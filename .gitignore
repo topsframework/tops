@@ -1,0 +1,24 @@
+
+# Automatically generated directories
+#======================================
+dep/
+build/
+lib/
+bin/
+sbin/
+libexec/
+dist/
+
+# Objects, Libraries and Binaries
+#==================================
+*.o
+*.a
+*.dll
+*.so
+
+# Make auxiliars
+#=================
+doc/doxygen/
+doc/Doxyfile.mk
+*.d
+
