@@ -8,16 +8,18 @@ PROJECT  := ToPS
 VERSION  := 2.0.0
 
 # Program settings
-BIN := Hello
+BIN := Hello test
 
 # SHRLIB   := # lib, all source files will make the library.
 
 # Flags
 # CXXFLAGS := # C++ Flags
-# LDFLAGS  := # Linker flags
+LDLIBS   :=
+LDFLAGS  := lib/gmock/make/gmock.a lib/gmock/gtest/make/gtest.a
 
 GIT_DEPENDENCY := \
-    googletest => http://git.chromium.org/external/googletest.git
+    gmock => http://git.chromium.org/external/googlemock.git,\
+    gmock/gtest => http://git.chromium.org/external/googletest.git
 
 # Package info
 MAINTEINER_NAME := Ígor Bonadio e Renato Cordeiro

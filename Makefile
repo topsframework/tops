@@ -57,6 +57,7 @@ DOXYFILE     := Doxyfile
 # Dependencies
 GIT_DEPENDENCY :=
 HG_DEPENDENCY  :=
+WEB_DEPENDENCY :=
 
 ########################################################################
 ##                              FLAGS                                 ##
@@ -246,6 +247,7 @@ TESTSUF := _tests
 ########################################################################
 ##                             PROGRAMS                               ##
 ########################################################################
+
 # Compilation
 AR              := ar
 AS              := nasm
@@ -303,8 +305,13 @@ DEBUILD         := debuild -us -uc
 DCH             := dch --create -v $(VERSION)-$(DEB_VERSION) \
                        --package $(DEB_PROJECT)
 
+# Remote
+CURL            := curl
+GIT             := git
+HG              := hg
+
 # Make
-MAKE            += --no-print-directory
+MAKE            += -f $(firstword $(MAKEFILE_LIST)) --no-print-directory
 
 # Include configuration file for programs if exists
 -include .config_os.mk config_os.mk Config_os.mk
@@ -443,6 +450,10 @@ endif
 ##                              PATHS                                 ##
 ########################################################################
 
+# Remote path
+MAKEREMOTE := \
+    https://raw.githubusercontent.com/renatocf/make/master/Makefile
+
 # Define the shell to be used
 SHELL = /bin/sh
 
@@ -452,8 +463,8 @@ SHELL = /bin/sh
 
 # Paths
 # ======
-vpath %.tar    $(distdir) # All tar files in distdir
-vpath %.tar.gz $(distdir) # All tar.gz files in distdir
+$(foreach e,.zip .tar .tgz .tbz2 .tar.gz .tar.bz2,\
+    $(eval vpath %.$e $(distdir)))
 
 # Binaries, libraries and source extensions
 $(foreach e,$(libext),$(eval vpath lib%$e $(libdir)))
@@ -464,11 +475,32 @@ $(foreach s,$(testdir),$(foreach e,$(srcext),$(eval vpath %$e $s)))
 ##                              FILES                                 ##
 ########################################################################
 
+# Useful definitions
+comma := ,
+empty :=
+space := $(empty) $(empty)
+tab   := $(empty)	$(empty)
+define newline
+
+
+endef
+
+# List manipulation functions
+define car
+$(strip $(firstword $(strip $1)))
+endef
+
+define cdr
+$(strip $(wordlist 2,$(words $(strip $1)),$(strip $1)))
+endef
+
 # Auxiliar data structures
 # ==========================
 # 1) hash-table.new: Create a hash table with elements accessible by
 #                    hash-table.key and a list of keys hash-table.keys
 # 2) hash-table.new_impl: Auxiliar function for hash-table.new
+# 3) procedure.new: Create a multi-line set of commands (for list
+# 					of arguments in a target)
 
 define hash-table.new
 $(call hash-table.new_impl,$(strip $1),$($(strip $1)))
@@ -476,13 +508,41 @@ endef
 
 define hash-table.new_impl
 $(if $(strip $2),$(or\
-    $(if $(strip $(subst =>,,$(strip $(wordlist 2,2,$2)))),\
-        $(error "Hash separator must be a => at variable '$1'")),\
-    $(eval $1.keys += $(strip $(firstword $2))),\
-    $(eval $1.$(strip $(firstword $2)) :=\
-        $(patsubst %\,%,$(wordlist 3,3,$2))),\
-    $(call hash-table.new_impl,$1,$(wordlist 4,$(words $2),$2))\
+  $(if $(strip $(subst =>,,$(strip $(wordlist 2,2,$2)))),\
+    $(error "Hash separator must be a => at variable '$1'")\
+  ),\
+  $(eval $1.__keys += $(firstword $2)),\
+  $(eval $1.$(firstword $2) := 0),\
+  $(strip $(foreach w,$(wordlist 3,$(words $2),$2),\
+    $(if $(strip $(filter 0,$(firstword $($1.$(firstword $2))))),\
+      $(if $(strip $(filter =>,$w)),\
+        $(error "Hash entry must end with ',' (key: $(firstword $2))"),\
+		$(eval $1.$(firstword $2) += $w)\
+        $(if $(strip $(filter %$(comma),$w)),\
+          $(eval $1.$(firstword $2) := \
+            $(words $(call cdr,$($1.$(firstword $2))))\
+            $(call cdr,$($1.$(firstword $2)))\
+          )\
+        )\
+      )\
+    )\
+  )),\
+  $(eval $1.$(firstword $2) := \
+    $(call cdr,$($1.$(strip $(firstword $2)))))\
+  $(call hash-table.new_impl,$1,\
+    $(wordlist $(words a a a $($1.$(firstword $2))),$(words $2),$2)\
+    $(eval $1.$(firstword $2) := \
+        $(patsubst %$(comma),%,$($1.$(firstword $2))))\
+  )\
 ))
+endef
+
+define hash-table.keys
+$(strip $($(strip $1).__keys))
+endef
+
+define hash-table.values
+$(strip $(foreach k,$(call hash-table.keys,$1),$($1.$k)))
 endef
 
 # Auxiliar functions
@@ -520,29 +580,14 @@ define remove-trailing-bar
 $(foreach s,$1,$(if $(or $(call not,$(dir $s)),$(suffix $s),$(notdir $(basename $s))),$s,$(patsubst %/,%,$s)))
 endef
 
-define has_c
-$(if $(strip $(sort $(foreach s,$(sort $(suffix $1)),\
-    $(findstring $s,$(cext))))),has_c)
-endef
-
 define is_c
 $(if $(strip $(foreach s,$(sort $(suffix $1)),\
     $(if $(strip $(findstring $s,$(cext))),,$s))),,is_c)
 endef
 
-define has_f
-$(if $(strip $(sort $(foreach s,$(sort $(suffix $1)),\
-    $(findstring $s,$(fext))))),has_f)
-endef
-
 define is_f
 $(if $(strip $(foreach s,$(sort $(suffix $1)),\
     $(if $(strip $(findstring $s,$(fext))),,$s))),,is_f)
-endef
-
-define has_cxx
-$(if $(strip $(sort $(foreach s,$(sort $(suffix $1)),\
-    $(findstring $s,$(cxxext))))),has_cxx)
 endef
 
 define is_cxx
@@ -552,17 +597,22 @@ endef
 
 # Auxiliar recursive functions
 # ==============================
-# 1) rsubdir: For listing all subdirectories of a given dir
-# 2) rwildcard: For wildcard deep-search in the directory tree
-# 3) rfilter-out: For filtering a list of text from another list
-rsubdir   = $(foreach d,$1,$(shell $(FIND) $d $(FIND_FLAGS)))
-rwildcard = $(foreach d,$(wildcard $1/*),\
-                $(call rwildcard,$d,$2)$(filter $(subst *,%,$2),$d))
-rfilter-out = \
-  $(eval rfilter-out_aux = $2)\
-  $(foreach d,$1,\
-      $(eval rfilter-out_aux = $(filter-out $d,$(rfilter-out_aux))))\
-  $(sort $(rfilter-out_aux))
+# 1) rsubdir:     For listing all subdirectories of a given dir
+# 2) rwildcard:   For wildcard deep-search in the directory tree
+# 3) rfilter:     For filtering a list of text from another list
+# 3) rfilter-out: For filtering out a list of text from another list
+rsubdir     = $(strip $(foreach d,$1,$(shell $(FIND) $d $(FIND_FLAGS))))
+rwildcard   = $(strip $(if $(strip $(wildcard $1/*)),\
+                  $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2)),\
+                  $(if $(wildcard $1*),$(filter $(subst *,%,$2),$1))))
+rfilter     = $(strip $(if $(strip $1),\
+                 $(call rfilter,$(call cdr,$1),$2)\
+                 $(filter $(call car,$1),$2)))
+rfilter-out = $(strip $(if $(strip $1),\
+                 $(call rfilter-out,\
+                     $(call cdr,$1),\
+                     $(filter-out $(call car,$1),$2)),\
+                 $(sort $2)))
 
 # Configuration Files
 # =====================
@@ -595,18 +645,24 @@ endef
 
 # Dependency files
 # =================
-# 1) git/hg_dependency: Internally defined variables for dependencies
+# 1) git/hg/web_dependency: Internally defined vars for dependencies
 # 2) Make variables above hash tables
-# 3) Create variable for all cvs dependencies
+# 3) Create variable for all dependencies
+# 4) Add path to libdir to store new dependencies
 #------------------------------------------------------------------[ 1 ]
 git_dependency := $(strip $(GIT_DEPENDENCY))
 hg_dependency  := $(strip $(HG_DEPENDENCY))
+web_dependency := $(strip $(WEB_DEPENDENCY))
 #------------------------------------------------------------------[ 2 ]
 $(call hash-table.new,git_dependency)
 $(call hash-table.new,hg_dependency)
+$(call hash-table.new,web_dependency)
 #------------------------------------------------------------------[ 3 ]
-cvsdep := $(addprefix $(libdir)/,$(git_dependency.keys))
-cvsdep += $(addprefix $(libdir)/,$(hg_dependency.keys))
+externdep := $(call hash-table.keys,git_dependency)
+externdep += $(call hash-table.keys,hg_dependency)
+externdep += $(call hash-table.keys,web_dependency)
+#------------------------------------------------------------------[ 4 ]
+externdep := $(addprefix $(firstword $(libdir))/,$(externdep))
 
 # Library files
 # ==============
@@ -716,15 +772,20 @@ autoinc := $(yaccinc) $(lexinc)
 
 # Source files
 # =============
-# 1) srcall : Find in the dir trees all source files (with dir names)
-# 2) srcall : Filter out ignored files from above
-# 2) srcall : Remove automatically generated source files from srcall
-# 3) liball : Save complete paths for libraries (wildcard-expanded)
-# 4) libpat : Save complete paths for libraries (non-wildcard-expanded)
-# 5) srccln : Remove library src from normal src
-# 5) autocln: Remove library src from normal auto generated src
-# 6) src    : Remove root directory names from dir paths
-# 6) autosrc: Remove root directory names from dir paths
+# 1) srcall  : Find in the dir trees all source files (with dir names)
+# 2) srcall  : Filter out ignored files from above
+# 3) srcall  : Remove automatically generated source files from srcall
+# 4) liball  : Save complete paths for libraries (wildcard-expanded)
+# 5) libpat  : Save complete paths for libraries (non-wildcard-expanded)
+# 6) srccln  : Remove library src from normal src
+# 6) asmcln  : Remove library src from assembly src
+# 6) autocln : Remove library src from normal auto generated src
+# 7) src     : Remove root directory names from dir paths
+# 7) asmsrc  : Remove root directory names from dir paths
+# 7) autosrc : Remove root directory names from dir paths
+# 8) c_all   : C files from srcall
+# 8) f_all   : Fortran files from srcall
+# 8) cxx_all : C++ files from srcall
 #------------------------------------------------------------------[ 1 ]
 ifneq ($(srcdir),.)
 srcall := $(sort\
@@ -789,6 +850,10 @@ autocln := $(call rfilter-out,$(liball),$(autocln))
 src     := $(call not-root,$(srccln))
 asmsrc  := $(call not-root,$(asmcln))
 autosrc := $(call not-root,$(autocln))
+#------------------------------------------------------------------[ 8 ]
+c_all   := $(call rfilter,$(addprefix %,$(cext)),$(srcall))
+f_all   := $(call rfilter,$(addprefix %,$(fext)),$(srcall))
+cxx_all := $(call rfilter,$(addprefix %,$(cxxext)),$(srcall))
 
 # Static libraries
 # =================
@@ -946,9 +1011,9 @@ ldlibs   = $(sort $(patsubst %/,%,$(patsubst %,-L%,$(libsub))))
 # Type-specific libraries
 # ========================
 # 1) Add c, f, cxx, lex and yacc only libraries in linker flags
-$(if $(strip $(call has_c,$(srcall))),$(eval ldflags += $(LDC)))
-$(if $(strip $(call has_f,$(srcall))),$(eval ldflags += $(LDF)))
-$(if $(strip $(call has_cxx,$(srcall))),$(eval ldflags += $(LDCXX)))
+$(if $(strip $(c_all)),$(eval ldflags += $(LDC)))
+$(if $(strip $(f_all)),$(eval ldflags += $(LDF)))
+$(if $(strip $(cxx_all)),$(eval ldflags += $(LDCXX)))
 $(if $(strip $(lexall)),$(eval ldflags += $(LDLEX)))
 $(if $(strip $(yaccall)),$(eval ldflags += $(LDYACC)))
 
@@ -974,9 +1039,13 @@ testrun := $(addprefix run_,$(subst /,_,$(testdep)))
 # 1) Dependencies will be generated for sources, auto sources and tests
 # 2) Get the not-root basenames of all source directories
 # 3) Create dependency names and directories
-depall  := $(testall) $(call not-root,$(srcall) $(autoall))
-depall  := $(strip $(basename $(depall)))
-depall  := $(addprefix $(depdir)/,$(addsuffix $(depext),$(depall)))
+# 4) Files that indicate the correctness of some dependencies
+# 3) Add dependency directory
+depall    := $(testall) $(call not-root,$(srcall) $(autoall))
+depall    := $(strip $(basename $(depall)))
+depall    := $(addprefix $(depdir)/,$(addsuffix $(depext),$(depall)))
+interndep := $(addsuffix dep,build tags docs dist dpkg install)
+interndep := $(addprefix $(depdir)/,$(interndep))
 
 # Binary
 # =======
@@ -1009,7 +1078,7 @@ libexec := $(if $(strip $(binext)),\
 
 $(if $(strip $(bin) $(sbin) $(libexec)),\
     $(eval binall := $(bin) $(sbin) $(libexec)),\
-    $(eval binall := $(bindir)/a.out)\
+    $(if $(strip $(srcall)),$(eval binall := $(bindir)/a.out))\
 )
 #------------------------------------------------------------------[ 2 ]
 $(foreach sep,/ .,$(foreach b,$(notdir $(binall)),$(or\
@@ -1082,26 +1151,36 @@ $(foreach doc,info html dvi pdf ps,\
 
 # Debian packaging files
 # =======================
-# 1) debdep: debian packaging files in the default debian directory
-debdep := changelog compat control copyright
-debdep += rules source/format $(DEB_PROJECT).dirs
-debdep := $(sort $(strip $(addprefix $(debdir)/,$(debdep))))
+# 1) deball: debian packaging files in the default debian directory
+deball := changelog compat control copyright
+deball += rules source/format $(DEB_PROJECT).dirs
+deball := $(sort $(strip $(addprefix $(debdir)/,$(deball))))
 
 ########################################################################
 ##                              BUILD                                 ##
 ########################################################################
 
+# CP              := cp -rap
+# MV              := mv
+# RM              := rm -f
+# MKDIR           := mkdir -p
+# RMDIR           := rm -rf
+# FIND            := find
+
+build_dependency := \
+    AR       => $(arlib),\
+    AS       => $(asmall),\
+    CC       => $(c_all),\
+    FC       => $(f_all),\
+    CXX      => $(cxx_all),\
+    RANLIB   => $(arlib),\
+    LEX      => $(clexer),\
+    LEX_CXX  => $(cxxlexer),\
+    YACC     => $(cparser),\
+    YACC_CXX => $(cxxparser)
+
 .PHONY: all
-all: $(cvsdep) $(binall) $(liball)
-
-.PHONY: package
-package: package-tar.gz
-
-.PHONY: dist
-dist: dist-tar.gz
-
-.PHONY: tar
-tar: dist-tar
+all: builddep $(externdep) $(binall) $(liball)
 
 .PHONY: check
 check: $(testrun)
@@ -1110,8 +1189,146 @@ check: $(testrun)
 .PHONY: nothing
 nothing:
 
+.PHONY: upgrade
+upgrade:
+	$(call phony-status,$(MSG_MAKE_UPGRADE))
+	$(quiet) $(CURL) $(MAKEREMOTE) -o $(firstword $(MAKEFILE_LIST))\
+        $(NO_OUTPUT) $(NO_ERROR)
+	$(call phony-ok,$(MSG_MAKE_UPGRADE))
+
+########################################################################
+##                          INITIALIZATION                            ##
+########################################################################
+
+.PHONY: init
+init:
+	$(call mkdir,$(srcdir))
+	$(call mkdir,$(incdir))
+	$(call mkdir,$(docdir))
+	$(quiet) $(MAKE) config > Config.mk
+	$(quiet) $(MAKE) gitignore > .gitignore
+
+.PHONY: standard
+standard:
+	$(call mv,$(objext),$(objdir))
+	$(call mv,$(libext),$(firstword libdir))
+	$(call mv,$(docext),$(docdir))
+	$(call mv,$(incext),$(firstword incdir))
+	$(call mv,$(srcext) $(asmext),$(firstword srcdir))
+	$(call mv,$(lexext) $(lexxext) $(yaccext) $(yaxxext),\
+        $(firstword srcdir))
+
+########################################################################
+##                               TAGS                                 ##
+########################################################################
+
+tags_dependency := \
+    CTAGS => ctags,\
+    ETAGS => etags
+
+.PHONY: TAGS
+TAGS: tagsdep ctags etags
+
+ctags: $(incall) $(srcall)
+	$(call phony-status,$(MSG_CTAGS))
+	$(quiet) $(CTAGS) $(CTAGSFLAGS) $^ -o $@ $(ERROR)
+	$(call phony-ok,$(MSG_CTAGS))
+
+etags: $(incall) $(srcall)
+	$(call phony-status,$(MSG_ETAGS))
+	$(quiet) $(ETAGS) $(ETAGSFLAGS) $^ -o $@ $(ERROR)
+	$(call phony-ok,$(MSG_ETAGS))
+
+########################################################################
+##                          DOCUMENTATION                             ##
+########################################################################
+
+docs_dependency := \
+    DOXYGEN   => $(doxyfile),\
+    MAKEINFO  => $(texiinfo),\
+    TEXI2HTML => $(texihtml),\
+    TEXI2DVI  => $(texidvi),\
+    TEXI2PDF  => $(texipdf),\
+    TEXI2PS   => $(texips)
+
+.PHONY: docs
+docs: docsdep $(if $(strip $(doxyfile)),doxy)
+docs: $(if $(strip $(texiall)),info html dvi pdf ps)
+
+ifneq ($(strip $(doxyfile)),) ####
+
+.PHONY: doxy
+doxy: docsdep $(docdir)/$(doxyfile).mk
+	$(call phony-status,$(MSG_DOXY_DOCS))
+	$(quiet) $(DOXYGEN) $(word 2,2,$^) $(NO_OUTPUT) $(NO_ERROR)
+	$(call phony-ok,$(MSG_DOXY_DOCS))
+
+$(docdir)/$(doxyfile).mk: | $(docdir) $(docdir)/doxygen
+$(docdir)/$(doxyfile).mk: $(doxyfile) $(srcall) $(incall)
+	$(call status,$(MSG_DOXY_MAKE))
+	$(quiet) $(CP) $< $@
+	
+	@echo "                                                      " >> $@
+	@echo "######################################################" >> $@
+	@echo "##                 MAKEFILE CONFIGS                 ##" >> $@
+	@echo "######################################################" >> $@
+	@echo "                                                      " >> $@
+	@echo "# Project info                                        " >> $@
+	@echo "PROJECT_NAME     = $(PROJECT)                         " >> $@
+	@echo "PROJECT_NUMBER   = $(VERSION)                         " >> $@
+	@echo "PROJECT_BRIEF    = $(SYNOPSIS)                        " >> $@
+	@echo "                                                      " >> $@
+	@echo "# Source info                                         " >> $@
+	@echo "INPUT            = $(call rsubdir,$(srcdir) $(incdir))" >> $@
+	@echo "FILE_PATTERNS    = $(addprefix *,$(srcext) $(incext)) " >> $@
+	@echo "                                                      " >> $@
+	@echo "OUTPUT_DIRECTORY = $(firstword $(docdir)/doxygen)     " >> $@
+	
+	$(call ok,$(MSG_DOXY_MAKE),$@)
+
+$(doxyfile):
+	$(call status,$(MSG_DOXY_FILE))
+	$(quiet) $(DOXYGEN) -g $@ $(NO_OUTPUT)
+	$(call ok,$(MSG_DOXY_FILE),$@)
+
+$(docdir)/doxygen:
+	$(call mkdir,$(docdir)/doxygen)
+
+endif # ifneq($(strip $(doxyfile)),) ####
+
+########################################################################
+##                            DISTRIBUTION                            ##
+########################################################################
+
+dist_dependency := \
+    TAR   => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
+             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
+    ZIP   => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
+             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
+    GZIP  => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
+             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
+    BZIP2 => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
+             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir)
+
+.PHONY: package
+package: distdep package-tar.gz
+
+.PHONY: dist
+dist: distdep dist-tar.gz
+
+.PHONY: tar
+tar: distdep dist-tar
+
+########################################################################
+##                          DEBIAN PACKAGE                            ##
+########################################################################
+
+dpkg_dependency := \
+    DEBUILD => $(deball),\
+    DCH     => $(debdir)/changelog,
+
 .PHONY: dpkg
-dpkg: package-tar.gz $(debdep)
+dpkg: dpkgdep package-tar.gz $(deball)
 	
 	@# Step 1: Rename the upstream tarball
 	$(call phony-status,$(MSG_DEB_STEP1))
@@ -1139,6 +1356,9 @@ dpkg: package-tar.gz $(debdep)
 	$(quiet) cd $(distdir)/$(DEB_PROJECT)-$(VERSION) \
 	         && $(DEBUILD) $(ERROR)
 	$(call phony-ok,$(MSG_DEB_STEP4))
+
+# Executes iff one of the make goals is 'dpkg'
+ifneq (,$(foreach g,$(MAKECMDGOALS),$(filter $g,dpkg)))
 
 $(debdir)/changelog: | $(debdir)
 	$(quiet) $(DCH)
@@ -1196,49 +1416,33 @@ $(debdir)/$(DEB_PROJECT).dirs: | $(debdir)
 	$(if $(strip $(lib)),     $(call cat,'$(i_libdir)                '))
 	$(if $(strip $(texiinfo)),$(call cat,'$(i_docdir)/info           '))
 	$(call select,stdout)
-
-########################################################################
-##                          INITIALIZATION                            ##
-########################################################################
-
-.PHONY: init
-init:
-	$(call mkdir,$(srcdir))
-	$(call mkdir,$(incdir))
-	$(call mkdir,$(docdir))
-	$(quiet) $(MAKE) config > Config.mk
-	$(quiet) $(MAKE) gitignore > .gitignore
-
-.PHONY: standard
-standard:
-	$(call mv,$(objext),$(objdir))
-	$(call mv,$(libext),$(firstword libdir))
-	$(call mv,$(docext),$(docdir))
-	$(call mv,$(incext),$(firstword incdir))
-	$(call mv,$(srcext) $(asmext),$(firstword srcdir))
-	$(call mv,$(lexext) $(lexxext) $(yaccext) $(yaxxext),\
-        $(firstword srcdir))
+endif
 
 ########################################################################
 ##                           INSTALLATION                             ##
 ########################################################################
 
+install_dependency := \
+    INSTALL         => $(i_lib) $(i_bin) $(i_sbin) $(i_libexec),\
+    INSTALL_DATA    => $(i_lib),\
+    INSTALL_PROGRAM => $(i_bin) $(i_sbin) $(i_libexec)
+
 .PHONY: install-strip
-install-strip:
+install-strip: installdep 
 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
 
 .PHONY: install
-install: $(i_lib) $(i_bin) $(i_sbin) $(i_libexec) install-docs
+install: installdep $(i_lib) $(i_bin) $(i_sbin) $(i_libexec) install-docs
 
 .PHONY: install-docs
-install-docs: install-info install-html install-dvi
+install-docs: installdep install-info install-html install-dvi
 install-docs: install-pdf install-ps
 
 .PHONY: install-info
 install-info:
 	$(if $(strip $(texiinfo)),$(foreach f,$(texiinfo),\
         $(INSTALL_DATA) $f $(i_infodir)/$(notdir $f);\
-        if $(SHELL) -c '$(INSTALL_INFO) --version' $(NO_OUTOUT) 2>&1; \
+        if $(SHELL) -c '$(INSTALL_INFO) --version' $(NO_OUTPUT) 2>&1; \
         then \
             $(INSTALL_INFO) --dir-file="$(i_infodir)/dir" \
             "$(i_infodir)/$(notdir $f)"; \
@@ -1295,81 +1499,43 @@ uninstall-info:
     ))
 
 ########################################################################
-##                               TAGS                                 ##
-########################################################################
-
-.PHONY: TAGS
-TAGS: ctags etags
-
-ctags: $(incall) $(srcall)
-	$(call phony-status,$(MSG_CTAGS))
-	$(quiet) $(CTAGS) $(CTAGSFLAGS) $^ -o $@
-	$(call phony-ok,$(MSG_CTAGS))
-
-etags: $(incall) $(srcall)
-	$(call phony-status,$(MSG_ETAGS))
-	$(quiet) $(ETAGS) $(ETAGSFLAGS) $^ -o $@
-	$(call phony-ok,$(MSG_ETAGS))
-
-########################################################################
-##                          DOCUMENTATION                             ##
-########################################################################
-
-.PHONY: docs
-all-docs: $(if $(strip $(doxyfile)),doxy)
-all-docs: $(if $(strip $(texiall)),info html dvi pdf ps)
-
-ifneq ($(strip $(doxyfile)),) ####
-
-.PHONY: doxy
-doxy: $(docdir)/$(doxyfile).mk
-	$(call phony-status,$(MSG_DOXY_DOCS))
-	$(quiet) $(DOXYGEN) $< $(NO_OUTPUT) $(NO_ERROR)
-	$(call phony-ok,$(MSG_DOXY_DOCS))
-
-$(docdir)/$(doxyfile).mk: | $(docdir) $(docdir)/doxygen
-$(docdir)/$(doxyfile).mk: $(doxyfile) $(srcall) $(incall)
-	$(call status,$(MSG_DOXY_MAKE))
-	$(quiet) $(CP) $< $@
-	
-	@echo "                                                      " >> $@
-	@echo "######################################################" >> $@
-	@echo "##                 MAKEFILE CONFIGS                 ##" >> $@
-	@echo "######################################################" >> $@
-	@echo "                                                      " >> $@
-	@echo "# Project info                                        " >> $@
-	@echo "PROJECT_NAME     = $(PROJECT)                         " >> $@
-	@echo "PROJECT_NUMBER   = $(VERSION)                         " >> $@
-	@echo "PROJECT_BRIEF    = $(SYNOPSIS)                        " >> $@
-	@echo "                                                      " >> $@
-	@echo "# Source info                                         " >> $@
-	@echo "INPUT            = $(call rsubdir,$(srcdir) $(incdir))" >> $@
-	@echo "FILE_PATTERNS    = $(addprefix *,$(srcext) $(incext)) " >> $@
-	@echo "                                                      " >> $@
-	@echo "OUTPUT_DIRECTORY = $(firstword $(docdir)/doxygen)     " >> $@
-	
-	$(call ok,$(MSG_DOXY_MAKE),$@)
-
-$(doxyfile):
-	$(call status,$(MSG_DOXY_FILE))
-	$(quiet) $(DOXYGEN) -g $@ $(NO_OUTPUT)
-	$(call ok,$(MSG_DOXY_FILE),$@)
-
-$(docdir)/doxygen:
-	$(call mkdir,$(docdir)/doxygen)
-
-endif # ifneq($(strip $(doxyfile)),) ####
-
-########################################################################
 ##                              RULES                                 ##
 ########################################################################
 
 #======================================================================#
-# Function: cvs-factory                                                #
+# Function: dep-factory                                                #
+# @param  $1 Dependency name (for targets)                             #
+# @param  $3 Dependency nick (hash key)                                #
+# @return Target to check a set of dependencies defined in $2          #
+#======================================================================#
+define dep-factory
+# Creates hash from hash-key
+$$(call hash-table.new,$2)
+
+.PHONY: $1dep
+$1dep: \
+    $$(if $$(call hash-table.values,$2),$$(depdir)/$1dep)
+
+$$(depdir)/$1dep: $$(call cdr,$$(MAKEFILE_LIST)) | $$(depdir)
+	$$(quiet) $$(foreach d,$$(call hash-table.keys,$2),\
+       $$(if $$(strip $$($2.$$d)),\
+         $$(call phony-status,$$(MSG_DEP))$$(newline)\
+         $$(quiet) which $$(firstword $$($$d)) $$(NO_OUTPUT) $$(NO_ERROR)\
+            || $$(call phony-error,$$(MSG_DEP_FAILURE)) $$(newline)\
+         $$(call phony-ok,$$(MSG_DEP))$$(newline)\
+    ))
+	$$(quiet) touch $$@
+	$$(call phony-ok,$$(MSG_DEP_ALL))
+endef
+$(foreach d,build tags docs dist dpkg install,\
+    $(eval $(call dep-factory,$d,$d_dependency)))
+
+#======================================================================#
+# Function: cvs-dependency                                             #
 # @param  $1 Dependency nick (hash key)                                #
 # @param  $2 CVS executable                                            #
 # @param  $3 Dependency path (hash value)                              #
-# @return Target to generate source files according to its type        #
+# @return Target to download cvs dependencies for building             #
 #======================================================================#
 define cvs-dependency
 $$(libdir)/$$(strip $1): PWD = $$(shell pwd)
@@ -1388,10 +1554,37 @@ $$(libdir)/$$(strip $1): | $$(libdir)
               fi $$(ERROR)
 	$$(call phony-ok,$$(MSG_MAKE_DEP))
 endef
-$(foreach cvs,git hg,\
-    $(foreach d,$($(cvs)_dependency.keys),$(eval\
-        $(call cvs-dependency,$d,$(cvs),$($(cvs)_dependency.$d))\
-)))
+$(foreach d,$(call hash-table.keys,git_dependency),$(eval\
+	$(call cvs-dependency,$d,$(GIT),$(git_dependency.$d))))
+$(foreach d,$(call hash-table.keys,hg_dependency),$(eval\
+	$(call cvs-dependency,$d,$(HG),$(hg_dependency.$d))))
+
+#======================================================================#
+# Function: web-dependency                                             #
+# @param  $1 Dependency nick (hash key)                                #
+# @param  $2 Web downloader                                            #
+# @param  $3 Dependency path (hash value)                              #
+# @return Target to download web dependencies for building             #
+#======================================================================#
+define web-dependency
+$$(libdir)/$$(strip $1): PWD = $$(shell pwd)
+$$(libdir)/$$(strip $1): | $$(libdir)
+	$$(call phony-status,$$(MSG_WEB_DOWNLOAD))
+	$$(quiet) $2 $$(strip $3) -o $$@ $$(NO_OUTPUT) $$(NO_ERROR)
+	$$(call phony-ok,$$(MSG_WEB_DOWNLOAD))
+	
+	$$(call phony-status,$$(MSG_MAKE_DEP))
+	$$(quiet) if [ -f $$@/[Mm]akefile ]; then \
+                  cd $$@ && $$(MAKE) -f [Mm]akefile; \
+              elif [ -f $$@/make/[Mm]akefile ]; then \
+                  cd $$@/make && $$(MAKE) -f [Mm]akefile; \
+              else \
+                  echo $${MSG_MAKE_NONE}; \
+              fi $$(ERROR)
+	$$(call phony-ok,$$(MSG_MAKE_DEP))
+endef
+$(foreach d,$(call hash-table.keys,web_dependency),$(eval\
+	$(call web-dependency,$d,$(CURL),$(web_dependency.$d))))
 
 #======================================================================#
 # Function: scanner-factory                                            #
@@ -1679,6 +1872,7 @@ $(foreach a,$(arpatsrc),\
 #            substituting / for _ in $(testdep)                        #
 # @return Target to generate binary file for the unit test             #
 #======================================================================#
+ifneq (,$(foreach g,$(MAKECMDGOALS),$(filter $g,check)))
 define test-factory
 $1: $2 $3 | $$(bindir)
 	$$(call status,$$(MSG_TEST_COMPILE))
@@ -1703,6 +1897,7 @@ $(foreach s,$(testdep),$(eval\
         ),\
         run_$(subst /,_,$s)\
 )))
+endif
 
 #======================================================================#
 # Function: binary-factory                                             #
@@ -1745,7 +1940,7 @@ $(foreach b,$(binall),$(eval\
 #======================================================================#
 define texinfo-factory
 .PHONY: $1
-$1: $$(texi$1)
+$1: docsdep $$(texi$1)
 	$$(call phony-ok,$$(MSG_TEXI_DOCS))
 
 $$(docdir)/$1/%$2: $$(filter $$(docdir)/$$*%,$$(texiall)) | $$(docdir)/$1
@@ -1906,12 +2101,12 @@ define dist-factory
 package-$1: dirs := Makefile $$(make_configs)
 package-$1: dirs += $$(srcdir) $$(incdir) $$(datadir) $$(docdir)
 package-$1: dirs += $$(if $$(strip $$(lib)),$$(libdir)) $$(bindir)
-package-$1: $$(distdir)/$$(PROJECT)-$$(VERSION)_src.$1
+package-$1: distdep $$(distdir)/$$(PROJECT)-$$(VERSION)_src.$1
 
 .PHONY: dist-$1
 dist-$1: dirs := Makefile $$(make_configs)
 dist-$1: dirs += $$(if $$(strip $$(lib)),$$(libdir)) $$(bindir)
-dist-$1: $$(distdir)/$$(PROJECT)-$$(VERSION).$1
+dist-$1: distdep $$(distdir)/$$(PROJECT)-$$(VERSION).$1
 endef
 $(foreach e,tar.gz tar.bz2 tar zip tgz tbz2,\
     $(eval $(call dist-factory,$e)))
@@ -1931,7 +2126,7 @@ clean: mostlyclean
 
 .PHONY: distclean
 distclean: clean
-	$(call rm-if-empty,$(depdir),$(depall))
+	$(call rm-if-empty,$(depdir),$(depall) $(interndep))
 	$(call rm-if-empty,$(distdir))
 	$(call rm-if-empty,$(firstword $(libdir)),\
         $(filter $(firstword $(libdir))/%,$(lib))\
@@ -1951,7 +2146,7 @@ docclean:
 .PHONY: packageclean
 packageclean:
 	$(call rm-if-empty,$(distdir)/$(DEB_PROJECT)-$(VERSION))
-	$(call rm-if-empty,$(debdir),$(debdep))
+	$(call rm-if-empty,$(debdir),$(deball))
 
 .PHONY: realclean
 ifndef D
@@ -1962,7 +2157,9 @@ realclean:
 else
 realclean: docclean distclean packageclean
 	$(call rm-if-exists,$(lexall),$(MSG_LEX_NONE))
+	$(foreach d,$(lexinc),$(call rm-if-empty,$d)$(newline))
 	$(call rm-if-exists,$(yaccall),$(MSG_YACC_NONE))
+	$(foreach d,$(yaccinc),$(call rm-if-empty,$d)$(newline))
 	$(call rm-if-exists,ctags,$(MSG_CTAGS_NONE))
 	$(call rm-if-exists,etags,$(MSG_ETAGS_NONE))
 endif
@@ -1984,14 +2181,18 @@ uninitialize:
 	@echo $(MSG_UNINIT_WARN)
 	@echo $(MSG_UNINIT_ALT)
 else
-uninitialize: mainteiner-clean
+uninitialize:
+	@$(MAKE) mainteiner-clean D=1
 	$(call rm-if-empty,$(srcdir),$(srcall))
 	$(call rm-if-empty,$(incdir),$(incall))
 	$(call rm-if-empty,$(docdir),$(texiall))
 	$(call rm-if-exists,Config.mk)
 	$(call rm-if-exists,config.mk)
+	$(call rm-if-exists,.config.mk)
 	$(call rm-if-exists,Config_os.mk)
 	$(call rm-if-exists,config_os.mk)
+	$(call rm-if-exists,.config_os.mk)
+	$(call rm-if-exists,.gitignore)
 endif
 
 ########################################################################
@@ -2022,6 +2223,8 @@ RES     := \033[0m
 ERR     := \033[0;37m
 endif
 
+MSG_MAKE_UPGRADE  = "${YELLOW}Upgrading Makefile${RES}"
+
 MSG_UNINIT_WARN   = "${RED}Are you sure you want to delete all"\
                     "sources, headers and configuration files?"
 MSG_UNINIT_ALT    = "${DEF}Run ${BLUE}'make uninitialize U=1'${RES}"
@@ -2030,8 +2233,14 @@ MSG_MOVE          = "${YELLOW}Populating directory $(firstword $2)${RES}"
 MSG_NO_MOVE       = "${PURPLE}Nothing to put in $(firstword $2)${RES}"
 
 MSG_CVS_CLONE     = "${CYAN}Cloning dependency ${DEF}$@${RES}"
+MSG_WEB_DOWNLOAD  = "${CYAN}Downloading dependency ${DEF}$@${RES}"
 MSG_MAKE_DEP      = "${YELLOW}Building dependency ${DEF}$@${RES}"
 MSG_MAKE_NONE     = "${ERR}No Makefile found for compilation${RES}"
+
+MSG_DEP           = "${DEF}Searching for $d dependecy"\
+                    "${GREEN}$($(d))${RES}"
+MSG_DEP_ALL       = "${YELLOW}All dependencies avaiable${RES}"
+MSG_DEP_FAILURE   = "${DEF}Dependency ${GREEN}$($d)${DEF} not found${RES}"
 
 MSG_TOUCH         = "${PURPLE}Creating new file ${DEF}$1${RES}"
 MSG_UPDATE_NMSH   = "${YELLOW}Updating namespace${DEF}"\
@@ -2247,9 +2456,7 @@ define rm-if-empty
                 $(if $(strip $(MAINTEINER_CLEAN)),\
                     $(call rmdir,$d),\
                     $(if $(strip $(call rfilter-out,$2,\
-                            $(call rfilter-out,\
-                                $(filter-out $d,$(call rsubdir,$d)),\
-                                $(call rwildcard,$d,*)))),\
+                                 $(call rwildcard,$d,*))),\
                         $(call phony-ok,$(MSG_RM_NOT_EMPTY)),\
                         $(call rmdir,$d)\
                 )),\
@@ -2277,11 +2484,11 @@ ifndef SILENT
 
 ifneq ($(strip $(quiet)),)
     define phony-status
-    	@printf "%b ... " $1;
+    	@printf "%b " $1; printf "... " 
     endef
     
     define status
-    	@$(RM) $@ && printf "%b ... " $1;
+    	@$(RM) $@ && printf "%b " $1; printf "... ";
     endef
 
     define vstatus
@@ -2290,7 +2497,11 @@ ifneq ($(strip $(quiet)),)
 endif
 
 define phony-ok
-	@echo "\r${GREEN}[OK]${RES}" $1 "     ";
+	@if [ $$? ];\
+         then echo "\r${GREEN}[OK]${RES}" $1 "     ";\
+         else echo "${RED}[ERROR]${RES}" $1 "${RED}(STATUS: $$?)${RES}";\
+              exit 42;\
+     fi;
 endef
 
 define ok
@@ -2317,7 +2528,7 @@ else
 endif
 
 define phony-error
-	@echo "${RED}[ERROR]${RES}" $1; exit 42;
+(echo "\r${RED}[ERROR]${RES}" $1 "${RED}(STATUS: $$?)${RES}"; exit 42)
 endef
 
 define test-error
@@ -2413,7 +2624,7 @@ endef
 # $2 List of extensions to validate as correct $1, if it is not empty
 define invalid-ext
 $(if $(strip $1),$(if $(findstring $(strip $1),$2),,\
-    $(call phony-error,$(MSG_NEW_EXT))\
+    $(quiet) $(call phony-error,$(MSG_NEW_EXT))\
 ))
 endef
 
@@ -2855,7 +3066,7 @@ config:
 	@echo "# IGNORED  := # Files within Make dirs to be ignored."
 	@echo ""
 	@echo "# ARLIB    := # Static/Shared libraries' names. If one is a"
-	@echo "# SHRLIB   := # lib, all source files will make the library."
+	@echo "# SHRLIB   := # dir, all source files will make the library."
 	@echo ""
 	@echo "# Flags"
 	@echo "# ASFLAGS  := # Assembly Flags"
@@ -2934,15 +3145,14 @@ projecthelp:
 	@echo "                                                            "
 	@echo "Default targets:                                            "
 	@echo "-----------------                                           "
-	@echo " * all-docs:     Generate docs in all formats avaiable      "
 	@echo " * all:          Generate all executables                   "
 	@echo " * check:        Compile and run Unit Tests                 "
 	@echo " * compiler:     Outputs Compiler.mk to define compilers    "
 	@echo " * config:       Outputs Config.mk model for user's options "
-	@echo " * delete:       Remove C/C++ artifact (see above)          "
 	@echo " * dpkg:         Create a debian package from the project   "
 	@echo " * dist-*:       As 'dist', with many types of compression  "
 	@echo " * dist:         Create .tar.gz with binaries and libraries "
+	@echo " * docs:         Generate docs in all formats avaiable      "
 	@echo " * doxy:         Create Doxygen docs (if doxyfile defined)  "
 	@echo " * gitignore:    Outputs .gitignore model for user          "
 	@echo " * init:         Create directories for beggining projects  "
@@ -2950,15 +3160,21 @@ projecthelp:
 	@echo " * install-docs: Install documentation in all formats       "
 	@echo " * install:      Install executables and libraries          "
 	@echo " * installcheck: Run installation tests (if avaiable)       "
-	@echo " * new:          Create C/C++ artifact (see above)          "
 	@echo " * package-*:    As 'package', with many compressions       "
 	@echo " * package:      As 'dist', but also with sources and data  "
 	@echo " * standard:     Move files to their standard directories   "
 	@echo " * tar:          Create .tar with binaries and libraries    "
 	@echo " * uninstall:    Uninstall anything created by any install  "
+	@echo " * upgrade:      Upgrades Makefile with remote repository   "
+	@echo "                                                            "
+	@echo "Management targets:                                         "
+	@echo "--------------------                                        "
+	@echo " * new:          Creates C/C++/Fortran artifact             "
+	@echo " * delete:       Removes C/C++/Fortran artifact             "
+	@echo " * update:       Updates C/C++/Fortran artifact             "
 	@echo "                                                            "
 	@echo "Tags targets:                                               "
-	@echo "---------------                                             "
+	@echo "--------------                                              "
 	@echo " * ctags:        Create tags for VI/Vim editor              "
 	@echo " * etags:        Create tags for Emacs editor               "
 	@echo " * TAGS:         Create tags for both VI/Vim and Emacs      "
@@ -2979,7 +3195,7 @@ projecthelp:
 	@echo " * uninitialize: Above and source/include directories       "
 	@echo "                                                            "
 	@echo "Help targets:                                               "
-	@echo "---------------                                             "
+	@echo "--------------                                              "
 	@echo " * help:         Info about this Makefile                   "
 	@echo " * projecthelp:  Perharps you kwnow if you are here         "
 	@echo "                                                            "
@@ -3033,10 +3249,6 @@ dump:
 	@echo "----------------------------------------"
 	$(call prompt,"ignored:      ",$(ignored)      )
 	
-	@echo "${WHITE}\nCVS DEPENDENCIES        ${RES}"
-	@echo "----------------------------------------"
-	$(call prompt,"cvsdep:       ",$(cvsdep)       )
-	
 	@echo "${WHITE}\nACCEPTED EXTENSIONS     ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"srcext:       ",$(srcext)       )
@@ -3054,6 +3266,7 @@ dump:
 	$(call prompt,"clexer:       ",$(clexer)       )
 	$(call prompt,"cxxlexer:     ",$(cxxlexer)     )
 	$(call prompt,"lexall:       ",$(lexall)       )
+	$(call prompt,"lexinc:       ",$(lexinc)       )
 	
 	@echo "${WHITE}\nPARSER                  ${RES}"
 	@echo "----------------------------------------"
@@ -3061,6 +3274,7 @@ dump:
 	$(call prompt,"cparser:      ",$(cparser)      )
 	$(call prompt,"cxxparser:    ",$(cxxparser)    )
 	$(call prompt,"yaccall:      ",$(yaccall)      )
+	$(call prompt,"yaccinc:      ",$(yaccinc)      )
 	
 	@echo "${WHITE}\nSOURCE                  ${RES}"
 	@echo "----------------------------------------"
@@ -3073,6 +3287,9 @@ dump:
 	$(call prompt,"autoall:      ",$(autoall)      )
 	$(call prompt,"autocln:      ",$(autocln)      )
 	$(call prompt,"autosrc:      ",$(autosrc)      )
+	$(call prompt,"c_all:        ",$(c_all)        )
+	$(call prompt,"f_all:        ",$(f_all)        )
+	$(call prompt,"cxx_all:      ",$(cxx_all)      )
 	
 	@echo "${WHITE}\nHEADERS                 ${RES}"
 	@echo "----------------------------------------"
@@ -3127,6 +3344,8 @@ dump:
 	@echo "${WHITE}\nDEPENDENCY              ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"depall:       ",$(depall)       )
+	$(call prompt,"interndep:    ",$(interndep)    )
+	$(call prompt,"externdep:    ",$(externdep)    )
 	
 	@echo "${WHITE}\nBINARY                  ${RES}"
 	@echo "----------------------------------------"
