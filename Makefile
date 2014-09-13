@@ -2611,11 +2611,9 @@ endef
 
 ## WEB DEPENDENCIES ####################################################
 define web-clone
-$(if $(strip $(shell $(CURL) -z $2 $1 $(NO_ERROR))),
-	$(call phony-status,$(MSG_WEB_CLONE))$(newline)\
-	$(quiet) $(CURL) $1 -o $2 $(NO_OUTPUT) $(NO_ERROR)$(newline)\
-	$(call phony-ok,$(MSG_WEB_CLONE))$(newline)\
-)
+	$(call phony-status,$(MSG_WEB_CLONE))
+	$(quiet) $(CURL) $1 -o $2 $(NO_OUTPUT) $(NO_ERROR)
+	$(call phony-ok,$(MSG_WEB_CLONE))
 endef
 
 ## VERSIONMENT #########################################################
@@ -2658,7 +2656,7 @@ endef
 
 define git-add-commit
 $(if $(foreach f,$1,$(wildcard $f)),\
-    $(if $(strip $(shell $(GIT) diff --exit-code $1)),\
+    $(if $(shell $(GIT) diff --exit-code $1),\
         $(call git-add,$1)$(newline)$(call git-commit,$1,$2)))
 endef
 
