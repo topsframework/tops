@@ -1187,13 +1187,6 @@ deball := $(sort $(strip $(addprefix $(debdir)/,$(deball))))
 ##                              BUILD                                 ##
 ########################################################################
 
-# CP              := cp -rap
-# MV              := mv
-# RM              := rm -f
-# MKDIR           := mkdir -p
-# RMDIR           := rm -rf
-# FIND            := find
-
 build_dependency := \
     AR       => $(arlib),\
     AS       => $(asmall),\
@@ -2254,7 +2247,7 @@ MSG_MAKE_CREATE   = "${PURPLE}Creating file ${DEF}$2"\
 MSG_MAKE_DEP      = "${YELLOW}Building dependency ${DEF}$<${RES}"
 MSG_MAKE_NONE     = "${ERR}No Makefile found for compilation${RES}"
 
-MSG_DEP           = "${DEF}Searching for $d dependecy"\
+MSG_DEP           = "${DEF}Searching for $d dependency"\
                     "${GREEN}$($(d))${RES}"
 MSG_DEP_ALL       = "${YELLOW}All dependencies avaiable${RES}"
 MSG_DEP_FAILURE   = "${DEF}Dependency ${GREEN}$($d)${DEF}"\
@@ -3337,7 +3330,7 @@ endef
 
 .PHONY: dump
 dump:
-	@echo "${WHITE}\nDOCUMENTATION           ${RES}"
+	@echo "${WHITE}\nCONFIGURATION           ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"license:      ",$(license)      )
 	$(call prompt,"notice:       ",$(notice)       )
@@ -3396,15 +3389,6 @@ dump:
 	$(call prompt,"incsub:       ",$(incsub)       )
 	$(call prompt,"autoinc:      ",$(autoinc)      )
 	
-	@echo "${WHITE}\nTEST                    ${RES}"
-	@echo "----------------------------------------"
-	$(call prompt,"testall:      ",$(testall)      )
-	$(call prompt,"testsrc:      ",$(testsrc)      )
-	$(call prompt,"testobj:      ",$(testobj)      )
-	$(call prompt,"testdep:      ",$(testdep)      )
-	$(call prompt,"testbin:      ",$(testbin)      )
-	$(call prompt,"testrun:      ",$(testrun)      )
-	
 	@echo "${WHITE}\nLIBRARY                 ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"lib_in:       ",$(lib_in)       )
@@ -3435,6 +3419,15 @@ dump:
 	@echo "----------------------------------------"
 	$(call prompt,"systemlib:    ",$(systemlib)    )
 	$(call prompt,"systemname:   ",$(systemname)   )
+	
+	@echo "${WHITE}\nTEST                    ${RES}"
+	@echo "----------------------------------------"
+	$(call prompt,"testall:      ",$(testall)      )
+	$(call prompt,"testsrc:      ",$(testsrc)      )
+	$(call prompt,"testobj:      ",$(testobj)      )
+	$(call prompt,"testdep:      ",$(testdep)      )
+	$(call prompt,"testbin:      ",$(testbin)      )
+	$(call prompt,"testrun:      ",$(testrun)      )
 	
 	@echo "${WHITE}\nOBJECT                  ${RES}"
 	@echo "----------------------------------------"
