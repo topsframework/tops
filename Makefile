@@ -26,8 +26,8 @@
 ########################################################################
 
 # Project setting
-PROJECT  := Default
-VERSION  := 1.0
+PROJECT         := Default
+VERSION         := 1.0
 
 # Package info
 AUXFILES        :=
@@ -42,22 +42,22 @@ DEB_PROJECT     := Default
 DEB_PRIORITY    := optional
 
 # Program settings
-BIN      :=
-SBIN     :=
-LIBEXEC  :=
-TESTBIN  :=
-ARLIB    :=
-SHRLIB   :=
+BIN             :=
+SBIN            :=
+LIBEXEC         :=
+TESTBIN         :=
+ARLIB           :=
+SHRLIB          :=
 
 # Documentation settings
-LICENSE      := LICENSE
-NOTICE       := NOTICE
-CONTRIBUTORS := CONTRIBUTORS
-DOXYFILE     := Doxyfile
+LICENSE         := LICENSE
+NOTICE          := NOTICE
+CONTRIBUTORS    := CONTRIBUTORS
+DOXYFILE        := Doxyfile
 
 # Dependencies
-GIT_DEPENDENCY :=
-WEB_DEPENDENCY :=
+GIT_DEPENDENCY  :=
+WEB_DEPENDENCY  :=
 
 ########################################################################
 ##                              FLAGS                                 ##
@@ -76,6 +76,7 @@ CXXFLAGS  := $(CFLAGS) -std=c++11
 FFLAGS    := -cpp
 
 # Linker flags
+LDLIBS    :=
 LDFLAGS   :=
 LDC       :=
 LDF       := -lgfortran
@@ -87,8 +88,17 @@ LDYACC    :=
 ARFLAGS   := -rcv
 SOFLAGS   := -shared
 
-# Include configuration file if exists
--include .config.mk config.mk Config.mk
+########################################################################
+##                              LIBS                                  ##
+########################################################################
+
+# C/C++/Fortran include paths
+CLIBS     :=
+CXXLIBS   :=
+FLIBS     :=
+
+# Linker lib paths
+LDLIBS    :=
 
 ########################################################################
 ##                            DIRECTORIES                             ##
@@ -115,6 +125,9 @@ $(foreach var,\
     $(eval $(var) := .)\
 )
 endif
+
+# Include configuration file if exists
+-include .config.mk config.mk Config.mk
 
 ## INSTALLATION ########################################################
 
@@ -306,8 +319,7 @@ DCH             := dch --create -v $(VERSION)-$(DEB_VERSION) \
                        --package $(DEB_PROJECT)
 
 # Remote
-CURL            := curl
-GIT             := git
+CURL            := curl -o
 GIT             := git
 
 # Make
@@ -341,6 +353,7 @@ fflags    := $(FFLAGS)
 cxxflags  := $(CXXFLAGS)
 cxxlexer  := $(CXXLEXER)
 cxxparser := $(CXXPARSER)
+ldlibs    := $(LDLIBS)
 ldflags   := $(LDFLAGS)
 arflags   := $(ARFLAGS)
 soflags   := $(SOFLAGS)
@@ -501,7 +514,7 @@ endef
 #                    hash-table.key and a list of keys hash-table.keys
 # 2) hash-table.new_impl: Auxiliar function for hash-table.new
 # 3) procedure.new: Create a multi-line set of commands (for list
-# 					of arguments in a target)
+#                   of arguments in a target)
 
 define hash-table.new
 $(call hash-table.new_impl,$(strip $1),$($(strip $1)))
@@ -518,7 +531,7 @@ $(if $(strip $2),$(or\
     $(if $(strip $(filter 0,$(firstword $($1.$(firstword $2))))),\
       $(if $(strip $(filter =>,$w)),\
         $(error "Hash entry must end with ',' (key: $(firstword $2))"),\
-		$(eval $1.$(firstword $2) += $w)\
+        $(eval $1.$(firstword $2) += $w)\
         $(if $(strip $(filter %$(comma),$w)),\
           $(eval $1.$(firstword $2) := \
             $(words $(call cdr,$($1.$(firstword $2))))\
@@ -649,7 +662,7 @@ endef
 # 1) git/web_dependency: Internally defined vars for dependencies
 # 2) Make variables above hash tables
 # 3) Create variable for all dependencies
-# 4) Add path to libdir to store new dependencies
+# 4) Paths (in first libdir) to store new dependencies
 #------------------------------------------------------------------[ 1 ]
 git_dependency := $(strip $(GIT_DEPENDENCY))
 web_dependency := $(strip $(WEB_DEPENDENCY))
@@ -659,8 +672,9 @@ $(call hash-table.new,web_dependency)
 #------------------------------------------------------------------[ 3 ]
 externdep := $(call hash-table.keys,git_dependency)
 externdep += $(call hash-table.keys,web_dependency)
+externdep := $(patsubst %,$(depdir)/%dep,$(externdep))
 #------------------------------------------------------------------[ 4 ]
-externdep := $(addprefix $(firstword $(libdir))/,$(externdep))
+externreq := $(patsubst $(depdir)/%dep,$(libdir)/%,$(externdep))
 
 # Library files
 # ==============
@@ -938,23 +952,23 @@ $(if $(strip $(shrpatsrc)),\
         $(eval ldflags := -Wl,-rpath=$d $(ldflags))\
 ))
 
-# External libraries
-# ====================
-# 1) externlib  : Extra libraries given by the user
-# 2) externlib  : Filter out ignored files from above
-# 2) externname : Extra libraries names, deduced from above
+# Other system libraries
+# ========================
+# 1) systemlib  : Extra libraries given by the user
+# 2) systemlib  : Filter out ignored files from above
+# 2) systemname : Extra libraries names, deduced from above
 #------------------------------------------------------------------[ 1 ]
-externlib  := \
+systemlib  := \
 $(foreach e,$(libext),\
     $(foreach d,$(wordlist 2,$(words $(libdir)),$(libdir)),\
         $(call rwildcard,$d,*$e)\
 ))
 #------------------------------------------------------------------[ 2 ]
-externlib  := $(call filter-ignored,$(externlib))
+systemlib  := $(call filter-ignored,$(systemlib))
 #------------------------------------------------------------------[ 3 ]
-externname := \
+systemname := \
 $(foreach e,$(libext),\
-    $(patsubst lib%$e,%,$(filter lib%$e,$(notdir $(externlib))))\
+    $(patsubst lib%$e,%,$(filter lib%$e,$(notdir $(systemlib))))\
 )
 
 # Object files
@@ -993,9 +1007,9 @@ incsub  += $(patsubst %,$(libdir)/%/include,\
                $(call hash-table.keys,git_dependency))
 incsub  += $(lexinc) $(yaccinc)
 #------------------------------------------------------------------[ 4 ]
-clibs   := $(patsubst %,-I%,$(incsub))
-flibs   := $(patsubst %,-I%,$(incsub))
-cxxlibs := $(patsubst %,-I%,$(incsub))
+clibs   := $(CLIBS)   $(patsubst %,-I%,$(incsub))
+flibs   := $(FLIBS)   $(patsubst %,-I%,$(incsub))
+cxxlibs := $(CXXLIBS) $(patsubst %,-I%,$(incsub))
 
 # Library files
 # ==============
@@ -1003,10 +1017,11 @@ cxxlibs := $(patsubst %,-I%,$(incsub))
 # 2) libname: all static and shared libraries names
 # 3) Get all subdirectories of the library dirs and
 #    add them as paths to be searched for libraries
-lib     := $(arlib) $(shrlib) $(externlib)
-libname := $(arname) $(shrname) $(externname)
-libsub   = $(if $(strip $(lib)),$(foreach d,$(libdir),$(call rsubdir,$d)))
-ldlibs   = $(sort $(patsubst %/,%,$(patsubst %,-L%,$(libsub))))
+lib     := $(arlib) $(shrlib) $(systemlib)
+libname := $(arname) $(shrname) $(systemname)
+libsub   = $(if $(strip $(lib)),\
+               $(foreach d,$(libdir),$(call rsubdir,$d)))
+ldlibs   = $(LDLIBS) $(sort $(patsubst %/,%,$(addprefix -L,$(libsub))))
 
 # Type-specific libraries
 # ========================
@@ -1076,8 +1091,8 @@ testrun := $(addprefix run_,$(subst /,_,$(testbin)))
 depall    := $(testall) $(call not-root,$(srcall) $(autoall))
 depall    := $(strip $(basename $(depall)))
 depall    := $(addprefix $(depdir)/,$(addsuffix $(depext),$(depall)))
-interndep := $(addsuffix dep,build tags docs dist dpkg install)
-interndep := $(addprefix $(depdir)/,$(interndep))
+systemdep := $(addsuffix dep,build upgrade tags docs dist dpkg install)
+systemdep := $(addprefix $(depdir)/,$(systemdep))
 
 # Binary
 # =======
@@ -1186,13 +1201,6 @@ deball := $(sort $(strip $(addprefix $(debdir)/,$(deball))))
 ##                              BUILD                                 ##
 ########################################################################
 
-# CP              := cp -rap
-# MV              := mv
-# RM              := rm -f
-# MKDIR           := mkdir -p
-# RMDIR           := rm -rf
-# FIND            := find
-
 build_dependency := \
     AR       => $(arlib),\
     AS       => $(asmall),\
@@ -1206,7 +1214,7 @@ build_dependency := \
     YACC_CXX => $(cxxparser)
 
 .PHONY: all
-all: builddep externdep $(binall) $(liball)
+all: builddep $(externdep) $(binall) $(liball)
 
 .PHONY: check
 check: $(testrun)
@@ -1214,41 +1222,36 @@ check: $(testrun)
 
 .PHONY: nothing
 nothing:
-	@echo $(call hash-table.keys,git_dependency)
-	@echo $(foreach t,$(notdir $(testbin)),$(foreach e,$(srcext),\
-              $(filter %$t$e,$(testsrc))))
-	@echo $(Command_tests_src)
-	@echo $(Command_tests_obj)
+	$(strip $(call rfilter-out,$2,$(call rwildcard,test/gmock,*)))
+
+########################################################################
+##                               UPGRADE                              ##
+########################################################################
+
+upgrade_dependency := \
+	CURL     => $(firstword $(MAKEFILE_LIST))
 
 .PHONY: upgrade
-upgrade:
-	$(call phony-status,$(MSG_MAKE_DOWNLOAD))
-	$(quiet) $(CURL) $(MAKEREMOTE) -o $(firstword $(MAKEFILE_LIST))\
-        $(NO_OUTPUT) $(NO_ERROR)
-	$(call phony-ok,$(MSG_MAKE_DOWNLOAD))
-	$(call git-add,$(firstword $(MAKEFILE_LIST)))
-	$(call git-commit,"Upgrading $(firstword $(MAKEFILE_LIST))")
-
-.PHONY: externdep
-externdep: $(patsubst $(libdir)/%,$(depdir)/%dep,$(externdep))
+upgrade: upgradedep
+	$(call web-clone,$(MAKEREMOTE),$(firstword $(MAKEFILE_LIST)))
+	$(call git-add-commit,$(firstword $(MAKEFILE_LIST)),\
+                          "Upgrades $(firstword $(MAKEFILE_LIST))")
 
 ########################################################################
 ##                          INITIALIZATION                            ##
 ########################################################################
 
-init_dependency := \
-    GIT      => $(firstword $(MAKEFILE_LIST))
-
 .PHONY: init
-init: initdep
+init:
 	$(call mkdir,$(srcdir))
 	$(call mkdir,$(incdir))
 	$(call mkdir,$(docdir))
-	$(quiet) $(MAKE) config > Config.mk
-	$(quiet) $(MAKE) gitignore > .gitignore
-	$(call git-init)
-	$(call git-add,Config.mk .gitignore)
-	$(call git-commit,"Adds configuration files")
+	$(call make-create,config,Config.mk)
+	$(call make-create,gitignore,.gitignore)
+	$(if $(wildcard .git/*),,\
+        $(call git-init)$(newline)\
+        $(call git-add-commit,Config.mk,"Adds Config.mk")$(newline)\
+        $(call git-add-commit,.gitignore,"Adds .gitignore"))
 
 .PHONY: standard
 standard:
@@ -1545,47 +1548,47 @@ uninstall-info:
 ########################################################################
 
 #======================================================================#
-# Function: dep-factory                                                #
+# Function: system-dependency                                          #
 # @param  $1 Dependency name (for targets)                             #
 # @param  $3 Dependency nick (hash key)                                #
 # @return Target to check a set of dependencies defined in $2          #
 #======================================================================#
-define dep-factory
+define system-dependency
 # Creates hash from hash-key
 $$(call hash-table.new,$2)
 
 .PHONY: $1dep
-$1dep: \
-    $$(if $$(call hash-table.values,$2),$$(depdir)/$1dep)
+$1dep: $$(if $$(call hash-table.values,$2),$$(depdir)/$1dep)
 
 $$(depdir)/$1dep: $$(call cdr,$$(MAKEFILE_LIST)) | $$(depdir)
 	$$(quiet) $$(foreach d,$$(call hash-table.keys,$2),\
        $$(if $$(strip $$($2.$$d)),\
          $$(call phony-status,$$(MSG_DEP))$$(newline)\
-         $$(quiet) which $$(firstword $$($$d)) $$(NO_OUTPUT) $$(NO_ERROR)\
-            || $$(call phony-error,$$(MSG_DEP_FAILURE)) $$(newline)\
+         $$(quiet) which $$(firstword $$($$d)) \
+                   $$(NO_OUTPUT) $$(NO_ERROR)\
+                || $$(call phony-error,$$(MSG_DEP_FAILURE))$$(newline)\
          $$(call phony-ok,$$(MSG_DEP))$$(newline)\
     ))
 	$$(quiet) touch $$@
 	$$(call phony-ok,$$(MSG_DEP_ALL))
 endef
-$(foreach d,build init tags docs dist dpkg install,\
-    $(eval $(call dep-factory,$d,$d_dependency)))
+$(foreach d,build upgrade tags docs dist dpkg install,\
+    $(eval $(call system-dependency,$d,$d_dependency)))
 
 #======================================================================#
-# Function: git-dependency                                             #
+# Function: extern-dependency                                          #
 # @param  $1 Dependency nick (hash key)                                #
 # @param  $2 Dependency path (hash value)                              #
 # @return Target to download git dependencies for building             #
 #======================================================================#
-define git-dependency
+define extern-dependency
 $$(libdir)/$$(strip $1): | $$(libdir)
-	$$(call git-clone,$$(call car,$$(strip $2)),$$@)
+	$$(call $$(strip $2),$$(call car,$$(strip $3)),$$@)
 	
-$$(depdir)/$$(strip $1)dep: $$(libdir)/$$(strip $1) $$(externdep)
+$$(depdir)/$$(strip $1)dep: $$(libdir)/$$(strip $1) $$(externreq)
 	$$(call status,$$(MSG_MAKE_DEP))
-	$$(quiet) cd $$< && $$(or $$(strip $$(call cdr,$$(strip $2))),0)\
-                        $$(NO_OUTPUT) $$(ERROR)\
+	$$(quiet) $$$$(cd $$< && $$(or $$(call cdr,$$(strip $3)),:))\
+                  $$(ERROR)\
               || \
               if [ -f $$</[Mm]akefile ]; then \
                   cd $$< && $$(MAKE) -f [Mm]akefile; \
@@ -1600,34 +1603,9 @@ $$(depdir)/$$(strip $1)dep: $$(libdir)/$$(strip $1) $$(externdep)
 	$$(call ok,$$(MSG_MAKE_DEP))
 endef
 $(foreach d,$(call hash-table.keys,git_dependency),$(eval\
-	$(call git-dependency,$d,$(git_dependency.$d))))
-
-#======================================================================#
-# Function: web-dependency                                             #
-# @param  $1 Dependency nick (hash key)                                #
-# @param  $2 Web downloader                                            #
-# @param  $3 Dependency path (hash value)                              #
-# @return Target to download web dependencies for building             #
-#======================================================================#
-define web-dependency
-$$(libdir)/$$(strip $1): PWD = $$(shell pwd)
-$$(libdir)/$$(strip $1): | $$(libdir)
-	$$(call phony-status,$$(MSG_WEB_DOWNLOAD))
-	$$(quiet) $2 $$(strip $3) -o $$@ $$(NO_OUTPUT) $$(NO_ERROR)
-	$$(call phony-ok,$$(MSG_WEB_DOWNLOAD))
-	
-	$$(call phony-status,$$(MSG_MAKE_DEP))
-	$$(quiet) if [ -f $$@/[Mm]akefile ]; then \
-                  cd $$@ && $$(MAKE) -f [Mm]akefile; \
-              elif [ -f $$@/make/[Mm]akefile ]; then \
-                  cd $$@/make && $$(MAKE) -f [Mm]akefile; \
-              else \
-                  echo $${MSG_MAKE_NONE}; \
-              fi $$(ERROR)
-	$$(call phony-ok,$$(MSG_MAKE_DEP))
-endef
+	$(call extern-dependency,$d,git-clone,$(git_dependency.$d))))
 $(foreach d,$(call hash-table.keys,web_dependency),$(eval\
-	$(call web-dependency,$d,$(CURL),$(web_dependency.$d))))
+	$(call extern-dependency,$d,web-clone,$(web_dependency.$d))))
 
 #======================================================================#
 # Function: scanner-factory                                            #
@@ -1932,7 +1910,6 @@ endef
 $(foreach t,$(testbin),$(eval\
     $(call test-factory,$(dir $t),$(notdir $t),run_$(subst /,_,$t)\
 )))
-
 endif
 
 #======================================================================#
@@ -2152,17 +2129,17 @@ $(foreach e,tar.gz tar.bz2 tar zip tgz tbz2,\
 ########################################################################
 .PHONY: mostlyclean
 mostlyclean:
-	$(call rm-if-empty,$(objdir),$(objall) $(autoobj))
+	$(call rm-if-empty,$(objdir),$(objall) $(autoobj) $(testobj))
 
 .PHONY: clean
 clean: mostlyclean
-	$(call rm-if-empty,$(bindir),$(bin))
+	$(call rm-if-empty,$(bindir),$(bin) $(testbin))
 	$(call rm-if-empty,$(sbindir),$(sbin))
 	$(call rm-if-empty,$(execdir),$(libexec))
 
 .PHONY: distclean
 distclean: clean
-	$(call rm-if-empty,$(depdir),$(depall) $(interndep))
+	$(call rm-if-empty,$(depdir),$(depall) $(systemdep) $(externdep))
 	$(call rm-if-empty,$(distdir))
 	$(call rm-if-empty,$(firstword $(libdir)),\
         $(filter $(firstword $(libdir))/%,$(lib))\
@@ -2191,7 +2168,7 @@ realclean:
 	@echo $(MSG_WARNCLEAN_END)
 	@echo $(MSG_WARNCLEAN_ALT)
 else
-realclean: docclean distclean packageclean
+realclean: distclean docclean packageclean
 	$(call rm-if-exists,$(lexall),$(MSG_LEX_NONE))
 	$(foreach d,$(lexinc),$(call rm-if-empty,$d)$(newline))
 	$(call rm-if-exists,$(yaccall),$(MSG_YACC_NONE))
@@ -2260,8 +2237,6 @@ RES     := \033[0m
 ERR     := \033[0;37m
 endif
 
-MSG_MAKE_DOWNLOAD = "${YELLOW}Downloading Makefile${RES}"
-
 MSG_UNINIT_WARN   = "${RED}Are you sure you want to delete all"\
                     "sources, headers and configuration files?"
 MSG_UNINIT_ALT    = "${DEF}Run ${BLUE}'make uninitialize U=1'${RES}"
@@ -2269,30 +2244,35 @@ MSG_UNINIT_ALT    = "${DEF}Run ${BLUE}'make uninitialize U=1'${RES}"
 MSG_MOVE          = "${YELLOW}Populating directory $(firstword $2)${RES}"
 MSG_NO_MOVE       = "${PURPLE}Nothing to put in $(firstword $2)${RES}"
 
+MSG_WEB_CLONE     = "${YELLOW}Downloading ${DEF}$2${RES}"
+
 MSG_GIT_INIT      = "${YELLOW}[$(GIT)]"\
                     "${BLUE}Initializing empty repository${RES}"
 MSG_GIT_CLONE     = "${YELLOW}[$(GIT)]"\
                     "${BLUE}Cloning repository ${DEF}$2${RES}"
 MSG_GIT_ADD       = "${YELLOW}[$(GIT)]${BLUE} Adding"\
                     "$(if $(wordlist 2,2,$1),files,file)${DEF}"\
-                    "$(subst $(space),$(comma)$(space),$(strip $1))${RES}"
-MSG_GIT_COMMIT    = "${YELLOW}[$(GIT)]"\
-                    "${BLUE}Commiting message ${DEF}\"$1\"${RES}"
+                    "$(subst $(space),$(comma)$(space),$(strip $1))"\
+                    "${RES}"
+MSG_GIT_COMMIT    = "${YELLOW}[$(GIT)]${BLUE}"\
+                    "Commiting message ${DEF}\"$(strip $2)\"${RES}"
 
-MSG_WEB_DOWNLOAD  = "${CYAN}Downloading dependency ${DEF}$@${RES}"
+MSG_MAKE_CREATE   = "${PURPLE}Creating file ${DEF}$2"\
+                    "${PURPLE}from target ${DEF}$1${RES}"
 MSG_MAKE_DEP      = "${YELLOW}Building dependency ${DEF}$<${RES}"
 MSG_MAKE_NONE     = "${ERR}No Makefile found for compilation${RES}"
 
-MSG_DEP           = "${DEF}Searching for $d dependecy"\
+MSG_DEP           = "${DEF}Searching for $d dependency"\
                     "${GREEN}$($(d))${RES}"
 MSG_DEP_ALL       = "${YELLOW}All dependencies avaiable${RES}"
-MSG_DEP_FAILURE   = "${DEF}Dependency ${GREEN}$($d)${DEF} not found${RES}"
+MSG_DEP_FAILURE   = "${DEF}Dependency ${GREEN}$($d)${DEF}"\
+                    "not found${RES}"
 
 MSG_TOUCH         = "${PURPLE}Creating new file ${DEF}$1${RES}"
 MSG_UPDATE_NMSH   = "${YELLOW}Updating namespace${DEF}"\
-					"$(subst /,::,${NMS_HEADER})"
+                    "$(subst /,::,${NMS_HEADER})"
 MSG_UPDATE_LIBH   = "${YELLOW}Updating library${DEF}"\
-					"$(subst /,::,${LIB_HEADER})"
+                    "$(subst /,::,${LIB_HEADER})"
 MSG_NEW_EXT       = "${RED}Extension '$1' invalid${RES}"
 MSG_DELETE_WARN   = "${RED}Are you sure you want to do deletes?${RES}"
 MSG_DELETE_ALT    = "${DEF}Run ${BLUE}'make delete FLAGS D=1'${RES}"
@@ -2385,6 +2365,14 @@ MSG_CXX_LIBCOMP   = "${DEF}Generating C++ library artifact"\
 ##                            FUNCTIONS                               ##
 ########################################################################
 
+## TARGET FILES ########################################################
+define make-create
+$(if $(wildcard $2),,\
+	$(call phony-status,$(MSG_MAKE_CREATE))$(newline)\
+    $(quiet) $(MAKE) $1 $(if $(filter -k,$(MAKE)),,> $2)$(newline)\
+	$(call phony-ok,$(MSG_MAKE_CREATE)))$(newline)
+endef
+
 ## DEPENDENCIES ########################################################
 # Functions: *-depend
 # @param $1 Source name (with path)
@@ -2423,9 +2411,11 @@ $(sort $(objdir) $(depdir) $(libdir) $(docdir) $(debdir) ):
 	$(call mkdir,$@)
 
 define mkdir
+$(if $(shell if ! [ -d $(strip $(patsubst .,,$1)) ]; then echo 1; fi),\
 	$(if $(strip $(patsubst .,,$1)), $(call phony-status,$(MSG_MKDIR)) )
 	$(if $(strip $(patsubst .,,$1)), $(quiet) $(MKDIR) $1              )
 	$(if $(strip $(patsubst .,,$1)), $(call phony-ok,$(MSG_MKDIR))     )
+)
 endef
 
 # Create a subdirectory tree in the first element of a list of roots
@@ -2501,8 +2491,9 @@ define rm-if-empty
             $(if $(strip $2),
                 $(if $(strip $(MAINTEINER_CLEAN)),\
                     $(call rmdir,$d),\
-                    $(if $(strip $(call rfilter-out,$2,\
-                                 $(call rwildcard,$d,*))),\
+                    $(if $(strip
+                      $(call rfilter-out,$(call rsubdir,$d)),\
+                      $(call rfilter-out,$2,$(call rwildcard,$d,*))),\
                         $(call phony-ok,$(MSG_RM_NOT_EMPTY)),\
                         $(call rmdir,$d)\
                 )),\
@@ -2529,8 +2520,12 @@ endef
 ifndef SILENT
 
 ifneq ($(strip $(quiet)),)
+    define model-status
+    printf "%b " $1; printf "... ";
+    endef
+
     define phony-status
-    	@printf "%b " $1; printf "... " 
+    	@$(call model-status,$1)
     endef
 
     define phony-vstatus
@@ -2538,7 +2533,7 @@ ifneq ($(strip $(quiet)),)
     endef
     
     define status
-    	@$(RM) $@ && printf "%b " $1; printf "... ";
+    	@$(RM) $@ && $(call model-status,$1)
     endef
 
     define vstatus
@@ -2546,19 +2541,27 @@ ifneq ($(strip $(quiet)),)
     endef
 endif
 
+define model-ok
+echo "\r${GREEN}[OK]${RES}" $1 "     ";
+endef
+
+define model-error
+echo "${RED}[ERROR]${RES}" $1 "${RED}(STATUS: $$?)${RES}";
+endef
+
 define phony-ok
-	@if [ $$? ];\
-         then echo "\r${GREEN}[OK]${RES}" $1 "     ";\
-         else echo "${RED}[ERROR]${RES}" $1 "${RED}(STATUS: $$?)${RES}";\
-              exit 42;\
-     fi;
+@if [ $$? ];\
+    then $(call model-ok,$1)\
+    else $(call model-error,$1)\
+         exit 42;\
+fi;
 endef
 
 define ok
-@if [ -f $2 ]; then\
-	echo "\r${GREEN}[OK]${RES}" $1 "     ";\
-else\
-	echo "\r${RED}[ERROR]${RES}" $1 "${RED}(STATUS: $$?)${RES}"; exit 42;\
+@if [ -f $2 ];\
+    then $(call model-ok,$1)\
+    else $(call model-error,$1)\
+         exit 42;\
 fi
 endef
 
@@ -2566,15 +2569,15 @@ endif
 
 ## ERROR ###############################################################
 ifndef MORE
-    define ERROR
-	2>&1 | sed '1 s/^/stderr:\n/' | sed 's/^/> /'
-    endef
-    #| sed ''/"> error"/s//`printf "${ERR}"`/'' # Adds gray color when
-    #                                           # connected to above
+define ERROR
+2>&1 | sed '1 s/^/stderr:\n/' | sed 's/^/> /'
+endef
+#| sed ''/"> error"/s//`printf "${ERR}"`/'' # Adds gray color when
+#                                           # connected to above
 else
-    define ERROR
-    2>&1 | more
-    endef
+define ERROR
+2>&1 | more
+endef
 endif
 
 define phony-error
@@ -2624,6 +2627,13 @@ $(if $(wildcard $1*),,\
     $(call phony-ok,$(MSG_TOUCH)))
 endef
 
+## WEB DEPENDENCIES ####################################################
+define web-clone
+	$(call phony-status,$(MSG_WEB_CLONE))
+	$(quiet) $(CURL) $2 $1 $(NO_OUTPUT) $(NO_ERROR)
+	$(call phony-ok,$(MSG_WEB_CLONE))
+endef
+
 ## VERSIONMENT #########################################################
 ifneq (,$(strip $(GIT)))
 
@@ -2634,27 +2644,36 @@ define git-clone
 endef
 
 define git-init
-	$(call phony-status,$(MSG_GIT_INIT))
-	$(quiet) $(GIT) init $(NO_OUTPUT) $(NO_ERROR)
-	$(call phony-ok,$(MSG_GIT_INIT))
+	$(quiet) if ! [ -d .git ];\
+             then\
+                 $(call model-status,$(MSG_GIT_INIT))\
+                 $(GIT) init $(NO_OUTPUT) $(NO_ERROR);\
+                 $(call model-ok,$(MSG_GIT_INIT))\
+             fi
 endef
 
 define git-add
-	$(call phony-status,$(MSG_GIT_ADD))
-	$(quiet) if $(GIT) diff --exit-code $1;\
+	$(quiet) if ! $(GIT) ls-files $1 --error-unmatch 2>/dev/null 1>&2\
+             || ! $(GIT) diff --exit-code $1 $(NO_OUTPUT);\
              then\
+                 $(call model-status,$(MSG_GIT_ADD))\
                  $(GIT) add $1 $(NO_OUTPUT) $(NO_ERROR);\
+                 $(call model-ok,$(MSG_GIT_ADD))\
              fi
-	$(call phony-ok,$(MSG_GIT_ADD))
 endef
 
 define git-commit
-	$(call phony-status,$(MSG_GIT_COMMIT))
-	$(quiet) if $(GIT) diff --cached --exit-code;\
+	$(quiet) if ! $(GIT) diff --cached --exit-code $1 $(NO_OUTPUT);\
              then\
-                 $(GIT) commit -m $1 $(NO_OUTPUT) $(NO_ERROR);\
+                 $(call model-status,$(MSG_GIT_COMMIT))\
+                 $(GIT) commit -m $(strip $2) $(NO_OUTPUT) $(NO_ERROR);\
+                 $(call model-ok,$(MSG_GIT_COMMIT))\
              fi
-	$(call phony-ok,$(MSG_GIT_COMMIT))
+endef
+
+define git-add-commit
+	$(call git-add,$1)
+	$(call git-commit,$1,$2)
 endef
 
 endif
@@ -3323,7 +3342,10 @@ endef
 
 .PHONY: dump
 dump:
-	@echo "${WHITE}\nDOCUMENTATION           ${RES}"
+ifdef VAR ####
+	$(call prompt,"$(VAR):       ",$($(VAR))       )
+else
+	@echo "${WHITE}\nCONFIGURATION           ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"license:      ",$(license)      )
 	$(call prompt,"notice:       ",$(notice)       )
@@ -3382,14 +3404,6 @@ dump:
 	$(call prompt,"incsub:       ",$(incsub)       )
 	$(call prompt,"autoinc:      ",$(autoinc)      )
 	
-	@echo "${WHITE}\nTEST                    ${RES}"
-	@echo "----------------------------------------"
-	$(call prompt,"testall:      ",$(testall)      )
-	$(call prompt,"testsrc:      ",$(testsrc)      )
-	$(call prompt,"testobj:      ",$(testobj)      )
-	$(call prompt,"testbin:      ",$(testbin)      )
-	$(call prompt,"testrun:      ",$(testrun)      )
-	
 	@echo "${WHITE}\nLIBRARY                 ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"lib_in:       ",$(lib_in)       )
@@ -3398,11 +3412,6 @@ dump:
 	$(call prompt,"libsrc:       ",$(libsrc)       )
 	$(call prompt,"libname:      ",$(libname)      )
 	$(call prompt,"lib:          ",$(lib)          )
-	
-	@echo "${WHITE}\nEXTERNAL LIBRARY        ${RES}"
-	@echo "----------------------------------------"
-	$(call prompt,"externlib:    ",$(externlib)    )
-	$(call prompt,"externname:   ",$(externname)   )
 	
 	@echo "${WHITE}\nSTATIC LIBRARY          ${RES}"
 	@echo "----------------------------------------"
@@ -3421,6 +3430,20 @@ dump:
 	$(call prompt,"shrname:      ",$(shrname)      )
 	$(call prompt,"shrlib:       ",$(shrlib)       )
 	
+	@echo "${WHITE}\nOTHER SYSTEM LIBRARY    ${RES}"
+	@echo "----------------------------------------"
+	$(call prompt,"systemlib:    ",$(systemlib)    )
+	$(call prompt,"systemname:   ",$(systemname)   )
+	
+	@echo "${WHITE}\nTEST                    ${RES}"
+	@echo "----------------------------------------"
+	$(call prompt,"testall:      ",$(testall)      )
+	$(call prompt,"testsrc:      ",$(testsrc)      )
+	$(call prompt,"testobj:      ",$(testobj)      )
+	$(call prompt,"testdep:      ",$(testdep)      )
+	$(call prompt,"testbin:      ",$(testbin)      )
+	$(call prompt,"testrun:      ",$(testrun)      )
+	
 	@echo "${WHITE}\nOBJECT                  ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"obj:          ",$(obj)          )
@@ -3432,7 +3455,7 @@ dump:
 	@echo "${WHITE}\nDEPENDENCY              ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"depall:       ",$(depall)       )
-	$(call prompt,"interndep:    ",$(interndep)    )
+	$(call prompt,"systemdep:    ",$(systemdep)    )
 	$(call prompt,"externdep:    ",$(externdep)    )
 	
 	@echo "${WHITE}\nBINARY                  ${RES}"
@@ -3471,3 +3494,5 @@ dump:
 	$(call prompt,"cxxlibs:      ",$(cxxlibs)      )
 	$(call prompt,"ldlibs:       ",$(ldlibs)       )
 	$(call prompt,"ldflags:      ",$(ldflags)      )
+
+endif #### ifdef VAR
