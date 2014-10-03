@@ -76,6 +76,7 @@ CXXFLAGS  := $(CFLAGS) -std=c++11
 FFLAGS    := -cpp
 
 # Linker flags
+LDLIBS    :=
 LDFLAGS   :=
 LDC       :=
 LDF       := -lgfortran
@@ -87,8 +88,17 @@ LDYACC    :=
 ARFLAGS   := -rcv
 SOFLAGS   := -shared
 
-# Include configuration file if exists
--include .config.mk config.mk Config.mk
+########################################################################
+##                              LIBS                                  ##
+########################################################################
+
+# C/C++/Fortran include paths
+CLIBS     :=
+CXXLIBS   :=
+FLIBS     :=
+
+# Linker lib paths
+LDLIBS    :=
 
 ########################################################################
 ##                            DIRECTORIES                             ##
@@ -101,6 +111,7 @@ DOCDIR  := doc
 DEBDIR  := debian
 OBJDIR  := build
 LIBDIR  := lib
+EXTDIR  := external
 BINDIR  := bin
 SBINDIR := sbin
 EXECDIR := libexec
@@ -110,11 +121,14 @@ DATADIR :=
 DESTDIR :=
 else
 $(foreach var,\
-    SRCDIR BINDIR DEPDIR OBJDIR INCDIR LIBDIR \
+    SRCDIR DEPDIR INCDIR OBJDIR LIBDIR EXTDIR BINDIR \
     SBINDIR DISTDIR TESTDIR DATADIR,\
     $(eval $(var) := .)\
 )
 endif
+
+# Include configuration file if exists
+-include .config.mk config.mk Config.mk
 
 ## INSTALLATION ########################################################
 
@@ -306,7 +320,7 @@ DCH             := dch --create -v $(VERSION)-$(DEB_VERSION) \
                        --package $(DEB_PROJECT)
 
 # Remote
-CURL            := curl
+CURL            := curl -o
 GIT             := git
 
 # Make
@@ -340,6 +354,7 @@ fflags    := $(FFLAGS)
 cxxflags  := $(CXXFLAGS)
 cxxlexer  := $(CXXLEXER)
 cxxparser := $(CXXPARSER)
+ldlibs    := $(LDLIBS)
 ldflags   := $(LDFLAGS)
 arflags   := $(ARFLAGS)
 soflags   := $(SOFLAGS)
@@ -364,6 +379,7 @@ override docdir  := $(strip $(foreach d,$(DOCDIR),$(patsubst %/,%,$d)))
 override debdir  := $(strip $(foreach d,$(DEBDIR),$(patsubst %/,%,$d)))
 override objdir  := $(strip $(foreach d,$(OBJDIR),$(patsubst %/,%,$d)))
 override libdir  := $(strip $(foreach d,$(LIBDIR),$(patsubst %/,%,$d)))
+override extdir  := $(strip $(foreach d,$(EXTDIR),$(patsubst %/,%,$d)))
 override bindir  := $(strip $(foreach d,$(BINDIR),$(patsubst %/,%,$d)))
 override sbindir := $(strip $(foreach d,$(SBINDIR),$(patsubst %/,%,$d)))
 override execdir := $(strip $(foreach d,$(EXECDIR),$(patsubst %/,%,$d)))
@@ -373,14 +389,14 @@ override datadir := $(strip $(foreach d,$(DATADIR),$(patsubst %/,%,$d)))
 
 # All directories
 alldir := $(strip\
-    $(srcdir) $(depdir) $(incdir) $(docdir) $(debdir) $(objdir)     \
-    $(libdir) $(bindir) $(sbindir) $(execdir) $(distdir) $(testdir) \
-    $(datadir)                                                      \
+    $(srcdir) $(depdir) $(incdir) $(docdir) $(debdir) $(objdir)    \
+    $(libdir) $(extdir) $(bindir) $(sbindir) $(execdir) $(distdir) \
+    $(testdir) $(datadir)                                          \
 )
 
 # Check if every directory variable is non-empty
 ifeq ($(and $(srcdir),$(bindir),$(depdir),$(objdir),\
-            $(incdir),$(libdir),$(distdir),$(testdir)),)
+            $(incdir),$(libdir),$(extdir),$(distdir),$(testdir)),)
 $(error There must be at least one directory of each type, or '.'.)
 endif
 
@@ -637,18 +653,18 @@ $(call rfilter-out,$(ignored),$1)
 endef
 
 # Default variable names
-# ======================
+# ========================
 # fooall: complete path WITH root directories
 # foosrc: complete path WITHOUT root directories
 # foopat: incomplete paths WITH root directories
 # foolib: library names WITHOUT root directories
 
-# Dependency files
-# =================
+# External dependency files
+# ===========================
 # 1) git/web_dependency: Internally defined vars for dependencies
 # 2) Make variables above hash tables
 # 3) Create variable for all dependencies
-# 4) Paths (in first libdir) to store new dependencies
+# 4) Paths (in first extdir) to store new dependencies
 #------------------------------------------------------------------[ 1 ]
 git_dependency := $(strip $(GIT_DEPENDENCY))
 web_dependency := $(strip $(WEB_DEPENDENCY))
@@ -660,10 +676,31 @@ externdep := $(call hash-table.keys,git_dependency)
 externdep += $(call hash-table.keys,web_dependency)
 externdep := $(patsubst %,$(depdir)/%dep,$(externdep))
 #------------------------------------------------------------------[ 4 ]
-externreq := $(patsubst $(depdir)/%dep,$(libdir)/%,$(externdep))
+externreq := $(patsubst $(depdir)/%dep,$(extdir)/%,$(externdep))
+
+# Header files
+# ==============
+# 1) Get all files able to be included
+# 2) Filter out ignored files from above
+# 3) Get all subdirectories of the included dirs
+# 4) Add them as paths to be searched for headers
+#------------------------------------------------------------------[ 1 ]
+incall  := $(foreach i,$(incdir),$(foreach e,$(incext),\
+                $(call rwildcard,$i,*$e)))
+#------------------------------------------------------------------[ 2 ]
+incall  := $(call filter-ignored,$(incall))
+#------------------------------------------------------------------[ 3 ]
+incsub  := $(sort $(call remove-trailing-bar,$(dir $(incall))))
+incsub  += $(patsubst %,$(extdir)/%/include,\
+               $(call hash-table.keys,git_dependency))
+incsub  += $(lexinc) $(yaccinc)
+#------------------------------------------------------------------[ 4 ]
+clibs   := $(CLIBS)   $(patsubst %,-I%,$(incsub))
+flibs   := $(FLIBS)   $(patsubst %,-I%,$(incsub))
+cxxlibs := $(CXXLIBS) $(patsubst %,-I%,$(incsub))
 
 # Library files
-# ==============
+# ===============
 # .---.-----.------.-----.--------.---------------------------------.
 # | # | dir | base | ext | STATUS |             ACTION              |
 # |===|=====|======|=====|========|=================================|
@@ -695,7 +732,7 @@ $(foreach s,$(lib_in),                                                 \
 )
 
 # Assembly files
-# ==============
+# ================
 # 1) Find all assembly files in the source directory
 # 2) Filter out ignored files from above
 #------------------------------------------------------------------[ 1 ]
@@ -705,8 +742,8 @@ $(foreach root,$(srcdir),\
 #------------------------------------------------------------------[ 2 ]
 asmall := $(call filter-ignored,$(asmall))
 
-# Lexical analyzer
-# =================
+# Lexical analyzers
+# ===================
 # 1) Find in a directory tree all the lex files (with dir names)
 # 2) Filter out ignored files from above
 # 3) Split C++ and C lexers (to be compiled appropriately)
@@ -734,8 +771,8 @@ lexinc   := $(call not-root,$(basename $(basename $(lexall))))
 lexinc   := $(addprefix $(firstword $(incdir))/,$(lexinc))
 lexinc   := $(addsuffix -yy/,$(lexinc))
 
-# Syntatic analyzer
-# ==================
+# Syntatic analyzers
+# ====================
 # 1) Find in a directory tree all the yacc files (with dir names)
 # 3) Filter out ignored files from above
 # 3) Split C++ and C parsers (to be compiled appropriately)
@@ -764,12 +801,12 @@ yaccinc   := $(addprefix $(firstword $(incdir))/,$(yaccinc))
 yaccinc   := $(addsuffix -tab/,$(yaccinc))
 
 # Automatically generated files
-# =============================
+# ===============================
 autoall := $(yaccall) $(lexall)
 autoinc := $(yaccinc) $(lexinc)
 
 # Source files
-# =============
+# ==============
 # 1) srcall  : Find in the dir trees all source files (with dir names)
 # 2) srcall  : Filter out ignored files from above
 # 3) srcall  : Remove automatically generated source files from srcall
@@ -854,7 +891,7 @@ f_all   := $(call rfilter,$(addprefix %,$(fext)),$(srcall))
 cxx_all := $(call rfilter,$(addprefix %,$(cxxext)),$(srcall))
 
 # Static libraries
-# =================
+# ==================
 # 1) Get complete static library paths from all libraries
 # 2) Store static library paths without root directory
 # 3) Create one var with the object dependencies for each lib above
@@ -890,7 +927,7 @@ arlib   := $(foreach s,$(arpatsrc),\
 arlib   := $(patsubst %,$(firstword $(libdir))/%.a,$(basename $(arlib)))
 
 # Dynamic libraries
-# ==================
+# ===================
 # 1) Get all source files that may be compiled to create the shared lib
 # 2) Get complete dynamic library paths from all libraries
 # 3) Store dynamic library paths without root directory
@@ -938,8 +975,8 @@ $(if $(strip $(shrpatsrc)),\
         $(eval ldflags := -Wl,-rpath=$d $(ldflags))\
 ))
 
-# Other system libraries
-# ========================
+# System libraries
+# ==================
 # 1) systemlib  : Extra libraries given by the user
 # 2) systemlib  : Filter out ignored files from above
 # 2) systemname : Extra libraries names, deduced from above
@@ -957,8 +994,29 @@ $(foreach e,$(libext),\
     $(patsubst lib%$e,%,$(filter lib%$e,$(notdir $(systemlib))))\
 )
 
+# General libraries
+# ===================
+# 1) lib: all static and shared libraries
+# 2) libname: all static and shared libraries names
+# 3) Get all subdirectories of the library dirs and
+#    add them as paths to be searched for libraries
+lib     := $(arlib) $(shrlib) $(systemlib)
+libname := $(arname) $(shrname) $(systemname)
+libsub   = $(if $(strip $(lib)),\
+               $(foreach d,$(libdir),$(call rsubdir,$d)))
+ldlibs   = $(LDLIBS) $(sort $(patsubst %/,%,$(addprefix -L,$(libsub))))
+
+# Type-specific libraries
+# =========================
+# 1) Add c, f, cxx, lex and yacc only libraries in linker flags
+$(if $(strip $(c_all)),$(eval ldflags += $(LDC)))
+$(if $(strip $(f_all)),$(eval ldflags += $(LDF)))
+$(if $(strip $(cxx_all)),$(eval ldflags += $(LDCXX)))
+$(if $(strip $(lexall)),$(eval ldflags += $(LDLEX)))
+$(if $(strip $(yaccall)),$(eval ldflags += $(LDYACC)))
+
 # Object files
-# =============
+# ==============
 # 1) Add obj suffix for each 'naked' assembly source file name (basename)
 # 2) Add obj suffix for each 'naked' source file name (basename)
 # 3) Prefix the build dir before each name
@@ -976,99 +1034,8 @@ objall := $(obj) $(arobj) $(shrobj) #$(autoobj)
 autoobj := $(addsuffix $(firstword $(objext)),$(basename $(autosrc)))
 autoobj := $(addprefix $(objdir)/,$(autoobj))
 
-# Header files
-# =============
-# 1) Get all files able to be included
-# 2) Filter out ignored files from above
-# 3) Get all subdirectories of the included dirs
-# 4) Add them as paths to be searched for headers
-#------------------------------------------------------------------[ 1 ]
-incall  := $(foreach i,$(incdir),$(foreach e,$(incext),\
-                $(call rwildcard,$i,*$e)))
-#------------------------------------------------------------------[ 2 ]
-incall  := $(call filter-ignored,$(incall))
-#------------------------------------------------------------------[ 3 ]
-incsub  := $(sort $(call remove-trailing-bar,$(dir $(incall))))
-incsub  += $(patsubst %,$(libdir)/%/include,\
-               $(call hash-table.keys,git_dependency))
-incsub  += $(lexinc) $(yaccinc)
-#------------------------------------------------------------------[ 4 ]
-clibs   := $(patsubst %,-I%,$(incsub))
-flibs   := $(patsubst %,-I%,$(incsub))
-cxxlibs := $(patsubst %,-I%,$(incsub))
-
-# Library files
-# ==============
-# 1) lib: all static and shared libraries
-# 2) libname: all static and shared libraries names
-# 3) Get all subdirectories of the library dirs and
-#    add them as paths to be searched for libraries
-lib     := $(arlib) $(shrlib) $(systemlib)
-libname := $(arname) $(shrname) $(systemname)
-libsub   = $(if $(strip $(lib)),\
-               $(foreach d,$(libdir),$(call rsubdir,$d)))
-ldlibs   = $(sort $(patsubst %/,%,$(patsubst %,-L%,$(libsub))))
-
-# Type-specific libraries
-# ========================
-# 1) Add c, f, cxx, lex and yacc only libraries in linker flags
-$(if $(strip $(c_all)),$(eval ldflags += $(LDC)))
-$(if $(strip $(f_all)),$(eval ldflags += $(LDF)))
-$(if $(strip $(cxx_all)),$(eval ldflags += $(LDCXX)))
-$(if $(strip $(lexall)),$(eval ldflags += $(LDLEX)))
-$(if $(strip $(yaccall)),$(eval ldflags += $(LDYACC)))
-
-# Automated tests
-# ================
-# 1) testall: Get all source files in the test directory
-# 2) testall: Filter out ignored files from above
-# 3) testdep: Basenames without test suffix, root dirs and extensions
-# 4) testrun: Alias to execute tests, prefixing run_ and
-#             substituting / for _ in $(testdep)
-#------------------------------------------------------------------[ 1 ]
-$(foreach e,$(srcext),\
-    $(eval testall += $(call rwildcard,$(testdir),*$e)))
-#------------------------------------------------------------------[ 2 ]
-testall := $(call filter-ignored,$(testall))
-#------------------------------------------------------------------[ 4 ]
-testsrc := $(call not-root,$(testall))
-#------------------------------------------------------------------[ 5 ]
-testobj := $(addsuffix $(firstword $(objext)),$(basename $(testsrc)))
-testobj := $(addprefix $(objdir)/$(testdir)/,$(testobj))
-#------------------------------------------------------------------[ 6 ]
-testbin := $(notdir $(sort $(strip $(TESTBIN))))
-testbin := $(addprefix $(bindir)/$(testdir)/,$(testbin))
-#------------------------------------------------------------------[ 7 ]
-$(foreach t,$(notdir $(testbin)),$(or\
-    $(eval $t_src := $(foreach e,$(srcext),$(filter %$t$e,$(testsrc)))),\
-    $(eval $t_obj := $(foreach e,$(objext),\
-                       $(filter $(objdir)/$(testdir)/%$t$e,$(testobj))))\
-))
-# $(eval testsrc := $(filter-out $b.%,$(testsrc))),\
-# $(eval testobj := $(filter-out $(objdir)/$(testdir)/$b.%,$(testobj))),
-#------------------------------------------------------------------[ 8 ]
-define common-test-factory
-$(call rfilter-out,$(foreach t,$(notdir $(testbin)),$($t_$1)),$2)
-endef
-comtestsrc := $(call common-test-factory,src,$(testsrc))
-comtestobj := $(call common-test-factory,obj,$(testobj))
-#------------------------------------------------------------------[ 9 ]
-$(foreach t,$(notdir $(testbin)),$(or\
-    $(eval $t_src := $(comtestsrc) $($t_src)),\
-    $(eval $t_obj := $(comtestobj) $($t_obj)),\
-))
-#------------------------------------------------------------------[ 10 ]
-$(foreach s,$(comtestsrc),\
-    $(if $(strip $(filter-out %$(testsuf),$(basename $s))),\
-        $(error "Test $(testdir)/$s does not have suffix $(testsuf)")))
-$(foreach s,$(comtestsrc),\
-    $(if $(strip $(filter $(subst $(testsuf).,.,$s),$(src))),,\
-        $(error "Test $(testdir)/$s has no corresponding source file")))
-#------------------------------------------------------------------[ 11 ]
-testrun := $(addprefix run_,$(subst /,_,$(testbin)))
-
-# Dependency files
-# =================
+# Source dependency files
+# =========================
 # 1) Dependencies will be generated for sources, auto sources and tests
 # 2) Get the not-root basenames of all source directories
 # 3) Create dependency names and directories
@@ -1080,8 +1047,8 @@ depall    := $(addprefix $(depdir)/,$(addsuffix $(depext),$(depall)))
 systemdep := $(addsuffix dep,build upgrade tags docs dist dpkg install)
 systemdep := $(addprefix $(depdir)/,$(systemdep))
 
-# Binary
-# =======
+# Binaries
+# ==========
 # 1) Define all binary names (with extensions if avaiable)
 # 2) Store binary-specific files from source, objects and libs
 # 3) Store common source, objects and libs filtering the above ones
@@ -1095,9 +1062,12 @@ systemdep := $(addprefix $(depdir)/,$(systemdep))
 #    4.7) binary-name_is_cxx, to test if the binary may be C's or C++'s
 #------------------------------------------------------------------[ 1 ]
 define binary-name
-$1 := $$(addprefix $$(strip $3)/,$$(notdir $$(sort $$(strip $2))))
-$1 := $$(call filter-ignored,$$($1))
+$1 := $$(call remove-trailing-bar,$2)
+$1 := $$(foreach b,$$($1),$$(or $$(strip $$(wildcard $$b/*)),\
+          $$(strip $$(foreach d,$$(srcdir),$$(wildcard $$d/$$b/*))),$$b))
+$1 := $$(addprefix $$(strip $3)/,$$(basename $$(call not-root,$$($1))))
 $1 := $$(if $$(strip $$(binext)),$$(addsuffix $$(binext),$$($1)),$$($1))
+$1 := $$(call filter-ignored,$$($1))
 endef
 $(eval $(call binary-name,bin,$(BIN),$(bindir)))
 $(eval $(call binary-name,sbin,$(SBIN),$(sbindir)))
@@ -1108,7 +1078,7 @@ $(if $(strip $(bin) $(sbin) $(libexec)),\
     $(if $(strip $(srcall)),$(eval binall := $(bindir)/a.out))\
 )
 #------------------------------------------------------------------[ 2 ]
-$(foreach sep,/ .,$(foreach b,$(notdir $(binall)),$(or\
+$(foreach sep,/ .,$(foreach b,$(call not-root,$(binall)),$(or\
     $(eval $b_src  += $(filter $b$(sep)%,$(src))),\
     $(eval $b_obj  += $(filter $(objdir)/$b$(sep)%,$(objall))),\
     $(eval $b_aobj += $(filter $(objdir)/$b$(sep)%,$(autoobj))),\
@@ -1121,7 +1091,7 @@ $(foreach sep,/ .,$(foreach b,$(notdir $(binall)),$(or\
 )))
 #------------------------------------------------------------------[ 3 ]
 define common-factory
-$(call rfilter-out,$(foreach b,$(notdir $(binall)),$($b_$1)),$2)
+$(call rfilter-out,$(foreach b,$(call not-root,$(binall)),$($b_$1)),$2)
 endef
 comsrc  := $(call common-factory,src,$(src))
 comobj  := $(call common-factory,obj,$(objall))
@@ -1141,15 +1111,67 @@ $(foreach b,$(notdir $(binall)),$(or\
     $(eval $b_is_cxx := $(strip $(call is_cxx,$($b_src)))),\
 ))
 
-# Install binary
-# ================
+# Binary installation
+# =====================
 i_lib     := $(addprefix $(i_libdir)/,$(call not-root,$(lib)))
 i_bin     := $(addprefix $(i_bindir)/,$(call not-root,$(bin)))
 i_sbin    := $(addprefix $(i_sbindir)/,$(call not-root,$(sbin)))
 i_libexec := $(addprefix $(i_libexecdir)/,$(call not-root,$(libexec)))
 
+# Automated tests
+# =================
+# 1) testall: Get all source files in the test directory
+# 2) testall: Filter out ignored files from above
+# 3) testdep: Basenames without test suffix, root dirs and extensions
+# 4) testrun: Alias to execute tests, prefixing run_ and
+#             substituting / for _ in $(testdep)
+#------------------------------------------------------------------[ 1 ]
+$(foreach e,$(srcext),\
+    $(eval testall += $(call rwildcard,$(testdir),*$e)))
+#------------------------------------------------------------------[ 2 ]
+testall := $(call filter-ignored,$(testall))
+#------------------------------------------------------------------[ 4 ]
+testsrc := $(call not-root,$(testall))
+#------------------------------------------------------------------[ 5 ]
+testobj := $(addsuffix $(firstword $(objext)),$(basename $(testsrc)))
+testobj := $(addprefix $(objdir)/$(testdir)/,$(testobj))
+#------------------------------------------------------------------[ 6 ]
+testbin := $(call remove-trailing-bar,$(TESTBIN))
+testbin := $(foreach b,$(testbin),$(or $(strip \
+               $(foreach d,$(testdir),$(wildcard $d/$b/*))),$b))
+testbin := $(call not-root,$(basename $(testbin)))
+testbin := $(addprefix $(strip $(bindir)/$(testdir))/,$(testbin))
+testbin := $(if $(strip $(binext)),\
+               $(addsuffix $(binext),$(testbin)),$(testbin))
+testbin := $(call filter-ignored,$(testbin))
+#------------------------------------------------------------------[ 7 ]
+$(foreach t,$(call not-root,$(testbin)),$(or\
+    $(eval $t_src := $(filter $(call not-root,$t)%,$(testsrc))),\
+    $(eval $t_obj := $(filter $(objdir)/$(testdir)/$t%,$(testobj)))\
+))
+#------------------------------------------------------------------[ 8 ]
+define common-test-factory
+$(call rfilter-out,$(foreach t,$(call not-root,$(testbin)),$($t_$1)),$2)
+endef
+comtestsrc := $(call common-test-factory,src,$(testsrc))
+comtestobj := $(call common-test-factory,obj,$(testobj))
+#------------------------------------------------------------------[ 9 ]
+$(foreach t,$(call not-root,$(testbin)),$(or\
+    $(eval $t_src := $(comtestsrc) $($t_src)),\
+    $(eval $t_obj := $(comtestobj) $($t_obj)),\
+))
+#------------------------------------------------------------------[ 10 ]
+$(foreach s,$(comtestsrc),\
+    $(if $(strip $(filter-out %$(testsuf),$(basename $s))),\
+        $(error "Test $(testdir)/$s does not have suffix $(testsuf)")))
+$(foreach s,$(comtestsrc),\
+    $(if $(strip $(filter $(subst $(testsuf).,.,$s),$(src))),,\
+        $(error "Test $(testdir)/$s has no corresponding source file")))
+#------------------------------------------------------------------[ 11 ]
+testrun := $(addprefix run_,$(subst /,_,$(testbin)))
+
 # Texinfo files
-# ==============
+# ===============
 # 1) texiall: All TexInfo files with complete path
 # 2) texiall: Filter out ignored files from above
 # 3) texisrc: Take out root dir reference from above
@@ -1176,8 +1198,8 @@ $(foreach doc,info html dvi pdf ps,\
                 $(basename $(texisrc))\
 ))))
 
-# Debian packaging files
-# =======================
+# Debian package files
+# ======================
 # 1) deball: debian packaging files in the default debian directory
 deball := changelog compat control copyright
 deball += rules source/format $(DEB_PROJECT).dirs
@@ -1568,13 +1590,12 @@ $(foreach d,build upgrade tags docs dist dpkg install,\
 # @return Target to download git dependencies for building             #
 #======================================================================#
 define extern-dependency
-$$(libdir)/$$(strip $1): | $$(libdir)
+$$(extdir)/$$(strip $1): | $$(extdir)
 	$$(call $$(strip $2),$$(call car,$$(strip $3)),$$@)
 	
-$$(depdir)/$$(strip $1)dep: $$(libdir)/$$(strip $1) $$(externreq)
+$$(depdir)/$$(strip $1)dep: $$(extdir)/$$(strip $1) $$(externreq)
 	$$(call status,$$(MSG_MAKE_DEP))
-	$$(quiet) cd $$< && $$(or $$(strip $$(call cdr,$$(strip $3))),:)\
-                        $$(NO_OUTPUT) $$(ERROR)\
+	$$(quiet) (cd $$< && $$(or $$(call cdr,$$(strip $3)),:)) $$(ERROR)\
               || \
               if [ -f $$</[Mm]akefile ]; then \
                   cd $$< && $$(MAKE) -f [Mm]akefile; \
@@ -1872,42 +1893,45 @@ $(foreach a,$(arpatsrc),\
 
 #======================================================================#
 # Function: test-factory                                               #
-# @param  $1 Binary name for the unit test module                      #
-# @param  $2 Object with main function for running unit test           #
-# @param  $3 Object with the code that will be tested by the unit test #
-# @param  $4 Alias to execute tests, prefixing run_ and                #
+# @param  $1 Unit test binary's directory name                         #
+# @param  $1 Unit test binary's name without root directory            #
+# @param  $3 Alias to execute tests, prefixing run_ and                #
 #            substituting / for _ in $(testdep)                        #
 # @return Target to generate binary file for the unit test             #
 #======================================================================#
 ifneq (,$(foreach g,$(MAKECMDGOALS),$(filter $g,check)))
 define test-factory
-$1$2: $$($2_obj) | $$(call root,$1)
+$1/$2: $$($2_obj) | $1
 	$$(call status,$$(MSG_TEST_COMPILE))
-	$$(quiet) $$(call mksubdir,$$(call root,$1),$$@)
+	$$(quiet) $$(call mksubdir,$1,$$@)
 	$$(quiet) $$(CXX) $$^ -o $$@ $$(ldflags) $$(ldlibs)
 	$$(call ok,$$(MSG_TEST_COMPILE),$$@)
 
 .PHONY: $3
-$3: $1$2
+$3: $1/$2
 	$$(call phony-vstatus,$$(MSG_TEST))
 	@./$$< || $$(call test-error,$$(MSG_TEST_FAILURE))
 	$$(call ok,$$(MSG_TEST))
 endef
 $(foreach t,$(testbin),$(eval\
-    $(call test-factory,$(dir $t),$(notdir $t),run_$(subst /,_,$t)\
+    $(call test-factory,$(call root,$t),$(call not-root,$t),\
+    run_$(subst /,_,$t)\
 )))
 endif
 
 #======================================================================#
 # Function: binary-factory                                             #
-# @param  $1 Binary name                                               #
-# @param  $2 Compiler to be used (C's or C++'s)                        #
+# @param  $1 Binary root directory                                     #
+# @param  $1 Binary name witout root dir                               #
+# @param  $3 Comments to be used (C's, Fortran's or C++'s)             #
+# @param  $4 Compiler to be used (C's, Fortran's or C++'s)             #
 # @return Target to generate binaries and dependencies of its object   #
 #         files (to create objdir and automatic source)                #
 #======================================================================#
 define binary-factory
-$1$2: $$($2_lib) $$($2_aobj) $$($2_obj) | $1
+$1/$2: $$($2_lib) $$($2_aobj) $$($2_obj) | $1
 	$$(call status,$$(MSG_$$(strip $3)_LINKAGE))
+	$$(quiet) $$(call mksubdir,$1,$$@)
 	$$(quiet) $4 $$($2_aobj) $$($2_obj) -o $$@ \
               $$(ldflags) $$($2_link) $$(ldlibs) $$(ERROR)
 	$$(call ok,$$(MSG_$$(strip $3)_LINKAGE),$$@)
@@ -1917,14 +1941,14 @@ $$($2_obj): | $$(objdir)
 $$($2_aobj): $$($2_aall) | $$(objdir)
 endef
 $(foreach b,$(binall),$(eval\
-    $(call binary-factory,$(dir $b),$(notdir $b),\
-        $(if $($(strip $(notdir $b))_is_c),C,\
-        $(if $($(strip $(notdir $b))_is_f),F,\
-        $(if $($(strip $(notdir $b))_is_cxx),CXX,CXX\
+    $(call binary-factory,$(call root,$b),$(call not-root,$b),\
+        $(if $($(strip $(call not-root,$b))_is_c),C,\
+        $(if $($(strip $(call not-root,$b))_is_f),F,\
+        $(if $($(strip $(call not-root,$b))_is_cxx),CXX,CXX\
     ))),\
-        $(if $($(strip $(notdir $b))_is_c),$(CC),\
-        $(if $($(strip $(notdir $b))_is_f),$(FC),\
-        $(if $($(strip $(notdir $b))_is_cxx),$(CXX),$(CXX)\
+        $(if $($(strip $(call not-root,$b))_is_c),$(CC),\
+        $(if $($(strip $(call not-root,$b))_is_f),$(FC),\
+        $(if $($(strip $(call not-root,$b))_is_cxx),$(CXX),$(CXX)\
     ))),\
 )))
 
@@ -2127,6 +2151,7 @@ clean: mostlyclean
 distclean: clean
 	$(call rm-if-empty,$(depdir),$(depall) $(systemdep) $(externdep))
 	$(call rm-if-empty,$(distdir))
+	$(call rm-if-empty,$(extdir))
 	$(call rm-if-empty,$(firstword $(libdir)),\
         $(filter $(firstword $(libdir))/%,$(lib))\
     )
@@ -2154,7 +2179,7 @@ realclean:
 	@echo $(MSG_WARNCLEAN_END)
 	@echo $(MSG_WARNCLEAN_ALT)
 else
-realclean: docclean distclean packageclean
+realclean: distclean docclean packageclean
 	$(call rm-if-exists,$(lexall),$(MSG_LEX_NONE))
 	$(foreach d,$(lexinc),$(call rm-if-empty,$d)$(newline))
 	$(call rm-if-exists,$(yaccall),$(MSG_YACC_NONE))
@@ -2393,7 +2418,7 @@ endef
 $(sort $(bindir) $(sbindir) $(execdir) ):
 	$(call mkdir,$@)
 
-$(sort $(objdir) $(depdir) $(libdir) $(docdir) $(debdir) ):
+$(sort $(objdir) $(depdir) $(libdir) $(extdir) $(docdir) $(debdir) ):
 	$(call mkdir,$@)
 
 define mkdir
@@ -2480,7 +2505,7 @@ define rm-if-empty
                     $(if $(strip
                       $(call rfilter-out,$(call rsubdir,$d)),\
                       $(call rfilter-out,$2,$(call rwildcard,$d,*))),\
-                        $(call phony-ok,$(MSG_RM_NOT_EMPTY))\
+                        $(call phony-ok,$(MSG_RM_NOT_EMPTY)),\
                         $(call rmdir,$d)\
                 )),\
                 $(call rmdir,$d)\
@@ -2555,15 +2580,15 @@ endif
 
 ## ERROR ###############################################################
 ifndef MORE
-    define ERROR
-    2>&1 | sed '1 s/^/stderr:\n/' | sed 's/^/> /'
-    endef
-    #| sed ''/"> error"/s//`printf "${ERR}"`/'' # Adds gray color when
-    #                                           # connected to above
+define ERROR
+2>&1 | sed '1 s/^/stderr:\n/' | sed 's/^/> /'
+endef
+#| sed ''/"> error"/s//`printf "${ERR}"`/'' # Adds gray color when
+#                                           # connected to above
 else
-    define ERROR
-    2>&1 | more
-    endef
+define ERROR
+2>&1 | more
+endef
 endif
 
 define phony-error
@@ -2616,7 +2641,7 @@ endef
 ## WEB DEPENDENCIES ####################################################
 define web-clone
 	$(call phony-status,$(MSG_WEB_CLONE))
-	$(quiet) $(CURL) $1 -z $2 -o $2 $(NO_OUTPUT) $(NO_ERROR)
+	$(quiet) $(CURL) $2 $1 $(NO_OUTPUT) $(NO_ERROR)
 	$(call phony-ok,$(MSG_WEB_CLONE))
 endef
 
@@ -3202,6 +3227,7 @@ gitignore:
 	@$(foreach d,$(depdir),echo $d/; )
 	@$(foreach d,$(objdir),echo $d/; )
 	@$(foreach d,$(libdir),echo $d/; )
+	@$(foreach d,$(extdir),echo $d/; )
 	@$(foreach d,$(bindir),echo $d/; )
 	@$(foreach d,$(sbindir),echo $d/; )
 	@$(foreach d,$(execdir),echo $d/; )
@@ -3328,6 +3354,9 @@ endef
 
 .PHONY: dump
 dump:
+ifdef VAR ####
+	$(call prompt,"$(VAR):       ",$($(VAR))       )
+else
 	@echo "${WHITE}\nCONFIGURATION           ${RES}"
 	@echo "----------------------------------------"
 	$(call prompt,"license:      ",$(license)      )
@@ -3477,3 +3506,5 @@ dump:
 	$(call prompt,"cxxlibs:      ",$(cxxlibs)      )
 	$(call prompt,"ldlibs:       ",$(ldlibs)       )
 	$(call prompt,"ldflags:      ",$(ldflags)      )
+
+endif #### ifdef VAR
