@@ -15,13 +15,14 @@ TESTBIN  := test
 
 # Flags
 CXXFLAGS += -pthread # C++ Flags
-LDFLAGS  := lib/gmock/make/gmock.a lib/gmock/gtest/make/gtest.a -pthread
+LDFLAGS  := -pthread -lgmock -lgtest
+LDLIBS   := -L external/gmock/gtest/make/ -L external/gmock/make/ 
 
 GIT_DEPENDENCY := \
     gmock       => http://git.chromium.org/external/googlemock.git\
-                   cd make && make gmock.a,\
+                   cd make && make gmock.a && mv gmock.a libgmock.a,\
     gmock/gtest => http://git.chromium.org/external/googletest.git\
-                   cd make && make gtest.a
+                   cd make && make gtest.a && mv gtest.a libgtest.a
 
 # Package info
 MAINTEINER_NAME := Ígor Bonadio e Renato Cordeiro
