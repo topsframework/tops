@@ -4,6 +4,7 @@
 dep/
 build/
 lib/
+external/
 bin/
 sbin/
 libexec/
