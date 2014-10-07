@@ -18,6 +18,8 @@ CXXFLAGS += -pthread # C++ Flags
 LDFLAGS  := -pthread -lgmock -lgtest
 LDLIBS   := -L external/gmock/gtest/make/ -L external/gmock/make/ 
 
+# Git
+GIT_REMOTE     := git@bitbucket.org:igorbonadio/topspp.git
 GIT_DEPENDENCY := \
     gmock       => http://git.chromium.org/external/googlemock.git\
                    cd make && make gmock.a && mv gmock.a libgmock.a,\
