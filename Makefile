@@ -83,7 +83,7 @@ LDF       := -lgfortran
 LDCXX     :=
 LDLEX     := -lfl
 LDYACC    :=
-LDESQL    := -L$(shell pg_config --libdir) -lecpg
+LDESQL    := -lecpg
 
 # Library flags
 ARFLAGS   := -rcv
@@ -509,6 +509,9 @@ comma := ,
 empty :=
 space := $(empty) $(empty)
 tab   := $(empty)	$(empty)
+define quote
+"
+endef
 define newline
 
 
@@ -1316,8 +1319,8 @@ init: initdep
 	$(call make-create,config,Config.mk)
 	$(call make-create,gitignore,.gitignore)
 	$(call git-init)
-	$(call git-add-commit,Config.mk,"Adds Config.mk")
-	$(call git-add-commit,.gitignore,"Adds .gitignore")
+	$(call git-add-commit,Makefile Config.mk .gitignore,\
+           "Adds Makefile and Config.mk with .gitignore")
 	$(call git-remote-add,origin,$(GIT_REMOTE))
 
 .PHONY: standard
@@ -1326,7 +1329,7 @@ standard: init
 	$(call mv,$(libext),$(firstword $(libdir)),"library")
 	$(call mv,$(docext),$(docdir),"document")
 	$(call mv,$(incext),$(firstword $(incdir)),"header")
-	$(call mv,$(srcext) $(asmext),$(firstword $(srcdir)),"assembly")
+	$(call mv,$(srcext) $(asmext),$(firstword $(srcdir)),"source")
 	$(call mv,$(lexext) $(lexxext),$(firstword $(srcdir)),"lexer")
 	$(call mv,$(yaccext) $(yaxxext),$(firstword $(srcdir)),"parser")
 	$(call mv,$(esqlext),$(firstword $(srcdir)),"embedded SQL")
@@ -2540,7 +2543,7 @@ $(if $(strip $(foreach e,$(strip $1),$(wildcard *$e))),\
     $(call git-add-commit,\
         $(addprefix $(firstword $2)/,\
             $(foreach e,$(strip $1),$(wildcard *$e))),\
-        "Moves $3 files to $(firstword $2)/")\
+        "Moves $(subst $(quote),,$3) files to $(firstword $2)/")\
 )
 endef
 
@@ -3472,15 +3475,16 @@ projecthelp:
 
 define prompt
 @echo "${YELLOW}"$1"${RES}"\
-      $(if $(strip $(filter undefined,$(origin $(VAR)))),\
-          "${RED}Undefined${RES}",\
-          $(if $(strip $2),"$(strip $2)","${RED}Empty${RES}"))
+      $(if $(strip $2),"$(strip $2)","${RED}Empty${RES}")
 endef
 
 .PHONY: dump
 dump:
 ifdef VAR ####
-	$(call prompt,"$(VAR):       ",$($(VAR))       )
+	@echo "${YELLOW}"$(VAR)"${RES}"\
+          $(if $(strip $(filter undefined,$(origin $($(VAR))))),\
+              "${RED}Undefined${RES}",\
+              "$(or $(strip $($(VAR)),${RED}Empty${RES}))")
 else
 	@echo "${WHITE}\nCONFIGURATION           ${RES}"
 	@echo "----------------------------------------"
@@ -3502,6 +3506,7 @@ else
 	$(call prompt,"lexxext:      ",$(lexxext)      )
 	$(call prompt,"yaccext:      ",$(yaccext)      )
 	$(call prompt,"yaxxext:      ",$(yaxxext)      )
+	$(call prompt,"esqlext:      ",$(esqlext)      )
 	$(call prompt,"docext:       ",$(docext)       )
 	
 	@echo "${WHITE}\nLEXER                   ${RES}"
