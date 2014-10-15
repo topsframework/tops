@@ -33,6 +33,7 @@ VERSION         := 1.0
 AUXFILES        :=
 MAINTEINER_NAME := Your Name
 MAINTEINER_MAIL := your_mail@mail.com
+COPYRIGHT       := $(MAINTEINER_NAME)
 SYNOPSIS        := default short synopsis
 DESCRIPTION     := default long description
 
@@ -63,68 +64,62 @@ WEB_DEPENDENCY  :=
 ##                              FLAGS                                 ##
 ########################################################################
 
-# Compilation flags
-ASFLAGS   := -f elf32
+# Preprocessor options
+CPPFLAGS   :=
 
-# C Options
-CFLAGS    := -Wall -ansi -pedantic -O2 -g
+# Assembly/C/C++/Fortran options
+ASFLAGS    := -f elf32
+CFLAGS     := -Wall -ansi -pedantic -O2 -g
+CXXFLAGS   := $(CFLAGS) -std=c++11
+FFLAGS     := -cpp
 
-# C++ Options
-CXXFLAGS  := $(CFLAGS) -std=c++11
+# Linker options
+LDFLAGS    :=
+LDC        :=
+LDF        := -lgfortran
+LDCXX      :=
+LDLEX      := -lfl
+LDYACC     :=
+LDESQL     := -lecpg
 
-# Fortran Options
-FFLAGS    := -cpp
+# Library options
+ARFLAGS    := -rcv
+SOFLAGS    := -shared
 
-# Linker flags
-LDLIBS    :=
-LDFLAGS   :=
-LDC       :=
-LDF       := -lgfortran
-LDCXX     :=
-LDLEX     := -lfl
-LDYACC    :=
-LDESQL    := -lecpg
+# Assembly/C/C++/Fortran paths for include dirs
+ASLIBS     :=
+CLIBS      :=
+CXXLIBS    :=
+FLIBS      :=
 
-# Library flags
-ARFLAGS   := -rcv
-SOFLAGS   := -shared
-
-########################################################################
-##                              LIBS                                  ##
-########################################################################
-
-# C/C++/Fortran include paths
-CLIBS     :=
-CXXLIBS   :=
-FLIBS     :=
-
-# Linker lib paths
-LDLIBS    :=
+# Linker paths for library dirs
+LDLIBS     :=
 
 ########################################################################
 ##                            DIRECTORIES                             ##
 ########################################################################
 ifndef SINGLE_DIR
-SRCDIR  := src
-DEPDIR  := dep
-INCDIR  := include
-DOCDIR  := doc
-DEBDIR  := debian
-OBJDIR  := build
-LIBDIR  := lib
-EXTDIR  := external
-SRPDIR  := script
-BINDIR  := bin
-SBINDIR := sbin
-EXECDIR := libexec
-DISTDIR := dist
-TESTDIR := test
-DATADIR := data
-DESTDIR :=
+SRCDIR    := src
+DEPDIR    := dep
+INCDIR    := include
+DOCDIR    := doc
+DEBDIR    := debian
+OBJDIR    := build
+LIBDIR    := lib
+EXTDIR    := external
+SRPDIR    := script
+BINDIR    := bin
+SBINDIR   := sbin
+EXECDIR   := libexec
+DISTDIR   := dist
+TESTDIR   := test
+DATADIR   := data
+DESTDIR   :=
+LOCALEDIR := locale
 else
 $(foreach var,\
-    SRCDIR DEPDIR INCDIR OBJDIR LIBDIR EXTDIR BINDIR \
-    SBINDIR DISTDIR TESTDIR DATADIR,\
+    SRCDIR DEPDIR INCDIR OBJDIR LIBDIR EXTDIR SRPDIR BINDIR \
+    SBINDIR DISTDIR TESTDIR DATADIR LOCALEDIR,\
     $(eval $(var) := .)\
 )
 endif
@@ -264,6 +259,11 @@ DATAEXT := .asc .bak .bin .bk .cfg .conf .cnf .css .csv .dat \
            .diff .dsk .htm .html .json .log .ltsv .raw .sql \
            .temp .tmp .tsv .txt .xml .yaml .yml
 
+# I18n extensions
+POTEXT  := .pot
+POEXT   := .po
+MOEXT   := .mo
+
 # Test suffix
 TESTSUF := Test
 
@@ -319,7 +319,7 @@ YACCFLAGS       :=
 # Embedded SQL
 ESQL            := ecpg
 ESQLLIBS        := $(shell pg_config --includedir)
-ESQLFLAGS       := 
+ESQLFLAGS       :=
 
 # Tags
 CTAGS           := ctags
@@ -335,6 +335,15 @@ TEXI2HTML       := makeinfo --no-split --html
 TEXI2DVI        := texi2dvi
 TEXI2PDF        := texi2pdf
 TEXI2PS         := texi2dvi --ps
+
+# Native Language Support
+XGETTEXT        := xgettext
+MSGINIT         := msginit --no-translator
+MSGMERGE        := msgmerge
+MSGFMT          := msgfmt -c
+ENABLE_NLS      ?= $(or $(strip $(filter translation,$(MAKECMDGOALS))),\
+                        $(sort $(patsubst %,1,$(strip $(call rwildcard,\
+                           $(localedir),$(addprefix *,$(potext)))))))
 
 # Packages (Debian)
 DEBUILD         := debuild -us -uc
@@ -359,139 +368,7 @@ MAKE            += -f $(firstword $(MAKEFILE_LIST)) $(MAKEFLAGS)
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\#
 
 ########################################################################
-##                       USER INPUT VALIDATION                        ##
-########################################################################
-
-# Documentation:
-license      := $(strip $(firstword $(wildcard $(LICENSE))))
-notice       := $(strip $(firstword $(wildcard $(NOTICE))))
-contributors := $(strip $(firstword $(wildcard $(CONTRIBUTORS))))
-doxyfile     := $(strip $(firstword $(DOXYFILE)))
-
-# Flags:
-# Redefine flags to avoid conflict with user's local definitions
-asflags   := $(ASFLAGS)
-cflags    := $(CFLAGS)
-fflags    := $(FFLAGS)
-cxxflags  := $(CXXFLAGS)
-cxxlexer  := $(CXXLEXER)
-cxxparser := $(CXXPARSER)
-ldlibs    := $(LDLIBS)
-ldflags   := $(LDFLAGS)
-arflags   := $(ARFLAGS)
-soflags   := $(SOFLAGS)
-lexflags  := $(LEXFLAGS)
-yaccflags := $(YACCFLAGS)
-esqlflags := $(ESQLFLAGS)
-
-# Installation directories
-destdir := $(strip $(foreach d,$(DESTDIR),$(patsubst %/,%,$d)))
-
-$(foreach b,$(install_dirs),\
-    $(if $(strip $(firstword $($b))),\
-        $(eval i_$b := $(destdir)$(strip $(patsubst %/,%,$($b)))),\
-        $(error "$b" must not be empty))\
-)
-
-# Directories:
-# No directories must end with a '/' (slash)
-override srcdir  := $(strip $(foreach d,$(SRCDIR),$(patsubst %/,%,$d)))
-override depdir  := $(strip $(foreach d,$(DEPDIR),$(patsubst %/,%,$d)))
-override incdir  := $(strip $(foreach d,$(INCDIR),$(patsubst %/,%,$d)))
-override docdir  := $(strip $(foreach d,$(DOCDIR),$(patsubst %/,%,$d)))
-override debdir  := $(strip $(foreach d,$(DEBDIR),$(patsubst %/,%,$d)))
-override objdir  := $(strip $(foreach d,$(OBJDIR),$(patsubst %/,%,$d)))
-override libdir  := $(strip $(foreach d,$(LIBDIR),$(patsubst %/,%,$d)))
-override extdir  := $(strip $(foreach d,$(EXTDIR),$(patsubst %/,%,$d)))
-override srpdir  := $(strip $(foreach d,$(SRPDIR),$(patsubst %/,%,$d)))
-override bindir  := $(strip $(foreach d,$(BINDIR),$(patsubst %/,%,$d)))
-override sbindir := $(strip $(foreach d,$(SBINDIR),$(patsubst %/,%,$d)))
-override execdir := $(strip $(foreach d,$(EXECDIR),$(patsubst %/,%,$d)))
-override distdir := $(strip $(foreach d,$(DISTDIR),$(patsubst %/,%,$d)))
-override testdir := $(strip $(foreach d,$(TESTDIR),$(patsubst %/,%,$d)))
-override datadir := $(strip $(foreach d,$(DATADIR),$(patsubst %/,%,$d)))
-
-# All directories
-alldir := $(strip\
-    $(srcdir) $(depdir) $(incdir) $(docdir) $(debdir) $(objdir)   \
-    $(libdir) $(extdir) $(srpdir) $(bindir) $(sbindir) $(execdir) \
-    $(distdir) $(testdir) $(datadir)                              \
-)
-
-# Check if every directory variable is non-empty
-ifeq ($(and $(srcdir),$(bindir),$(depdir),$(objdir),\
-            $(incdir),$(libdir),$(extdir),$(distdir),$(testdir)),)
-$(error There must be at least one directory of each type, or '.'.)
-endif
-
-ifneq ($(words $(depdir) $(objdir) $(distdir) $(debdir)),4)
-$(error There must be one dependency, obj, dist and debian dir.)
-endif
-
-# Extensions:
-testsuf := $(strip $(sort $(TESTSUF)))
-ifneq ($(words $(testsuf)),1)
-    $(error Just one suffix allowed for test sources!)
-endif
-
-# Extensions:
-# Every extension must begin with a '.' (dot)
-hext    := $(strip $(sort $(HEXT)))
-hfext   := $(strip $(sort $(HFEXT)))
-hxxext  := $(strip $(sort $(HXXEXT)))
-cext    := $(strip $(sort $(CEXT)))
-fext    := $(strip $(sort $(FEXT)))
-cxxext  := $(strip $(sort $(CXXEXT)))
-tlext   := $(strip $(sort $(TLEXT)))
-asmext  := $(strip $(sort $(ASMEXT)))
-libext  := $(strip $(sort $(LIBEXT)))
-lexext  := $(strip $(sort $(LEXEXT)))
-lexxext := $(strip $(sort $(LEXXEXT)))
-yaccext := $(strip $(sort $(YACCEXT)))
-yaxxext := $(strip $(sort $(YAXXEXT)))
-esqlext := $(strip $(sort $(ESQLEXT)))
-depext  := $(strip $(sort $(DEPEXT)))
-objext  := $(strip $(sort $(OBJEXT)))
-binext  := $(strip $(sort $(BINEXT)))
-
-srpext  := $(strip $(sort $(SRPEXT)))
-dataext := $(strip $(sort $(DATAEXT)))
-
-texiext := $(strip $(sort $(TEXIEXT)))
-infoext := $(strip $(sort $(INFOEXT)))
-htmlext := $(strip $(sort $(HTMLEXT)))
-dviext  := $(strip $(sort $(DVIEXT)))
-pdfext  := $(strip $(sort $(PDFEXT)))
-psext   := $(strip $(sort $(PSEXT)))
-
-incext := $(hext) $(hxxext) $(tlext) $(hfext)
-srcext := $(cext) $(cxxext) $(fext)
-docext := $(texiext) $(infoext) $(htmlext) $(dviext) $(pdfext) $(psext)
-
-# Check all extensions
-allext := $(incext) $(srcext) $(asmext) $(libext)
-allext += $(lexext) $(lexxext) $(yaccext) $(yaxxext) $(esqlext)
-allext += $(depext) $(objext) $(binext) $(srpext) $(dataext)
-allext := $(strip $(allext))
-$(foreach ext,$(allext),\
-    $(if $(filter .%,$(ext)),,\
-        $(error "$(ext)" is not a valid extension)))
-
-ifneq ($(words $(objext)),1)
-    $(error Just one object extension allowed!)
-endif
-
-ifneq ($(words $(depext)),1)
-    $(error Just one dependency extension allowed!)
-endif
-
-ifneq ($(words $(binext)),1)
-    $(if $(binext),\
-        $(error Just one or none binary extensions allowed!))
-endif
-
-########################################################################
-##                              PATHS                                 ##
+##                  MAKEFILE BASIC CONFIGURATIONS                     ##
 ########################################################################
 
 # Remote path
@@ -501,25 +378,10 @@ MAKEREMOTE := \
 # Define the shell to be used
 SHELL = /bin/sh
 
-# Define extensions as the only valid ones
-.SUFFIXES:
-.SUFFIXES: $(allext)
-
-# Paths
-# ======
-$(foreach e,.zip .tar .tgz .tbz2 .tar.gz .tar.bz2,\
-    $(eval vpath %.$e $(distdir)))
-
-# Binaries, libraries and source extensions
-$(foreach e,$(libext),$(eval vpath lib%$e $(libdir)))
-$(foreach s,$(srcdir),$(foreach e,$(srcext),$(eval vpath %$e $s)))
-$(foreach s,$(testdir),$(foreach e,$(srcext),$(eval vpath %$e $s)))
-
 ########################################################################
-##                              FILES                                 ##
+##                         USEFUL DEFINITIONS                         ##
 ########################################################################
 
-# Useful definitions
 comma := ,
 empty :=
 space := $(empty) $(empty)
@@ -532,7 +394,34 @@ define newline
 
 endef
 
+########################################################################
+##                             FUNCTIONS                              ##
+########################################################################
+
+# Logic functions
+# =================
+# 1) not: Returns empty if arg is not empty, and not empty otherwise
+# 2) eq:  Returns not empty if $1 == $2, and empty otherwise
+# 3) ne:  Returns not empty if $1 != $2, and empty otherwise
+define not
+$(strip $(if $1,,T))
+endef
+
+define eq
+$(strip $(if $(strip $(filter-out $(strip $1),$(strip $2))),,1))
+endef
+
+define ne
+$(strip $(call not,$(call eq,$1,$2)))
+endef
+
 # List manipulation functions
+# =============================
+# 1) car:    Gets first element of a list
+# 2) cdr:    Gets all but firs element of a list
+# 3) rcar:   Gets last element of a list
+# 4) rcdr:   Gets all but last element of a list
+# 5) invert: Inverts a list
 define car
 $(strip $(firstword $(strip $1)))
 endef
@@ -541,13 +430,93 @@ define cdr
 $(strip $(wordlist 2,$(words $(strip $1)),$(strip $1)))
 endef
 
-# Auxiliar data structures
-# ==========================
-# 1) hash-table.new: Create a hash table with elements accessible by
-#                    hash-table.key and a list of keys hash-table.keys
-# 2) hash-table.new_impl: Auxiliar function for hash-table.new
-# 3) procedure.new: Create a multi-line set of commands (for list
-#                   of arguments in a target)
+define rcar
+$(strip $(lastword $(strip $1)))
+endef
+
+define rcdr
+$(strip $(patsubst %.word,%,\
+    $(patsubst %.word.last,,$(strip $(addsuffix .word,$1)).last)))
+endef
+
+define invert
+$(if $(strip $1),\
+    $(call invert,$(wordlist 2,$(words $1),$1))) $(firstword $1)
+endef
+
+# Path manipulation functions
+# =============================
+# 1) root: Gets the root directory (first in the path) of a path or file
+# 2) not-root: Given a path or file, take out the root directory of it
+# 3) remove-trailing-bar: Removes the last / of a directory-only name
+define root
+$(strip $(foreach s,$1,\
+    $(if $(findstring /,$s),\
+        $(call root,$(patsubst %/,%,$(dir $s))),$(strip $s))))
+endef
+
+define not-root
+$(strip $(foreach s,$1,\
+    $(patsubst $(strip $(call root,$s))/%,%,$s)))
+endef
+
+define remove-trailing-bar
+$(strip $(foreach s,$1,\
+    $(if $(or $(call not,$(dir $s)),$(suffix $s),$(notdir $(basename $s))),$s,$(patsubst %/,%,$s))))
+endef
+
+# File identification functions
+# ===============================
+# 1) is-f:    Figures out if all files in a list are Fortran files
+# 2) has-cxx: Figures out if there is a C++ file in a list
+# 3) is-cxx:  Figures out if all files in a list are C++ files
+
+define is_c
+$(if $(strip $(foreach s,$(sort $(suffix $1)),\
+    $(if $(strip $(findstring $s,$(cext))),,$s))),,is_c)
+endef
+
+define is_f
+$(if $(strip $(foreach s,$(sort $(suffix $1)),\
+    $(if $(strip $(findstring $s,$(fext))),,$s))),,is_f)
+endef
+
+define is_cxx
+$(if $(strip $(foreach s,$(sort $(suffix $1)),\
+    $(if $(strip $(findstring $s,$(cxxext))),,$s))),,is_cxx)
+endef
+
+# Auxiliar recursive functions
+# ==============================
+# 1) rsubdir:     For listing all subdirectories of a given dir
+# 2) rwildcard:   For wildcard deep-search in the directory tree
+# 3) rfilter:     For filtering a list of text from another list
+# 3) rfilter-out: For filtering out a list of text from another list
+rsubdir     = $(strip $(foreach d,$1,$(shell $(FIND) $d $(FIND_FLAGS))))
+rwildcard   = $(strip $(if $(strip $(wildcard $1/*)),\
+                  $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2)),\
+                  $(if $(wildcard $1*),$(filter $(subst *,%,$2),$1))))
+rfilter     = $(strip $(if $(strip $1),\
+                 $(call rfilter,$(call cdr,$1),$2)\
+                 $(filter $(call car,$1),$2)))
+rfilter-out = $(strip $(if $(strip $1),\
+                 $(call rfilter-out,\
+                     $(call cdr,$1),\
+                     $(filter-out $(call car,$1),$2)),\
+                 $(sort $2)))
+
+########################################################################
+##                           DATA STRUCTURES                          ##
+########################################################################
+
+# Hash Table
+# ============
+# 1) hash-table.new:      Creates a hash table with elements accessible
+#                         by hash-table.key and a list of keys
+#                         hash-table.keys
+# 2) hash-table.new_impl: Implements recursion for hash-table.new
+# 3) hash-table.keys:     Returns the list of keys of hash-table $1
+# 4) hash-table.values:   Returns the list of values of hash-table $1
 
 define hash-table.new
 $(call hash-table.new_impl,$(strip $1),$($(strip $1)))
@@ -592,74 +561,183 @@ define hash-table.values
 $(strip $(foreach k,$(call hash-table.keys,$1),$($1.$k)))
 endef
 
-# Auxiliar functions
-# ===================
-# 1) root: Gets the root directory (first in the path) of a path or file
-# 2) not-root: Given a path or file, take out the root directory of it
-# 3) invert: Invert a list of elements
-# 4) not: Returns empty if its argument was defined, or T otherwise
-# 5) remove-trailing-bar: Removes the last / of a directory-only name
-# 6) has-c: figure out if there is a C file in a list
-# 7) is-f: figure out if all files in a list are C files
-# 6) has-c: figure out if there is a Fortran file in a list
-# 7) is-f: figure out if all files in a list are Fortran files
-# 6) has-cxx: figure out if there is a C++ file in a list
-# 7) is-cxx: figure out if all files in a list are C++ files
-define root
-$(foreach s,$1,\
-    $(if $(findstring /,$s),\
-        $(call root,$(patsubst %/,%,$(dir $s))),$(strip $s)))
-endef
+########################################################################
+##                       USER INPUT VALIDATION                        ##
+########################################################################
 
-define not-root
-$(foreach s,$1,$(strip $(patsubst $(strip $(call root,$s))/%,%,$s)))
-endef
+# Documentation
+# ===============
+license      := $(strip $(firstword $(wildcard $(LICENSE))))
+notice       := $(strip $(firstword $(wildcard $(NOTICE))))
+contributors := $(strip $(firstword $(wildcard $(CONTRIBUTORS))))
+doxyfile     := $(strip $(firstword $(DOXYFILE)))
 
-define invert
-$(if $(strip $1),$(call invert,$(wordlist 2,$(words $1),$1))) $(firstword $1)
-endef
+# Flags
+# =======
+# Redefine flags to avoid conflict with user's local definitions
+cppflags  := $(CPPFLAGS)
+asflags   := $(ASFLAGS)
+cflags    := $(CFLAGS)
+fflags    := $(FFLAGS)
+cxxflags  := $(CXXFLAGS)
+cxxlexer  := $(CXXLEXER)
+cxxparser := $(CXXPARSER)
+ldlibs    := $(LDLIBS)
+ldflags   := $(LDFLAGS)
+arflags   := $(ARFLAGS)
+soflags   := $(SOFLAGS)
+lexflags  := $(LEXFLAGS)
+yaccflags := $(YACCFLAGS)
+esqlflags := $(ESQLFLAGS)
 
-define not
-$(strip $(if $1,,T))
-endef
+# Installation directories
+# ==========================
+# Add prefix $(destdir)/ and transforms names in i_
+destdir := $(strip $(foreach d,$(DESTDIR),$(patsubst %/,%,$d)))
 
-define remove-trailing-bar
-$(foreach s,$1,$(if $(or $(call not,$(dir $s)),$(suffix $s),$(notdir $(basename $s))),$s,$(patsubst %/,%,$s)))
-endef
+$(foreach b,$(install_dirs),\
+    $(if $(strip $(firstword $($b))),\
+        $(eval i_$b := $(destdir)$(strip $(patsubst %/,%,$($b)))),\
+        $(error "$b" must not be empty))\
+)
 
-define is_c
-$(if $(strip $(foreach s,$(sort $(suffix $1)),\
-    $(if $(strip $(findstring $s,$(cext))),,$s))),,is_c)
-endef
+# Directories
+# =============
+# No directories must end with a '/' (slash)
+override srcdir    := $(call remove-trailing-bar,$(SRCDIR))
+override depdir    := $(call remove-trailing-bar,$(DEPDIR))
+override incdir    := $(call remove-trailing-bar,$(INCDIR))
+override docdir    := $(call remove-trailing-bar,$(DOCDIR))
+override debdir    := $(call remove-trailing-bar,$(DEBDIR))
+override objdir    := $(call remove-trailing-bar,$(OBJDIR))
+override libdir    := $(call remove-trailing-bar,$(LIBDIR))
+override extdir    := $(call remove-trailing-bar,$(EXTDIR))
+override srpdir    := $(call remove-trailing-bar,$(SRPDIR))
+override bindir    := $(call remove-trailing-bar,$(BINDIR))
+override sbindir   := $(call remove-trailing-bar,$(SBINDIR))
+override execdir   := $(call remove-trailing-bar,$(EXECDIR))
+override distdir   := $(call remove-trailing-bar,$(DISTDIR))
+override testdir   := $(call remove-trailing-bar,$(TESTDIR))
+override datadir   := $(call remove-trailing-bar,$(DATADIR))
+override localedir := $(call remove-trailing-bar,$(LOCALEDIR))
 
-define is_f
-$(if $(strip $(foreach s,$(sort $(suffix $1)),\
-    $(if $(strip $(findstring $s,$(fext))),,$s))),,is_f)
-endef
+# All directories
+alldir := $(strip\
+    $(srcdir) $(depdir) $(incdir) $(docdir) $(debdir) $(objdir)   \
+    $(libdir) $(extdir) $(srpdir) $(bindir) $(sbindir) $(execdir) \
+    $(distdir) $(testdir) $(datadir) $(localedir)                 \
+)
 
-define is_cxx
-$(if $(strip $(foreach s,$(sort $(suffix $1)),\
-    $(if $(strip $(findstring $s,$(cxxext))),,$s))),,is_cxx)
-endef
+# Check if every directory variable is non-empty
+ifeq ($(and $(srcdir),$(bindir),$(depdir),$(objdir),\
+            $(incdir),$(libdir),$(extdir),$(distdir),$(testdir)),)
+$(error There must be at least one directory of each type, or '.'.)
+endif
 
-# Auxiliar recursive functions
-# ==============================
-# 1) rsubdir:     For listing all subdirectories of a given dir
-# 2) rwildcard:   For wildcard deep-search in the directory tree
-# 3) rfilter:     For filtering a list of text from another list
-# 3) rfilter-out: For filtering out a list of text from another list
-rsubdir     = $(strip $(foreach d,$1,$(shell $(FIND) $d $(FIND_FLAGS))))
-rwildcard   = $(strip $(if $(strip $(wildcard $1/*)),\
-                  $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2)),\
-                  $(if $(wildcard $1*),$(filter $(subst *,%,$2),$1))))
-rfilter     = $(strip $(if $(strip $1),\
-                 $(call rfilter,$(call cdr,$1),$2)\
-                 $(filter $(call car,$1),$2)))
-rfilter-out = $(strip $(if $(strip $1),\
-                 $(call rfilter-out,\
-                     $(call cdr,$1),\
-                     $(filter-out $(call car,$1),$2)),\
-                 $(sort $2)))
+ifneq ($(words $(depdir) $(objdir) $(distdir) $(debdir)),4)
+$(error There must be one dependency, obj, dist and debian dir.)
+endif
+
+ifneq ($(words $(localedir)),1)
+$(error There must be just one locale dir.)
+endif
+
+# Extensions:
+testsuf := $(strip $(sort $(TESTSUF)))
+ifneq ($(words $(testsuf)),1)
+    $(error Just one suffix allowed for test sources!)
+endif
+
+# Extensions
+# ============
+# Every extension must begin with a '.' (dot)
+hext    := $(strip $(sort $(HEXT)))
+hfext   := $(strip $(sort $(HFEXT)))
+hxxext  := $(strip $(sort $(HXXEXT)))
+cext    := $(strip $(sort $(CEXT)))
+fext    := $(strip $(sort $(FEXT)))
+cxxext  := $(strip $(sort $(CXXEXT)))
+tlext   := $(strip $(sort $(TLEXT)))
+asmext  := $(strip $(sort $(ASMEXT)))
+libext  := $(strip $(sort $(LIBEXT)))
+lexext  := $(strip $(sort $(LEXEXT)))
+lexxext := $(strip $(sort $(LEXXEXT)))
+yaccext := $(strip $(sort $(YACCEXT)))
+yaxxext := $(strip $(sort $(YAXXEXT)))
+esqlext := $(strip $(sort $(ESQLEXT)))
+depext  := $(strip $(sort $(DEPEXT)))
+objext  := $(strip $(sort $(OBJEXT)))
+binext  := $(strip $(sort $(BINEXT)))
+
+srpext  := $(strip $(sort $(SRPEXT)))
+dataext := $(strip $(sort $(DATAEXT)))
+
+potext  := $(strip $(sort $(POTEXT)))
+poext   := $(strip $(sort $(POEXT)))
+moext   := $(strip $(sort $(MOEXT)))
+
+texiext := $(strip $(sort $(TEXIEXT)))
+infoext := $(strip $(sort $(INFOEXT)))
+htmlext := $(strip $(sort $(HTMLEXT)))
+dviext  := $(strip $(sort $(DVIEXT)))
+pdfext  := $(strip $(sort $(PDFEXT)))
+psext   := $(strip $(sort $(PSEXT)))
+
+incext := $(hext) $(hxxext) $(tlext) $(hfext)
+srcext := $(cext) $(cxxext) $(fext)
+docext := $(texiext) $(infoext) $(htmlext) $(dviext) $(pdfext) $(psext)
+
+# Check all extensions
+allext := $(incext) $(srcext) $(asmext) $(libext)
+allext += $(lexext) $(lexxext) $(yaccext) $(yaxxext) $(esqlext)
+allext += $(depext) $(objext) $(binext) $(srpext) $(dataext)
+allext += $(potext) $(poext) $(moext) $(docext)
+allext := $(strip $(allext))
+$(foreach ext,$(allext),\
+    $(if $(filter .%,$(ext)),,\
+        $(error "$(ext)" is not a valid extension)))
+
+ifneq ($(words $(objext)),1)
+    $(error Just one object extension allowed!)
+endif
+
+ifneq ($(words $(depext)),1)
+    $(error Just one dependency extension allowed!)
+endif
+
+ifneq ($(words $(binext)),1)
+    $(if $(binext),\
+        $(error Just one or none binary extensions allowed!))
+endif
+
+# Define extensions as the only valid ones
+.SUFFIXES:
+.SUFFIXES: $(allext)
+
+########################################################################
+##                              PATHS                                 ##
+########################################################################
+
+# Paths
+# ======
+$(foreach e,.zip .tar .tgz .tbz2 .tar.gz .tar.bz2,\
+    $(eval vpath %.$e $(distdir)))
+
+# Binaries, libraries and source extensions
+$(foreach e,$(libext),$(eval vpath lib%$e $(libdir)))
+$(foreach s,$(srcdir),$(foreach e,$(srcext),$(eval vpath %$e $s)))
+$(foreach s,$(testdir),$(foreach e,$(srcext),$(eval vpath %$e $s)))
+
+########################################################################
+##                              FILES                                 ##
+########################################################################
+
+# Default variable names
+# ========================
+# fooall: complete path WITH root directories
+# foosrc: complete path WITHOUT root directories
+# foopat: incomplete paths WITH root directories
+# foolib: library names WITHOUT root directories
 
 # Configuration Files
 # =====================
@@ -682,13 +760,6 @@ ignored := $(sort $(foreach f,$(ignored),\
 define filter-ignored
 $(call rfilter-out,$(ignored),$1)
 endef
-
-# Default variable names
-# ========================
-# fooall: complete path WITH root directories
-# foosrc: complete path WITHOUT root directories
-# foopat: incomplete paths WITH root directories
-# foolib: library names WITHOUT root directories
 
 # External dependency files
 # ===========================
@@ -782,7 +853,7 @@ lexinc   := $(call not-root,$(basename $(basename $(lexall))))
 lexinc   := $(addprefix $(firstword $(incdir))/,$(lexinc))
 lexinc   := $(addsuffix -yy/,$(lexinc))
 #------------------------------------------------------------------[ 6 ]
-lexinc   += $(strip $(LEXLIBS))
+lexinc   += $(if $(strip $(lexall)),$(strip $(LEXLIBS)))
 
 # Syntatic analyzers
 # ====================
@@ -814,7 +885,7 @@ yaccinc   := $(call not-root,$(basename $(basename $(yaccall))))
 yaccinc   := $(addprefix $(firstword $(incdir))/,$(yaccinc))
 yaccinc   := $(addsuffix -tab/,$(yaccinc))
 #------------------------------------------------------------------[ 6 ]
-yaccinc   += $(strip $(YACCLIBS))
+yaccinc   += $(if $(strip $(yaccall)),$(strip $(YACCLIBS)))
 
 # Embedded SQL preprocessors
 # ============================
@@ -834,7 +905,7 @@ esqlall   += $(foreach E,$(esqlext),\
                 $(patsubst %$E,%.c,$(filter %$E,$(cesql))))
 esqlall   := $(strip $(esqlall))
 #------------------------------------------------------------------[ 4 ]
-esqlinc   := $(strip $(ESQLLIBS))
+esqlinc   := $(if $(strip $(esqlall)),$(strip $(ESQLLIBS)))
 
 # Automatically generated files
 # ===============================
@@ -858,6 +929,7 @@ incsub  += $(patsubst %,$(extdir)/%/include,\
                $(call hash-table.keys,git_dependency))
 incsub  += $(autoinc)
 #------------------------------------------------------------------[ 4 ]
+aslibs  := $(ASLIBS)  $(patsubst %,-I%,$(incsub))
 clibs   := $(CLIBS)   $(patsubst %,-I%,$(incsub))
 flibs   := $(FLIBS)   $(patsubst %,-I%,$(incsub))
 cxxlibs := $(CXXLIBS) $(patsubst %,-I%,$(incsub))
@@ -1105,6 +1177,34 @@ depall    := $(addprefix $(depdir)/,$(addsuffix $(depext),$(depall)))
 systemdep := $(addsuffix dep,build upgrade tags docs dist dpkg install)
 systemdep := $(addprefix $(depdir)/,$(systemdep))
 
+# Internationalization
+# ======================
+# 1) intlall: Get all portable object files (based on their locale)
+# 2) intlall: Filter out ignored files from above
+# 3) intlobj: Names of corresponding machine object files
+ifneq (,$(strip $(ENABLE_NLS)))
+#------------------------------------------------------------------[ 1 ]
+ifneq ($(srcdir),.)
+intlall := $(sort\
+    $(foreach E,$(poext),\
+        $(call rwildcard,$(localedir),*$E)\
+))
+else
+$(warning Locale directory is '.'. Deep search for translations disabled.)
+intlall := $(sort\
+    $(foreach E,$(poext),\
+        $(wildcard *$E)\
+))
+endif
+#------------------------------------------------------------------[ 2 ]
+intlall := $(strip $(call filter-ignored,$(intlall)))
+#------------------------------------------------------------------[ 3 ]
+intlobj := \
+$(foreach p,$(intlall),\
+    $(dir $p)LC_MESSAGES/$(notdir $(basename $p))$(firstword $(moext)))
+intlobj := $(strip $(intlobj))
+endif
+
 # Binaries
 # ==========
 # 1) Define all binary names (with extensions if avaiable)
@@ -1138,6 +1238,8 @@ $(if $(strip $(bin) $(sbin) $(libexec)),\
 #------------------------------------------------------------------[ 2 ]
 $(foreach sep,/ .,$(foreach b,$(call not-root,$(binall)),$(or\
     $(eval $b_src  += $(filter $b$(sep)%,$(src))),\
+    $(eval $b_all  += $(sort $(call rfilter,\
+                          $(addprefix %,$($b_src)),$(srcall))))\
     $(eval $b_obj  += $(filter $(objdir)/$b$(sep)%,$(objall))),\
     $(eval $b_aobj += $(filter $(objdir)/$b$(sep)%,$(autoobj))),\
     $(eval $b_lib  += $(foreach d,$(libdir),\
@@ -1152,6 +1254,7 @@ define common-factory
 $(call rfilter-out,$(foreach b,$(call not-root,$(binall)),$($b_$1)),$2)
 endef
 comsrc  := $(call common-factory,src,$(src))
+comall  := $(call common-factory,all,$(srcall))
 comobj  := $(call common-factory,obj,$(objall))
 comlib  := $(call common-factory,lib,$(lib))
 comlink := $(call common-factory,link,$(libname))
@@ -1160,6 +1263,7 @@ comaall := $(call common-factory,aall,$(autoall))
 #------------------------------------------------------------------[ 4 ]
 $(foreach b,$(notdir $(binall)),$(or\
     $(eval $b_src    := $(comsrc)  $($b_src)  ),\
+    $(eval $b_all    := $(comall)  $($b_all)  ),\
     $(eval $b_obj    := $(comobj)  $($b_obj)  ),\
     $(eval $b_lib    := $(comlib)  $($b_lib)  ),\
     $(eval $b_aobj   := $(comaobj) $($b_aobj) ),\
@@ -1175,6 +1279,21 @@ i_lib     := $(addprefix $(i_libdir)/,$(call not-root,$(lib)))
 i_bin     := $(addprefix $(i_bindir)/,$(call not-root,$(bin)))
 i_sbin    := $(addprefix $(i_sbindir)/,$(call not-root,$(sbin)))
 i_libexec := $(addprefix $(i_libexecdir)/,$(call not-root,$(libexec)))
+
+# Internationalization templates
+# ================================
+# 1) intltl:   Template files for executables
+# 2) cppflags: Add definitions for internationalization
+ifneq (,$(strip $(ENABLE_NLS)))
+#------------------------------------------------------------------[ 1 ]
+intltl    := \
+$(foreach b,$(binall),\
+    $(localedir)/$(call not-root,$b)$(firstword $(potext)))
+intltl    := $(strip $(intltl))
+#------------------------------------------------------------------[ 2 ]
+cppflags  += -D ENABLE_NLS -D PACKAGE=\"$(PROJECT)\" \
+             -D LOCALEDIR=\"$(i_localedir)\"
+endif
 
 # Automated tests
 # =================
@@ -1295,7 +1414,7 @@ nothing:
 ########################################################################
 
 external_dependency := \
-	GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
+    GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
 
 .PHONY: sync
 sync: externaldep
@@ -1310,8 +1429,8 @@ deploy: externaldep
 ########################################################################
 
 upgrade_dependency := \
-	CURL     => $(firstword $(MAKEFILE_LIST)),\
-	GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
+    CURL     => $(firstword $(MAKEFILE_LIST)),\
+    GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
 
 .PHONY: upgrade
 upgrade: upgradedep
@@ -1324,7 +1443,7 @@ upgrade: upgradedep
 ########################################################################
 
 init_dependency := \
-	GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
+    GIT      => $(or $(filter-out undefined,$(origin NO_GIT)),1)
 
 .PHONY: init
 init: initdep
@@ -1340,16 +1459,20 @@ init: initdep
 
 .PHONY: standard
 standard: init
-	$(call mv,$(objext),$(objdir),"object")
-	$(call mv,$(libext),$(firstword $(libdir)),"library")
-	$(call mv,$(docext),$(docdir),"document")
-	$(call mv,$(srpext),$(srpdir),"script")
-	$(call mv,$(dataext),$(datadir),"data")
-	$(call mv,$(incext),$(firstword $(incdir)),"header")
-	$(call mv,$(srcext) $(asmext),$(firstword $(srcdir)),"source")
-	$(call mv,$(lexext) $(lexxext),$(firstword $(srcdir)),"lexer")
-	$(call mv,$(yaccext) $(yaxxext),$(firstword $(srcdir)),"parser")
-	$(call mv,$(esqlext),$(firstword $(srcdir)),"embedded SQL")
+	$(call mv,$(objext), $(objdir),   "object")
+	$(call mv,$(libext), $(libdir),   "library")
+	$(call mv,$(docext), $(docdir),   "document")
+	$(call mv,$(srpext), $(srpdir),   "script")
+	$(call mv,$(dataext),$(datadir),  "data")
+	$(call mv,$(potext), $(localedir),"portable object template")
+	$(call mv,$(poext),  $(localedir),"portable object")
+	$(call mv,$(moext),  $(localedir),"machine object")
+	$(call mv,$(incext), $(incdir),   "header")
+	$(call mv,$(asmext), $(srcdir),   "assembly")
+	$(call mv,$(srcext), $(srcdir),   "source")
+	$(call mv,$(esqlext),$(srcdir),   "embedded SQL")
+	$(call mv,$(lexext)  $(lexxext),$(srcdir),"lexer")
+	$(call mv,$(yaccext) $(yaxxext),$(srcdir),"parser")
 
 ########################################################################
 ##                               TAGS                                 ##
@@ -1371,6 +1494,19 @@ etags: $(incall) $(srcall)
 	$(call phony-status,$(MSG_ETAGS))
 	$(quiet) $(ETAGS) $(ETAGSFLAGS) $^ -o $@ $(ERROR)
 	$(call phony-ok,$(MSG_ETAGS))
+
+########################################################################
+##                        INTERNATIONALIZATION                        ##
+########################################################################
+
+translation_dependency := \
+    XGETTEXT => $(intltl),\
+    MSGINIT  => $(intlall),\
+    MSGMERGE => $(intlall),\
+    MSGFMT   => $(intlobj)
+
+.PHONY: translation
+translation: translationdep $(intltl) $(intlobj)
 
 ########################################################################
 ##                          DOCUMENTATION                             ##
@@ -1434,23 +1570,20 @@ endif # ifneq($(strip $(doxyfile)),) ####
 ########################################################################
 
 dist_dependency := \
-    TAR   => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
-             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
-    ZIP   => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
-             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
-    GZIP  => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
-             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir),\
-    BZIP2 => Makefile $(make_configs) $(srcdir) $(incdir) $(datadir)\
-             $(docdir) $(if $(strip $(lib)),$(libdir)) $(bindir)
+    ZIP   => $(call rfilter,%-zip,$(MAKECMDGOALS)),\
+    TAR   => $(call rfilter,package dist tar,$(MAKECMDGOALS))\
+             $(call rfilter,dist-tar% package-tar%,$(MAKECMDGOALS)),\
+    GZIP  => $(call rfilter,dist-%gz package-tar%gz, $(MAKECMDGOALS)),\
+    BZIP2 => $(call rfilter,dist-%bz2 package-tar%bz2, $(MAKECMDGOALS))
 
 .PHONY: package
-package: distdep package-tar.gz
+package: package-tar.gz
 
 .PHONY: dist
-dist: distdep dist-tar.gz
+dist: dist-tar.gz
 
 .PHONY: tar
-tar: distdep dist-tar
+tar: dist-tar
 
 ########################################################################
 ##                          DEBIAN PACKAGE                            ##
@@ -1561,7 +1694,7 @@ install_dependency := \
     INSTALL_PROGRAM => $(i_bin) $(i_sbin) $(i_libexec)
 
 .PHONY: install-strip
-install-strip: installdep 
+install-strip: installdep
 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
 
 .PHONY: install
@@ -1660,7 +1793,8 @@ $$(depdir)/$1dep: $$(call cdr,$$(MAKEFILE_LIST)) | $$(depdir)
 	$$(quiet) touch $$@
 	$$(call phony-ok,$$(MSG_DEP_ALL))
 endef
-$(foreach d,build external upgrade init tags docs dist dpkg install,\
+$(foreach d,build external upgrade init tags \
+            translation docs dist dpkg install,\
     $(eval $(call system-dependency,$d,$d_dependency)))
 
 #======================================================================#
@@ -1690,9 +1824,9 @@ $$(depdir)/$$(strip $1)dep: $$(extdir)/$$(strip $1) $$(externreq)
 	$$(call ok,$$(MSG_MAKE_DEP))
 endef
 $(foreach d,$(call hash-table.keys,git_dependency),$(eval\
-	$(call extern-dependency,$d,git-clone,$(git_dependency.$d))))
+    $(call extern-dependency,$d,git-clone,$(git_dependency.$d))))
 $(foreach d,$(call hash-table.keys,web_dependency),$(eval\
-	$(call extern-dependency,$d,web-clone,$(web_dependency.$d))))
+    $(call extern-dependency,$d,web-clone,$(web_dependency.$d))))
 
 #======================================================================#
 # Function: scanner-factory                                            #
@@ -1799,7 +1933,8 @@ $$(objdir)/$3%$$(firstword $$(objext)): $2%$1 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call c-depend,$$<,$$@,$3$$*)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(AS) $$(ASMFLAGS) $$< -o $$@ $$(ERROR)
+	$$(quiet) $$(AS) $$(cppflags) $$(asflags) $$(aslibs) \
+                     $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_ASM_COMPILE),$$@)
 endef
@@ -1822,7 +1957,8 @@ $$(objdir)/$3%$$(firstword $$(objext)): $2%$1 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call c-depend,$$<,$$@,$3$$*)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(CC) $$(cflags) $$(clibs) -c $$< -o $$@ $$(ERROR)
+	$$(quiet) $$(CC) $$(cppflags) $$(cflags) $$(clibs) \
+                     -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_C_COMPILE),$$@)
 endef
@@ -1846,7 +1982,8 @@ $$(objdir)/$3%$$(firstword $$(objext)): $2%$1 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call cpp-depend,$$<,$$@,$3$$*)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(CXX) $$(cxxlibs) $$(cxxflags) -c $$< -o $$@ $$(ERROR)
+	$$(quiet) $$(CXX) $$(cppflags) $$(cxxlibs) $$(cxxflags) \
+                      -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_CXX_COMPILE),$$@)
 endef
@@ -1870,7 +2007,8 @@ $$(objdir)/$3%$$(firstword $$(objext)): $2%$1 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call fortran-depend,$$<,$$@,$3$$*)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(FC) $$(fflags) $$(flibs) -c $$< -o $$@ $$(ERROR)
+	$$(quiet) $$(FC) $$(cppflags) $$(fflags) $$(flibs) \
+                     -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_F_COMPILE),$$@)
 endef
@@ -1898,7 +2036,8 @@ $$(objdir)/$2$$(firstword $$(objext)): $1$2$3 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call c-depend,$$<,$$@,$2)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(CC) -fPIC $$(clibs) $$(cflags) -c $$< -o $$@ $$(ERROR)
+	$$(quiet) $$(CC) -fPIC $$(cppflags) $$(clibs) $$(cflags) \
+                     -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_C_LIBCOMP),$$@)
 endef
@@ -1919,8 +2058,8 @@ $$(objdir)/$2$$(firstword $$(objext)): $1$2$3 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call cpp-depend,$$<,$$@,$2)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(CXX) -fPIC $$(cxxlibs) $$(cxxflags) -c $$< -o $$@ \
-              $$(ERROR)
+	$$(quiet) $$(CXX) -fPIC $$(cppflags) $$(cxxlibs) $$(cxxflags) \
+                      -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_CXX_LIBCOMP),$$@)
 endef
@@ -1941,8 +2080,8 @@ $$(objdir)/$2$$(firstword $$(objext)): $1$2$3 | $$(depdir)
 	$$(quiet) $$(call mksubdir,$$(depdir),$$@)
 	$$(quiet) $$(call fortran-depend,$$<,$$@,$2)
 	$$(quiet) $$(call mksubdir,$$(objdir),$$@)
-	$$(quiet) $$(FC) -fPIC $$(flibs) $$(fflags) -c $$< -o $$@ \
-              $$(ERROR)
+	$$(quiet) $$(FC) -fPIC $$(cppflags) $$(flibs) $$(fflags) \
+                     -c $$< -o $$@ $$(ERROR)
 	
 	$$(call ok,$$(MSG_F_LIBCOMP),$$@)
 endef
@@ -2046,6 +2185,57 @@ $(foreach b,$(binall),$(eval\
         $(if $($(strip $(call not-root,$b))_is_cxx),$(CXX),$(CXX)\
     ))),\
 )))
+
+#======================================================================#
+# Function: intl-template-factory                                      #
+# @param  $1 Locale root directory                                     #
+# @param  $1 Binary name witout root dir                               #
+# @return Target to generate template translations for translators     #
+#======================================================================#
+ifneq (,$(strip $(ENABLE_NLS)))
+define intl-template-factory
+$1/$2$$(firstword $$(potext)): $$($2_all) | $1
+	$$(call status,$$(MSG_INTL_TEMPLATE))
+	$$(quiet) $$(call mksubdir,$1,$$@)
+	$$(quiet) $$(XGETTEXT)\
+              --copyright-holder=$(subst $(space),\$(space),$(COPYRIGHT))\
+              --msgid-bugs-address=$(MAINTEINER_MAIL)\
+              --package-name=$(subst $(space),\$(space),$(PROJECT))\
+              --package-version=$(VERSION)\
+              -d $2 -k_ -kN_ -s $$^ -o $$@
+	$$(call ok,$$(MSG_INTL_TEMPLATE),$$@)
+endef
+$(foreach b,$(binall),$(eval\
+    $(call intl-template-factory,$(strip\
+        $(localedir)),$(call not-root,$(basename $b)))))
+endif
+
+#======================================================================#
+# Function: intl-translate-factory                                     #
+# @param  $1 Locale root directory                                     #
+# @param  $1 Binary name witout root dir                               #
+# @return Target to generate machine objects to be used by binaries    #
+#======================================================================#
+ifneq (,$(strip $(ENABLE_NLS)))
+define intl-translate-factory
+$1/%/$2$$(firstword $$(poext)): $1/$2$$(firstword $$(potext))
+	$$(call phony-status,$$(MSG_INTL_PORTABLE))
+	$$(quiet) $$(call mksubdir,$1,$$@)
+	$$(quiet) $$(if $$(strip $$(wildcard $$@)),\
+                  $$(MSGMERGE) $$@ $$< -o $$@ $$(ERROR),\
+                  $$(MSGINIT)  -l $$* -i $$< -o $$@ $$(ERROR))
+	$$(call phony-ok,$$(MSG_INTL_PORTABLE),$$@)
+
+$1/%/LC_MESSAGES/$2$$(firstword $$(moext)): $1/%/$2$$(firstword $$(poext))
+	$$(call status,$$(MSG_INTL_MACHINE))
+	$$(quiet) $$(call mksubdir,$1,$$@)
+	$$(quiet) $$(MSGFMT) $$< -o $$@ $$(ERROR)
+	$$(call ok,$$(MSG_INTL_MACHINE),$$@)
+endef
+$(foreach t,$(intltl),$(eval\
+    $(call intl-translate-factory,$(strip \
+        $(localedir)),$(call not-root,$(basename $t)))))
+endif
 
 #======================================================================#
 # Function: texinfo-factory                                            #
@@ -2161,7 +2351,7 @@ define packsyst-factory
         $$(strip $$(foreach f,$$(dirs),$$(or \
             $$(strip $$(call rwildcard,$$f,*)),\
             $$(strip $$(wildcard $$f*))) )))
-%.$1: $$(binall)
+%.$1: distdep $$(binall)
 	$$(call mkdir,$$(dir $$@))
 	$$(quiet) $$(MKDIR) $$(packdir)
 	$$(quiet) $$(CP) $$(clndirs) $$(packdir)
@@ -2251,6 +2441,15 @@ distclean: clean
         $(filter $(firstword $(libdir))/%,$(lib))\
     )
 
+ifneq (,$(strip $(ENABLE_NLS)))
+.PHONY: translationclean
+translationclean:
+	$(call rm-if-exists,$(intltl),$(MSG_INTLTL_NONE))
+	$(call rm-if-exists,$(intlall),$(MSG_INTLALL_NONE))
+	$(call rm-if-exists,$(intlobj),$(MSG_INTLOBJ_NONE))
+	$(call rm-if-empty,$(localedir))
+endif
+
 .PHONY: docclean
 docclean:
 	$(call rm-if-empty,$(docdir)/doxygen)
@@ -2274,7 +2473,8 @@ realclean:
 	@echo $(MSG_WARNCLEAN_END)
 	@echo $(MSG_WARNCLEAN_ALT)
 else
-realclean: distclean docclean packageclean
+realclean: distclean docclean packageclean \
+           $(if $(ENABLE_NLS),translationclean)
 	$(call rm-if-exists,$(lexall),$(MSG_LEX_NONE))
 	$(foreach d,$(lexinc),$(call rm-if-empty,$d)$(newline))
 	$(call rm-if-exists,$(yaccall),$(MSG_YACC_NONE))
@@ -2412,6 +2612,15 @@ MSG_CTAGS_NONE    = "${PURPLE}No auto-generated tags for Vi${RES}"
 MSG_ETAGS         = "${BLUE}Creating tags for ${YELLOW}Emacs${RES}"
 MSG_ETAGS_NONE    = "${PURPLE}No auto-generated tags for Emacs${RES}"
 
+MSG_INTL_TEMPLATE = "${DEF}Generating template ${GREEN}$@${RES}"
+MSG_INTL_PORTABLE = "${DEF}Generating file for ${BLUE}$*${DEF}"\
+                    "translation from ${GREEN}$<${RES}"
+MSG_INTL_MACHINE  = "${DEF}Generating machine translation for"\
+                    "${GREEN}$(notdir $(basename $@))${RES}"
+MSG_INTLTL_NONE   = "${PURPLE}No translation templates${RES}"
+MSG_INTLALL_NONE  = "${PURPLE}No translation portable objects${RES}"
+MSG_INTLOBJ_NONE  = "${PURPLE}No translation machine objects${RES}"
+
 MSG_TEXI_FILE     = "${DEF}Generating $1 file ${WHITE}$@${RES}"
 MSG_TEXI_DOCS     = "${BLUE}Generating docs in ${WHITE}$@${RES}"
 
@@ -2497,27 +2706,18 @@ endef
 # @param $3 Dependency file name
 
 define c-depend
-$(CC) -MM                     \
-    -MF $(depdir)/$3$(depext) \
-    -MP -MT $2                \
-    $(clibs) $(cflags)        \
-    $1
+$(CC) -MM -MF $(depdir)/$3$(depext) -MP -MT $2 \
+      $(cppflags) $(clibs) $(cflags) $1
 endef
 
 define cpp-depend
-$(CXX) -MM                    \
-    -MF $(depdir)/$3$(depext) \
-    -MP -MT $2                \
-    $(cxxlibs) $(cxxflags)    \
-    $1
+$(CXX) -MM -MF $(depdir)/$3$(depext) -MP -MT $2 \
+       $(cppflags) $(cxxlibs) $(cxxflags) $1
 endef
 
 define fortran-depend
-$(FC) -MM                     \
-    -MF $(depdir)/$3$(depext) \
-    -MP -MT $2                \
-    $(flibs) $(fflags)        \
-    $1
+$(FC) -MM -MF $(depdir)/$3$(depext) -MP -MT $2 \
+      $(cppflags) $(flibs) $(fflags) $1
 endef
 
 ## DIRECTORIES #########################################################
@@ -2525,6 +2725,9 @@ $(sort $(bindir) $(sbindir) $(execdir) ):
 	$(call mkdir,$@)
 
 $(sort $(objdir) $(depdir) $(libdir) $(extdir) $(docdir) $(debdir) ):
+	$(call mkdir,$@)
+
+$(sort $(srpdir) $(datadir) $(localedir) ):
 	$(call mkdir,$@)
 
 define mkdir
@@ -2637,7 +2840,7 @@ endef
 #======================================================================#
 define rm-if-exists
 $(if $(wildcard $1),\
-    $(call rm,$1),$(if $(strip $2),$(call phony-ok,$2)))
+    $(call rm,$1),$(if $(strip $2),$(call phony-ok,$(strip $2))))
 endef
 
 ## STATUS ##############################################################
@@ -2938,11 +3141,12 @@ override CXX_MAIN      := $(strip $(basename $(notdir $(CXX_MAIN))))
 override TEMPLATE      := $(strip $(basename $(notdir $(TEMPLATE))))
 override C_MODULE      := $(strip $(basename $(notdir $(C_MODULE))))
 override CXX_MODULE    := $(strip $(basename $(notdir $(CXX_MODULE))))
+override TRANSLATION   := $(strip $(basename $(notdir $(TRANSLATION))))
 
 # Check if there is at least one artifact to be created/deleted
 $(if $(or $(NAMESPACE),$(NMS_HEADER),$(LIBRARY),$(LIB_HEADER),\
      $(CLASS),$(F_FILE),$(C_FILE),$(CXX_FILE),$(C_MAIN),$(CXX_MAIN),\
-     $(TEMPLATE),$(C_MODULE),$(CXX_MODULE)),,\
+     $(TEMPLATE),$(C_MODULE),$(CXX_MODULE),$(TRANSLATION)),,\
      $(error No filetype defined. Type 'make projecthelp' for info))
 
 .PHONY: new
@@ -3195,6 +3399,12 @@ ifdef CXX_MODULE
 	
 	$(call mkdir,$(srcbase)/$(CXX_MODULE))
 endif
+ifneq (,$(strip $(ENABLE_NLS)))
+ifdef TRANSLATION
+new: $(foreach t,$(intltl),$(foreach e,$(firstword $(poext)),\
+        $(localedir)/$(TRANSLATION)$d/$(call not-root,$(basename $t))$e))
+endif
+endif
 
 .PHONY: update
 update:
@@ -3288,12 +3498,25 @@ ifdef CXX_MODULE
 	$(call delete-file,$(incbase)/$(CXX_MODULE),$(INC_EXT) $(hxxext))
 	$(call rm-if-empty,$(srcbase)/$(CXX_MODULE))
 endif
+ifneq (,$(strip $(ENABLE_NLS)))
+ifdef TRANSLATION
+delete: r := $(localedir)
+delete: d := $(TRANSLATION)
+delete:
+	$(foreach t,$(intltl),$(call delete-file,\
+        $r/$d/$(call not-root,$(basename $b)),$(poext)))
+	$(foreach t,$(intltl),$(call delete-file,\
+        $r/$d/LC_MESSAGES/$(call not-root,$b),$(moext)))
+	$(call rm-if-empty,$r/$d/LC_MESSAGES)
+	$(call rm-if-empty,$r/$d)
 endif
+endif
+endif # Check if D was defined
 
 endif # Check if one goal is 'new' or 'delete'
 
 ########################################################################
-##                         HELP AND CONFIGS                           ##
+##                         CONFIGURATION FILES                        ##
 ########################################################################
 
 .PHONY: config
@@ -3322,6 +3545,7 @@ config:
 	@echo "# SHRLIB   := # dir, all source files will make the library."
 	@echo ""
 	@echo "# Flags"
+	@echo "# CPPFLAGS := # Precompiler Flags"
 	@echo "# ASFLAGS  := # Assembly Flags"
 	@echo "# CFLAGS   := # C Flags"
 	@echo "# CXXFLAGS := # C++ Flags"
@@ -3341,6 +3565,7 @@ config:
 	@echo "# Package info"
 	@echo "# MAINTEINER_NAME := # Your name"
 	@echo "# MAINTEINER_MAIL := # your_name@mail.com"
+	@echo "# COPYRIGHT       := # Copyright Holder"
 	@echo "# SYNOPSIS        := # One-line description of the program"
 	@echo "# DESCRIPTION     := # Longer description of the program"
 	@echo ""
@@ -3385,6 +3610,38 @@ gitignore:
 	@$(if $(strip $(doxyfile)),echo $(docdir)/$(doxyfile).mk)
 	@$(foreach e,$(depext),echo *$e; )
 	@echo ""
+
+########################################################################
+##                         INFORMATION TARGETS                        ##
+########################################################################
+
+define statistic-count
+$(words $1) $(if $(call ne,$(words $1),0),$(strip \
+    $(foreach n,$(call rcar,$(call rcdr,$(shell wc -l $1))),$(strip \
+        $(if $(call eq,1,$n),($n line),($n lines))\
+))))
+endef
+
+.PHONY: statistics
+statistics:
+	@echo "                                                            "
+	@echo "$(PROJECT)-$(VERSION)                                       "
+	@echo "=============================                               "
+	@echo "                                                            "
+	@echo "C            : $(call statistic-count,$(c_all))             "
+	@echo "C++          : $(call statistic-count,$(cxx_all))           "
+	@echo "Fortran      : $(call statistic-count,$(f_all))             "
+	@echo "Assembly     : $(call statistic-count,$(asmall))            "
+	@echo "Headers      : $(call statistic-count,$(incall))            "
+	@echo "Lexers       : $(call statistic-count,$(alllexer))          "
+	@echo "Parsers      : $(call statistic-count,$(allparser))         "
+	@echo "Embedded SQL : $(call statistic-count,$(cesql))             "
+	@echo "Tests        : $(call statistic-count,$(testall))           "
+	@echo "-----------------------------------                         "
+	@echo "Total        :"\
+          "$(call statistic-count,$(srcall) $(asmall) $(incall)        \
+           $(alllexer) $(allparser) $(cesql) $(testall))               "
+	@echo "                                                            "
 
 .PHONY: help
 help:
@@ -3468,6 +3725,7 @@ projecthelp:
 	@echo " * INC_EXT:      Include extension for files made by 'new'  "
 	@echo " * SRC_EXT:      Source extension for files made by 'new'   "
 	@echo " * NO_COLORS:    Outputs are made without any color         "
+	@echo " * ENABLE_NLS:   Allows internationalization                "
 	@echo "                                                            "
 	@echo "Management flags                                            "
 	@echo "-----------------                                           "
@@ -3498,10 +3756,10 @@ endef
 .PHONY: dump
 dump:
 ifdef VAR ####
-	@echo "${YELLOW}"$(VAR)"${RES}"\
-          $(if $(strip $(filter undefined,$(origin $($(VAR))))),\
+	@echo "${YELLOW}$(VAR):${RES}"\
+          $(if $(strip $(filter undefined,$(origin $(VAR)))),\
               "${RED}Undefined${RES}",\
-              "$(or $(strip $($(VAR)),${RED}Empty${RES}))")
+              "$(or $(strip $($(VAR))),${RED}Empty${RES})")
 else
 	@echo "${WHITE}\nCONFIGURATION           ${RES}"
 	@echo "----------------------------------------"
