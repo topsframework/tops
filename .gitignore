@@ -12,6 +12,7 @@ dist/
 
 # Objects, Libraries and Binaries
 #==================================
+*.mo
 *.o
 *.a
 *.dll
