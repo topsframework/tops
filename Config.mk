@@ -1,48 +1,41 @@
 
-############################################################
-##     UNCOMMENT ANY TARGET TO OVERWRITE THE DEFAULT!     ##
-############################################################
+########################################################################
+##                     ToPS Makefile Configuration                    ##
+########################################################################
+
+# Project settings
+# ==================
+PROJECT         := ToPS
+VERSION         := 2.0.0
+GIT_REMOTE      := git@bitbucket.org:igorbonadio/topspp.git
 
 # Project info
 # ===============
-# PROJECT         := # Project name (def: Default)
-# VERSION         := # Version (def: 1.0)
-# GIT_REMOTE      := # Remote path for git repository
-# MAINTEINER_NAME := # Your name
-# MAINTEINER_MAIL := # your_name@mail.com
-# COPYRIGHT       := # Copyright Holder
-# SYNOPSIS        := # One-line description of the program
-# DESCRIPTION     := # Longer description of the program
+COPYRIGHT       := ToPS
+MAINTEINER_NAME := Renato Cordeiro Ferreira,\
+                   Ígor Bonadio
+MAINTEINER_MAIL := renatocordeiroferreira@gmail.com,\
+                   igorbonadio@gmail.com
+SYNOPSIS        := Toolkit of Probabilistic Sequences (ToPS)
+DESCRIPTION     := ToPS is an objected-oriented framework that  \
+                   facilitates the integration of probabilistic \
+                   models for sequences over a user defined alphabet.
 
 # Program settings
 # ==================
-# BIN             := # Binaries' names. If a subdir of any
-                     # src dir has the same name of this bin
-                     # it and all its subdir will be compiled
-                     # only for this specific binary
-# ARLIB           := # Static/Shared libraries' names. If
-# SHRLIB          := # one is a dir, all srcs within will
-                     # make the lib
+BIN      := Hello
+TESTBIN  := test
 
 # Dependencies
 # ==============
-# GIT_DEPENDENCY  := # List of git dependencies in the format
-                     # DEP_NAME => dep_path                  
-# WEB_DEPENDENCY  := # Same as above, but for URL downloads  
-                     # with 'curl -o' (default) or 'wget -O' 
+GIT_DEPENDENCY := \
+    gmock       => http://git.chromium.org/external/googlemock.git\
+                   cd make && make gmock.a && mv gmock.a libgmock.a,\
+    gmock/gtest => http://git.chromium.org/external/googletest.git\
+                   cd make && make gtest.a && mv gtest.a libgtest.a
 
 # Flags
 # =======
-# CPPFLAGS        := # Precompiler Flags
-# ASFLAGS         := # Assembly Flags
-# CFLAGS          := # C Flags
-# CXXFLAGS        := # C++ Flags
-# LDFLAGS         := # Linker flags
-
-# Documentation
-# ===============
-# LICENSE         := # File with a License (def: LICENSE)
-# NOTICE          := # Notice of the License, to be put in 
-#                    # the top of any file (def: NOTICE).
-# DOXYFILE        := # Dxygen config file (def: Doxyfile)
-
+CXXFLAGS += -ansi -Wall -pedantic -O2 -std=c++11 -pthread
+LDFLAGS  := -pthread -lgmock -lgtest
+LDLIBS   := -L external/gmock/gtest/make/ -L external/gmock/make/ 
