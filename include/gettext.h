@@ -17,23 +17,24 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Default libraries
-#include <iostream>
-using namespace std;
-
-// I18n library
-#include "gettext.h"
-
-int main(int argc, char **argv)
-{
-    setlocale(LC_ALL, "");
+#ifndef H_GETTEXT_DEFINED
+#define H_GETTEXT_DEFINED
 
 #ifdef ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "utf-8");
-    textdomain(PACKAGE);
+
+/* I18n libraries */
+#include <libintl.h>
+#define _(String) gettext (String)
+#define gettext_noop(String) String
+#define N_(String) gettext_noop (String)
+
+#else
+
+/* I18n libraries */
+#define _(String) String
+#define gettext_noop(String) String
+#define N_(String) gettext_noop (String)
+
 #endif
-    
-    std::cout << _("Hello, World!") << std::endl;
-    return 0;
-}
+
+#endif
