@@ -1,3 +1,6 @@
 [submodule "make"]
 	path = make
 	url = git@github.com:renatocf/make.git
+[submodule "external/gmock"]
+	path = external/gmock
+	url = http://git.chromium.org/external/googlemock.git
