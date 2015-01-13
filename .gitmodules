@@ -9,4 +9,4 @@
 	url = http://git.chromium.org/external/googletest.git
 [submodule "external/tops"]
 	path = external/tops
-	url = https://github.com/ayoshiaki/tops.git
+	url = https://github.com/igorbonadio/tops.git
