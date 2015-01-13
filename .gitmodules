@@ -4,9 +4,12 @@
 [submodule "external/gmock"]
 	path = external/gmock
 	url = http://git.chromium.org/external/googlemock.git
+    ignore = dirty
 [submodule "external/gtest"]
 	path = external/gtest
 	url = http://git.chromium.org/external/googletest.git
+    ignore = dirty
 [submodule "external/tops"]
 	path = external/tops
 	url = https://github.com/ayoshiaki/tops.git
+    ignore = dirty
