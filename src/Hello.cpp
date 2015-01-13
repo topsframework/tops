@@ -19,21 +19,14 @@
 
 // Default libraries
 #include <iostream>
-using namespace std;
 
-// I18n library
-#include "gettext.h"
+#include "src/Alphabet.hpp"
+
+using namespace std;
 
 int main(int argc, char **argv)
 {
-    setlocale(LC_ALL, "");
-
-#ifdef ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "utf-8");
-    textdomain(PACKAGE);
-#endif
-    
-    std::cout << _("Hello, World!") << std::endl;
+	auto alphabet = tops::AlphabetPtr(new tops::Alphabet());
+    std::cout << "Hello, World!" << alphabet->size() <<std::endl;
     return 0;
 }
