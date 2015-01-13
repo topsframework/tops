@@ -28,8 +28,9 @@ TESTBIN         := test
 
 # Dependencies
 # ==============
-GIT_DEPENDENCY  := tops 	=> https://github.com/ayoshiaki/tops.git \
-							make build && cd build && cmake .. && make
+GIT_DEPENDENCY  := \
+    tops => https://github.com/ayoshiaki/tops.git \
+            mkdir build && cd build && cmake .. && make
 							
 WEB_DEPENDENCY  := # Same as above, but for URL downloads  
                    # with 'curl -o' (default) or 'wget -O' 
@@ -39,14 +40,16 @@ WEB_DEPENDENCY  := # Same as above, but for URL downloads
 ASLIBS          := # Assembly paths
 CLIBS           := # C paths
 CXXLIBS         := # C++ paths
-LDLIBS          := -L external/tops/build/src # -L /usr/local/Cellar/boost/1.57.0/lib
+LDLIBS          := -L external/tops/build/src \
+                 # -L /usr/local/Cellar/boost/1.57.0/lib
 
 # Flags
 # =======
 CPPFLAGS        := # Precompiler Flags
 ASFLAGS         := # Assembly Flags
 CFLAGS          := # C Flags
-CXXFLAGS        := -ansi -Wall -pedantic -O2 -std=c++11 -I external/tops # -I /usr/local/Cellar/boost/1.57.0/include
+CXXFLAGS        := -ansi -Wall -pedantic -O2 -std=c++11 -I external/tops \
+                 # -I /usr/local/Cellar/boost/1.57.0/include
 LDFLAGS         := -lboost_system -lToPS
 
 # Makeball list
