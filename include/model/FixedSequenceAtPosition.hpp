@@ -4,10 +4,10 @@
 #include "ProbabilisticModelDecorator.hpp"
 
 namespace tops {
-    namespace model {
-        class FixedSequenceAtPosition : ProbabilisticModelDecorator {
-        };
-    }
+  namespace model {
+    class FixedSequenceAtPosition : ProbabilisticModelDecorator {
+    };
+  }
 }
 
 #endif

@@ -4,10 +4,10 @@
 #include "DecodableModel.hpp"
 
 namespace tops {
-    namespace model {
-        class GeneralizedHiddenMarkovModel : DecodableModel {
-        };
-    }
+  namespace model {
+    class GeneralizedHiddenMarkovModel : DecodableModel {
+    };
+  }
 }
 
 #endif

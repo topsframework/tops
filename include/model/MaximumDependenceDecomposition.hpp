@@ -4,10 +4,10 @@
 #include "ProbabilisticModel.hpp"
 
 namespace tops {
-    namespace model {
-        class MaximumDependenceDecomposition : public ProbabilisticModel {
-        };
-    }
+  namespace model {
+    class MaximumDependenceDecomposition : public ProbabilisticModel {
+    };
+  }
 }
 
 #endif

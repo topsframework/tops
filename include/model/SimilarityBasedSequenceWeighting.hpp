@@ -4,10 +4,10 @@
 #include "ProbabilisticModel.hpp"
 
 namespace tops {
-    namespace model {
-        class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
-        };
-    }
+  namespace model {
+    class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
+    };
+  }
 }
 
 #endif

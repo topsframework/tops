@@ -4,10 +4,10 @@
 #include "ProbabilisticModelDecorator.hpp"
 
 namespace tops {
-    namespace model {
-        class PhasedRunLengthDistribution : ProbabilisticModelDecorator {
-        };
-    }
+  namespace model {
+    class PhasedRunLengthDistribution : ProbabilisticModelDecorator {
+    };
+  }
 }
 
 #endif

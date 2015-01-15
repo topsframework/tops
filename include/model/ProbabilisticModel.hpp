@@ -7,10 +7,8 @@
 
 namespace tops {
   namespace model {
-
     class ProbabilisticModel {
     public:
-
       // After refactoring, remove topsModel methods!
       void setTopsModel(ProbabilisticModelPtr model) {
         _tops_model = model;

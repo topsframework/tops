@@ -4,10 +4,10 @@
 #include "FactorableModel.hpp"
 
 namespace tops {
-    namespace model {
-        class VariableLengthMarkovChain : FactorableModel {
-        };
-    }
+  namespace model {
+    class VariableLengthMarkovChain : FactorableModel {
+    };
+  }
 }
 
 #endif

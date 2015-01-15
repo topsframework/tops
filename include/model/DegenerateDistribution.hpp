@@ -4,10 +4,10 @@
 #include "DiscreteIIDModel.hpp"
 
 namespace tops {
-    namespace model {
-        class DegenerateDistribution : DiscreteIIDModel {
-        };
-    }
+  namespace model {
+    class DegenerateDistribution : DiscreteIIDModel {
+    };
+  }
 }
 
 #endif

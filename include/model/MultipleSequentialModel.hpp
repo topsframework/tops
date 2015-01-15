@@ -4,10 +4,10 @@
 #include "ProbabilisticModel.hpp"
 
 namespace tops {
-    namespace model {
-        class MultipleSequentialModel : public ProbabilisticModel {
-        };
-    }
+  namespace model {
+    class MultipleSequentialModel : public ProbabilisticModel {
+    };
+  }
 }
 
 #endif

@@ -4,10 +4,10 @@
 #include "InhomogeneousFactorableModel.hpp"
 
 namespace tops {
-    namespace model {
-        class InhomogeneousMarkovChain : InhomogeneousFactorableModel {
-        };
-    }
+  namespace model {
+    class InhomogeneousMarkovChain : InhomogeneousFactorableModel {
+    };
+  }
 }
 
 #endif

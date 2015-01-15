@@ -6,9 +6,9 @@
 #include "Symbol.hpp"
 
 namespace tops {
-    namespace model {
-        typedef std::vector<Symbol> Sequence;
-    }
+  namespace model {
+    typedef std::vector<Symbol> Sequence;
+  }
 }
 
 #endif
