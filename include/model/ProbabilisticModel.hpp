@@ -1,11 +1,11 @@
-#ifndef PROBABILISTIC_MODEL_HPP
-#define PROBABILISTIC_MODEL_HPP
+#ifndef PROBABILISTIC_MODEL_HPP_
+#define PROBABILISTIC_MODEL_HPP_
 
 namespace tops {
-	namespace model {
-		class ProbabilisticModel {
-		};
-	}
+    namespace model {
+        class ProbabilisticModel {
+        };
+    }
 }
 
 #endif
