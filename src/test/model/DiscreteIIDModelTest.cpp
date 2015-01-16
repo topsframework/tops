@@ -12,5 +12,5 @@ protected:
 };
 
 TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(1, Eq(1));
+  ASSERT_THAT(model->alphabetSize(), Eq(3));
 }

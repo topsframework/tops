@@ -11,6 +11,8 @@ namespace tops {
     public:
       DiscreteIIDModel(const std::vector<double> &log_probabilities);
 
+      virtual int alphabetSize();
+
       virtual double choose() const;
       virtual Symbol choosePosition(const Sequence &sequence, unsigned int index) const;
 
