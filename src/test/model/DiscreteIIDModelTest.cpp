@@ -39,3 +39,9 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
     ASSERT_THAT(model->evaluate(data, 0, 5), DoubleEq(result));
   }
 }
+
+TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequencePosition) {
+  ASSERT_THAT(model->evaluatePosition({2, 1, 0}, 0), DoubleEq(log(0.2)));
+  ASSERT_THAT(model->evaluatePosition({2, 1, 0}, 1), DoubleEq(log(0.3)));
+  ASSERT_THAT(model->evaluatePosition({2, 1, 0}, 2), DoubleEq(log(0.5)));
+}
