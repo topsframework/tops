@@ -13,31 +13,31 @@ namespace tops {
         alphabet->createSymbol(std::to_string(p));
       }
       model->setAlphabet(alphabet);
-      setTopsModel(model);
+      _self = model;
     }
 
     int DiscreteIIDModel::alphabetSize() {
-      return getTopsModel()->alphabet()->size();
+      return _self->alphabet()->size();
     }
 
     double DiscreteIIDModel::choose() const {
-      return getTopsModel()->choose();
+      return _self->choose();
     }
 
     Symbol DiscreteIIDModel::choosePosition(const Sequence &sequence, unsigned int index) const {
-      return getTopsModel()->factorable()->choosePosition(sequence, index);
+      return _self->factorable()->choosePosition(sequence, index);
     }
 
     double DiscreteIIDModel::logProbabilityOf(Symbol symbol) {
-      return getTopsModel()->log_probability_of(symbol);
+      return _self->log_probability_of(symbol);
     }
 
     double DiscreteIIDModel::evaluate(const Sequence &sequence, unsigned int begin, unsigned int end) {
-      return getTopsModel()->evaluate(sequence, begin, end);
+      return _self->evaluate(sequence, begin, end);
     }
 
     double DiscreteIIDModel::evaluatePosition(const Sequence &sequence, unsigned int index) const {
-      return getTopsModel()->evaluatePosition(sequence, index);
+      return _self->evaluatePosition(sequence, index);
     }
   }
 }

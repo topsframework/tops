@@ -18,14 +18,14 @@ protected:
 };
 
 TEST_F(AContextTreeNode, ShouldHaveADistribution) {
-  ASSERT_THAT(node->distribution(), Eq(distribution));
+  ASSERT_THAT(node->distribution()->_self, Eq(distribution->_self));
 }
 
 TEST_F(AContextTreeNode, ShouldHaveChildren) {
   auto c0 = node->child(ContextTreeNodePtr(new ContextTreeNode(distribution)), 0);
   auto c1 = node->child(ContextTreeNodePtr(new ContextTreeNode(distribution)), 1);
   auto c2 = node->child(ContextTreeNodePtr(new ContextTreeNode(distribution)), 2);
-  ASSERT_THAT(node->child(0), Eq(c0));
-  ASSERT_THAT(node->child(1), Eq(c1));
-  ASSERT_THAT(node->child(2), Eq(c2));
+  ASSERT_THAT(node->child(0)->_self, Eq(c0->_self));
+  ASSERT_THAT(node->child(1)->_self, Eq(c1->_self));
+  ASSERT_THAT(node->child(2)->_self, Eq(c2->_self));
 }

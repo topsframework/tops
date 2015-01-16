@@ -5,6 +5,8 @@
 
 #include "DiscreteIIDModel.hpp"
 
+#include "src/ContextTree.hpp"
+
 namespace tops {
   namespace model {
     class ContextTreeNode;
@@ -14,13 +16,14 @@ namespace tops {
     public:
       ContextTreeNode(DiscreteIIDModelPtr distribution);
 
+      DiscreteIIDModelPtr distribution(DiscreteIIDModelPtr distribution);
       DiscreteIIDModelPtr distribution();
       
       ContextTreeNodePtr child(ContextTreeNodePtr child, Symbol symbol);
       ContextTreeNodePtr child(Symbol symbol);
-    private:
-      DiscreteIIDModelPtr _distribution;
-      std::vector<ContextTreeNodePtr> _children;
+
+      // After refactoring, remove _self!
+      tops::ContextTreeNodePtr _self;
     };
   }
 }

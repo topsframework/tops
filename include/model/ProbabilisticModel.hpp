@@ -9,16 +9,8 @@ namespace tops {
   namespace model {
     class ProbabilisticModel {
     public:
-      // After refactoring, remove topsModel methods!
-      void setTopsModel(ProbabilisticModelPtr model) {
-        _tops_model = model;
-      }
-
-      tops::ProbabilisticModelPtr getTopsModel() const {
-        return _tops_model;
-      }
-    private:
-      tops::ProbabilisticModelPtr _tops_model;
+      // After refactoring, remove _self!
+      tops::ProbabilisticModelPtr _self;
     };
   }
 }
