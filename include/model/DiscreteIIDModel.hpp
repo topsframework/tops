@@ -7,7 +7,7 @@
 
 namespace tops {
   namespace model {
-    class DiscreteIIDModel : FactorableModel {
+    class DiscreteIIDModel : public FactorableModel {
     public:
       DiscreteIIDModel(const std::vector<double> &log_probabilities);
 
