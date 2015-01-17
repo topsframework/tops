@@ -23,3 +23,6 @@ doc/doxygen/
 doc/Doxyfile.mk
 *.d
 
+# Mac OS X temp files
+#====================
+.DS_Store
