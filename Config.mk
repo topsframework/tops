@@ -23,7 +23,8 @@ DESCRIPTION     := ToPS is an objected-oriented framework that  \
 
 # Program settings
 # ==================
-BIN             := bench
+BIN             :=
+SHRLIB          := model
 TESTBIN         := test
 
 # Dependencies
