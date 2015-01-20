@@ -31,7 +31,7 @@ BENCHBIN        := bench
 # Dependencies
 # ==============
 GIT_DEPENDENCY  := \
-    tops      => https://github.com/ayoshiaki/tops.git \
+    tops      => https://github.com/igorbonadio/tops.git \
                  mkdir -p build && cd build && cmake .. && make
 
 WEB_DEPENDENCY  := # Same as above, but for URL downloads
