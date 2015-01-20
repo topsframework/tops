@@ -30,12 +30,10 @@ TESTBIN         := test
 # ==============
 GIT_DEPENDENCY  := \
     tops      => https://github.com/ayoshiaki/tops.git \
-                 mkdir build && cd build && cmake .. && make
-    benchmark => https://github.com/google/benchmark.git \
-                 mkdir build && cd build && cmake .. && make
-							
-WEB_DEPENDENCY  := # Same as above, but for URL downloads  
-                   # with 'curl -o' (default) or 'wget -O' 
+                 mkdir -p build && cd build && cmake .. && make
+
+WEB_DEPENDENCY  := # Same as above, but for URL downloads
+                   # with 'curl -o' (default) or 'wget -O'
 
 # Paths
 # =======
@@ -43,7 +41,6 @@ ASLIBS          := # Assembly paths
 CLIBS           := # C paths
 CXXLIBS         := # C++ paths
 LDLIBS          := -L external/tops/build/src \
-                   -L external/benchmark/build/src \
                    # -L /usr/local/Cellar/boost/1.57.0/lib
 
 # Flags
@@ -52,10 +49,10 @@ CPPFLAGS        := # Precompiler Flags
 ASFLAGS         := # Assembly Flags
 CFLAGS          := # C Flags
 CXXFLAGS        := -ansi -Wall -pedantic -O2 -std=c++11 -I external/tops \
-                   -I external/benchmark/include \
                    # -I /usr/local/Cellar/boost/1.57.0/include
-LDFLAGS         := -lboost_system -lToPS -lbenchmark
+LDFLAGS         := -lboost_system -lToPS
 
 # Makeball list
 # ===============
 include conf/googletest.mk
+include conf/googlebenchmark.mk
