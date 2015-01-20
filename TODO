@@ -1,6 +1,6 @@
-[Tests]
-  [ ] Test choose methods
-
 [Refactoring]
-  [ ] Remove _self
-  [ ] Modify ContextTree's contructor. It doesn't need the alphabet_size parameter
+    [ ] Remove _self.
+    [ ] Remove 'alphabet_size' param from ContextTree's contructor.
+
+[Tests]
+    [ ] Choose methods to be tested.
