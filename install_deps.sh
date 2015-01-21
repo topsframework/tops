@@ -11,3 +11,9 @@ if [ "$1" == "ubuntu" ]; then
   apt-get install -y libboost-regex-dev
   apt-get install -y cmake
 fi
+
+if [ "$1" == "freebsd" ]; then
+  pkg install -y devel/git
+  pkg install -y devel/boost-all
+  sudo pkg install -y devel/cmake
+fi
