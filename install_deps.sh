@@ -14,6 +14,7 @@ fi
 
 if [ "$1" == "freebsd" ]; then
   pkg install -y devel/git
+  pkg install -y gmake
   pkg install -y devel/boost-all
-  sudo pkg install -y devel/cmake
+  pkg install -y devel/cmake
 fi
