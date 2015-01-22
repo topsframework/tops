@@ -19,6 +19,7 @@ dist/
 
 # Make auxiliars
 #=================
+make.debug
 doc/doxygen/
 doc/Doxyfile.mk
 *.d
