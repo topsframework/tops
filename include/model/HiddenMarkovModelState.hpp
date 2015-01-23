@@ -17,41 +17,31 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "Vertex.hpp"
+#ifndef HIDDEN_MARKOV_MODEL_STATE_HPP_
+#define HIDDEN_MARKOV_MODEL_STATE_HPP_
 
-#include <map>
+#include <memory>
+
+#include "DiscreteIIDModel.hpp"
+
+#include "src/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
 
-Vertex::Vertex(int id): _id(id) {
-}
+class HiddenMarkovModelState {
+ public:
+  HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emission, DiscreteIIDModelPtr transition);
 
-int Vertex::id() {
-  return _id;
-}
+  DiscreteIIDModelPtr emissions();
+  DiscreteIIDModelPtr transitions();
 
-VertexPtr Vertex::connect(VertexPtr vertex) {
-  addNextVertex(vertex);
-  vertex->addPreviousVertex(VertexPtr(this));
-  return vertex;
-}
+  tops::HMMStatePtr _self;
+};
 
-void Vertex::addNextVertex(VertexPtr vertex) {
-  next_vertexes[vertex->id()] = vertex;
-}
-
-void Vertex::addPreviousVertex(VertexPtr vertex) {
-  previous_vertexes[vertex->id()] = vertex;
-}
-
-std::map<int, VertexPtr> Vertex::nextVertexes() {
-  return next_vertexes;
-}
-
-std::map<int, VertexPtr> Vertex::previousVertexes() {
-  return previous_vertexes;
-}
+typedef std::shared_ptr<HiddenMarkovModelState> HiddenMarkovModelStatePtr;
 
 }  // namespace model
 }  // namespace tops
+
+#endif

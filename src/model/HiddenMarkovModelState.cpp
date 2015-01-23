@@ -17,37 +17,29 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef VERTEX_HPP_
-#define VERTEX_HPP_
-
-#include <map>
+#include "HiddenMarkovModelState.hpp"
 
 namespace tops {
 namespace model {
 
-class Vertex;
-typedef std::shared_ptr<Vertex> VertexPtr;
+HiddenMarkovModelState::HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emission, DiscreteIIDModelPtr transition) {
+  _self = tops::HMMStatePtr(new tops::HMMState());
+  _self->setEmissions(boost::static_pointer_cast<tops::DiscreteIIDModel>(emission->_self));
+  _self->setTransition(boost::static_pointer_cast<tops::DiscreteIIDModel>(transition->_self));
+  _self->setId(symbol);
+}
 
-class Vertex {
- public:
-  explicit Vertex(int id);
+DiscreteIIDModelPtr HiddenMarkovModelState::emissions() {
+  auto iid = DiscreteIIDModelPtr(new DiscreteIIDModel({}));
+  iid->_self = _self->emission();
+  return iid;
+}
 
-  int id();
-
-  VertexPtr connect(VertexPtr vertex);
-  void addNextVertex(VertexPtr vertex);
-  void addPreviousVertex(VertexPtr vertex);
-
-  std::map<int, VertexPtr> nextVertexes();
-  std::map<int, VertexPtr> previousVertexes();
-
- private:
-  std::map<int, VertexPtr> next_vertexes;
-  std::map<int, VertexPtr> previous_vertexes;
-  int _id;
-};
+DiscreteIIDModelPtr HiddenMarkovModelState::transitions() {
+  auto iid = DiscreteIIDModelPtr(new DiscreteIIDModel({}));
+  iid->_self = _self->transitions();
+  return iid;
+}
 
 }  // namespace model
 }  // namespace tops
-
-#endif
