@@ -17,6 +17,7 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#include <vector>
 #include <string>
 
 #include "DiscreteIIDModel.hpp"
@@ -24,7 +25,8 @@
 namespace tops {
 namespace model {
 
-DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities) : tops::DiscreteIIDModel(probabilities) {
+DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
+    : tops::DiscreteIIDModel(probabilities) {
   AlphabetPtr alphabet = AlphabetPtr(new Alphabet());
   for (auto p : probabilities)
     alphabet->createSymbol(std::to_string(p));
@@ -35,5 +37,5 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
 
-}
-}
+}  // namespace model
+}  // namespace tops

@@ -35,8 +35,8 @@ class DiscreteIIDModel : public tops::DiscreteIIDModel {
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
 
  private:
-  DiscreteIIDModel(std::vector<double> probabilities);
+  explicit DiscreteIIDModel(std::vector<double> probabilities);
 };
 
-}
-}
+}  // namespace model
+}  // namespace tops
