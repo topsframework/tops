@@ -17,23 +17,52 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <string>
+#include <math.h>
+#include <vector>
+
+#include "gmock/gmock.h"
 
 #include "DiscreteIIDModel.hpp"
 
-namespace tops {
-namespace model {
+using ::testing::Eq;
+using ::testing::DoubleEq;
 
-DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities) : tops::DiscreteIIDModel(probabilities) {
-  AlphabetPtr alphabet = AlphabetPtr(new Alphabet());
-  for (auto p : probabilities)
-    alphabet->createSymbol(std::to_string(p));
-  setAlphabet(alphabet);
+using tops::model::DiscreteIIDModel;
+using tops::model::DiscreteIIDModelPtr;
+using tops::model::Sequence;
+
+class ADiscreteIIDModel : public testing::Test {
+ protected:
+  DiscreteIIDModelPtr iid = DiscreteIIDModel::make({0.5, 0.3, 0.2});
+};
+
+TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
+  ASSERT_THAT(iid->alphabet()->size(), Eq(3));
 }
 
-DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
-  return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
+TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASingleSymbol) {
+  ASSERT_THAT(iid->log_probability_of(0), DoubleEq(log(0.5)));
+  ASSERT_THAT(iid->log_probability_of(1), DoubleEq(log(0.3)));
+  ASSERT_THAT(iid->log_probability_of(2), DoubleEq(log(0.2)));
 }
 
+TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
+  std::vector<Sequence> test_data = {
+    {0, 0, 1, 1, 2, 2},
+    {0, 1, 2, 2, 2, 2},
+    {1, 1, 1, 0, 0, 0}
+  };
+  for (auto data : test_data) {
+    double result = 0.0;
+    for (auto symbol : data) {
+      result += iid->log_probability_of(symbol);
+    }
+    ASSERT_THAT(iid->evaluate(data, 0, 5), DoubleEq(result));
+  }
 }
+
+TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequencePosition) {
+  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 0), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 1), DoubleEq(log(0.3)));
+  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 2), DoubleEq(log(0.5)));
 }

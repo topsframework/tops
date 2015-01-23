@@ -18,14 +18,25 @@
 /***********************************************************************/
 
 #include <memory>
+#include <vector>
+
+#include "Sequence.hpp"
 
 #include "src/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
-  class DiscreteIIDModel : public tops::DiscreteIIDModel {
-  };
 
-  typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
+class DiscreteIIDModel;
+typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
+
+class DiscreteIIDModel : public tops::DiscreteIIDModel {
+ public:
+  static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+
+ private:
+  DiscreteIIDModel(std::vector<double> probabilities);
+};
+
 }
 }
