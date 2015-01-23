@@ -20,7 +20,7 @@
 #ifndef VERTEX_HPP_
 #define VERTEX_HPP_
 
-#include <vector>
+#include <map>
 
 namespace tops {
 namespace model {
@@ -30,14 +30,21 @@ typedef std::shared_ptr<Vertex> VertexPtr;
 
 class Vertex {
  public:
+  explicit Vertex(int id);
+
+  int id();
+
   VertexPtr connect(VertexPtr vertex);
   void addNextVertex(VertexPtr vertex);
   void addPreviousVertex(VertexPtr vertex);
-  std::vector<VertexPtr> nextVertexes();
-  std::vector<VertexPtr> previousVertexes();
+
+  std::map<int, VertexPtr> nextVertexes();
+  std::map<int, VertexPtr> previousVertexes();
+
  private:
-  std::vector<VertexPtr> next_vertexes;
-  std::vector<VertexPtr> previous_vertexes;
+  std::map<int, VertexPtr> next_vertexes;
+  std::map<int, VertexPtr> previous_vertexes;
+  int _id;
 };
 
 }  // namespace model

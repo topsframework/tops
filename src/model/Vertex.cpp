@@ -19,10 +19,17 @@
 
 #include "Vertex.hpp"
 
-#include <vector>
+#include <map>
 
 namespace tops {
 namespace model {
+
+Vertex::Vertex(int id): _id(id) {
+}
+
+int Vertex::id() {
+  return _id;
+}
 
 VertexPtr Vertex::connect(VertexPtr vertex) {
   addNextVertex(vertex);
@@ -31,18 +38,18 @@ VertexPtr Vertex::connect(VertexPtr vertex) {
 }
 
 void Vertex::addNextVertex(VertexPtr vertex) {
-  next_vertexes.push_back(vertex);
+  next_vertexes[vertex->id()] = vertex;
 }
 
 void Vertex::addPreviousVertex(VertexPtr vertex) {
-  previous_vertexes.push_back(vertex);
+  previous_vertexes[vertex->id()] = vertex;
 }
 
-std::vector<VertexPtr> Vertex::nextVertexes() {
+std::map<int, VertexPtr> Vertex::nextVertexes() {
   return next_vertexes;
 }
 
-std::vector<VertexPtr> Vertex::previousVertexes() {
+std::map<int, VertexPtr> Vertex::previousVertexes() {
   return previous_vertexes;
 }
 

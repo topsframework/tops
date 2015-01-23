@@ -28,10 +28,10 @@ using tops::model::VertexPtr;
 
 class AVertex : public testing::Test {
  protected:
-  VertexPtr v1 = VertexPtr(new Vertex());
-  VertexPtr v2 = VertexPtr(new Vertex());
-  VertexPtr v3 = VertexPtr(new Vertex());
-  VertexPtr v4 = VertexPtr(new Vertex());
+  VertexPtr v1 = VertexPtr(new Vertex(0));
+  VertexPtr v2 = VertexPtr(new Vertex(1));
+  VertexPtr v3 = VertexPtr(new Vertex(2));
+  VertexPtr v4 = VertexPtr(new Vertex(3));
 
   virtual void SetUp() {
     v1->connect(v1);
