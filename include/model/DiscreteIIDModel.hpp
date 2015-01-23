@@ -17,38 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef DISCRETE_IID_MODEL_HPP_
-#define DISCRETE_IID_MODEL_HPP_
-
 #include <memory>
-#include <vector>
 
-#include "FactorableModel.hpp"
+#include "src/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
+  class DiscreteIIDModel : public tops::DiscreteIIDModel {
+  };
 
-class DiscreteIIDModel : public FactorableModel {
- public:
-  explicit DiscreteIIDModel(const std::vector<double> &probabilities);
-
-  virtual int alphabetSize();
-
-  virtual double choose() const;
-  virtual Symbol choosePosition(const Sequence &sequence,
-                                unsigned int index) const;
-
-  virtual double logProbabilityOf(Symbol symbol);
-  virtual double evaluate(const Sequence &sequence,
-                          unsigned int begin,
-                          unsigned int end);
-  virtual double evaluatePosition(const Sequence &sequence,
-                                  unsigned int index) const;
-};
-
-typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
-
-}  // namespace model
-}  // namespace tops
-
-#endif
+  typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
+}
+}

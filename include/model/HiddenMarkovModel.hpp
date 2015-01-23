@@ -17,18 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef HIDDEN_MARKOV_MODEL_HPP_
-#define HIDDEN_MARKOV_MODEL_HPP_
+#include <memory>
 
-#include "DecodableModel.hpp"
+#include "src/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
+  class HiddenMarkovModel : public tops::HiddenMarkovModel {
+  };
 
-class HiddenMarkovModel : DecodableModel {
-};
-
-}  // namespace model
-}  // namespace tops
-
-#endif
+  typedef std::shared_ptr<HiddenMarkovModel> HiddenMarkovModelPtr;
+}
+}

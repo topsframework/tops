@@ -17,27 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef FACTORABLE_MODEL_HPP_
-#define FACTORABLE_MODEL_HPP_
+#include <memory>
 
-#include "ProbabilisticModel.hpp"
+#include "src/FactorableModel.hpp"
 
 namespace tops {
 namespace model {
+  class FactorableModel : public tops::FactorableModel {
+  };
 
-class FactorableModel : public ProbabilisticModel {
-  virtual Symbol choosePosition(const Sequence &sequence,
-                                unsigned int index) const = 0;
-
-  virtual double evaluate(const Sequence &sequence,
-                          unsigned int begin,
-                          unsigned int end) = 0;
-
-  virtual double evaluatePosition(const Sequence &sequence,
-                                  unsigned int index) const = 0;
-};
-
-}  // namespace model
-}  // namespace tops
-
-#endif
+  typedef std::shared_ptr<FactorableModel> FactorableModelPtr;
+}
+}

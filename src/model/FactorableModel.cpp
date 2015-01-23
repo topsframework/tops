@@ -22,5 +22,5 @@
 namespace tops {
 namespace model {
 
-}  // namespace model
-}  // namespace tops
+}
+}
