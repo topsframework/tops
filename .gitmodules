@@ -1,19 +1,19 @@
 [submodule "make"]
-	path = make
-	url = https://github.com/renatocf/make.git
+  path = make
+  url = https://github.com/renatocf/make.git
 [submodule "external/gmock"]
-	path = external/gmock
-	url = http://git.chromium.org/external/googlemock.git
+  path = external/gmock
+  url = http://git.chromium.org/external/googlemock.git
     ignore = dirty
 [submodule "external/gtest"]
-	path = external/gtest
-	url = http://git.chromium.org/external/googletest.git
+  path = external/gtest
+  url = http://git.chromium.org/external/googletest.git
     ignore = dirty
 [submodule "external/tops"]
-	path = external/tops
-	url = https://github.com/igorbonadio/tops.git
+  path = external/tops
+  url = https://github.com/igorbonadio/tops.git
     ignore = dirty
 [submodule "external/gbenchmark"]
-	path = external/gbenchmark
-	url = https://github.com/google/benchmark.git
+  path = external/gbenchmark
+  url = https://github.com/google/benchmark.git
     ignore = dirty
