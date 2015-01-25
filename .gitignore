@@ -8,6 +8,7 @@ bin/
 sbin/
 libexec/
 dist/
+coverage/
 
 # Objects, Libraries and Binaries
 #==================================
