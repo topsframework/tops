@@ -40,7 +40,9 @@ Git Repository
 You can download the development version of ToPS by executing the 
 command below:
 
-git clone https://github.com/ayoshiaki/tops.git 
+```bash
+git clone https://github.com/ayoshiaki/tops.git
+```
 
 Platforms
 =========
@@ -62,23 +64,33 @@ Installing ToPS
 
 1. Download ToPS from GitHub  
 
-   git clone https://github.com/ayoshiaki/tops.git
-   git submodule update --init
+```bash
+git clone https://github.com/ayoshiaki/tops.git
+git submodule update --init
+```
 
    This will create a directory named tops
 
 2. Go to the tops directory:
 
-   cd tops
+```bash
+cd tops
+```
 
 3. Run make
 
-   make
+```bash
+make
+```
 
 5. Run make install
 
-   sudo make install
+```bash
+sudo make install
+```
 
 6. If you are using linux run ldconfig
 
-   sudo ldconfig
+```bash
+sudo ldconfig
+```
