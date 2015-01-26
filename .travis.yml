@@ -23,6 +23,9 @@ install:
   - lcov --version
   - g++ --version
 
+before_script:
+  - git submodule update --init --recursive
+
 script:
   - make test-coverage
 
