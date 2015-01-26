@@ -15,6 +15,7 @@ install:
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
   # install boost for developers
   - sudo apt-get install -qq libboost-all-dev
+  - sudo apt-get install libboost-regex-dev
   # install latest LCOV (1.9 was failing)
   - wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
   - tar xf lcov_1.11.orig.tar.gz
