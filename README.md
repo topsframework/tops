@@ -1,10 +1,8 @@
 ToPS
 ======
 
-[![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)]
-                (https://travis-ci.org/topsframework/tops-refactoring)
-[![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)]
-                   (https://coveralls.io/r/topsframework/tops-refactoring)
+[![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
+[![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
 
 ToPS is an objected-oriented framework implemented using C++ that 
 facilitates the integration of probabilistic models for sequences 
