@@ -13,6 +13,8 @@ install:
   - sudo apt-get -qq install gcc-4.9 g++-4.9
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
+  # install boost for developers
+  - sudo apt-get install -qq libboost-dev
   # install latest LCOV (1.9 was failing)
   - wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
   - tar xf lcov_1.11.orig.tar.gz
@@ -25,5 +27,5 @@ script:
   - make test-coverage
 
 after_success:
-  - coveralls-lcov --repo-token zWBScakuxIG31eWEQfdZz3x9tbMAZnzNd 
+  - coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 
                    coverage/data/test/test.info
