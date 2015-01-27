@@ -26,11 +26,6 @@ samplers, and sequence decoders. Finally, ToPS is an extensible and
 portable system that facilitates the implementation of other 
 probabilistic models, and the development of new programs.
 
-Example of usage is in "example" folder.
-
-Please feel free to contact me if you have any question: 
-André Yoshiaki Kashiwabara <akashiwabara@usp.br>
-
 Documentation
 =============
 
@@ -57,7 +52,7 @@ Software Requirement
 ====================
 
 ToPS was written in C++. It was compiled using the g++ version 4.2.1 
-and it requires
+and it requires:
 
 - Boost C++ Libraries version 1.52
 - Git
@@ -67,33 +62,33 @@ Installing ToPS
 
 1. Download ToPS from GitHub  
 
-```bash
-git clone https://github.com/ayoshiaki/tops.git
-git submodule update --init
-```
+   ```bash
+   git clone https://github.com/ayoshiaki/tops.git
+   git submodule update --init
+   ```
 
    This will create a directory named tops
 
 2. Go to the tops directory:
 
-```bash
-cd tops
-```
+   ```bash
+   cd tops
+   ```
 
 3. Run make
 
-```bash
-make
-```
+   ```bash
+   make
+   ```
 
 5. Run make install
 
-```bash
-sudo make install
-```
+   ```bash
+   sudo make install
+   ```
 
 6. If you are using linux run ldconfig
 
-```bash
-sudo ldconfig
-```
+   ```bash
+   sudo ldconfig
+   ```
