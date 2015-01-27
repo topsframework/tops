@@ -4,9 +4,9 @@ ToPS
 [![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
 [![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
 
-ToPS is an objected-oriented framework implemented using C++ that 
+ToPS is an objected-oriented framework implemented with C++ which 
 facilitates the integration of probabilistic models for sequences 
-over a user defined alphabet. ToPS contains the implementation of 
+over an user defined alphabet. ToPS contains the implementation of 
 eight distinct models to analyze discrete sequences:
 
 1. Independent and identically distributed model
@@ -18,9 +18,9 @@ eight distinct models to analyze discrete sequences:
 7. Similarity Based Sequence Weighting
 8. Generalized Hidden Markov Model (GHMM)
 
-The user can implement models either by manual description of the 
+Users can implement models either by manual description of the 
 probability values in a configuration file, or by using training 
-algorithms provided by the system. The ToPS framework also includes 
+algorithms provided by the system. ToPS framework also includes 
 a set of programs that implement bayesian classifiers, sequence 
 samplers, and sequence decoders. Finally, ToPS is an extensible and 
 portable system that facilitates the implementation of other 
@@ -46,7 +46,7 @@ Platforms
 =========
 
 ToPS was designed to run on Unix/Linux operating systems. 
-Tested platforms include: MacOS X, and Ubuntu linux.
+Tested platforms include: MacOS X and Ubuntu Linux.
 
 Software Requirement
 ====================
