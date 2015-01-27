@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_SEQUENCE_
+#define TOPS_MODEL_SEQUENCE_
+
 #include <memory>
 #include <vector>
 
@@ -31,3 +34,5 @@ typedef std::vector<int> Sequence;
 
 }
 }
+
+#endif  // TOPS_MODEL_SEQUENCE_

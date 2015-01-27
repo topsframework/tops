@@ -17,15 +17,30 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_
+#define TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_
+
 #include <memory>
+#include <vector>
+
+#include "VariableLengthMarkovChain.hpp"
 
 #include "src/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
-  class InhomogeneousMarkovChain : public tops::InhomogeneousMarkovChain {
-  };
 
-  typedef std::shared_ptr<InhomogeneousMarkovChain> InhomogeneousMarkovChainPtr;
+class InhomogeneousMarkovChain;
+typedef std::shared_ptr<InhomogeneousMarkovChain> InhomogeneousMarkovChainPtr;
+
+class InhomogeneousMarkovChain : public tops::InhomogeneousMarkovChain {
+ public:
+  static InhomogeneousMarkovChainPtr make(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
+ private:
+  InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
+};
+
 }
 }
+
+#endif  // TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_

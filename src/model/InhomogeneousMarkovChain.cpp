@@ -22,5 +22,17 @@
 namespace tops {
 namespace model {
 
+InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
+  return InhomogeneousMarkovChainPtr(new InhomogeneousMarkovChain(vlmcs, phased));
+}
+
+InhomogeneousMarkovChain::InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
+  std::vector<tops::ContextTreePtr> trees;
+  for (auto vlmc : vlmcs)
+    trees.push_back(vlmc->getTree());
+  setPositionSpecificDistribution(trees);
+  this->phased(phased);
+}
+
 }
 }
