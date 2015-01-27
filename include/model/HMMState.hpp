@@ -17,15 +17,25 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_HMM_STATE_
+#define TOPS_MODEL_HMM_STATE_
+
 #include <memory>
+
+#include "DiscreteIIDModel.hpp"
 
 #include "src/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
-  class HMMState : public tops::HMMState {
-  };
 
-  typedef std::shared_ptr<HMMState> HMMStatePtr;
+class HMMState;
+typedef std::shared_ptr<HMMState> HMMStatePtr;
+
+class HMMState : public tops::HMMState {
+};
+
 }
 }
+
+#endif  // TOPS_MODEL_HMM_STATE_

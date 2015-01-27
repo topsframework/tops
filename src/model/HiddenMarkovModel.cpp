@@ -22,5 +22,23 @@
 namespace tops {
 namespace model {
 
+HiddenMarkovModelPtr HiddenMarkovModel::make(std::vector<tops::HMMStatePtr> states, DiscreteIIDModelPtr initial_probability, int observation_alphabet_size, int state_alphabet_size) {
+  return HiddenMarkovModelPtr(new HiddenMarkovModel(states, initial_probability, observation_alphabet_size, state_alphabet_size));
+}
+
+HiddenMarkovModel::HiddenMarkovModel(std::vector<tops::HMMStatePtr> states, DiscreteIIDModelPtr initial_probability, int observation_alphabet_size, int state_alphabet_size) {
+  auto states_alphabet = AlphabetPtr(new Alphabet());
+  for (int i = 0; i < state_alphabet_size; i++)
+    states_alphabet->createSymbol(std::to_string(i));
+
+  auto observation_alphabet = AlphabetPtr(new Alphabet());
+  for (int i = 0; i < observation_alphabet_size; i++)
+    observation_alphabet->createSymbol(std::to_string(i));
+
+  setStates(states, states_alphabet);
+  setAlphabet(observation_alphabet);
+  setInitialProbability(initial_probability);
+}
+
 }
 }

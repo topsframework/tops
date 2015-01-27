@@ -17,15 +17,27 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_
+#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_
+
 #include <memory>
 
 #include "src/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
-  class HiddenMarkovModel : public tops::HiddenMarkovModel {
-  };
 
-  typedef std::shared_ptr<HiddenMarkovModel> HiddenMarkovModelPtr;
+class HiddenMarkovModel;
+typedef std::shared_ptr<HiddenMarkovModel> HiddenMarkovModelPtr;
+
+class HiddenMarkovModel : public tops::HiddenMarkovModel {
+ public:
+  static HiddenMarkovModelPtr make(std::vector<tops::HMMStatePtr> states, DiscreteIIDModelPtr initial_probability, int observation_alphabet_size, int state_alphabet_size);
+ private:
+  HiddenMarkovModel(std::vector<tops::HMMStatePtr> states, DiscreteIIDModelPtr initial_probability, int observation_alphabet_size, int state_alphabet_size);
+};
+
 }
 }
+
+#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_
