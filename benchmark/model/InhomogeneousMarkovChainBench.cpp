@@ -50,7 +50,7 @@ static void BM_InhomogeneousMarkovChainEvaluate(benchmark::State& state) {
   auto sequence = generateSequence(state.range_y(), 2);
   state.ResumeTiming();
   while (state.KeepRunning()) {
-    model->evaluate(sequence, 0, state.range_y());
+    model->evaluate(sequence, 0, state.range_y()-1);
   }
 }
 BENCHMARK(BM_InhomogeneousMarkovChainEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
