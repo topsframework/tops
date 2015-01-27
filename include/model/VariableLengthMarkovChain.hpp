@@ -17,15 +17,28 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_
+#define TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_
+
 #include <memory>
 
 #include "src/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {
-  class VariableLengthMarkovChain : public tops::VariableLengthMarkovChain {
-  };
 
-  typedef std::shared_ptr<VariableLengthMarkovChain> VariableLengthMarkovChainPtr;
+class VariableLengthMarkovChain;
+typedef std::shared_ptr<VariableLengthMarkovChain> VariableLengthMarkovChainPtr;
+
+class VariableLengthMarkovChain : public tops::VariableLengthMarkovChain {
+ public:
+  static VariableLengthMarkovChainPtr make(tops::ContextTreePtr context_tree);
+
+ private:
+  explicit VariableLengthMarkovChain(tops::ContextTreePtr context_tree);
+};
+
 }
 }
+
+#endif  // TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_

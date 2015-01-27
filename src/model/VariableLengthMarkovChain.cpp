@@ -22,5 +22,12 @@
 namespace tops {
 namespace model {
 
+VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(tops::ContextTreePtr context_tree) {
+  return VariableLengthMarkovChainPtr(new VariableLengthMarkovChain(context_tree));
+}
+
+VariableLengthMarkovChain::VariableLengthMarkovChain(tops::ContextTreePtr context_tree) : tops::VariableLengthMarkovChain(context_tree) {
+}
+
 }
 }

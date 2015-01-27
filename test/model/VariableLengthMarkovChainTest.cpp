@@ -17,29 +17,38 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_DISCRETE_IID_MODEL_
-#define TOPS_MODEL_DISCRETE_IID_MODEL_
-
-#include <memory>
+#include <math.h>
 #include <vector>
 
-#include "src/DiscreteIIDModel.hpp"
+#include "gmock/gmock.h"
 
-namespace tops {
-namespace model {
+#include "VariableLengthMarkovChain.hpp"
+#include "Sequence.hpp"
+#include "DiscreteIIDModel.hpp"
 
-class DiscreteIIDModel;
-typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
+using ::testing::Eq;
+using ::testing::DoubleEq;
 
-class DiscreteIIDModel : public tops::DiscreteIIDModel {
- public:
-  static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+using tops::model::VariableLengthMarkovChain;
+using tops::model::VariableLengthMarkovChainPtr;
+using tops::model::DiscreteIIDModel;
+using tops::model::DiscreteIIDModelPtr;
+using tops::model::Sequence;
 
- private:
-  explicit DiscreteIIDModel(std::vector<double> probabilities);
+class AVLMC : public testing::Test {
+ protected:
+  tops::ContextTreePtr context_tree;
+  VariableLengthMarkovChainPtr vlmc;
+
+  virtual void SetUp() {
+    auto alphabet = tops::AlphabetPtr(new tops::Alphabet());
+    alphabet->createSymbol("0");
+    alphabet->createSymbol("1");
+    context_tree = tops::ContextTreePtr(new tops::ContextTree(alphabet));
+    vlmc = VariableLengthMarkovChain::make(context_tree);
+  }
 };
 
-}  // namespace model
-}  // namespace tops
-
-#endif  // TOPS_MODEL_DISCRETE_IID_MODEL_
+TEST_F(AVLMC, ShouldHaveAnContextTree) {
+  ASSERT_THAT(vlmc->getTree(), Eq(context_tree));
+}

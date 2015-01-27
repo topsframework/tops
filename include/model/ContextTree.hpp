@@ -17,15 +17,23 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_CONTEXT_TREE_
+#define TOPS_MODEL_CONTEXT_TREE_
+
 #include <memory>
 
 #include "src/ContextTree.hpp"
 
 namespace tops {
 namespace model {
-  class ContextTree : public tops::ContextTree {
-  };
 
-  typedef std::shared_ptr<ContextTree> ContextTreePtr;
+class ContextTree;
+typedef std::shared_ptr<ContextTree> ContextTreePtr;
+
+class ContextTree : public tops::ContextTree {
+};
+
 }
 }
+
+#endif  // TOPS_MODEL_CONTEXT_TREE_
