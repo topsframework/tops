@@ -22,10 +22,11 @@
 #include "benchmark/benchmark.h"
 
 #include "DiscreteIIDModel.hpp"
+#include "Sequence.hpp"
 
-using tops::model::Sequence;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
+using tops::model::Sequence;
 
 static void BM_DiscreteIIDModelChoose(benchmark::State& state) {
   state.PauseTiming();
