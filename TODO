@@ -1,11 +1,14 @@
 [Refactoring]
-    [ ] Remove _self.
-    [ ] Remove 'alphabet_size' param from ContextTree's contructor.
-    [ ] Remove duplications of benchmark's helper functions.
+  [ ] Remove _self.
+  [ ] Remove 'alphabet_size' param from ContextTree's contructor.
+  [ ] Remove duplications of benchmark's helper functions.
 
 [Tests]
-    [ ] Choose methods to be tested.
-    [ ] Improve tests
+  [ ] Choose methods to be tested.
+  [ ] Improve tests
 
 [Benchmarks]
-    [ ] Improve benchmarks
+  [ ] Improve benchmarks
+
+[New Features]
+  [ ] Add HMM's evaluate algorithm
