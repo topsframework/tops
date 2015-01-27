@@ -41,7 +41,7 @@ WEB_DEPENDENCY  := # Same as above, but for URL downloads
 # =======
 ASLIBS          := # Assembly paths
 CLIBS           := # C paths
-CXXLIBS         := # C++ paths
+CXXLIBS         := -I external/tops
 LDLIBS          := -L external/tops/build/src \
                    # -L /usr/local/Cellar/boost/1.57.0/lib
 
@@ -50,8 +50,9 @@ LDLIBS          := -L external/tops/build/src \
 CPPFLAGS        := # Precompiler Flags
 ASFLAGS         := # Assembly Flags
 CFLAGS          := # C Flags
-CXXFLAGS        := -ansi -Wall -pedantic -O2 -std=c++11 -I external/tops \
-                   # -I /usr/local/Cellar/boost/1.57.0/include
+CXXFLAGS        := -ansi -Wall -O2 -std=c++11 \
+                   # -I /usr/local/Cellar/boost/1.57.0/include \
+                   # -pedantic 
 LDFLAGS         := -lboost_system -lToPS
 
 # Makeball list
