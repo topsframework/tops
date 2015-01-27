@@ -23,6 +23,7 @@
 #include "gmock/gmock.h"
 
 #include "DiscreteIIDModel.hpp"
+#include "Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
