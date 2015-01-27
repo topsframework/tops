@@ -28,8 +28,10 @@ before_script:
   - git submodule update --init --recursive
 
 script:
+  - make
+  - make check
   - make test-coverage
 
 after_success:
   - coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 
-                   coverage/data/test/test.info
+                   coverage/test/test.info
