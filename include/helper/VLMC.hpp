@@ -17,45 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <vector>
-#include <random>
-#include <string>
-
-#include "benchmark/benchmark.h"
+#ifndef TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
+#define TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
 
 #include "VariableLengthMarkovChain.hpp"
-#include "Sequence.hpp"
-#include "VariableLengthMarkovChain.hpp"
 
-#include "Random.hpp"
-#include "VLMC.hpp"
+namespace tops {
+namespace helper {
 
-using tops::model::VariableLengthMarkovChain;
-using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::Sequence;
+tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size);
 
-using tops::helper::generateRandomInteger;
-using tops::helper::generateSequence;
-using tops::helper::generateRandomVLMC;
+}  // namespace helper
+}  // namespace tops
 
-static void BM_VariableLengthMarkovChainChoose(benchmark::State& state) {
-  state.PauseTiming();
-  auto model = generateRandomVLMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
-  int index = generateRandomInteger(state.range_y()-1);
-  state.ResumeTiming();
-  while (state.KeepRunning())
-    model->choosePosition(sequence, index);
-}
-BENCHMARK(BM_VariableLengthMarkovChainChoose)->RangePair(2, 16, 2, 5*1024*1024*1024);
-
-static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
-  state.PauseTiming();
-  auto model = generateRandomVLMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
-  state.ResumeTiming();
-  while (state.KeepRunning()) {
-    model->evaluate(sequence, 0, state.range_y());
-  }
-}
-BENCHMARK(BM_VariableLengthMarkovChainEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
+#endif  // TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_

@@ -12,8 +12,8 @@ int generateRandomInteger(int max) {
   return distribution(generator);
 }
 
-Sequence generateSequence(int size, int alphabet_size) {
-  Sequence sequence;
+tops::model::Sequence generateSequence(int size, int alphabet_size) {
+  tops::model::Sequence sequence;
   for (int i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));
   }

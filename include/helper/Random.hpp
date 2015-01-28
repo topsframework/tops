@@ -26,7 +26,7 @@ namespace tops {
 namespace helper {
 
 int generateRandomInteger(int max);
-Sequence generateSequence(int size, int alphabet_size);
+tops::model::Sequence generateSequence(int size, int alphabet_size);
 
 }  // namespace helper
 }  // namespace tops

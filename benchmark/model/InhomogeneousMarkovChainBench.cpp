@@ -28,6 +28,7 @@
 #include "InhomogeneousMarkovChain.hpp"
 
 #include "Random.hpp"
+#include "VLMC.hpp"
 
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
@@ -37,8 +38,7 @@ using tops::model::Sequence;
 
 using tops::helper::generateRandomInteger;
 using tops::helper::generateSequence;
-
-VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size);
+using tops::helper::generateRandomVLMC;
 
 InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains, int alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> vlmcs;
