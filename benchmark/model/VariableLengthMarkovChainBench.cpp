@@ -27,24 +27,14 @@
 #include "Sequence.hpp"
 #include "VariableLengthMarkovChain.hpp"
 
+#include "Random.hpp"
+
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::Sequence;
 
-std::default_random_engine generator;
-
-int generateRandomInteger(int max) {
-  std::uniform_int_distribution<int> distribution(0, max);
-  return distribution(generator);
-}
-
-Sequence generateSequence(int size, int alphabet_size) {
-  Sequence sequence;
-  for (int i = 0; i < size; i++) {
-    sequence.push_back(generateRandomInteger(alphabet_size-1));
-  }
-  return sequence;
-}
+using tops::helper::generateRandomInteger;
+using tops::helper::generateSequence;
 
 VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size) {
   auto alphabet = tops::AlphabetPtr(new tops::Alphabet());

@@ -17,43 +17,18 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <vector>
-#include <random>
-#include <string>
+#ifndef TOPS_HELPER_RANDOM_
+#define TOPS_HELPER_RANDOM_
 
-#include "benchmark/benchmark.h"
-
-#include "VariableLengthMarkovChain.hpp"
 #include "Sequence.hpp"
-#include "InhomogeneousMarkovChain.hpp"
 
-#include "Random.hpp"
+namespace tops {
+namespace helper {
 
-using tops::model::VariableLengthMarkovChain;
-using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::InhomogeneousMarkovChain;
-using tops::model::InhomogeneousMarkovChainPtr;
-using tops::model::Sequence;
+int generateRandomInteger(int max);
+Sequence generateSequence(int size, int alphabet_size);
 
-using tops::helper::generateRandomInteger;
-using tops::helper::generateSequence;
+}  // namespace helper
+}  // namespace tops
 
-VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size);
-
-InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains, int alphabet_size) {
-  std::vector<VariableLengthMarkovChainPtr> vlmcs;
-  for (int i = 0; i < number_of_chains; i++)
-    vlmcs.push_back(generateRandomVLMC(number_of_chains, alphabet_size));
-  return InhomogeneousMarkovChain::make(vlmcs, true);
-}
-
-static void BM_InhomogeneousMarkovChainEvaluate(benchmark::State& state) {
-  state.PauseTiming();
-  auto model = generateRandomIMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
-  state.ResumeTiming();
-  while (state.KeepRunning()) {
-    model->evaluate(sequence, 0, state.range_y()-1);
-  }
-}
-BENCHMARK(BM_InhomogeneousMarkovChainEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
+#endif  // TOPS_HELPER_RANDOM_
