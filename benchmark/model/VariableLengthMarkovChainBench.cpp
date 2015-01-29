@@ -36,13 +36,13 @@ using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::Sequence;
 
 using tops::helper::generateRandomInteger;
-using tops::helper::generateSequence;
+using tops::helper::generateRandomSequence;
 using tops::helper::generateRandomVLMC;
 
 static void BM_VariableLengthMarkovChainChoose(benchmark::State& state) {
   state.PauseTiming();
   auto model = generateRandomVLMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
+  auto sequence = generateRandomSequence(state.range_y(), 2);
   int index = generateRandomInteger(state.range_y()-1);
   state.ResumeTiming();
   while (state.KeepRunning())
@@ -53,7 +53,7 @@ BENCHMARK(BM_VariableLengthMarkovChainChoose)->RangePair(2, 16, 2, 5*1024*1024*1
 static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
   state.PauseTiming();
   auto model = generateRandomVLMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
+  auto sequence = generateRandomSequence(state.range_y(), 2);
   state.ResumeTiming();
   while (state.KeepRunning()) {
     model->evaluate(sequence, 0, state.range_y());

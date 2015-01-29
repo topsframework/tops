@@ -5,7 +5,7 @@
 namespace tops {
 namespace helper {
 
-tops::model::Sequence generateSequence(int size, int alphabet_size) {
+tops::model::Sequence generateRandomSequence(int size, int alphabet_size) {
   tops::model::Sequence sequence;
   for (int i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));

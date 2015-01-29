@@ -37,13 +37,13 @@ using tops::model::InhomogeneousMarkovChain;
 using tops::model::InhomogeneousMarkovChainPtr;
 using tops::model::Sequence;
 
-using tops::helper::generateSequence;
+using tops::helper::generateRandomSequence;
 using tops::helper::generateRandomIMC;
 
 static void BM_InhomogeneousMarkovChainEvaluate(benchmark::State& state) {
   state.PauseTiming();
   auto model = generateRandomIMC(state.range_x(), 2);
-  auto sequence = generateSequence(state.range_y(), 2);
+  auto sequence = generateRandomSequence(state.range_y(), 2);
   state.ResumeTiming();
   while (state.KeepRunning()) {
     model->evaluate(sequence, 0, state.range_y()-1);
