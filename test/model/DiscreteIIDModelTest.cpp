@@ -25,6 +25,8 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/Sequence.hpp"
 
+#include "helper/DiscreteIIDModel.hpp"
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 
@@ -32,38 +34,39 @@ using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
 using tops::model::Sequence;
 
+using tops::helper::createLoadedCoinIIDModel;
+
 class ADiscreteIIDModel : public testing::Test {
  protected:
-  DiscreteIIDModelPtr iid = DiscreteIIDModel::make({0.5, 0.3, 0.2});
+  DiscreteIIDModelPtr iid = createLoadedCoinIIDModel();
 };
 
 TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(iid->alphabet()->size(), Eq(3));
+  ASSERT_THAT(iid->alphabet()->size(), Eq(2));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASingleSymbol) {
-  ASSERT_THAT(iid->log_probability_of(0), DoubleEq(log(0.5)));
-  ASSERT_THAT(iid->log_probability_of(1), DoubleEq(log(0.3)));
-  ASSERT_THAT(iid->log_probability_of(2), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->log_probability_of(0), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->log_probability_of(1), DoubleEq(log(0.8)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
   std::vector<Sequence> test_data = {
-    {0, 0, 1, 1, 2, 2},
-    {0, 1, 2, 2, 2, 2},
-    {1, 1, 1, 0, 0, 0}
+    {0, 0, 1, 1},
+    {0, 1, 1, 1},
+    {1, 1, 1, 1}
   };
   for (auto data : test_data) {
     double result = 0.0;
     for (auto symbol : data) {
       result += iid->log_probability_of(symbol);
     }
-    ASSERT_THAT(iid->evaluate(data, 0, 5), DoubleEq(result));
+    ASSERT_THAT(iid->evaluate(data, 0, 3), DoubleEq(result));
   }
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequencePosition) {
-  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 0), DoubleEq(log(0.2)));
-  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 1), DoubleEq(log(0.3)));
-  ASSERT_THAT(iid->evaluatePosition({2, 1, 0}, 2), DoubleEq(log(0.5)));
+  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
+  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
 }

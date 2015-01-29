@@ -27,6 +27,9 @@ namespace helper {
 
 tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size);
 
+tops::model::DiscreteIIDModelPtr createFairCoinIIDModel();
+tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel();
+
 }  // namespace helper
 }  // namespace tops
 
