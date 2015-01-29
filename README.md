@@ -63,8 +63,7 @@ Installing ToPS
 1. Download ToPS from GitHub  
 
    ```bash
-   git clone https://github.com/ayoshiaki/tops.git
-   git submodule update --init
+   git clone --recursive https://github.com/topsframework/tops-refactoring.git
    ```
 
    This will create a directory named tops
@@ -72,7 +71,7 @@ Installing ToPS
 2. Go to the tops directory:
 
    ```bash
-   cd tops
+   cd tops-refactoring
    ```
 
 3. Run make
