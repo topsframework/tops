@@ -22,8 +22,8 @@
 
 #include "gmock/gmock.h"
 
-#include "DiscreteIIDModel.hpp"
-#include "Sequence.hpp"
+#include "model/DiscreteIIDModel.hpp"
+#include "model/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

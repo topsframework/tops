@@ -22,9 +22,9 @@
 
 #include "gmock/gmock.h"
 
-#include "InhomogeneousMarkovChain.hpp"
-#include "VariableLengthMarkovChain.hpp"
-#include "Sequence.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

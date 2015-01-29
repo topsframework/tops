@@ -23,12 +23,12 @@
 
 #include "benchmark/benchmark.h"
 
-#include "VariableLengthMarkovChain.hpp"
-#include "Sequence.hpp"
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/Sequence.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
 
-#include "Random.hpp"
-#include "IMC.hpp"
+#include "helper/Random.hpp"
+#include "helper/IMC.hpp"
 
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;

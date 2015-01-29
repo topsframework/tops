@@ -23,12 +23,12 @@
 
 #include "benchmark/benchmark.h"
 
-#include "VariableLengthMarkovChain.hpp"
-#include "Sequence.hpp"
-#include "VariableLengthMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/Sequence.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
 
-#include "Random.hpp"
-#include "VLMC.hpp"
+#include "helper/Random.hpp"
+#include "helper/VLMC.hpp"
 
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;

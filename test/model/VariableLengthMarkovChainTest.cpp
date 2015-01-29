@@ -22,9 +22,9 @@
 
 #include "gmock/gmock.h"
 
-#include "VariableLengthMarkovChain.hpp"
-#include "Sequence.hpp"
-#include "DiscreteIIDModel.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/Sequence.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

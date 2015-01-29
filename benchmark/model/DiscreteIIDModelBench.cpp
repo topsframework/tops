@@ -21,8 +21,8 @@
 
 #include "benchmark/benchmark.h"
 
-#include "DiscreteIIDModel.hpp"
-#include "Sequence.hpp"
+#include "model/DiscreteIIDModel.hpp"
+#include "model/Sequence.hpp"
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
