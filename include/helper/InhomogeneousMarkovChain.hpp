@@ -17,15 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_HELPER_RANDOM_
-#define TOPS_HELPER_RANDOM_
+#ifndef TOPS_HELPER_INHOMOGENEOUS_MARKOV_CHAIN_
+#define TOPS_HELPER_INHOMOGENEOUS_MARKOV_CHAIN_
+
+#include "model/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace helper {
 
-int generateRandomInteger(int max);
+tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains, int alphabet_size);
 
 }  // namespace helper
 }  // namespace tops
 
-#endif  // TOPS_HELPER_RANDOM_
+#endif  // TOPS_HELPER_INHOMOGENEOUS_MARKOV_CHAIN_

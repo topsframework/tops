@@ -1,4 +1,4 @@
-#include "VLMC.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
 #include "Random.hpp"
 

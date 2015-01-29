@@ -28,7 +28,8 @@
 #include "model/InhomogeneousMarkovChain.hpp"
 
 #include "helper/Random.hpp"
-#include "helper/IMC.hpp"
+#include "helper/Sequence.hpp"
+#include "helper/InhomogeneousMarkovChain.hpp"
 
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;

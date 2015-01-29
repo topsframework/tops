@@ -1,6 +1,6 @@
-#include "IMC.hpp"
+#include "helper/InhomogeneousMarkovChain.hpp"
 
-#include "VLMC.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace helper {

@@ -28,7 +28,8 @@
 #include "model/VariableLengthMarkovChain.hpp"
 
 #include "helper/Random.hpp"
-#include "helper/VLMC.hpp"
+#include "helper/Sequence.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;

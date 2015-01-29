@@ -17,17 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
-#define TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
+#ifndef TOPS_HELPER_SEQUENCE_
+#define TOPS_HELPER_SEQUENCE_
 
-#include "VariableLengthMarkovChain.hpp"
+#include "model/Sequence.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size);
+tops::model::Sequence generateSequence(int size, int alphabet_size);
 
 }  // namespace helper
 }  // namespace tops
 
-#endif  // TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
+#endif  // TOPS_HELPER_SEQUENCE_
