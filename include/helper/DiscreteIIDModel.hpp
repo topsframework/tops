@@ -17,41 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <vector>
-
-#include "benchmark/benchmark.h"
+#ifndef TOPS_HELPER_DISCRETE_IID_MODEL_
+#define TOPS_HELPER_DISCRETE_IID_MODEL_
 
 #include "model/DiscreteIIDModel.hpp"
-#include "model/Sequence.hpp"
 
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/Sequence.hpp"
+namespace tops {
+namespace helper {
 
-using tops::model::DiscreteIIDModel;
-using tops::model::DiscreteIIDModelPtr;
-using tops::model::Sequence;
+tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size);
 
-using tops::helper::generateRandomIIDModel;
-using tops::helper::generateRandomSequence;
+}  // namespace helper
+}  // namespace tops
 
-static void BM_DiscreteIIDModelChoose(benchmark::State& state) {
-  state.PauseTiming();
-  auto model = generateRandomIIDModel(state.range_x());
-  state.ResumeTiming();
-  while (state.KeepRunning())
-    model->choose();
-}
-BENCHMARK(BM_DiscreteIIDModelChoose)->Range(2, 16);
-
-static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
-  state.PauseTiming();
-  auto model = generateRandomIIDModel(state.range_x());
-  state.ResumeTiming();
-  while (state.KeepRunning()) {
-    state.PauseTiming();
-    auto sequence = generateRandomSequence(state.range_y(), state.range_x());
-    state.ResumeTiming();
-    model->evaluate(sequence, 0, state.range_y()-1);
-  }
-}
-BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
+#endif  // TOPS_HELPER_DISCRETE_IID_MODEL_
