@@ -25,6 +25,8 @@
 namespace tops {
 namespace helper {
 
+tops::model::HiddenMarkovModelPtr generateRandomHMM(int number_of_states, int number_of_observations);
+
 tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM();
 
 }  // namespace helper
