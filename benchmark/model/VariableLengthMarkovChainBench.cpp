@@ -48,7 +48,7 @@ static void BM_VariableLengthMarkovChainChoose(benchmark::State& state) {
   while (state.KeepRunning())
     model->choosePosition(sequence, index);
 }
-BENCHMARK(BM_VariableLengthMarkovChainChoose)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_VariableLengthMarkovChainChoose)->RangePair(2, 16, 2, 1024*1024*1024);
 
 static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
   state.PauseTiming();
@@ -59,4 +59,4 @@ static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
     model->evaluateSequence(sequence, 0, state.range_y());
   }
 }
-BENCHMARK(BM_VariableLengthMarkovChainEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_VariableLengthMarkovChainEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);

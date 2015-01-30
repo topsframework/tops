@@ -47,7 +47,7 @@ static void BM_HiddenMarkovModelViterbi(benchmark::State& state) {
     model->viterbi(sequence, path, gamma);
   }
 }
-BENCHMARK(BM_HiddenMarkovModelViterbi)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_HiddenMarkovModelViterbi)->RangePair(2, 16, 2, 1024*1024*1024);
 
 static void BM_HiddenMarkovModelForward(benchmark::State& state) {
   state.PauseTiming();
@@ -61,7 +61,7 @@ static void BM_HiddenMarkovModelForward(benchmark::State& state) {
     model->forward(sequence, alpha);
   }
 }
-BENCHMARK(BM_HiddenMarkovModelForward)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_HiddenMarkovModelForward)->RangePair(2, 16, 2, 1024*1024*1024);
 
 static void BM_HiddenMarkovModelBackward(benchmark::State& state) {
   state.PauseTiming();
@@ -75,7 +75,7 @@ static void BM_HiddenMarkovModelBackward(benchmark::State& state) {
     model->backward(sequence, beta);
   }
 }
-BENCHMARK(BM_HiddenMarkovModelBackward)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_HiddenMarkovModelBackward)->RangePair(2, 16, 2, 1024*1024*1024);
 
 static void BM_HiddenMarkovModelPosteriorDecoding(benchmark::State& state) {
   state.PauseTiming();
@@ -90,4 +90,4 @@ static void BM_HiddenMarkovModelPosteriorDecoding(benchmark::State& state) {
     model->posteriorDecoding(sequence, path, m);
   }
 }
-BENCHMARK(BM_HiddenMarkovModelPosteriorDecoding)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_HiddenMarkovModelPosteriorDecoding)->RangePair(2, 16, 2, 1024*1024*1024);

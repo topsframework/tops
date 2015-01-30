@@ -54,4 +54,4 @@ static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
     model->evaluate(sequence, 0, state.range_y()-1);
   }
 }
-BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(2, 16, 2, 5*1024*1024*1024);
+BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);
