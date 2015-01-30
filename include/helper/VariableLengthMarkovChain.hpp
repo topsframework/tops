@@ -27,6 +27,8 @@ namespace helper {
 
 tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size);
 
+tops::model::VariableLengthMarkovChainPtr createMachlerVLMC();
+
 }  // namespace helper
 }  // namespace tops
 
