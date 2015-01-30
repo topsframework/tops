@@ -14,6 +14,6 @@
 	url = https://github.com/igorbonadio/tops.git
     ignore = dirty
 [submodule "external/gbenchmark"]
-  path = external/gbenchmark
-  url = https://github.com/google/benchmark.git
+	path = external/gbenchmark
+	url = https://github.com/google/benchmark.git
     ignore = dirty
