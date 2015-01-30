@@ -1,7 +1,7 @@
 [Refactoring]
   [ ] Remove _self.
   [ ] Remove 'alphabet_size' param from ContextTree's contructor.
-  [ ] Remove duplications of benchmark's helper functions.
+  [x] Remove duplications of benchmark's helper functions.
 
 [Tests]
   [ ] Choose methods to be tested.
