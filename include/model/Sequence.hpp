@@ -23,6 +23,8 @@
 #include <memory>
 #include <vector>
 
+#include "model/Symbol.hpp"
+
 #include "src/DiscreteIIDModel.hpp"
 
 namespace tops {
@@ -30,7 +32,7 @@ namespace model {
 
 #include <vector>
 
-typedef std::vector<int> Sequence;
+typedef std::vector<Symbol> Sequence;
 
 }
 }

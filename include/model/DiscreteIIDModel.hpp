@@ -23,6 +23,9 @@
 #include <memory>
 #include <vector>
 
+#include "model/Sequence.hpp"
+#include "model/FactorableModel.hpp"
+
 #include "src/DiscreteIIDModel.hpp"
 
 namespace tops {
@@ -34,6 +37,11 @@ typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
 class DiscreteIIDModel : public tops::DiscreteIIDModel {
  public:
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+
+  virtual double probabilityOf(Symbol s) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual int choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const;
 
  private:
   explicit DiscreteIIDModel(std::vector<double> probabilities);

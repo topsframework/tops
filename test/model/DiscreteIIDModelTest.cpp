@@ -46,8 +46,8 @@ TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASingleSymbol) {
-  ASSERT_THAT(iid->log_probability_of(0), DoubleEq(log(0.2)));
-  ASSERT_THAT(iid->log_probability_of(1), DoubleEq(log(0.8)));
+  ASSERT_THAT(iid->probabilityOf(0), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(0.8)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
@@ -59,9 +59,9 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
   for (auto data : test_data) {
     double result = 0.0;
     for (auto symbol : data) {
-      result += iid->log_probability_of(symbol);
+      result += iid->probabilityOf(symbol);
     }
-    ASSERT_THAT(iid->evaluate(data, 0, 3), DoubleEq(result));
+    ASSERT_THAT(iid->evaluateSequence(data, 0, 3), DoubleEq(result));
   }
 }
 

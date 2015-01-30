@@ -17,15 +17,22 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <memory>
+#ifndef TOPS_MODEL_SYMBOL_
+#define TOPS_MODEL_SYMBOL_
 
-#include "src/SimilarityBasedSequenceWeightingCreator.hpp"
+#include <memory>
+#include <vector>
+
+#include "src/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
-  class SimilarityBasedSequenceWeightingCreator : public tops::SimilarityBasedSequenceWeightingCreator {
-  };
 
-  typedef std::shared_ptr<SimilarityBasedSequenceWeightingCreator> SimilarityBasedSequenceWeightingCreatorPtr;
+#include <vector>
+
+typedef int Symbol;
+
 }
 }
+
+#endif  // TOPS_MODEL_SYMBOL_
