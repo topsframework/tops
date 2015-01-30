@@ -7,6 +7,7 @@
 [Tests]
   [ ] Choose methods to be tested.
   [ ] Improve tests
+  [ ] Test random functions like choose()
 
 [Benchmarks]
   [ ] Improve benchmarks
