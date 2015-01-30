@@ -6,8 +6,8 @@
 	url = http://git.chromium.org/external/googlemock.git
     ignore = dirty
 [submodule "external/gtest"]
-  path = external/gtest
-  url = http://git.chromium.org/external/googletest.git
+	path = external/gtest
+	url = http://git.chromium.org/external/googletest.git
     ignore = dirty
 [submodule "external/tops"]
 	path = external/tops
