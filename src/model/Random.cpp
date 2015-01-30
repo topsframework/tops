@@ -4,7 +4,7 @@
 #include <random>
 
 namespace tops {
-namespace helper {
+namespace model {
 
 std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
 
@@ -13,5 +13,5 @@ int generateRandomDouble() {
   return distribution(generator);
 }
 
-}  // namespace helper
+}  // namespace model
 }  // namespace tops
