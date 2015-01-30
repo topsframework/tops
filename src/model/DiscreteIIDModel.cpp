@@ -20,7 +20,8 @@
 #include <vector>
 #include <string>
 
-#include "DiscreteIIDModel.hpp"
+#include "model/DiscreteIIDModel.hpp"
+#include "model/Random.hpp"
 
 namespace tops {
 namespace model {
@@ -60,7 +61,14 @@ double DiscreteIIDModel::evaluateSequence(const Sequence &s, unsigned int begin,
 }
 
 int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
-  return static_cast<int>(tops::DiscreteIIDModel::choosePosition(s, i));
+  double random = generateRandomDouble();
+  int symbol;
+  for(symbol = 0; symbol < _probabilities.size(); symbol++) {
+    random -= exp(_probabilities[symbol]);
+    if(random <= 0)
+      return symbol;
+  }
+  return _probabilities.size()-1;
 }
 
 

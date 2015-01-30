@@ -61,7 +61,7 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
     for (auto symbol : data) {
       result += iid->probabilityOf(symbol);
     }
-    ASSERT_THAT(iid->evaluateSequence(data, 0, 3), DoubleEq(result));
+    ASSERT_THAT(iid->evaluateSequence(data, 0, 4), DoubleEq(result));
   }
 }
 
