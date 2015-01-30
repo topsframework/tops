@@ -45,7 +45,7 @@ void DiscreteIIDModel::initializeOldModel(std::vector<double> probabilities) {
 }
 
 double DiscreteIIDModel::probabilityOf(Symbol s) const {
-  return log_probability_of(s);
+  return _probabilities[s];
 }
 
 double DiscreteIIDModel::evaluatePosition(const Sequence &s, unsigned int i) const {
