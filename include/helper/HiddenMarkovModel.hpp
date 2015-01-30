@@ -17,40 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <math.h>
-#include <vector>
-
-#include "gmock/gmock.h"
+#ifndef TOPS_HELPER_HIDDEN_MARKOV_MODEL_
+#define TOPS_HELPER_HIDDEN_MARKOV_MODEL_
 
 #include "model/HiddenMarkovModel.hpp"
-#include "model/DiscreteIIDModel.hpp"
-#include "model/Sequence.hpp"
 
-#include "helper/HiddenMarkovModel.hpp"
+namespace tops {
+namespace helper {
 
-using ::testing::Eq;
-using ::testing::DoubleEq;
-using ::testing::DoubleNear;
-using ::testing::ContainerEq;
+tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM();
 
-using tops::model::HiddenMarkovModel;
-using tops::model::HiddenMarkovModelPtr;
-using tops::model::Sequence;
+}  // namespace helper
+}  // namespace tops
 
-using tops::helper::createDishonestCoinCasinoHMM;
-
-class AHiddenMarkovModel : public testing::Test {
- protected:
-  HiddenMarkovModelPtr hmm = createDishonestCoinCasinoHMM();
-};
-
-TEST_F(AHiddenMarkovModel, ShouldFindTheBestPath) {
-  Sequence path;
-  tops::Matrix matrix;
-  ASSERT_THAT(hmm->viterbi({0, 0}, path, matrix), DoubleEq(log(0.0625)));
-  ASSERT_THAT(path, ContainerEq(Sequence{0, 0}));
-  ASSERT_THAT(hmm->viterbi({0, 0, 0, 0, 0, 0, 0}, path, matrix), DoubleNear(log(0.000061035188), 0.000001));
-  ASSERT_THAT(path, ContainerEq(Sequence{0, 0, 0, 0, 0, 0, 0}));
-  ASSERT_THAT(hmm->viterbi({1, 1, 1, 1, 1, 1}, path, matrix), DoubleNear(log(0.0429), 0.01));
-  ASSERT_THAT(path, ContainerEq(Sequence{1, 1, 1, 1, 1, 1}));
-}
+#endif  // TOPS_HELPER_HIDDEN_MARKOV_MODEL_
