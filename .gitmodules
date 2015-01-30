@@ -2,8 +2,8 @@
   path = make
   url = https://github.com/renatocf/make.git
 [submodule "external/gmock"]
-  path = external/gmock
-  url = http://git.chromium.org/external/googlemock.git
+	path = external/gmock
+	url = http://git.chromium.org/external/googlemock.git
     ignore = dirty
 [submodule "external/gtest"]
   path = external/gtest
