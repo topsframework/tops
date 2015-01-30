@@ -42,7 +42,7 @@ class ADiscreteIIDModel : public testing::Test {
 };
 
 TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(iid->alphabet()->size(), Eq(2));
+  ASSERT_THAT(iid->alphabetSize(), Eq(2));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASingleSymbol) {

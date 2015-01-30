@@ -34,6 +34,10 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
 
+int DiscreteIIDModel::alphabetSize() const {
+  return _probabilities.size();
+}
+
 void DiscreteIIDModel::initializeOldModel(std::vector<double> probabilities) {
   std::vector<double> prob;
   for (auto p : probabilities)

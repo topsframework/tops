@@ -38,6 +38,7 @@ class DiscreteIIDModel : public tops::DiscreteIIDModel {
  public:
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
 
+  virtual int alphabetSize() const;
   virtual double probabilityOf(Symbol s) const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
