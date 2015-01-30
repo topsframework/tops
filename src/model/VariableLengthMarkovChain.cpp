@@ -29,5 +29,41 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(tops::ContextTreePt
 VariableLengthMarkovChain::VariableLengthMarkovChain(tops::ContextTreePtr context_tree) : tops::VariableLengthMarkovChain(context_tree) {
 }
 
+VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(ContextTreePtr context_tree) {
+  return VariableLengthMarkovChainPtr(new VariableLengthMarkovChain(context_tree));
+}
+
+VariableLengthMarkovChain::VariableLengthMarkovChain(ContextTreePtr context_tree) : _context_tree(context_tree) {
+}
+
+int VariableLengthMarkovChain::alphabetSize() const {
+  return 0;
+}
+
+double VariableLengthMarkovChain::evaluatePosition(const Sequence &s, unsigned int i) const {
+  ContextTreeNodePtr c = _context_tree->getContext(s,i);
+  if (c == NULL)
+    return -HUGE;
+  else
+    return c->getDistribution()->probabilityOf(s[i]);
+}
+
+double VariableLengthMarkovChain::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
+  double p = 0;
+  for (int i = begin; i < end; i++)
+    p += evaluatePosition(s, i);
+  return p;
+}
+
+int VariableLengthMarkovChain::choosePosition(const Sequence &s, unsigned int i) const {
+  ContextTreeNodePtr c = _context_tree->getContext(s,i);
+  if (c == NULL)
+    // TODO: ERROR!
+    return 0;
+  else
+    return c->getDistribution()->choose();
+}
+
+
 }
 }

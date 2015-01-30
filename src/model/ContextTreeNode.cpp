@@ -22,5 +22,31 @@
 namespace tops {
 namespace model {
 
+ContextTreeNodePtr ContextTreeNode::make(int symbol, DiscreteIIDModelPtr distribution) {
+  return ContextTreeNodePtr(new ContextTreeNode(symbol, distribution));
+}
+
+ContextTreeNode::ContextTreeNode(int symbol, DiscreteIIDModelPtr distribution): _symbol(symbol), _leaf(true), _distribution(distribution) {
+}
+
+bool ContextTreeNode::isLeaf() {
+  return _leaf;
+}
+
+ContextTreeNodePtr ContextTreeNode::addChild(int symbol, DiscreteIIDModelPtr distribution) {
+  auto node = ContextTreeNodePtr(new ContextTreeNode(symbol, distribution));
+  _children[symbol] = node;
+  _leaf = false;
+  return node;
+}
+
+ContextTreeNodePtr ContextTreeNode::getChild(int symbol) {
+  return _children[symbol];
+}
+
+DiscreteIIDModelPtr ContextTreeNode::getDistribution() {
+  return _distribution;
+}
+
 }
 }

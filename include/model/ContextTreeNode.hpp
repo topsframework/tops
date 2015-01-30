@@ -19,13 +19,32 @@
 
 #include <memory>
 
+#include "model/DiscreteIIDModel.hpp"
+
 #include "src/ContextTree.hpp"
 
 namespace tops {
 namespace model {
-  class ContextTreeNode : public tops::ContextTreeNode {
-  };
 
-  typedef std::shared_ptr<ContextTreeNode> ContextTreeNodePtr;
+class ContextTreeNode;
+typedef std::shared_ptr<ContextTreeNode> ContextTreeNodePtr;
+
+class ContextTreeNode : public tops::ContextTreeNode {
+ public:
+  static ContextTreeNodePtr make(int symbol, DiscreteIIDModelPtr distribution);
+
+  bool isLeaf();
+  ContextTreeNodePtr addChild(int symbol, DiscreteIIDModelPtr distribution);
+  ContextTreeNodePtr getChild(int symbol);
+  DiscreteIIDModelPtr getDistribution();
+ private:
+  ContextTreeNode(int symbol, DiscreteIIDModelPtr distribution);
+
+  bool _leaf;
+  int _symbol;
+  std::map<int, ContextTreeNodePtr> _children;
+  DiscreteIIDModelPtr _distribution;
+};
+
 }
 }

@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include "model/ContextTreeNode.hpp"
+#include "model/Sequence.hpp"
+
 #include "src/ContextTree.hpp"
 
 namespace tops {
@@ -31,6 +34,14 @@ class ContextTree;
 typedef std::shared_ptr<ContextTree> ContextTreePtr;
 
 class ContextTree : public tops::ContextTree {
+ public:
+  static ContextTreePtr make(ContextTreeNodePtr root);
+
+  ContextTreeNodePtr getContext(Sequence sequence, int i);
+ private:
+  explicit ContextTree(ContextTreeNodePtr root);
+
+  ContextTreeNodePtr _root;
 };
 
 }

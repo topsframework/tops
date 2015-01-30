@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include "model/ContextTree.hpp"
+
 #include "src/VariableLengthMarkovChain.hpp"
 
 namespace tops {
@@ -33,9 +35,18 @@ typedef std::shared_ptr<VariableLengthMarkovChain> VariableLengthMarkovChainPtr;
 class VariableLengthMarkovChain : public tops::VariableLengthMarkovChain {
  public:
   static VariableLengthMarkovChainPtr make(tops::ContextTreePtr context_tree);
+  static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
+
+  virtual int alphabetSize() const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual int choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const;
 
  private:
   explicit VariableLengthMarkovChain(tops::ContextTreePtr context_tree);
+  explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
+
+  ContextTreePtr _context_tree;
 };
 
 }

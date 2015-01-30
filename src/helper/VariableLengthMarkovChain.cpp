@@ -24,47 +24,15 @@ tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes
 }
 
 tops::model::VariableLengthMarkovChainPtr createMachlerVLMC() {
-  auto alphabet = tops::AlphabetPtr(new tops::Alphabet());
-  alphabet->createSymbol("0");
-  alphabet->createSymbol("1");
-  auto context_tree = tops::ContextTreePtr(new tops::ContextTree(alphabet));
-  auto c0 = context_tree->createContext();
-  auto p0 = {0.5, 0.5};
-  auto iid0 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p0));
-  c0->setDistribution(iid0);
-  auto c1 = context_tree->createContext();
-  auto p1 = {0.6, 0.4};
-  auto iid1 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p1));
-  c1->setDistribution(iid1);
-  auto c2 = context_tree->createContext();
-  auto p2 = {0.3, 0.7};
-  auto iid2 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p2));
-  c2->setDistribution(iid2);
-  auto c3 = context_tree->createContext();
-  auto p3 = {0.7, 0.3};
-  auto iid3 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p3));
-  c3->setDistribution(iid3);
-  auto c4 = context_tree->createContext();
-  auto p4 = {0.1, 0.9};
-  auto iid4 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p4));
-  c4->setDistribution(iid4);
-  auto c5 = context_tree->createContext();
-  auto p5 = {0.3, 0.7};
-  auto iid5 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p5));
-  c5->setDistribution(iid5);
-  auto c6 = context_tree->createContext();
-  auto p6 = {0.7, 0.3};
-  auto iid6 = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(p6));
-  c6->setDistribution(iid6);
-
-  c0->setChild(c1, 0);
-  c0->setChild(c2, 1);
-  c2->setChild(c3, 0);
-  c2->setChild(c4, 1);
-  c3->setChild(c5, 0);
-  c3->setChild(c6, 1);
-
-  return tops::model::VariableLengthMarkovChain::make(context_tree);
+  auto root = tops::model::ContextTreeNode::make(0, tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
+  auto c0 = root->addChild(0, tops::model::DiscreteIIDModel::make({log(0.20), log(0.80)}));
+  auto c1 = root->addChild(1, tops::model::DiscreteIIDModel::make({log(0.21), log(0.79)}));
+  auto c10 = c1->addChild(0, tops::model::DiscreteIIDModel::make({log(0.22), log(0.78)}));
+  auto c11 = c1->addChild(1, tops::model::DiscreteIIDModel::make({log(0.25), log(0.75)}));
+  auto c100 = c10->addChild(0, tops::model::DiscreteIIDModel::make({log(0.30), log(0.70)}));
+  auto c101 = c10->addChild(1, tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
+  auto tree = tops::model::ContextTree::make(root);
+  return tops::model::VariableLengthMarkovChain::make(tree);
 }
 
 }  // namespace helper

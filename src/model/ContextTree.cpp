@@ -22,5 +22,26 @@
 namespace tops {
 namespace model {
 
+ContextTreePtr ContextTree::make(ContextTreeNodePtr root) {
+  return ContextTreePtr(new ContextTree(root));
+}
+
+ContextTree::ContextTree(ContextTreeNodePtr root): _root(root) {
+}
+
+ContextTreeNodePtr ContextTree::getContext(Sequence sequence, int i) {
+  ContextTreeNodePtr c = _root;
+  ContextTreeNodePtr p;
+  for(int j = i-1; j >= 0; j--) {
+    if (c->isLeaf())
+      return c;
+    p = c;
+    c = c->getChild(sequence[j]);
+    if (!c)
+      return p;
+  }
+  return c;
+}
+
 }
 }

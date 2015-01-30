@@ -47,19 +47,21 @@ class AVLMC : public testing::Test {
 TEST_F(AVLMC, ShouldEvaluateAPosition) {
   ASSERT_THAT(vlmc->evaluatePosition({0}, 0), DoubleEq(log(0.50)));
   ASSERT_THAT(vlmc->evaluatePosition({1}, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluatePosition({0, 1}, 1), DoubleEq(log(0.40)));
-  ASSERT_THAT(vlmc->evaluatePosition({0, 0}, 1), DoubleEq(log(0.60)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 0}, 1), DoubleEq(log(0.30)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 1}, 1), DoubleEq(log(0.70)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 0, 1}, 2), DoubleEq(log(0.40)));
+  ASSERT_THAT(vlmc->evaluatePosition({0, 1}, 1), DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->evaluatePosition({0, 0}, 1), DoubleEq(log(0.20)));
+  ASSERT_THAT(vlmc->evaluatePosition({1, 0}, 1), DoubleEq(log(0.21)));
+  ASSERT_THAT(vlmc->evaluatePosition({1, 1}, 1), DoubleEq(log(0.79)));
+  ASSERT_THAT(vlmc->evaluatePosition({1, 0, 1}, 2), DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->evaluatePosition({1, 0, 1, 0}, 3), DoubleEq(log(0.10)));
 }
 
 TEST_F(AVLMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(vlmc->evaluate({0}, 0, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluate({1}, 0, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluate({0, 1}, 0, 1), DoubleEq(log(0.20)));
-  ASSERT_THAT(vlmc->evaluate({0, 0}, 0, 1), DoubleEq(log(0.30)));
-  ASSERT_THAT(vlmc->evaluate({1, 0}, 0, 1), DoubleEq(log(0.15)));
-  ASSERT_THAT(vlmc->evaluate({1, 1}, 0, 1), DoubleEq(log(0.35)));
-  ASSERT_THAT(vlmc->evaluate({1, 0, 1}, 0, 2), DoubleEq(log(0.06)));
+  ASSERT_THAT(vlmc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.80)));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.20)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.21)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.79)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.50) + log(0.21) + log(0.80)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4), DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }
