@@ -1,26 +1,20 @@
 #include "helper/VariableLengthMarkovChain.hpp"
 
-#include "Random.hpp"
+#include "helper/Random.hpp"
+#include "helper/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace helper {
 
 tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(int number_of_nodes, int alphabet_size) {
-  auto alphabet = tops::AlphabetPtr(new tops::Alphabet());
-  for (int i = 0; i < alphabet_size; i++)
-    alphabet->createSymbol(std::to_string(i));
-  std::vector<double> counts(alphabet_size, 13.0);
-  auto iid = tops::DiscreteIIDModelPtr(new tops::DiscreteIIDModel(counts));
-  auto tree = tops::ContextTreePtr(new tops::ContextTree(alphabet));
-  auto node = tree->createContext();
-  node->setDistribution(iid);
+  auto node = tops::model::ContextTreeNode::make(0, generateRandomIIDModel(alphabet_size));
+  auto root = node;
   for (int i = 1; i < number_of_nodes; i++) {
-    auto _node = tree->createContext();
-    _node->setDistribution(iid);
-    node->setChild(_node, generateRandomInteger(alphabet_size-1));
-    node = _node;
+    for (int j = 0; j < alphabet_size; j++) {
+      node->addChild(j, generateRandomIIDModel(alphabet_size));
+    }
   }
-  return tops::model::VariableLengthMarkovChain::make(tree);
+  return tops::model::VariableLengthMarkovChain::make(tops::model::ContextTree::make(root));
 }
 
 tops::model::VariableLengthMarkovChainPtr createMachlerVLMC() {
@@ -31,8 +25,7 @@ tops::model::VariableLengthMarkovChainPtr createMachlerVLMC() {
   auto c11 = c1->addChild(1, tops::model::DiscreteIIDModel::make({log(0.25), log(0.75)}));
   auto c100 = c10->addChild(0, tops::model::DiscreteIIDModel::make({log(0.30), log(0.70)}));
   auto c101 = c10->addChild(1, tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
-  auto tree = tops::model::ContextTree::make(root);
-  return tops::model::VariableLengthMarkovChain::make(tree);
+  return tops::model::VariableLengthMarkovChain::make(tops::model::ContextTree::make(root));
 }
 
 }  // namespace helper
