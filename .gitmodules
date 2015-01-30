@@ -10,8 +10,8 @@
   url = http://git.chromium.org/external/googletest.git
     ignore = dirty
 [submodule "external/tops"]
-  path = external/tops
-  url = https://github.com/igorbonadio/tops.git
+	path = external/tops
+	url = https://github.com/igorbonadio/tops.git
     ignore = dirty
 [submodule "external/gbenchmark"]
   path = external/gbenchmark
