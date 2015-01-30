@@ -45,6 +45,10 @@ class DiscreteIIDModel : public tops::DiscreteIIDModel {
 
  private:
   explicit DiscreteIIDModel(std::vector<double> probabilities);
+
+  std::vector<double> _probabilities;
+
+  void initializeOldModel(std::vector<double> probabilities);
 };
 
 }  // namespace model

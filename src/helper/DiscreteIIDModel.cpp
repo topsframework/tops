@@ -13,11 +13,11 @@ tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
 }
 
 tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({0.5, 0.5});
+  return tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)});
 }
 
 tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({0.2, 0.8});
+  return tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)});
 }
 
 }  // namespace helper
