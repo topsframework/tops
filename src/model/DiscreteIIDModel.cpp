@@ -52,12 +52,15 @@ double DiscreteIIDModel::evaluatePosition(const Sequence &s, unsigned int i) con
   return _probabilities[s[i]];
 }
 
-int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
-  return static_cast<int>(tops::DiscreteIIDModel::choosePosition(s, i));
+double DiscreteIIDModel::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
+  double prob = evaluatePosition(s, begin);
+  for (int i = begin+1; i < end; i++)
+    prob += evaluatePosition(s, i);
+  return prob;
 }
 
-double DiscreteIIDModel::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
-  return evaluate(s, begin, end);
+int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
+  return static_cast<int>(tops::DiscreteIIDModel::choosePosition(s, i));
 }
 
 
