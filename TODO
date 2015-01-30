@@ -1,7 +1,8 @@
 [Refactoring]
-  [ ] Remove _self.
-  [ ] Remove 'alphabet_size' param from ContextTree's contructor.
-  [x] Remove duplications of benchmark's helper functions.
+  [ ] Almost all functions are virtual. Verify if it is necessary
+  [ ] Remove _self
+  [ ] Remove 'alphabet_size' param from ContextTree's contructor
+  [x] Remove duplications of benchmark's helper functions
 
 [Tests]
   [ ] Choose methods to be tested.
