@@ -49,7 +49,7 @@ double DiscreteIIDModel::probabilityOf(Symbol s) const {
 }
 
 double DiscreteIIDModel::evaluatePosition(const Sequence &s, unsigned int i) const {
-  return tops::DiscreteIIDModel::evaluatePosition(s, i);
+  return _probabilities[s[i]];
 }
 
 int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
