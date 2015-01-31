@@ -29,6 +29,10 @@ ContextTreeNodePtr ContextTreeNode::make(int symbol, DiscreteIIDModelPtr distrib
 ContextTreeNode::ContextTreeNode(int symbol, DiscreteIIDModelPtr distribution): _symbol(symbol), _leaf(true), _distribution(distribution) {
 }
 
+int ContextTreeNode::alphabetSize() const {
+  return _distribution->alphabetSize();
+}
+
 bool ContextTreeNode::isLeaf() {
   return _leaf;
 }

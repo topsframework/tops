@@ -44,6 +44,10 @@ class AVLMC : public testing::Test {
   VariableLengthMarkovChainPtr vlmc = createMachlerVLMC();
 };
 
+TEST_F(AVLMC, ShouldHaveAnAlphabet) {
+  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
+}
+
 TEST_F(AVLMC, ShouldEvaluateAPosition) {
   ASSERT_THAT(vlmc->evaluatePosition({0}, 0), DoubleEq(log(0.50)));
   ASSERT_THAT(vlmc->evaluatePosition({1}, 0), DoubleEq(log(0.50)));

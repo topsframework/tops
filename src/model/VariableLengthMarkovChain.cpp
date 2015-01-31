@@ -37,7 +37,7 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(ContextTreePtr context_tree
 }
 
 int VariableLengthMarkovChain::alphabetSize() const {
-  return 0;
+  return _context_tree->alphabetSize();
 }
 
 double VariableLengthMarkovChain::evaluatePosition(const Sequence &s, unsigned int i) const {

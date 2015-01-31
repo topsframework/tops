@@ -29,6 +29,10 @@ ContextTreePtr ContextTree::make(ContextTreeNodePtr root) {
 ContextTree::ContextTree(ContextTreeNodePtr root): _root(root) {
 }
 
+int ContextTree::alphabetSize() const {
+  return _root->alphabetSize();
+}
+
 ContextTreeNodePtr ContextTree::getContext(Sequence sequence, int i) {
   ContextTreeNodePtr c = _root;
   ContextTreeNodePtr p;

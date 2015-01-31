@@ -37,6 +37,8 @@ class ContextTree : public tops::ContextTree {
  public:
   static ContextTreePtr make(ContextTreeNodePtr root);
 
+  int alphabetSize() const;
+
   ContextTreeNodePtr getContext(Sequence sequence, int i);
  private:
   explicit ContextTree(ContextTreeNodePtr root);

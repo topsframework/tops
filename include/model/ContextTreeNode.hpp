@@ -33,6 +33,8 @@ class ContextTreeNode : public tops::ContextTreeNode {
  public:
   static ContextTreeNodePtr make(int symbol, DiscreteIIDModelPtr distribution);
 
+  int alphabetSize() const;
+
   bool isLeaf();
   ContextTreeNodePtr addChild(int symbol, DiscreteIIDModelPtr distribution);
   ContextTreeNodePtr getChild(int symbol);
