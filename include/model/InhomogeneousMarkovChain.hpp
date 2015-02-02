@@ -44,7 +44,7 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * @brief Class that represents an inhomogeneous Markov chain.
  *
  * An inhomogeneous Markov chain is a model which suports different Markov
- * chains per phase. It can be periodic or aperiodic.
+ * chains per position. It can be periodic or aperiodic.
  */
 class InhomogeneousMarkovChain : public FactorableModel {
  public:
