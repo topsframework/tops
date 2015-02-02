@@ -28,11 +28,9 @@
 namespace tops {
 namespace model {
 
-#include <vector>
-
 typedef std::vector<Symbol> Sequence;
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_SEQUENCE_
