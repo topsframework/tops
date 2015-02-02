@@ -54,8 +54,8 @@ TEST_F(AInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(AInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(imc->evaluateSequence({0}, 0, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->evaluateSequence({1}, 0, 0), DoubleEq(log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
   ASSERT_THAT(imc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.90)));
   ASSERT_THAT(imc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.10)));
   ASSERT_THAT(imc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
