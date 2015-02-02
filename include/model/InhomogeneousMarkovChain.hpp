@@ -23,26 +23,29 @@
 #include <memory>
 #include <vector>
 
-#include "VariableLengthMarkovChain.hpp"
+#include "model/FactorableModel.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {
 
 class InhomogeneousMarkovChain;
-typedef std::shared_ptr<InhomogeneousMarkovChain> InhomogeneousMarkovChainPtr;
+using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 
-class InhomogeneousMarkovChain {
+class InhomogeneousMarkovChain : public FactorableModel {
  public:
   static InhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs,
       bool phased);
 
   virtual int alphabetSize() const;
+
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
+
+  virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
  private:
   InhomogeneousMarkovChain(

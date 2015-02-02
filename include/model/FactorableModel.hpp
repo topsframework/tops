@@ -22,13 +22,22 @@
 
 #include <memory>
 
+#include "model/Sequence.hpp"
+
 namespace tops {
 namespace model {
 
 class FactorableModel {
+ public:
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const = 0;
+
+  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
 };
 
-typedef std::shared_ptr<FactorableModel> FactorableModelPtr;
+using FactorableModelPtr = std::shared_ptr<FactorableModel>;
 
 }  // namespace model
 }  // namespace tops

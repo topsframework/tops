@@ -22,24 +22,27 @@
 
 #include <memory>
 
+#include "model/FactorableModel.hpp"
 #include "model/ContextTree.hpp"
 
 namespace tops {
 namespace model {
 
 class VariableLengthMarkovChain;
-typedef std::shared_ptr<VariableLengthMarkovChain> VariableLengthMarkovChainPtr;
+using VariableLengthMarkovChainPtr = std::shared_ptr<VariableLengthMarkovChain>;
 
-class VariableLengthMarkovChain {
+class VariableLengthMarkovChain : public FactorableModel {
  public:
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
 
   virtual int alphabetSize() const;
+
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
+
+  virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
  private:
   explicit VariableLengthMarkovChain(ContextTreePtr context_tree);

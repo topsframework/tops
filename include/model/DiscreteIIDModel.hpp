@@ -23,16 +23,15 @@
 #include <memory>
 #include <vector>
 
-#include "model/Sequence.hpp"
 #include "model/FactorableModel.hpp"
 
 namespace tops {
 namespace model {
 
 class DiscreteIIDModel;
-typedef std::shared_ptr<DiscreteIIDModel> DiscreteIIDModelPtr;
+using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
 
-class DiscreteIIDModel {
+class DiscreteIIDModel : public FactorableModel {
  public:
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
 
