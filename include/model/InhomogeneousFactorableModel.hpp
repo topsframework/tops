@@ -17,13 +17,21 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_CONTEXT_TREE_
+#define TOPS_MODEL_CONTEXT_TREE_
+
 #include <memory>
 
 namespace tops {
 namespace model {
-  class InhomogeneousFactorableModel {
-  };
 
-  typedef std::shared_ptr<InhomogeneousFactorableModel> InhomogeneousFactorableModelPtr;
-}
-}
+class InhomogeneousFactorableModel {
+};
+
+typedef std::shared_ptr<InhomogeneousFactorableModel>
+        InhomogeneousFactorableModelPtr;
+
+}  // namespace model
+}  // namespace tops
+
+#endif  // TOPS_MODEL_CONTEXT_TREE_
