@@ -27,7 +27,7 @@ double FactorableModel::evaluateSequence(const Sequence &s,
                                           unsigned int begin,
                                           unsigned int end) const {
   double prob = 0;
-  for (int i = begin; i < end; i++)
+  for (unsigned int i = begin; i < end; i++)
     prob += evaluatePosition(s, i);
   return prob;
 }
