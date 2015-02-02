@@ -44,7 +44,7 @@ class ContextTree {
   ContextTreeNodePtr _root;
 };
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_CONTEXT_TREE_
