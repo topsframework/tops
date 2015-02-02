@@ -30,7 +30,7 @@ class DecodableModel {
 
 typedef std::shared_ptr<DecodableModel> DecodableModelPtr;
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_DECODABLE_MODEL_

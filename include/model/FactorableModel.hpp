@@ -17,13 +17,20 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_FACTORABLE_MODEL_
+#define TOPS_MODEL_FACTORABLE_MODEL_
+
 #include <memory>
 
 namespace tops {
 namespace model {
-  class FactorableModel {
-  };
 
-  typedef std::shared_ptr<FactorableModel> FactorableModelPtr;
-}
-}
+class FactorableModel {
+};
+
+typedef std::shared_ptr<FactorableModel> FactorableModelPtr;
+
+}  // namespace model
+}  // namespace tops
+
+#endif  // TOPS_MODEL_FACTORABLE_MODEL_
