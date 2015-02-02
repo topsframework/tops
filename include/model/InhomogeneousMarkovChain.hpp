@@ -25,15 +25,13 @@
 
 #include "VariableLengthMarkovChain.hpp"
 
-#include "src/InhomogeneousMarkovChain.hpp"
-
 namespace tops {
 namespace model {
 
 class InhomogeneousMarkovChain;
 typedef std::shared_ptr<InhomogeneousMarkovChain> InhomogeneousMarkovChainPtr;
 
-class InhomogeneousMarkovChain : public tops::InhomogeneousMarkovChain {
+class InhomogeneousMarkovChain {
  public:
   static InhomogeneousMarkovChainPtr make(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
 
@@ -47,8 +45,6 @@ class InhomogeneousMarkovChain : public tops::InhomogeneousMarkovChain {
 
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
   bool _phased;
-
-  void initializeOldIMC(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
 };
 
 }

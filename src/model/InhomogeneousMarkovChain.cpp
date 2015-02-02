@@ -26,16 +26,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(std::vector<VariableL
   return InhomogeneousMarkovChainPtr(new InhomogeneousMarkovChain(vlmcs, phased));
 }
 
-void InhomogeneousMarkovChain::initializeOldIMC(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
-  std::vector<tops::ContextTreePtr> trees;
-  for (auto vlmc : vlmcs)
-    trees.push_back(vlmc->getTree());
-  setPositionSpecificDistribution(trees);
-  this->phased(phased);
-}
-
 InhomogeneousMarkovChain::InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) : _vlmcs(vlmcs), _phased(phased) {
-  initializeOldIMC(vlmcs, phased);
 }
 
 int InhomogeneousMarkovChain::alphabetSize() const {
