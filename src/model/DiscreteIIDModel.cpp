@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include <math.h>
+#include <cmath>
 
 #include "model/DiscreteIIDModel.hpp"
 #include "model/Random.hpp"
@@ -27,7 +27,8 @@
 namespace tops {
 namespace model {
 
-DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities) : _probabilities(probabilities) {
+DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
+    : _probabilities(probabilities) {
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
@@ -42,11 +43,14 @@ double DiscreteIIDModel::probabilityOf(Symbol s) const {
   return _probabilities[s];
 }
 
-double DiscreteIIDModel::evaluatePosition(const Sequence &s, unsigned int i) const {
+double DiscreteIIDModel::evaluatePosition(const Sequence &s,
+                                          unsigned int i) const {
   return _probabilities[s[i]];
 }
 
-double DiscreteIIDModel::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
+double DiscreteIIDModel::evaluateSequence(const Sequence &s,
+                                          unsigned int begin,
+                                          unsigned int end) const {
   double prob = evaluatePosition(s, begin);
   for (int i = begin+1; i < end; i++)
     prob += evaluatePosition(s, i);
@@ -56,9 +60,9 @@ double DiscreteIIDModel::evaluateSequence(const Sequence &s, unsigned int begin,
 int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
   double random = generateRandomDouble();
   int symbol;
-  for(symbol = 0; symbol < _probabilities.size(); symbol++) {
+  for (symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= exp(_probabilities[symbol]);
-    if(random <= 0)
+    if (random <= 0)
       return symbol;
   }
   return _probabilities.size()-1;

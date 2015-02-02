@@ -26,7 +26,9 @@ ContextTreeNodePtr ContextTreeNode::make(DiscreteIIDModelPtr distribution) {
   return ContextTreeNodePtr(new ContextTreeNode(distribution));
 }
 
-ContextTreeNode::ContextTreeNode(DiscreteIIDModelPtr distribution): _leaf(true), _distribution(distribution) {
+ContextTreeNode::ContextTreeNode(DiscreteIIDModelPtr distribution)
+    : _leaf(true),
+      _distribution(distribution) {
 }
 
 int ContextTreeNode::alphabetSize() const {
@@ -37,7 +39,9 @@ bool ContextTreeNode::isLeaf() {
   return _leaf;
 }
 
-ContextTreeNodePtr ContextTreeNode::addChild(int symbol, DiscreteIIDModelPtr distribution) {
+ContextTreeNodePtr ContextTreeNode::addChild(
+    int symbol,
+    DiscreteIIDModelPtr distribution) {
   auto node = ContextTreeNodePtr(new ContextTreeNode(distribution));
   _children[symbol] = node;
   _leaf = false;
@@ -52,5 +56,5 @@ DiscreteIIDModelPtr ContextTreeNode::getDistribution() {
   return _distribution;
 }
 
-}
-}
+}  // namespace model
+}  // namespace tops

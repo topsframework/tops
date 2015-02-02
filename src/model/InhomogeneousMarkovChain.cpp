@@ -20,22 +20,28 @@
 #include "InhomogeneousMarkovChain.hpp"
 
 #include <cmath>
+#include <vector>
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
-  return InhomogeneousMarkovChainPtr(new InhomogeneousMarkovChain(vlmcs, phased));
+InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
+  return InhomogeneousMarkovChainPtr(
+    new InhomogeneousMarkovChain(vlmcs, phased));
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) : _vlmcs(vlmcs), _phased(phased) {
+InhomogeneousMarkovChain::InhomogeneousMarkovChain(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs,
+    bool phased) : _vlmcs(vlmcs), _phased(phased) {
 }
 
 int InhomogeneousMarkovChain::alphabetSize() const {
   return _vlmcs[0]->alphabetSize();
 }
 
-double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s, unsigned int i) const {
+double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
+                                                  unsigned int i) const {
   if (_phased)
     return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
   else if (i < _vlmcs.size())
@@ -44,16 +50,19 @@ double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s, unsigned in
     return -HUGE;
 }
 
-int InhomogeneousMarkovChain::choosePosition(const Sequence &s, unsigned int i) const {
+int InhomogeneousMarkovChain::choosePosition(const Sequence &s,
+                                             unsigned int i) const {
   if (_phased)
     return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
   else if (i < _vlmcs.size())
     return _vlmcs[i]->choosePosition(s, i);
   else
-    return 0; // TODO: ERROR!
+    return 0;  // TODO(igorbonadio): ERROR!
 }
 
-double InhomogeneousMarkovChain::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
+double InhomogeneousMarkovChain::evaluateSequence(const Sequence &s,
+                                                  unsigned int begin,
+                                                  unsigned int end) const {
   double p = 0;
   for (int i = 0; i < s.size(); i++) {
     p += evaluatePosition(s, i);
@@ -61,5 +70,5 @@ double InhomogeneousMarkovChain::evaluateSequence(const Sequence &s, unsigned in
   return p;
 }
 
-}
-}
+}  // namespace model
+}  // namespace tops
