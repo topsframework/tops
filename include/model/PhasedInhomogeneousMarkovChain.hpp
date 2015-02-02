@@ -17,23 +17,54 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "helper/InhomogeneousMarkovChain.hpp"
+#ifndef TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_
+#define TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_
 
+// Standard headers
+#include <memory>
 #include <vector>
 
-#include "helper/VariableLengthMarkovChain.hpp"
+// ToPS headers
+#include "model/InhomogeneousMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
-namespace helper {
+namespace model {
 
-tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(
-    int number_of_chains,
-    int alphabet_size) {
-  std::vector<tops::model::VariableLengthMarkovChainPtr> vlmcs;
-  for (int i = 0; i < number_of_chains; i++)
-    vlmcs.push_back(generateRandomVLMC(number_of_chains, alphabet_size));
-  return tops::model::InhomogeneousMarkovChain::make(vlmcs);
-}
+class PhasedInhomogeneousMarkovChain;
 
-}  // namespace helper
+/**
+ * @typedef PhasedInhomogeneousMarkovChainPtr
+ * @brief Alias of pointer to PhasedInhomogeneousMarkovChain.
+ */
+using PhasedInhomogeneousMarkovChainPtr 
+    = std::shared_ptr<PhasedInhomogeneousMarkovChain>;
+
+/**
+ * @class PhasedInhomogeneousMarkovChain
+ * @brief Class that represents an inhomogeneous Markov chain.
+ *
+ * A phased inhomogeneous Markov chain is a model which suports different 
+ * Markov chains per position. Each Markov chain repeats itsealf per
+ * phase.
+ */
+class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
+ public:
+  // Static methods
+  static PhasedInhomogeneousMarkovChainPtr make(
+      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+
+  // Virtual methods
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual int choosePosition(const Sequence &s, unsigned int i) const;
+
+ private:
+  // Constructors
+  PhasedInhomogeneousMarkovChain(
+      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+};
+
+}  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_

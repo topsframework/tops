@@ -17,23 +17,36 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "helper/InhomogeneousMarkovChain.hpp"
-
+// Standard headers
+#include <cmath>
 #include <vector>
 
-#include "helper/VariableLengthMarkovChain.hpp"
+// ToPS headers
+#include "PhasedInhomogeneousMarkovChain.hpp"
 
 namespace tops {
-namespace helper {
+namespace model {
 
-tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(
-    int number_of_chains,
-    int alphabet_size) {
-  std::vector<tops::model::VariableLengthMarkovChainPtr> vlmcs;
-  for (int i = 0; i < number_of_chains; i++)
-    vlmcs.push_back(generateRandomVLMC(number_of_chains, alphabet_size));
-  return tops::model::InhomogeneousMarkovChain::make(vlmcs);
+PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
+  return PhasedInhomogeneousMarkovChainPtr(
+    new PhasedInhomogeneousMarkovChain(vlmcs));
 }
 
-}  // namespace helper
+PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs)
+    : InhomogeneousMarkovChain(vlmcs) {
+}
+
+double PhasedInhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
+                                                        unsigned int i) const {
+  return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
+}
+
+int PhasedInhomogeneousMarkovChain::choosePosition(const Sequence &s,
+                                                   unsigned int i) const {
+  return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
+}
+
+}  // namespace model
 }  // namespace tops

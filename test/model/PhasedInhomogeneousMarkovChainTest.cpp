@@ -25,7 +25,7 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/InhomogeneousMarkovChain.hpp"
+#include "model/PhasedInhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
 
@@ -37,26 +37,26 @@ using ::testing::DoubleEq;
 using tops::model::Sequence;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::InhomogeneousMarkovChain;
-using tops::model::InhomogeneousMarkovChainPtr;
+using tops::model::PhasedInhomogeneousMarkovChain;
+using tops::model::PhasedInhomogeneousMarkovChainPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
 
-class AInhomogeneousMarkovChain : public testing::Test {
+class APhasedInhomogeneousMarkovChain : public testing::Test {
  protected:
-  InhomogeneousMarkovChainPtr imc;
+  PhasedInhomogeneousMarkovChainPtr imc;
 
   virtual void SetUp() {
-    imc = InhomogeneousMarkovChain::make({createMachlerVLMC(), createVLMCMC()}, true);
+    imc = PhasedInhomogeneousMarkovChain::make({createMachlerVLMC(), createVLMCMC()});
   }
 };
 
-TEST_F(AInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
+TEST_F(APhasedInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
   ASSERT_THAT(imc->alphabetSize(), Eq(2));
 }
 
-TEST_F(AInhomogeneousMarkovChain, ShouldEvaluateASequence) {
+TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
   ASSERT_THAT(imc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
   ASSERT_THAT(imc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.90)));

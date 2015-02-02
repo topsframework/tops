@@ -44,29 +44,26 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * @brief Class that represents an inhomogeneous Markov chain.
  *
  * An inhomogeneous Markov chain is a model which suports different Markov
- * chains per position. It can be periodic or aperiodic.
+ * chains per position.
  */
 class InhomogeneousMarkovChain : public FactorableModel {
  public:
   // Static methods
   static InhomogeneousMarkovChainPtr make(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs,
-      bool phased);
+      std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Virtual methods
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
- private:
+ protected:
   // Instance variables
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
-  bool _phased;
 
   // Constructors
   InhomogeneousMarkovChain(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs,
-      bool phased);
+      std::vector<VariableLengthMarkovChainPtr> vlmcs);
 };
 
 }  // namespace model

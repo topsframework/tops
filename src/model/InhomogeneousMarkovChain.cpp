@@ -28,14 +28,14 @@ namespace tops {
 namespace model {
 
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
+    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
   return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs, phased));
+    new InhomogeneousMarkovChain(vlmcs));
 }
 
 InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs,
-    bool phased) : _vlmcs(vlmcs), _phased(phased) {
+    std::vector<VariableLengthMarkovChainPtr> vlmcs)
+    : _vlmcs(vlmcs) {
 }
 
 int InhomogeneousMarkovChain::alphabetSize() const {
@@ -44,9 +44,7 @@ int InhomogeneousMarkovChain::alphabetSize() const {
 
 double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
                                                   unsigned int i) const {
-  if (_phased)
-    return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
-  else if (i < _vlmcs.size())
+  if (i < _vlmcs.size())
     return _vlmcs[i]->evaluatePosition(s, i);
   else
     return -HUGE;
@@ -54,9 +52,7 @@ double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
 
 int InhomogeneousMarkovChain::choosePosition(const Sequence &s,
                                              unsigned int i) const {
-  if (_phased)
-    return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
-  else if (i < _vlmcs.size())
+  if (i < _vlmcs.size())
     return _vlmcs[i]->choosePosition(s, i);
   else
     return 0;  // TODO(igorbonadio): ERROR!
