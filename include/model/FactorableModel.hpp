@@ -24,6 +24,7 @@
 #include <memory>
 
 // ToPS headers
+#include "model/ProbabilisticModel.hpp"
 #include "model/Sequence.hpp"
 
 namespace tops {
@@ -45,7 +46,7 @@ using FactorableModelPtr = std::shared_ptr<FactorableModel>;
  * A factorable model can be expressed as a product of terms evaluated
  * at each position in a sequence.
  */
-class FactorableModel {
+class FactorableModel : public ProbabilisticModel {
  public:
   // Purely virtual methods
   virtual int alphabetSize() const = 0;
