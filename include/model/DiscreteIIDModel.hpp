@@ -31,8 +31,18 @@ namespace tops {
 namespace model {
 
 class DiscreteIIDModel;
+
+/**
+ * @typedef DiscreteIIDModelPtr
+ * @brief Alias of pointer to DiscreteIIDModel.
+ */
 using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
 
+/**
+ * @class DiscreteIIDModel
+ * @brief Class that represents an independent and identically
+ *        distributed model.
+ */
 class DiscreteIIDModel : public FactorableModel {
  public:
   // Static methods

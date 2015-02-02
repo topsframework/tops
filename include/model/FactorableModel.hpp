@@ -29,6 +29,22 @@
 namespace tops {
 namespace model {
 
+class FactorableModel;
+
+/**
+ * @typedef FactorableModelPtr
+ * @brief Alias of pointer to FactorableModel.
+ */
+using FactorableModelPtr = std::shared_ptr<FactorableModel>;
+
+/**
+ * @class FactorableModel
+ * @brief Abstract class defining models in which the likelihood of
+ *        the sequence is factorable.
+ *
+ * A factorable model can be expressed as a product of terms evaluated
+ * at each position in a sequence.
+ */
 class FactorableModel {
  public:
   // Purely virtual methods
@@ -41,8 +57,6 @@ class FactorableModel {
                                   unsigned int begin,
                                   unsigned int end) const;
 };
-
-using FactorableModelPtr = std::shared_ptr<FactorableModel>;
 
 }  // namespace model
 }  // namespace tops

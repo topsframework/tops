@@ -31,8 +31,21 @@ namespace tops {
 namespace model {
 
 class VariableLengthMarkovChain;
-using VariableLengthMarkovChainPtr = std::shared_ptr<VariableLengthMarkovChain>;
 
+/**
+ * @typedef VariableLengthMarkovChainPtr
+ * @brief Alias of pointer to VariableLengthMarkovChain.
+ */
+using VariableLengthMarkovChainPtr
+    = std::shared_ptr<VariableLengthMarkovChain>;
+
+/**
+ * @class VariableLengthMarkovChain
+ * @brief Class that represents an variable length Markov chain.
+ *
+ * An variable length Markov chain is a Markov chain that can have different
+ * size contexts.
+ */
 class VariableLengthMarkovChain : public FactorableModel {
  public:
   // Static methods

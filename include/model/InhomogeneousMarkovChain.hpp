@@ -32,8 +32,20 @@ namespace tops {
 namespace model {
 
 class InhomogeneousMarkovChain;
+
+/**
+ * @typedef InhomogeneousMarkovChainPtr
+ * @brief Alias of pointer to InhomogeneousMarkovChain.
+ */
 using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 
+/**
+ * @class InhomogeneousMarkovChain
+ * @brief Class that represents an inhomogeneous Markov chain.
+ *
+ * An inhomogeneous Markov chain is a model which suports different Markov
+ * chains per phase. It can be periodic or aperiodic.
+ */
 class InhomogeneousMarkovChain : public FactorableModel {
  public:
   // Static methods
