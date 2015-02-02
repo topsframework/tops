@@ -17,13 +17,20 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_DECODABLE_MODEL_
+#define TOPS_MODEL_DECODABLE_MODEL_
+
 #include <memory>
 
 namespace tops {
 namespace model {
-  class DecodableModel {
-  };
 
-  typedef std::shared_ptr<DecodableModel> DecodableModelPtr;
+class DecodableModel {
+};
+
+typedef std::shared_ptr<DecodableModel> DecodableModelPtr;
+
 }
 }
+
+#endif  // TOPS_MODEL_DECODABLE_MODEL_
