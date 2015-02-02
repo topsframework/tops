@@ -39,12 +39,10 @@ class InhomogeneousMarkovChain : public FactorableModel {
       bool phased);
 
   virtual int alphabetSize() const;
-
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
-
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
  private:

@@ -29,6 +29,7 @@ namespace model {
 
 class FactorableModel {
  public:
+  virtual int alphabetSize() const = 0;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
