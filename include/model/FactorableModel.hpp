@@ -31,13 +31,15 @@ namespace model {
 
 class FactorableModel {
  public:
+  // Purely virtual methods
   virtual int alphabetSize() const = 0;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
+
+  // Virtual methods
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
-
-  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
 };
 
 using FactorableModelPtr = std::shared_ptr<FactorableModel>;

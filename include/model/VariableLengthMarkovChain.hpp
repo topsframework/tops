@@ -35,16 +35,20 @@ using VariableLengthMarkovChainPtr = std::shared_ptr<VariableLengthMarkovChain>;
 
 class VariableLengthMarkovChain : public FactorableModel {
  public:
+  // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
 
+  // Virtual methods
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
  private:
-  explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
-
+  // Instance variables
   ContextTreePtr _context_tree;
+
+  // Constructors
+  explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
 };
 
 }  // namespace model

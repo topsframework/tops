@@ -36,21 +36,25 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 
 class InhomogeneousMarkovChain : public FactorableModel {
  public:
+  // Static methods
   static InhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs,
       bool phased);
 
+  // Virtual methods
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
 
  private:
+  // Instance variables
+  std::vector<VariableLengthMarkovChainPtr> _vlmcs;
+  bool _phased;
+
+  // Constructors
   InhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs,
       bool phased);
-
-  std::vector<VariableLengthMarkovChainPtr> _vlmcs;
-  bool _phased;
 };
 
 }  // namespace model
