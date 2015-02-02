@@ -37,7 +37,9 @@ class VariableLengthMarkovChain {
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
-  virtual double evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
 
  private:
   explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
@@ -45,7 +47,7 @@ class VariableLengthMarkovChain {
   ContextTreePtr _context_tree;
 };
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_
