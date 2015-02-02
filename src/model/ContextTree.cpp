@@ -36,7 +36,7 @@ int ContextTree::alphabetSize() const {
 ContextTreeNodePtr ContextTree::getContext(Sequence sequence, int i) {
   ContextTreeNodePtr c = _root;
   ContextTreeNodePtr p;
-  for(int j = i-1; j >= 0; j--) {
+  for (int j = i-1; j >= 0; j--) {
     if (c->isLeaf())
       return c;
     p = c;
@@ -47,5 +47,5 @@ ContextTreeNodePtr ContextTree::getContext(Sequence sequence, int i) {
   return c;
 }
 
-}
-}
+}  // namespace model
+}  // namespace tops
