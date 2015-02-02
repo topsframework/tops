@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_CONTEXT_TREE_NODE_
+#define TOPS_MODEL_CONTEXT_TREE_NODE_
+
 #include <memory>
 #include <map>
 
@@ -46,5 +49,7 @@ class ContextTreeNode {
   DiscreteIIDModelPtr _distribution;
 };
 
-}
-}
+}  // namespace model
+}  // namespace tops
+
+#endif  // TOPS_MODEL_CONTEXT_TREE_NODE_
