@@ -27,7 +27,6 @@ namespace tops {
 namespace model {
 
 DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities) : _probabilities(probabilities) {
-  initializeOldModel(probabilities);
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
@@ -36,17 +35,6 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
 
 int DiscreteIIDModel::alphabetSize() const {
   return _probabilities.size();
-}
-
-void DiscreteIIDModel::initializeOldModel(std::vector<double> probabilities) {
-  std::vector<double> prob;
-  for (auto p : probabilities)
-    prob.push_back(exp(p));
-  setProbabilities(prob);
-  AlphabetPtr alphabet = AlphabetPtr(new Alphabet());
-  for (auto p : prob)
-    alphabet->createSymbol(std::to_string(p));
-  setAlphabet(alphabet);
 }
 
 double DiscreteIIDModel::probabilityOf(Symbol s) const {

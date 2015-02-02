@@ -54,7 +54,7 @@ int VariableLengthMarkovChain::choosePosition(const Sequence &s, unsigned int i)
     // TODO: ERROR!
     return 0;
   else
-    return c->getDistribution()->choose();
+    return c->getDistribution()->evaluatePosition(s, i);
 }
 
 

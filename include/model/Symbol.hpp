@@ -23,8 +23,6 @@
 #include <memory>
 #include <vector>
 
-#include "src/DiscreteIIDModel.hpp"
-
 namespace tops {
 namespace model {
 

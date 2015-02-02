@@ -25,8 +25,6 @@
 
 #include "model/Symbol.hpp"
 
-#include "src/DiscreteIIDModel.hpp"
-
 namespace tops {
 namespace model {
 
