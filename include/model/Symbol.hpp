@@ -26,11 +26,9 @@
 namespace tops {
 namespace model {
 
-#include <vector>
-
 typedef int Symbol;
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_SYMBOL_
