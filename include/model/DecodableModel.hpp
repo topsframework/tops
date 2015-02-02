@@ -19,11 +19,9 @@
 
 #include <memory>
 
-#include "src/DecodableModel.hpp"
-
 namespace tops {
 namespace model {
-  class DecodableModel : public tops::DecodableModel {
+  class DecodableModel {
   };
 
   typedef std::shared_ptr<DecodableModel> DecodableModelPtr;

@@ -19,11 +19,9 @@
 
 #include <memory>
 
-#include "src/ProbabilisticModel.hpp"
-
 namespace tops {
 namespace model {
-  class ProbabilisticModel : public tops::ProbabilisticModel {
+  class ProbabilisticModel {
   };
 
   typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;

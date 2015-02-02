@@ -30,10 +30,7 @@ BENCHBIN        := bench
 
 # Dependencies
 # ==============
-GIT_DEPENDENCY  := \
-    tops      => https://github.com/igorbonadio/tops.git \
-                 mkdir -p build && cd build && cmake .. && make
-
+GIT_DEPENDENCY  :=
 WEB_DEPENDENCY  := # Same as above, but for URL downloads
                    # with 'curl -o' (default) or 'wget -O'
 
@@ -41,9 +38,8 @@ WEB_DEPENDENCY  := # Same as above, but for URL downloads
 # =======
 ASLIBS          := # Assembly paths
 CLIBS           := # C paths
-CXXLIBS         := -I external/tops
-LDLIBS          := -L external/tops/build/src \
-                   # -L /usr/local/Cellar/boost/1.57.0/lib
+CXXLIBS         :=
+LDLIBS          :=
 
 # Flags
 # =======
@@ -51,9 +47,8 @@ CPPFLAGS        := # Precompiler Flags
 ASFLAGS         := # Assembly Flags
 CFLAGS          := # C Flags
 CXXFLAGS        := -ansi -Wall -O2 -std=c++11 \
-                   # -I /usr/local/Cellar/boost/1.57.0/include \
-                   # -pedantic 
-LDFLAGS         := -lboost_system -lToPS
+                   # -pedantic
+LDFLAGS         :=
 
 # Makeball list
 # ===============

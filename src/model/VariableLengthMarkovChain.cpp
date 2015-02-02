@@ -19,6 +19,8 @@
 
 #include "VariableLengthMarkovChain.hpp"
 
+#include <cmath>
+
 namespace tops {
 namespace model {
 

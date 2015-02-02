@@ -17,7 +17,7 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <math.h>
+#include <cmath>
 #include <vector>
 
 #include "gmock/gmock.h"

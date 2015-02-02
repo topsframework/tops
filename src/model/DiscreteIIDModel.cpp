@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <string>
+#include <math.h>
 
 #include "model/DiscreteIIDModel.hpp"
 #include "model/Random.hpp"

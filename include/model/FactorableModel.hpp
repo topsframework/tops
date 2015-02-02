@@ -19,11 +19,9 @@
 
 #include <memory>
 
-#include "src/FactorableModel.hpp"
-
 namespace tops {
 namespace model {
-  class FactorableModel : public tops::FactorableModel {
+  class FactorableModel {
   };
 
   typedef std::shared_ptr<FactorableModel> FactorableModelPtr;

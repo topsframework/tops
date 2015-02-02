@@ -19,11 +19,9 @@
 
 #include <memory>
 
-#include "src/InhomogeneousFactorableModel.hpp"
-
 namespace tops {
 namespace model {
-  class InhomogeneousFactorableModel : public tops::InhomogeneousFactorableModel {
+  class InhomogeneousFactorableModel {
   };
 
   typedef std::shared_ptr<InhomogeneousFactorableModel> InhomogeneousFactorableModelPtr;

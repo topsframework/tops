@@ -1,5 +1,7 @@
 #include "helper/VariableLengthMarkovChain.hpp"
 
+#include <cmath>
+
 #include "helper/Random.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 

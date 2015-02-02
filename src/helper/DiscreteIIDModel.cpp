@@ -1,5 +1,7 @@
 #include "helper/DiscreteIIDModel.hpp"
 
+#include <cmath>
+
 #include "helper/Random.hpp"
 
 namespace tops {
