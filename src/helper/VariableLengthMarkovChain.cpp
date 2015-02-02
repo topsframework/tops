@@ -28,5 +28,11 @@ tops::model::VariableLengthMarkovChainPtr createMachlerVLMC() {
   return tops::model::VariableLengthMarkovChain::make(tops::model::ContextTree::make(root));
 }
 
+tops::model::VariableLengthMarkovChainPtr createVLMCMC() {
+  auto root = tops::model::ContextTreeNode::make(0, tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
+  root->addChild(0, tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
+  return tops::model::VariableLengthMarkovChain::make(tops::model::ContextTree::make(root));
+}
+
 }  // namespace helper
 }  // namespace tops

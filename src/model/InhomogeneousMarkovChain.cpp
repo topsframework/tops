@@ -26,12 +26,46 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(std::vector<VariableL
   return InhomogeneousMarkovChainPtr(new InhomogeneousMarkovChain(vlmcs, phased));
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
+void InhomogeneousMarkovChain::initializeOldIMC(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) {
   std::vector<tops::ContextTreePtr> trees;
   for (auto vlmc : vlmcs)
     trees.push_back(vlmc->getTree());
   setPositionSpecificDistribution(trees);
   this->phased(phased);
+}
+
+InhomogeneousMarkovChain::InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased) : _vlmcs(vlmcs), _phased(phased) {
+  initializeOldIMC(vlmcs, phased);
+}
+
+int InhomogeneousMarkovChain::alphabetSize() const {
+  return _vlmcs[0]->alphabetSize();
+}
+
+double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s, unsigned int i) const {
+  if (_phased)
+    return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
+  else if (i < _vlmcs.size())
+    return _vlmcs[i]->evaluatePosition(s, i);
+  else
+    return -HUGE;
+}
+
+int InhomogeneousMarkovChain::choosePosition(const Sequence &s, unsigned int i) const {
+  if (_phased)
+    return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
+  else if (i < _vlmcs.size())
+    return _vlmcs[i]->choosePosition(s, i);
+  else
+    return 0; // TODO: ERROR!
+}
+
+double InhomogeneousMarkovChain::evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const {
+  double p = 0;
+  for (int i = 0; i < s.size(); i++) {
+    p += evaluatePosition(s, i);
+  }
+  return p;
 }
 
 }
