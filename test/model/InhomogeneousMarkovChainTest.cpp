@@ -17,11 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <math.h>
+// Standard headers
+#include <cmath>
 #include <vector>
 
+// External headers
 #include "gmock/gmock.h"
 
+// ToPS headers
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"

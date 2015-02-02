@@ -20,9 +20,11 @@
 #ifndef TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_
 #define TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_
 
+// Standard headers
 #include <memory>
 #include <vector>
 
+// ToPS headers
 #include "model/FactorableModel.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 

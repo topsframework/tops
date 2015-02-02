@@ -17,9 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "VariableLengthMarkovChain.hpp"
-
+// Standard headers
 #include <cmath>
+
+// ToPS headers
+#include "VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {

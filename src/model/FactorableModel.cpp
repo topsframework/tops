@@ -17,6 +17,7 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// ToPS headers
 #include "FactorableModel.hpp"
 
 namespace tops {

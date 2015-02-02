@@ -20,8 +20,10 @@
 #ifndef TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_
 #define TOPS_MODEL_VARIABLE_LENGTH_MARKOV_CHAIN_
 
+// Standard headers
 #include <memory>
 
+// ToPS headers
 #include "model/FactorableModel.hpp"
 #include "model/ContextTree.hpp"
 

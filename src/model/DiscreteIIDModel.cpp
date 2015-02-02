@@ -17,10 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <vector>
 #include <string>
 #include <cmath>
 
+// ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/Random.hpp"
 

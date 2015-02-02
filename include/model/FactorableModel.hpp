@@ -20,8 +20,10 @@
 #ifndef TOPS_MODEL_FACTORABLE_MODEL_
 #define TOPS_MODEL_FACTORABLE_MODEL_
 
+// Standard headers
 #include <memory>
 
+// ToPS headers
 #include "model/Sequence.hpp"
 
 namespace tops {

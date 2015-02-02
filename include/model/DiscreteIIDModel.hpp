@@ -20,9 +20,11 @@
 #ifndef TOPS_MODEL_DISCRETE_IID_MODEL_
 #define TOPS_MODEL_DISCRETE_IID_MODEL_
 
+// Standard headers
 #include <memory>
 #include <vector>
 
+// ToPS headers
 #include "model/FactorableModel.hpp"
 
 namespace tops {
