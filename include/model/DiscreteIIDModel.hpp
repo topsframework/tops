@@ -37,10 +37,14 @@ class DiscreteIIDModel {
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
 
   virtual int alphabetSize() const;
+
   virtual double probabilityOf(Symbol s) const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
+
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
-  virtual double evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const;
 
  private:
   explicit DiscreteIIDModel(std::vector<double> probabilities);
