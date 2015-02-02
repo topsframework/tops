@@ -17,13 +17,20 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_
+#define TOPS_MODEL_PROBABILISTIC_MODEL_
+
 #include <memory>
 
 namespace tops {
 namespace model {
-  class ProbabilisticModel {
-  };
 
-  typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;
-}
-}
+class ProbabilisticModel {
+};
+
+typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;
+
+}  // namespace model
+}  // namespace tops
+
+#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_
