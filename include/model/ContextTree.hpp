@@ -25,15 +25,13 @@
 #include "model/ContextTreeNode.hpp"
 #include "model/Sequence.hpp"
 
-#include "src/ContextTree.hpp"
-
 namespace tops {
 namespace model {
 
 class ContextTree;
 typedef std::shared_ptr<ContextTree> ContextTreePtr;
 
-class ContextTree : public tops::ContextTree {
+class ContextTree {
  public:
   static ContextTreePtr make(ContextTreeNodePtr root);
 

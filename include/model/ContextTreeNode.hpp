@@ -21,17 +21,15 @@
 
 #include "model/DiscreteIIDModel.hpp"
 
-#include "src/ContextTree.hpp"
-
 namespace tops {
 namespace model {
 
 class ContextTreeNode;
 typedef std::shared_ptr<ContextTreeNode> ContextTreeNodePtr;
 
-class ContextTreeNode : public tops::ContextTreeNode {
+class ContextTreeNode {
  public:
-  static ContextTreeNodePtr make(int symbol, DiscreteIIDModelPtr distribution);
+  static ContextTreeNodePtr make(DiscreteIIDModelPtr distribution);
 
   int alphabetSize() const;
 
@@ -40,10 +38,9 @@ class ContextTreeNode : public tops::ContextTreeNode {
   ContextTreeNodePtr getChild(int symbol);
   DiscreteIIDModelPtr getDistribution();
  private:
-  ContextTreeNode(int symbol, DiscreteIIDModelPtr distribution);
+  explicit ContextTreeNode(DiscreteIIDModelPtr distribution);
 
   bool _leaf;
-  int _symbol;
   std::map<int, ContextTreeNodePtr> _children;
   DiscreteIIDModelPtr _distribution;
 };
