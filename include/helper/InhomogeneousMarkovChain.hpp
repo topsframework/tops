@@ -25,7 +25,8 @@
 namespace tops {
 namespace helper {
 
-tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains, int alphabet_size);
+tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains,
+                                                           int alphabet_size);
 
 }  // namespace helper
 }  // namespace tops
