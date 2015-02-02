@@ -22,5 +22,14 @@
 namespace tops {
 namespace model {
 
+double FactorableModel::evaluateSequence(const Sequence &s,
+                                          unsigned int begin,
+                                          unsigned int end) const {
+  double prob = evaluatePosition(s, begin);
+  for (int i = begin+1; i < end; i++)
+    prob += evaluatePosition(s, i);
+  return prob;
+}
+
 }
 }

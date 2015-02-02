@@ -60,15 +60,5 @@ int InhomogeneousMarkovChain::choosePosition(const Sequence &s,
     return 0;  // TODO(igorbonadio): ERROR!
 }
 
-double InhomogeneousMarkovChain::evaluateSequence(const Sequence &s,
-                                                  unsigned int begin,
-                                                  unsigned int end) const {
-  double p = 0;
-  for (int i = 0; i < s.size(); i++) {
-    p += evaluatePosition(s, i);
-  }
-  return p;
-}
-
 }  // namespace model
 }  // namespace tops

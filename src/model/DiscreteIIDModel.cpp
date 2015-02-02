@@ -48,15 +48,6 @@ double DiscreteIIDModel::evaluatePosition(const Sequence &s,
   return _probabilities[s[i]];
 }
 
-double DiscreteIIDModel::evaluateSequence(const Sequence &s,
-                                          unsigned int begin,
-                                          unsigned int end) const {
-  double prob = evaluatePosition(s, begin);
-  for (int i = begin+1; i < end; i++)
-    prob += evaluatePosition(s, i);
-  return prob;
-}
-
 int DiscreteIIDModel::choosePosition(const Sequence &s, unsigned int i) const {
   double random = generateRandomDouble();
   int symbol;

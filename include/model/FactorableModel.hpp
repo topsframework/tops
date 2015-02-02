@@ -33,7 +33,7 @@ class FactorableModel {
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
-                                  unsigned int end) const = 0;
+                                  unsigned int end) const;
 
   virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
 };
