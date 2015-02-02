@@ -33,21 +33,27 @@ typedef std::shared_ptr<InhomogeneousMarkovChain> InhomogeneousMarkovChainPtr;
 
 class InhomogeneousMarkovChain {
  public:
-  static InhomogeneousMarkovChainPtr make(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
+  static InhomogeneousMarkovChainPtr make(
+      std::vector<VariableLengthMarkovChainPtr> vlmcs,
+      bool phased);
 
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual int choosePosition(const Sequence &s, unsigned int i) const;
-  virtual double evaluateSequence(const Sequence &s, unsigned int begin, unsigned int end) const;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
 
  private:
-  InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs, bool phased);
+  InhomogeneousMarkovChain(
+      std::vector<VariableLengthMarkovChainPtr> vlmcs,
+      bool phased);
 
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
   bool _phased;
 };
 
-}
-}
+}  // namespace model
+}  // namespace tops
 
 #endif  // TOPS_MODEL_INHOMOGENEOUS_MARKOV_CHAIN_
