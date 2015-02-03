@@ -32,5 +32,5 @@ double FactorableModel::evaluateSequence(const Sequence &s,
   return prob;
 }
 
-}
-}
+}  // namespace model
+}  // namespace tops
