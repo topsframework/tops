@@ -17,55 +17,16 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_FACTORABLE_MODEL_
-#define TOPS_MODEL_FACTORABLE_MODEL_
-
-// Standard headers
-#include <memory>
-
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
-#include "model/Sequence.hpp"
+#ifndef TOPS_MODEL_UTIL_
+#define TOPS_MODEL_UTIL_
 
 namespace tops {
 namespace model {
 
-class FactorableModel;
-
-/**
- * @typedef FactorableModelPtr
- * @brief Alias of pointer to FactorableModel.
- */
-using FactorableModelPtr = std::shared_ptr<FactorableModel>;
-
-/**
- * @class FactorableModel
- * @brief Abstract class defining models in which the likelihood of
- *        the sequence is factorable.
- *
- * A factorable model can be expressed as a product of terms evaluated
- * at each position in a sequence.
- */
-class FactorableModel : public ProbabilisticModel {
- public:
-  // Purely virtual methods
-  virtual int alphabetSize() const = 0;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
-
-  // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluateWithPrefixSumArray(int begin, int end);
-  virtual void initializePrefixSumArray(const Sequence &s);
-
- private:
-  // Instance variables
-  std::vector<double> _prefix_sum_array;
-};
+bool close(double a, double b, double tolerance);
+double safe_division(double a, double b);
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_FACTORABLE_MODEL_
+#endif  // TOPS_MODEL_UTIL_

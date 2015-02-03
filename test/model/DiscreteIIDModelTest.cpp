@@ -26,6 +26,7 @@
 #include "model/Sequence.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
+#include "helper/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -35,6 +36,7 @@ using tops::model::DiscreteIIDModelPtr;
 using tops::model::Sequence;
 
 using tops::helper::createLoadedCoinIIDModel;
+using tops::helper::generateRandomSequence;
 
 class ADiscreteIIDModel : public testing::Test {
  protected:
@@ -45,7 +47,7 @@ TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
   ASSERT_THAT(iid->alphabetSize(), Eq(2));
 }
 
-TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASingleSymbol) {
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASingleSymbol) {
   ASSERT_THAT(iid->probabilityOf(0), DoubleEq(log(0.2)));
   ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(0.8)));
 }
@@ -65,8 +67,16 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
   }
 }
 
-TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequencePosition) {
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
+}
+
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
+  for (int i = 1; i < 1000; i++) {
+    auto data = generateRandomSequence(i, 2);
+    iid->initializePrefixSumArray(data);
+    ASSERT_THAT(iid->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(iid->evaluateSequence(data, 0, data.size())));
+  }
 }

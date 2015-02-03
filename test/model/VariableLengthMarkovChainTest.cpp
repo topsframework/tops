@@ -27,6 +27,7 @@
 #include "model/DiscreteIIDModel.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
+#include "helper/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -38,6 +39,7 @@ using tops::model::DiscreteIIDModelPtr;
 using tops::model::Sequence;
 
 using tops::helper::createMachlerVLMC;
+using tops::helper::generateRandomSequence;
 
 class AVLMC : public testing::Test {
  protected:
@@ -68,4 +70,12 @@ TEST_F(AVLMC, ShouldEvaluateASequence) {
   ASSERT_THAT(vlmc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.79)));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.50) + log(0.21) + log(0.80)));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4), DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+}
+
+TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
+  for (int i = 1; i < 1000; i++) {
+    auto data = generateRandomSequence(i, 2);
+    vlmc->initializePrefixSumArray(data);
+    ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(vlmc->evaluateSequence(data, 0, data.size())));
+  }
 }

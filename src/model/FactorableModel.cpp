@@ -17,8 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <cmath>
+
 // ToPS headers
 #include "FactorableModel.hpp"
+#include "Util.hpp"
 
 namespace tops {
 namespace model {
@@ -30,6 +34,18 @@ double FactorableModel::evaluateSequence(const Sequence &s,
   for (unsigned int i = begin; i < end; i++)
     prob += evaluatePosition(s, i);
   return prob;
+}
+
+double FactorableModel::evaluateWithPrefixSumArray(int begin, int end) {
+  return _prefix_sum_array[end] - _prefix_sum_array[begin];
+}
+
+void FactorableModel::initializePrefixSumArray(const Sequence &s) {
+  _prefix_sum_array.resize(s.size() + 1);
+  _prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < s.size() ; i++) {
+    _prefix_sum_array[i+1] = _prefix_sum_array[i] + evaluatePosition(s, i);
+  }
 }
 
 }  // namespace model

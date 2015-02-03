@@ -17,55 +17,35 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_FACTORABLE_MODEL_
-#define TOPS_MODEL_FACTORABLE_MODEL_
-
 // Standard headers
-#include <memory>
+#include <cmath>
+#include <limits>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
-#include "model/Sequence.hpp"
+#include "Util.hpp"
 
 namespace tops {
 namespace model {
 
-class FactorableModel;
+bool close(double a, double b, double tolerance) {
+  double diff = fabs(a-b);
+  double div1 = safe_division(diff, fabs(a));
+  double div2 = safe_division(diff, fabs(b));
+  if ( (div1 <= tolerance) && (div2 <= tolerance)) {
+    return true;
+  }
+  return false;
+}
 
-/**
- * @typedef FactorableModelPtr
- * @brief Alias of pointer to FactorableModel.
- */
-using FactorableModelPtr = std::shared_ptr<FactorableModel>;
-
-/**
- * @class FactorableModel
- * @brief Abstract class defining models in which the likelihood of
- *        the sequence is factorable.
- *
- * A factorable model can be expressed as a product of terms evaluated
- * at each position in a sequence.
- */
-class FactorableModel : public ProbabilisticModel {
- public:
-  // Purely virtual methods
-  virtual int alphabetSize() const = 0;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
-
-  // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluateWithPrefixSumArray(int begin, int end);
-  virtual void initializePrefixSumArray(const Sequence &s);
-
- private:
-  // Instance variables
-  std::vector<double> _prefix_sum_array;
-};
+double safe_division(double a, double b) {
+  if((b < 1) && (a > b * (std::numeric_limits<double>::max)())) {
+    return (std::numeric_limits<double>::max)();
+  } else if (((b > 1) && (a < b*(std::numeric_limits<double>::min)()) )|| (a == 0)) {
+    return 0;
+  } else {
+    return a/b;
+  }
+}
 
 }  // namespace model
 }  // namespace tops
-
-#endif  // TOPS_MODEL_FACTORABLE_MODEL_
