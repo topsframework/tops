@@ -38,14 +38,14 @@ class ContextTreeNode {
   int alphabetSize() const;
 
   bool isLeaf();
-  ContextTreeNodePtr addChild(int symbol, DiscreteIIDModelPtr distribution);
-  ContextTreeNodePtr getChild(int symbol);
+  ContextTreeNodePtr addChild(Symbol symbol, DiscreteIIDModelPtr distribution);
+  ContextTreeNodePtr getChild(Symbol symbol);
   DiscreteIIDModelPtr getDistribution();
  private:
   explicit ContextTreeNode(DiscreteIIDModelPtr distribution);
 
   bool _leaf;
-  std::map<int, ContextTreeNodePtr> _children;
+  std::map<Symbol, ContextTreeNodePtr> _children;
   DiscreteIIDModelPtr _distribution;
 };
 

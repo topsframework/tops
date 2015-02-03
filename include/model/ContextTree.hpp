@@ -37,7 +37,7 @@ class ContextTree {
 
   int alphabetSize() const;
 
-  ContextTreeNodePtr getContext(Sequence sequence, int i);
+  ContextTreeNodePtr getContext(Sequence sequence, Symbol i);
  private:
   explicit ContextTree(ContextTreeNodePtr root);
 

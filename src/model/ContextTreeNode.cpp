@@ -40,7 +40,7 @@ bool ContextTreeNode::isLeaf() {
 }
 
 ContextTreeNodePtr ContextTreeNode::addChild(
-    int symbol,
+    Symbol symbol,
     DiscreteIIDModelPtr distribution) {
   auto node = ContextTreeNodePtr(new ContextTreeNode(distribution));
   _children[symbol] = node;
@@ -48,7 +48,7 @@ ContextTreeNodePtr ContextTreeNode::addChild(
   return node;
 }
 
-ContextTreeNodePtr ContextTreeNode::getChild(int symbol) {
+ContextTreeNodePtr ContextTreeNode::getChild(Symbol symbol) {
   return _children[symbol];
 }
 

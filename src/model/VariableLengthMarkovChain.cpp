@@ -49,7 +49,7 @@ double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
     return c->getDistribution()->probabilityOf(s[i]);
 }
 
-int VariableLengthMarkovChain::choosePosition(const Sequence &s,
+Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
                                               unsigned int i) const {
   ContextTreeNodePtr c = _context_tree->getContext(s, i);
   if (c == NULL)

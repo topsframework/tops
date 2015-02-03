@@ -51,7 +51,7 @@ class FactorableModel : public ProbabilisticModel {
   // Purely virtual methods
   virtual int alphabetSize() const = 0;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
 
   // Virtual methods
   virtual double evaluateSequence(const Sequence &s,

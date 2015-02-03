@@ -33,7 +33,7 @@ int ContextTree::alphabetSize() const {
   return _root->alphabetSize();
 }
 
-ContextTreeNodePtr ContextTree::getContext(Sequence sequence, int i) {
+ContextTreeNodePtr ContextTree::getContext(Sequence sequence, Symbol i) {
   ContextTreeNodePtr c = _root;
   ContextTreeNodePtr p;
   for (int j = i-1; j >= 0; j--) {
