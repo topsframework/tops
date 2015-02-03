@@ -30,7 +30,7 @@ before_script:
 script:
   - make
   - make check
-  - make test-coverage
+  - make test-coverage COV_IGNORE='*/helper/*'
 
 after_success:
   - coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 
