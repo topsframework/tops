@@ -28,10 +28,28 @@ before_script:
   - git submodule update --init --recursive
 
 script:
-  - make
-  - make check
-  - make test-coverage COV_IGNORE='*/helper/*'
+  - if [ ${COVERITY_SCAN_BRANCH} != 1 ];
+      then make test-coverage COV_IGNORE='*/helper/*';
+    fi
 
 after_success:
-  - coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 
-                   coverage/test/test.info
+  - if [ ${COVERITY_SCAN_BRANCH} != 1 ];
+      then coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 
+                          coverage/test/test.info;
+    fi
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   # via the "travis encrypt" command using the project repo's public key
+   - secure: "JaaaKGDY+6k1AutLv0S8UVrzJUjaFz8Ly25mLzjLHBeqmApFBzwp0mgkgAakQAYbprp8VKiJ/SxTEvYS+ScjYamnSzymmwBjWb5bmJSL5JgY1HkWZ9o1kt8Fpv5S237hEVN4rDl3m37n8dqe7gpTCVSaFtZNQ8/WUWp+RwddonY="
+
+addons:
+  coverity_scan:
+    project:
+      name: "topsframework/tops-refactoring"
+      description: "Build submitted via Travis CI"
+    notification_email: renato.cferreira@hotmail.com
+    build_command_prepend: "make distclean"
+    build_command:   "make -O -j 2"
+    branch_pattern: coverity_scan
