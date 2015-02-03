@@ -1,8 +1,9 @@
 [Refactoring]
   [ ] Almost all functions are virtual. Verify if it is necessary
-  [ ] Remove _self
-  [ ] Remove 'alphabet_size' param from ContextTree's contructor
+  [x] Remove _self
+  [x] Remove 'alphabet_size' param from ContextTree's contructor
   [x] Remove duplications of benchmark's helper functions
+  [ ] Prefix sum array can't be parallelized
 
 [Tests]
   [ ] Choose methods to be tested.

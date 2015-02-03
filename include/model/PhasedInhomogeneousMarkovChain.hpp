@@ -37,14 +37,14 @@ class PhasedInhomogeneousMarkovChain;
  * @typedef PhasedInhomogeneousMarkovChainPtr
  * @brief Alias of pointer to PhasedInhomogeneousMarkovChain.
  */
-using PhasedInhomogeneousMarkovChainPtr 
+using PhasedInhomogeneousMarkovChainPtr
     = std::shared_ptr<PhasedInhomogeneousMarkovChain>;
 
 /**
  * @class PhasedInhomogeneousMarkovChain
  * @brief Class that represents an inhomogeneous Markov chain.
  *
- * A phased inhomogeneous Markov chain is a model which suports different 
+ * A phased inhomogeneous Markov chain is a model which suports different
  * Markov chains per position. Each Markov chain repeats itsealf per
  * phase.
  */
@@ -56,7 +56,7 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
 
   // Virtual methods
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual int choosePosition(const Sequence &s, unsigned int i) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
 
  private:
   // Constructors

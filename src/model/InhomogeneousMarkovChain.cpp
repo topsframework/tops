@@ -50,7 +50,7 @@ double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
     return -HUGE;
 }
 
-int InhomogeneousMarkovChain::choosePosition(const Sequence &s,
+Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
                                              unsigned int i) const {
   if (i < _vlmcs.size())
     return _vlmcs[i]->choosePosition(s, i);

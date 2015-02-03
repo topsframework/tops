@@ -43,7 +43,7 @@ double PhasedInhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
   return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
 }
 
-int PhasedInhomogeneousMarkovChain::choosePosition(const Sequence &s,
+Symbol PhasedInhomogeneousMarkovChain::choosePosition(const Sequence &s,
                                                    unsigned int i) const {
   return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
 }

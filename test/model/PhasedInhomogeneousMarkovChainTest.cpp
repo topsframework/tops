@@ -30,6 +30,7 @@
 #include "model/Sequence.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
+#include "helper/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -42,6 +43,7 @@ using tops::model::PhasedInhomogeneousMarkovChainPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
+using tops::helper::generateRandomSequence;
 
 class APhasedInhomogeneousMarkovChain : public testing::Test {
  protected:
@@ -64,4 +66,12 @@ TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(imc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(imc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.5) + log(0.5) + log(0.80)));
+}
+
+TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
+  for (int i = 1; i < 1000; i++) {
+    auto data = generateRandomSequence(i, 2);
+    imc->initializePrefixSumArray(data);
+    ASSERT_THAT(imc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(imc->evaluateSequence(data, 0, data.size())));
+  }
 }
