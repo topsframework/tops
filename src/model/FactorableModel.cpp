@@ -22,7 +22,6 @@
 
 // ToPS headers
 #include "FactorableModel.hpp"
-#include "Util.hpp"
 
 namespace tops {
 namespace model {
