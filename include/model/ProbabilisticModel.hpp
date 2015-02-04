@@ -20,12 +20,24 @@
 #ifndef TOPS_MODEL_PROBABILISTIC_MODEL_
 #define TOPS_MODEL_PROBABILISTIC_MODEL_
 
+// Standard headers
 #include <memory>
+
+// ToPS headers
+#include "model/Sequence.hpp"
 
 namespace tops {
 namespace model {
 
 class ProbabilisticModel {
+public:
+  // Purely virtual methods
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const = 0;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const = 0;
 };
 
 typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;

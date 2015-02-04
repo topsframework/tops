@@ -26,6 +26,16 @@
 namespace tops {
 namespace model {
 
+Sequence FactorableModel::chooseSequence(Sequence &s, unsigned int size) const {
+  for (unsigned int k = 0; k < size; k++) {
+    if (k < s.size())
+      s[k] = choosePosition(s, k);
+    else
+      s.push_back(choosePosition(s, k));
+  }
+  return s;
+}
+
 double FactorableModel::evaluateSequence(const Sequence &s,
                                           unsigned int begin,
                                           unsigned int end) const {

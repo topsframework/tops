@@ -25,7 +25,6 @@
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
-#include "model/Sequence.hpp"
 
 namespace tops {
 namespace model {
@@ -54,6 +53,7 @@ class FactorableModel : public ProbabilisticModel {
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
 
   // Virtual methods
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
