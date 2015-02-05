@@ -5,7 +5,8 @@
   [x] Remove duplications of benchmark's helper functions
   [ ] Prefix sum array can't be parallelized
   [ ] DiscreteIIDModel::SmoothedHistogramStanke
-  [ ] trainSmoothedHistogramBurge
+  [ ] DiscreteIIDModel::trainSmoothedHistogramBurge
+  [ ] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
 
 [Tests]
   [ ] Choose methods to be tested.
