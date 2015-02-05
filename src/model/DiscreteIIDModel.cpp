@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <vector>
+#include <map>
 #include <string>
 #include <cmath>
 
@@ -51,6 +52,62 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainML(
   for (Symbol s = 0; s < alphabet_size; s++)
     probabilities[s] = log(probabilities[s]/number_of_symbols);
   return DiscreteIIDModel::make(probabilities);
+}
+
+DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
+    std::vector<Sequence> training_set,
+    double c,
+    int max_length) {
+
+  std::vector<Symbol> data;
+
+
+  for (auto sequence : training_set)
+    for (auto symbol : sequence)
+      data.push_back(symbol);
+
+  std::map<Symbol, double> counter;
+  std::map<Symbol, double> sum;
+  std::map<Symbol, double>::const_iterator iter;
+
+  for (auto symbol : data) {
+    iter = counter.find(symbol);
+    if(iter == counter.end())
+      counter[symbol] = 1.0;
+    else
+      counter[symbol] += 1.0;
+  }
+  double total = 0.0;
+  for (unsigned int k = 1; k <= max_length; k++){
+    int start = k - 10;
+    int end = k + 10;
+    if(start < 0)
+      start = 0;
+    sum[k] = 0.0;
+    for(int x = start; x < end; x++){
+      iter = counter.find((long)x);
+      if(iter != counter.end() && iter->second > 0.0){
+        double nx = iter->second;
+        double mean = x+1.0;
+        double sd = sqrt(2*((double)(x+1.0))*c/nx);
+        double px2 = 0.5*(1 + erf((((double)k+1.5) - mean))/ (sd*sqrt(2.0)));
+        double px1 = 0.5*(1 + erf((((double)k+0.5) - mean))/ (sd*sqrt(2.0)));
+        sum[k] += nx*(px2 - px1);
+      }
+    }
+    sum[k] = sum[k]/data.size();
+    total = total+ sum[k];
+  }
+  double epsilon = 1e-5;
+  total = total/(1 - max_length*epsilon);
+
+  std::vector<double> prob;
+  prob.resize(max_length+1);
+  for (int k = 1; k <= max_length; k++){
+    prob[k] = epsilon + sum[k]/total;
+  }
+
+  return DiscreteIIDModel::make(prob);
 }
 
 int DiscreteIIDModel::alphabetSize() const {
