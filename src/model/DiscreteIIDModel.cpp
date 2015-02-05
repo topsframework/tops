@@ -57,7 +57,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainML(
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
     std::vector<Sequence> training_set,
     double c,
-    int max_length) {
+    unsigned int max_length) {
 
   std::vector<Symbol> data;
 
@@ -107,6 +107,99 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
   }
 
   return DiscreteIIDModel::make(prob);
+}
+
+DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
+      std::vector<Sequence> training_set,
+      std::vector<unsigned int> weights,
+      unsigned int max_length,
+      int m,
+      double slope) {
+
+  double a = slope;
+  unsigned int max = max_length;
+  unsigned int L = max;
+  max = max + 4 * a * max;
+
+  std::vector<Symbol> data;
+  for (unsigned int i = 0; i < training_set.size(); i++)
+    for (auto symbol : training_set[i])
+      for (unsigned int k = 0; k < weights[i]; k++)
+        data.push_back(symbol);
+
+  std::map<Symbol, int> counter;
+  std::vector<double> prob;
+
+
+  std::vector<double> pi;
+  pi.resize(L);
+
+  if (data.size() > 0) {
+    for(unsigned int i = 0; i < data.size(); i++){
+      if(counter.find(data[i]) == counter.end())
+        counter[data[i]] = 1.0;
+      else
+        counter[data[i]] += 1.0;
+    }
+
+    double count_left = 0;
+    double count_right = 0;
+
+    for (int pos = 0; (pos < L) && (pos < max) ; pos +=1) {
+      int bwd = (int) (.01 + (a / pow(L, 1.0/5.0) ) * (double) pos);
+      if(bwd <= 0)
+        bwd = 1;
+      for(int j = pos - bwd + 1;  (j <= pos + bwd -1)  ; j++) {
+        if (! (j >= 0 && j < L))
+          continue;
+        if(j <= pos)
+          count_left += (counter[j]) ? 1: 0;
+        if(j >= pos)
+          count_right += (counter[j])? 1: 0;
+      }
+
+      while (count_left < m && count_right < m && bwd < L) {
+        bwd ++;
+        if(pos + bwd -1 < L)
+          count_left += counter[pos + bwd - 1] ? 1:0;
+        if(pos - bwd + 1 >= 0)
+          count_right += counter[pos + bwd - 1] ? 1:0;
+      }
+
+      if(pos < L)
+        pi[pos] += kernel_normal((double)0, (double)bwd) * counter[pos];
+      bool negligible = false;
+      int j=1;
+      while (!negligible && (pos-j>=0 || pos+j<L)){
+        double  wj = kernel_normal(j, bwd) * (counter[pos] );
+        if (pos-j>=0 && pos-j<(int)pi.size() ) {
+          pi[pos-j] += wj;
+        }
+        if (pos+j<(int)pi.size() && pos+j>=0) {
+          pi[pos+j] += wj;
+        }
+        negligible = (wj < 1e-20);
+        j++;
+      }
+    }
+
+    double total = 0;
+    for (long k = 0; k < (int)pi.size(); k++)
+      total += pi[k];
+    prob.resize(L);
+    for (long k = 0; k < (int)pi.size(); k++) {
+      prob[k] =  pi[k]/(total) ;
+    }
+  }
+
+  return DiscreteIIDModel::make(prob);
+}
+
+double DiscreteIIDModel::kernel_normal(double x, double h) {
+  double y = (x/h) * (x/h) ;
+  double f = 1.0/(sqrt(2*M_PI));
+  double v =  (f/h) * exp (- y/2);
+  return v;
 }
 
 int DiscreteIIDModel::alphabetSize() const {

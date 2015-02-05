@@ -4,6 +4,8 @@
   [x] Remove 'alphabet_size' param from ContextTree's contructor
   [x] Remove duplications of benchmark's helper functions
   [ ] Prefix sum array can't be parallelized
+  [ ] DiscreteIIDModel::SmoothedHistogramStanke
+  [ ] trainSmoothedHistogramBurge
 
 [Tests]
   [ ] Choose methods to be tested.

@@ -47,11 +47,18 @@ class DiscreteIIDModel : public FactorableModel {
  public:
   // Static methods
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
-  static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set, unsigned int alphabet_size);
+  static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set,
+                                     unsigned int alphabet_size);
   static DiscreteIIDModelPtr trainSmoothedHistogramBurge(
       std::vector<Sequence> training_set,
       double c,
-      int max_length);
+      unsigned int max_length);
+  static DiscreteIIDModelPtr trainSmoothedHistogramStanke(
+      std::vector<Sequence> training_set,
+      std::vector<unsigned int> weights,
+      unsigned int max_length,
+      int m,
+      double slope);
 
   // Virtual methods
   virtual int alphabetSize() const;
@@ -67,6 +74,9 @@ class DiscreteIIDModel : public FactorableModel {
 
   // Constructors
   explicit DiscreteIIDModel(std::vector<double> probabilities);
+
+  // Static methods
+  static double kernel_normal(double x, double h);
 };
 
 }  // namespace model
