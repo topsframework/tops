@@ -47,6 +47,7 @@ class DiscreteIIDModel : public FactorableModel {
  public:
   // Static methods
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+  static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set, unsigned int alphabet_size);
 
   // Virtual methods
   virtual int alphabetSize() const;

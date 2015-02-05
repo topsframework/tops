@@ -80,3 +80,14 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
     ASSERT_THAT(iid->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(iid->evaluateSequence(data, 0, data.size())));
   }
 }
+
+TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
+  std::vector<Sequence> training_set = {
+    {0, 0, 0, 1, 1},
+    {0, 0, 0, 1, 0, 0, 1, 1},
+    {0, 0, 0, 1, 1, 0, 0},
+  };
+  auto iid = DiscreteIIDModel::trainML(training_set, 2);
+  ASSERT_THAT(iid->probabilityOf(0), DoubleEq(log(13.0/20)));
+  ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(7.0/20)));
+}

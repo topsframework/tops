@@ -37,6 +37,22 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
 
+DiscreteIIDModelPtr DiscreteIIDModel::trainML(
+    std::vector<Sequence> training_set,
+    unsigned int alphabet_size) {
+  std::vector<double> probabilities(alphabet_size, 0);
+  unsigned int number_of_symbols = 0;
+  for (auto sequence : training_set) {
+    for (auto symbol : sequence) {
+      probabilities[symbol]++;
+      number_of_symbols++;
+    }
+  }
+  for (Symbol s = 0; s < alphabet_size; s++)
+    probabilities[s] = log(probabilities[s]/number_of_symbols);
+  return DiscreteIIDModel::make(probabilities);
+}
+
 int DiscreteIIDModel::alphabetSize() const {
   return _probabilities.size();
 }
