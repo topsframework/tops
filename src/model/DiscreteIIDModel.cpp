@@ -61,7 +61,6 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
 
   std::vector<Symbol> data;
 
-
   for (auto sequence : training_set)
     for (auto symbol : sequence)
       data.push_back(symbol);
@@ -72,26 +71,26 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
 
   for (auto symbol : data) {
     iter = counter.find(symbol);
-    if(iter == counter.end())
+    if (iter == counter.end())
       counter[symbol] = 1.0;
     else
       counter[symbol] += 1.0;
   }
   double total = 0.0;
-  for (unsigned int k = 1; k <= max_length; k++){
+  for (unsigned int k = 1; k <= max_length; k++) {
     int start = k - 10;
     int end = k + 10;
-    if(start < 0)
+    if (start < 0)
       start = 0;
     sum[k] = 0.0;
-    for(int x = start; x < end; x++){
-      iter = counter.find((long)x);
-      if(iter != counter.end() && iter->second > 0.0){
+    for (int x = start; x < end; x++) {
+      iter = counter.find(x);
+      if (iter != counter.end() && iter->second > 0.0) {
         double nx = iter->second;
         double mean = x+1.0;
-        double sd = sqrt(2*((double)(x+1.0))*c/nx);
-        double px2 = 0.5*(1 + erf((((double)k+1.5) - mean))/ (sd*sqrt(2.0)));
-        double px1 = 0.5*(1 + erf((((double)k+0.5) - mean))/ (sd*sqrt(2.0)));
+        double sd = sqrt(2*(x+1.0)*c/nx);
+        double px2 = 0.5*(1 + erf(((k+1.5) - mean))/ (sd*sqrt(2.0)));
+        double px1 = 0.5*(1 + erf(((k+0.5) - mean))/ (sd*sqrt(2.0)));
         sum[k] += nx*(px2 - px1);
       }
     }
@@ -103,7 +102,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
 
   std::vector<double> prob;
   prob.resize(max_length+1);
-  for (int k = 1; k <= max_length; k++){
+  for (int k = 1; k <= max_length; k++) {
     prob[k] = epsilon + sum[k]/total;
   }
 
