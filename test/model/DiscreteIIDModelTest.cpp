@@ -107,20 +107,20 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   auto training_set = {sequenceOfLengths()};
   auto iid = DiscreteIIDModel::trainSmoothedHistogramBurge(training_set, 1.0, 15000);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(6.10733e-05, 1e-06));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(6.74162e-05, 1e-06));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.70344, 1e-04));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.60463, 1e-04));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
   auto training_set = {sequenceOfLengths()};
   auto iid = DiscreteIIDModel::trainSmoothedHistogramStanke(training_set, {1}, 15000, 8, 0.5);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(4.67545e-05, 1e-06));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(5.92183e-05, 1e-06));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.9706, 1e-04));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.73428, 1e-04));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithm) {
   auto training_set = {sequenceOfLengths()};
   auto iid = DiscreteIIDModel::trainSmoothedHistogramKernelDensity(training_set, 15000);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(5.97595e-05, 1e-06));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(3.72181e-05, 1e-06));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.72518, 1e-04));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-10.1987, 1e-04));
 }

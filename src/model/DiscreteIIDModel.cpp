@@ -39,6 +39,18 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
 
+std::vector<double> DiscreteIIDModel::normalize(std::vector<double> probabilities) {
+  double sum = 0;
+  for (auto p : probabilities)
+    sum += p;
+
+  std::vector<double> log_probabilities;
+  for (auto p : probabilities)
+    log_probabilities.push_back(log(p/sum));
+
+  return log_probabilities;
+}
+
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size) {
@@ -107,7 +119,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
     prob[k] = epsilon + sum[k]/total;
   }
 
-  return DiscreteIIDModel::make(prob);
+  return DiscreteIIDModel::make(normalize(prob));
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
@@ -193,7 +205,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
     }
   }
 
-  return DiscreteIIDModel::make(prob);
+  return DiscreteIIDModel::make(normalize(prob));
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
@@ -237,7 +249,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
     prob[k] =  sum[k]/total;
   }
 
-  return DiscreteIIDModel::make(prob);
+  return DiscreteIIDModel::make(normalize(prob));
 }
 
 double DiscreteIIDModel::kernel_normal(double x, double h) {

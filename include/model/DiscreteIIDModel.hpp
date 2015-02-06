@@ -82,6 +82,7 @@ class DiscreteIIDModel : public FactorableModel {
   std::vector<double> _probabilities;
 
   // Static methods
+  static std::vector<double> normalize(std::vector<double> probabilities);
   static double kernel_normal(double x, double h);
   static double epanechnikov(double x, double h);
   static void band_den_bin(int n, int nb, double *d, const std::vector<double> &x,  std::vector<double> &cnt);
