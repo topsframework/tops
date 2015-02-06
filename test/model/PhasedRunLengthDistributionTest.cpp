@@ -50,7 +50,8 @@ TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
+  ASSERT_THAT(distribution->probabilityOf(125), DoubleNear(-4.51625, 1e-04));
   ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-9.99687, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(3317), DoubleNear(-9.99687, 1e-04));
+  ASSERT_THAT(distribution->probabilityOf(4188), DoubleEq(-HUGE));
 }
 
