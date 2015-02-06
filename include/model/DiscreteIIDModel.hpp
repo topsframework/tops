@@ -67,16 +67,19 @@ class DiscreteIIDModel : public FactorableModel {
   virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual Symbol choose() const;
+  virtual double probabilityOf(Symbol s) const;
 
   // Concrete methods
-  double probabilityOf(Symbol s) const;
+  std::vector<double> probabilities();
+
+ protected:
+  // Constructors
+  explicit DiscreteIIDModel(std::vector<double> probabilities);
 
  private:
   // Instance variables
   std::vector<double> _probabilities;
-
-  // Constructors
-  explicit DiscreteIIDModel(std::vector<double> probabilities);
 
   // Static methods
   static double kernel_normal(double x, double h);

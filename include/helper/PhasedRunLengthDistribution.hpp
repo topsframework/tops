@@ -17,41 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#ifndef TOPS_HELPER_DISCRETE_IID_MODEL_
+#define TOPS_HELPER_DISCRETE_IID_MODEL_
 
-// Standard headers
-#include <memory>
-
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+#include "model/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
-namespace model {
+namespace helper {
 
-class ProbabilisticModelDecorator;
-typedef std::shared_ptr<ProbabilisticModelDecorator> ProbabilisticModelDecoratorPtr;
+tops::model::PhasedRunLengthDistributionPtr createLengthDistribution();
 
-class ProbabilisticModelDecorator : public ProbabilisticModel {
- public:
-  // Static methods
-  static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
-  // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
- protected:
-  // Instance variables
-  ProbabilisticModelPtr _model;
-
-  // Constructors
-  ProbabilisticModelDecorator(ProbabilisticModelPtr model);
-};
-
-}  // namespace model
+}  // namespace helper
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#endif  // TOPS_HELPER_DISCRETE_IID_MODEL_

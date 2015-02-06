@@ -17,41 +17,40 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#include <cmath>
+#include <vector>
 
-// Standard headers
-#include <memory>
+#include "gmock/gmock.h"
 
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+#include "model/PhasedRunLengthDistribution.hpp"
+#include "model/Sequence.hpp"
 
-namespace tops {
-namespace model {
+#include "helper/PhasedRunLengthDistribution.hpp"
+#include "helper/Sequence.hpp"
 
-class ProbabilisticModelDecorator;
-typedef std::shared_ptr<ProbabilisticModelDecorator> ProbabilisticModelDecoratorPtr;
+using ::testing::Eq;
+using ::testing::DoubleEq;
+using ::testing::DoubleNear;
 
-class ProbabilisticModelDecorator : public ProbabilisticModel {
- public:
-  // Static methods
-  static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
-  // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
+using tops::model::PhasedRunLengthDistribution;
+using tops::model::PhasedRunLengthDistributionPtr;
+using tops::model::Sequence;
+
+using tops::helper::generateRandomSequence;
+using tops::helper::sequenceOfLengths;
+using tops::helper::createLengthDistribution;
+
+class APhasedRunLengthDistribution : public testing::Test {
  protected:
-  // Instance variables
-  ProbabilisticModelPtr _model;
-
-  // Constructors
-  ProbabilisticModelDecorator(ProbabilisticModelPtr model);
+  PhasedRunLengthDistributionPtr distribution = createLengthDistribution();
 };
 
-}  // namespace model
-}  // namespace tops
+TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
+  ASSERT_THAT(distribution->alphabetSize(), Eq(15001));
+}
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
+  ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-7.50014, 1e-04));
+  ASSERT_THAT(distribution->probabilityOf(3317), DoubleNear(-7.50014, 1e-04));
+}
+

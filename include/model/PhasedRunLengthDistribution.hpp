@@ -17,41 +17,49 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#ifndef TOPS_MODEL_PHASED_RUN_LENGTH_DISTRIBUTION_
+#define TOPS_MODEL_PHASED_RUN_LENGTH_DISTRIBUTION_
 
 // Standard headers
 #include <memory>
+#include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
 
-class ProbabilisticModelDecorator;
-typedef std::shared_ptr<ProbabilisticModelDecorator> ProbabilisticModelDecoratorPtr;
+class PhasedRunLengthDistribution;
+using PhasedRunLengthDistributionPtr = std::shared_ptr<PhasedRunLengthDistribution>;
 
-class ProbabilisticModelDecorator : public ProbabilisticModel {
+class PhasedRunLengthDistribution : public DiscreteIIDModel {
  public:
   // Static methods
-  static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
+  static PhasedRunLengthDistributionPtr make(std::vector<double> probabilities, int delta, int input_phase, int output_phase, int nphase);
+  static PhasedRunLengthDistributionPtr makeFromDiscreteIIDModel(DiscreteIIDModelPtr model, int delta, int input_phase, int output_phase, int nphase);
+
   // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
- protected:
+  virtual double probabilityOf(Symbol s) const;
+  virtual Symbol choose() const;
+
+ private:
   // Instance variables
-  ProbabilisticModelPtr _model;
+  int _delta;
+  int _input_phase;
+  int _output_phase;
+  int _nphase;
+  double _normfactor;
+  std::vector<double> _probabilities;
 
   // Constructors
-  ProbabilisticModelDecorator(ProbabilisticModelPtr model);
+  PhasedRunLengthDistribution(std::vector<double> probabilities, int delta, int input_phase, int output_phase, int nphase);
+
+  // Instance methods
+  int mod(int D, int d) const;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#endif  // TOPS_MODEL_PHASED_RUN_LENGTH_DISTRIBUTION_

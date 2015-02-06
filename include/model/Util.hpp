@@ -17,41 +17,19 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#ifndef TOPS_MODEL_UTIL_
+#define TOPS_MODEL_UTIL_
 
-// Standard headers
 #include <memory>
-
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+#include <vector>
 
 namespace tops {
 namespace model {
 
-class ProbabilisticModelDecorator;
-typedef std::shared_ptr<ProbabilisticModelDecorator> ProbabilisticModelDecoratorPtr;
-
-class ProbabilisticModelDecorator : public ProbabilisticModel {
- public:
-  // Static methods
-  static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
-  // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
- protected:
-  // Instance variables
-  ProbabilisticModelPtr _model;
-
-  // Constructors
-  ProbabilisticModelDecorator(ProbabilisticModelPtr model);
-};
+double lookup (double x);
+double log_sum (double x, double y);
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_DECORATOR_
+#endif  // TOPS_MODEL_UTIL_

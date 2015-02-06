@@ -394,11 +394,10 @@ double DiscreteIIDModel::probabilityOf(Symbol s) const {
 
 double DiscreteIIDModel::evaluatePosition(const Sequence &s,
                                           unsigned int i) const {
-  return _probabilities[s[i]];
+  return probabilityOf(s[i]);
 }
 
-Symbol DiscreteIIDModel::choosePosition(const Sequence &s,
-                                        unsigned int i) const {
+Symbol DiscreteIIDModel::choose() const {
   double random = generateRandomDouble();
   for (unsigned int symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= exp(_probabilities[symbol]);
@@ -406,6 +405,15 @@ Symbol DiscreteIIDModel::choosePosition(const Sequence &s,
       return symbol;
   }
   return _probabilities.size()-1;
+}
+
+Symbol DiscreteIIDModel::choosePosition(const Sequence &s,
+                                        unsigned int i) const {
+  return choose();
+}
+
+std::vector<double> DiscreteIIDModel::probabilities() {
+  return _probabilities;
 }
 
 
