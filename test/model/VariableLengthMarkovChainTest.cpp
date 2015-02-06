@@ -25,6 +25,7 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
 #include "model/DiscreteIIDModel.hpp"
+#include "model/ProbabilisticModelDecorator.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
@@ -36,6 +37,8 @@ using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
+using tops::model::ProbabilisticModelDecorator;
+using tops::model::ProbabilisticModelDecoratorPtr;
 using tops::model::Sequence;
 
 using tops::helper::createMachlerVLMC;
@@ -78,4 +81,16 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
     vlmc->initializePrefixSumArray(data);
     ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(vlmc->evaluateSequence(data, 0, data.size())));
   }
+}
+
+TEST_F(AVLMC, CanBeDecorated) {
+  auto decorated_vlmc = ProbabilisticModelDecorator::make(vlmc);
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.80)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.20)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.21)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.79)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.50) + log(0.21) + log(0.80)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4), DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }

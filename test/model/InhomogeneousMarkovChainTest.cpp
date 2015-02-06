@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
+#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
@@ -40,6 +41,8 @@ using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::InhomogeneousMarkovChain;
 using tops::model::InhomogeneousMarkovChainPtr;
+using tops::model::ProbabilisticModelDecorator;
+using tops::model::ProbabilisticModelDecoratorPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
@@ -74,4 +77,15 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
     imc->initializePrefixSumArray(data);
     ASSERT_THAT(imc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(imc->evaluateSequence(data, 0, data.size())));
   }
+}
+
+TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
+  auto decorated_imc = ProbabilisticModelDecorator::make(imc);
+  ASSERT_THAT(decorated_imc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.90)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.10)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(-HUGE));
 }

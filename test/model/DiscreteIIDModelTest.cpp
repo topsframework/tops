@@ -23,6 +23,7 @@
 #include "gmock/gmock.h"
 
 #include "model/DiscreteIIDModel.hpp"
+#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
@@ -34,6 +35,8 @@ using ::testing::DoubleNear;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
+using tops::model::ProbabilisticModelDecorator;
+using tops::model::ProbabilisticModelDecoratorPtr;
 using tops::model::Sequence;
 
 using tops::helper::createLoadedCoinIIDModel;
@@ -73,6 +76,13 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
   ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
+}
+
+TEST_F(ADiscreteIIDModel, CanBeDecorated) {
+  auto decorated_iid = ProbabilisticModelDecorator::make(iid);
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
