@@ -37,9 +37,9 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(
 }
 
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      double delta) {
+    std::vector<Sequence> training_set,
+    unsigned int alphabet_size,
+    double delta) {
 
   ContextTreePtr tree = ContextTree::make(alphabet_size);
   tree->initializeContextTreeRissanen(training_set);
@@ -57,13 +57,14 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
   return m;
 }
 
-VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainFixedLengthMarkovChain(
-      std::vector<Sequence> training_set,
-      unsigned int order,
-      unsigned int alphabet_size,
-      double pseudo_counts,
-      std::vector<double> weights,
-      ProbabilisticModelPtr apriori) {
+VariableLengthMarkovChainPtr
+  VariableLengthMarkovChain::trainFixedLengthMarkovChain(
+    std::vector<Sequence> training_set,
+    unsigned int order,
+    unsigned int alphabet_size,
+    double pseudo_counts,
+    std::vector<double> weights,
+    ProbabilisticModelPtr apriori) {
 
 
   ContextTreePtr tree = ContextTree::make(alphabet_size);
