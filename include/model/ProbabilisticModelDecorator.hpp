@@ -37,6 +37,7 @@ class ProbabilisticModelDecorator : public ProbabilisticModel {
   // Static methods
   static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
   // Virtual methods
+  virtual int alphabetSize() const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;

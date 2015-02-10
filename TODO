@@ -8,6 +8,7 @@
   [ ] DiscreteIIDModel::trainSmoothedHistogramBurge
   [ ] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
   [ ] Check training methods of IID and PhasedRunLengthDistribution
+  [ ] FixedSequenceAtPosition::prefix_sum_array
 
 [Tests]
   [ ] Choose methods to be tested.

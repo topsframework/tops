@@ -17,33 +17,42 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_
+#include <cmath>
+#include <vector>
 
-// Standard headers
-#include <memory>
+#include "gmock/gmock.h"
 
-// ToPS headers
+#include "model/DiscreteIIDModel.hpp"
+#include "model/FixedSequenceAtPosition.hpp"
 #include "model/Sequence.hpp"
 
-namespace tops {
-namespace model {
+#include "helper/DiscreteIIDModel.hpp"
+#include "helper/Sequence.hpp"
 
-class ProbabilisticModel {
-public:
-  // Purely virtual methods
-  virtual int alphabetSize() const = 0;
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const = 0;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const = 0;
+using ::testing::Eq;
+using ::testing::DoubleEq;
+using ::testing::DoubleNear;
+
+using tops::model::DiscreteIIDModel;
+using tops::model::DiscreteIIDModelPtr;
+using tops::model::FixedSequenceAtPosition;
+using tops::model::FixedSequenceAtPositionPtr;
+using tops::model::Sequence;
+
+using tops::helper::createLoadedCoinIIDModel;
+
+class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
+ protected:
+  FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(createLoadedCoinIIDModel(), 3, {1, 0, 1}, DiscreteIIDModel::make({0, -HUGE}));
 };
 
-typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;
+TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldHaveAnAlphabetSize) {
+  ASSERT_THAT(iid->alphabetSize(), Eq(2));
+}
 
-}  // namespace model
-}  // namespace tops
-
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_
+TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 0, 0, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 1, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 1, 0, 0}, 0, 8), DoubleNear(-10.1029, 1e-4));
+}

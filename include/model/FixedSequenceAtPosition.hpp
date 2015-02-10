@@ -17,42 +17,44 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "ProbabilisticModelDecorator.hpp"
+#ifndef TOPS_MODEL_FIXED_SEQUENCE_AT_POSITION_
+#define TOPS_MODEL_FIXED_SEQUENCE_AT_POSITION_
+
+// Standard headers
+#include <memory>
+#include <vector>
+
+// ToPS headers
+#include "model/ProbabilisticModelDecorator.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
 
-ProbabilisticModelDecoratorPtr ProbabilisticModelDecorator::make(
-    ProbabilisticModelPtr model) {
-  return ProbabilisticModelDecoratorPtr(new ProbabilisticModelDecorator(model));
-}
+class FixedSequenceAtPosition;
+using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
 
-ProbabilisticModelDecorator::ProbabilisticModelDecorator(
-    ProbabilisticModelPtr model) : _model(model) {
-}
+class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
+ public:
+  // Static methods
+  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
 
-int ProbabilisticModelDecorator::alphabetSize() const {
-  return _model->alphabetSize();
-}
+  // Virtual methods
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
+ private:
+  int _position;
+  Sequence _sequence;
+  DiscreteIIDModelPtr _probabilities;
 
-double ProbabilisticModelDecorator::evaluateSequence(const Sequence &s,
-                                                     unsigned int begin,
-                                                     unsigned int end) const {
-  return _model->evaluateSequence(s, begin, end);
-}
+  void addSequence(Sequence & h) const;
 
-double ProbabilisticModelDecorator::evaluatePosition(const Sequence &s, unsigned int i) const {
-  return _model->evaluatePosition(s, i);
-}
-
-Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s, unsigned int i) const {
-  return _model->choosePosition(s, i);
-}
-
-Sequence ProbabilisticModelDecorator::chooseSequence(Sequence &s, unsigned int size) const {
-  return _model->chooseSequence(s, size);
-}
-
+  FixedSequenceAtPosition(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_FIXED_SEQUENCE_AT_POSITION_
