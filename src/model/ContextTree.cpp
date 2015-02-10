@@ -188,12 +188,12 @@ void ContextTree::normalize()
   }
 
 
-void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int order, const std::map<std::string, double> & weights)
+void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int order, const std::vector<double> &weights)
   {
     initializeCounter(sequences, order,0, weights);
   }
 
-  void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int order, double pseudocounts, const std::map<std::string, double> & weights)
+  void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int order, double pseudocounts, const std::vector<double> &weights)
   {
     // if (order < 0) order = 0;
 
@@ -374,70 +374,70 @@ void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int
 
   void ContextTree::initializeContextTreeRissanen(const std::vector<Sequence> & sequences)
   {
-    // ContextTreeNodePtr root = createContext();
-    // for(int i = 0; i < (int)_alphabet_size; i++)
-    //   root->addCount(i);
+    ContextTreeNodePtr root = createContext();
+    for(int i = 0; i < (int)_alphabet_size; i++)
+      root->addCount(i);
 
-    // for(int s = 0; s < (int)sequences.size(); s++)
-    //   {
-    //     for(int i = 0; i < (int)(sequences[s]->getSequence()).size(); i++)
-    //       {
-    //         int v = (sequences[s]->getSequence())[i];
-    //         ContextTreeNodePtr w = root;
-    //         if((!w->isLeaf()) && ((w->getCounter())[v] == 1.0))
-    //           {
-    //             for(int l = 0; l < (int)_alphabet_size; l++)
-    //               {
-    //                 ContextTreeNodePtr n = w->getChild(l);
-    //                 n->addCount(v);
-    //               }
-    //             w->addCount(v);
-    //             continue;
-    //           }
-    //         if(w->isLeaf() && ((w->getCounter())[v] == 1.0))
-    //           {
-    //             for(int l = 0; l < (int)_alphabet_size; l++)
-    //               {
-    //                 ContextTreeNodePtr n = createContext();
-    //                 n->addCount(v);
-    //                 w->setChild(n, l);
-    //               }
-    //             w->addCount(v);
-    //             continue;
-    //           }
-    //         int j = i - 1;
-    //         if(j < 0)
-    //           w->addCount(v);
-    //         while(j >= 0)
-    //           {
-    //             int u = (sequences[s]->getSequence())[j];
-    //             w->addCount(v);
-    //             w = w->getChild(u);
-    //             if((!w->isLeaf()) && (w->getCounter())[v] == 1.0)
-    //               {
-    //                 for(int l = 0; l < (int)_alphabet_size; l++)
-    //                   {
-    //                     ContextTreeNodePtr n = w->getChild(l);
-    //                     n->addCount(v);
-    //                   }
-    //                 w->addCount(v);
-    //                 break;
-    //               }
-    //             if(w->isLeaf() && ((w->getCounter())[v] == 1.0) )
-    //               {
-    //                 for(int l = 0; l  < (int)_alphabet_size; l++)
-    //                   {
-    //                     ContextTreeNodePtr n = createContext();
-    //                     n->addCount(v);
-    //                     w->setChild(n,l);
-    //                   }
-    //                 w->addCount(v);
-    //                 break;
-    //               }
-    //             j = j-1;
-    //           }
-    //       }
-    //   }
+    for(int s = 0; s < (int)sequences.size(); s++)
+      {
+        for(int i = 0; i < (int)(sequences[s].size()); i++)
+          {
+            int v = sequences[s][i];
+            ContextTreeNodePtr w = root;
+            if((!w->isLeaf()) && ((w->getCounter())[v] == 1.0))
+              {
+                for(int l = 0; l < (int)_alphabet_size; l++)
+                  {
+                    ContextTreeNodePtr n = w->getChild(l);
+                    n->addCount(v);
+                  }
+                w->addCount(v);
+                continue;
+              }
+            if(w->isLeaf() && ((w->getCounter())[v] == 1.0))
+              {
+                for(int l = 0; l < (int)_alphabet_size; l++)
+                  {
+                    ContextTreeNodePtr n = createContext();
+                    n->addCount(v);
+                    w->setChild(n, l);
+                  }
+                w->addCount(v);
+                continue;
+              }
+            int j = i - 1;
+            if(j < 0)
+              w->addCount(v);
+            while(j >= 0)
+              {
+                int u = sequences[s][j];
+                w->addCount(v);
+                w = w->getChild(u);
+                if((!w->isLeaf()) && (w->getCounter())[v] == 1.0)
+                  {
+                    for(int l = 0; l < (int)_alphabet_size; l++)
+                      {
+                        ContextTreeNodePtr n = w->getChild(l);
+                        n->addCount(v);
+                      }
+                    w->addCount(v);
+                    break;
+                  }
+                if(w->isLeaf() && ((w->getCounter())[v] == 1.0) )
+                  {
+                    for(int l = 0; l  < (int)_alphabet_size; l++)
+                      {
+                        ContextTreeNodePtr n = createContext();
+                        n->addCount(v);
+                        w->setChild(n,l);
+                      }
+                    w->addCount(v);
+                    break;
+                  }
+                j = j-1;
+              }
+          }
+      }
   }
 
 int ContextTree::getNumberOfNodes() const

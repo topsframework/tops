@@ -47,8 +47,8 @@ class ContextTree {
   void removeContextNotUsed();
   void normalize();
   void normalize(ProbabilisticModelPtr old, double pseudocount, int i);
-  void initializeCounter(const std::vector<Sequence> &sequences, int order, const std::map<std::string, double> &weights);
-  void initializeCounter(const std::vector<Sequence> &sequences, int order, double pseudocounts, const std::map<std::string, double> & weights);
+  void initializeCounter(const std::vector<Sequence> &sequences, int order, const std::vector<double> &weights);
+  void initializeCounter(const std::vector<Sequence> &sequences, int order, double pseudocounts, const std::vector<double> &weights);
   void pruneTree(double delta);
   void pruneTreeSmallSampleSize(int small_);
   void initializeContextTreeRissanen(const std::vector<Sequence> &sequences);
