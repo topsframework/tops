@@ -195,55 +195,51 @@ void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int
 
   void ContextTree::initializeCounter(const std::vector<Sequence> & sequences, int order, double pseudocounts, const std::vector<double> &weights)
   {
-    // if (order < 0) order = 0;
+    if (order < 0) order = 0;
 
-    // ContextTreeNodePtr root = createContext();
-    // if(pseudocounts > 0) {
-    //   for(int sym = 0; sym < root->alphabet_size(); sym++)
-    //     {
-    //       root->setCount(sym,pseudocounts);
-    //     }
-    // }
+    ContextTreeNodePtr root = createContext();
+    if(pseudocounts > 0) {
+      for(int sym = 0; sym < root->alphabet_size(); sym++)
+        {
+          root->setCount(sym,pseudocounts);
+        }
+    }
 
-    // for ( int l = 0; l < (int)sequences.size(); l ++){
-    //   std::string seqname = sequences[l]->getName();
-    //   double weight = 1.0;
-    //   if (weights.find(seqname) != weights.end())
-    //     weight = (weights.find(seqname)->second);
-    //   // std::cerr << seqname << " with weight " << weight << std::endl;
-    //   for( int i = order; i < (int)(sequences[l]->getSequence()).size(); i++)
-    //     {
-    //       int currentSymbol = (sequences[l]->getSequence())[i];
-    //       int j = i - 1;
+    for ( int l = 0; l < (int)sequences.size(); l ++){
+      double weight = weights[l];
+      for( int i = order; i < (int)sequences[l].size(); i++)
+        {
+          int currentSymbol = sequences[l][i];
+          int j = i - 1;
 
-    //       ContextTreeNodePtr w = getRoot();
+          ContextTreeNodePtr w = getRoot();
 
-    //       w->addCount(currentSymbol, weight);
+          w->addCount(currentSymbol, weight);
 
-    //       while((j >= 0) &&  ((i - j) <= order))
-    //         {
-    //           int symbol = (sequences[l]->getSequence())[j];
-    //           if((w->getChild(symbol) == NULL) || w->isLeaf())
-    //             {
-    //               ContextTreeNodePtr c2 = createContext();
-    //               w->setChild(c2, symbol);
-    //             }
-    //           w = w->getChild(symbol);
+          while((j >= 0) &&  ((i - j) <= order))
+            {
+              int symbol = sequences[l][j];
+              if((w->getChild(symbol) == NULL) || w->isLeaf())
+                {
+                  ContextTreeNodePtr c2 = createContext();
+                  w->setChild(c2, symbol);
+                }
+              w = w->getChild(symbol);
 
-    //           if(pseudocounts > 0) {
-    //             for(int sym = 0; sym < root->alphabet_size(); sym++)
-    //               {
-    //                 if(w->getCounter()[sym] <= 0.0)
-    //                   w->setCount(sym,pseudocounts);
-    //               }
-    //           }
+              if(pseudocounts > 0) {
+                for(int sym = 0; sym < root->alphabet_size(); sym++)
+                  {
+                    if(w->getCounter()[sym] <= 0.0)
+                      w->setCount(sym,pseudocounts);
+                  }
+              }
 
 
-    //           w->addCount(currentSymbol, weight);
-    //           j -- ;
-    //         }
-    //     }
-    // }
+              w->addCount(currentSymbol, weight);
+              j -- ;
+            }
+        }
+    }
   }
 
   void ContextTree::pruneTreeSmallSampleSize(int small_)
