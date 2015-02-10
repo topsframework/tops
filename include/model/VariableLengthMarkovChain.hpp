@@ -54,6 +54,13 @@ class VariableLengthMarkovChain : public FactorableModel {
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
       double delta);
+  static VariableLengthMarkovChainPtr trainFixedLengthMarkovChain(
+      std::vector<Sequence> training_set,
+      unsigned int order,
+      unsigned int alphabet_size,
+      double pseudo_counts,
+      std::vector<double> weights,
+      ProbabilisticModelPtr apriori);
 
   // Virtual methods
   virtual int alphabetSize() const;

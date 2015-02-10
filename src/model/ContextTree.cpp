@@ -143,7 +143,7 @@ void ContextTree::normalize()
     }
 }
 
-  void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount, int t)
+  void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount)
   {
       if(old == NULL){
           // std::cerr << "ERROR: ContextTree -> a priori model is null !" << std::endl;
