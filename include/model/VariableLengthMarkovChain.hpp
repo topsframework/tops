@@ -50,6 +50,10 @@ class VariableLengthMarkovChain : public FactorableModel {
  public:
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
+  static VariableLengthMarkovChainPtr trainContextAlgorithm(
+      std::vector<Sequence> training_set,
+      unsigned int alphabet_size,
+      double delta);
 
   // Virtual methods
   virtual int alphabetSize() const;

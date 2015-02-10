@@ -36,6 +36,27 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(
     ContextTreePtr context_tree) : _context_tree(context_tree) {
 }
 
+VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
+      std::vector<Sequence> training_set,
+      unsigned int alphabet_size,
+      double delta) {
+
+  ContextTreePtr tree = ContextTree::make(alphabet_size);
+  tree->initializeContextTreeRissanen(training_set);
+  tree->pruneTree(delta);
+  tree->removeContextNotUsed();
+  tree->normalize();
+  VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
+  double loglikelihood = 0.0;
+  unsigned int sample_size = 0;
+  for (int i = 0; i < (int) training_set.size(); i++) {
+          loglikelihood
+            += m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
+          sample_size += training_set[i].size();
+  }
+  return m;
+}
+
 int VariableLengthMarkovChain::alphabetSize() const {
   return _context_tree->alphabetSize();
 }
