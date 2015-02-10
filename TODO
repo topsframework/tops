@@ -11,9 +11,9 @@
   [ ] FixedSequenceAtPosition::prefix_sum_array
 
 [Tests]
-  [ ] Choose methods to be tested.
-  [ ] Improve tests
   [ ] Test random functions like choose()
+  [ ] Test training methods of VLMC
+  [ ] Test training methods of IMC
 
 [Benchmarks]
   [ ] Improve benchmarks
