@@ -21,6 +21,8 @@
 #define TOPS_MODEL_CONTEXT_TREE_
 
 #include <memory>
+#include <vector>
+#include <set>
 
 #include "model/ContextTreeNode.hpp"
 #include "model/Sequence.hpp"
@@ -33,15 +35,34 @@ typedef std::shared_ptr<ContextTree> ContextTreePtr;
 
 class ContextTree {
  public:
-  static ContextTreePtr make(ContextTreeNodePtr root);
+  static ContextTreePtr make(int alphabet_size);
 
   int alphabetSize() const;
+  std::vector<ContextTreeNodePtr> & all_context();
+  ContextTreeNodePtr getRoot() const;
+  ContextTreeNodePtr createContext();
+  ContextTreeNodePtr getContext (int id);
+  ContextTreeNodePtr getContext(const Sequence & s, int i);
+  std::set<int> getLevelOneNodes();
+  void removeContextNotUsed();
+  void normalize();
+  void normalize(ProbabilisticModelPtr old, double pseudocount, int i);
+  void initializeCounter(const std::vector<Sequence> &sequences, int order, const std::map<std::string, double> &weights);
+  void initializeCounter(const std::vector<Sequence> &sequences, int order, double pseudocounts, const std::map<std::string, double> & weights);
+  void pruneTree(double delta);
+  void pruneTreeSmallSampleSize(int small_);
+  void initializeContextTreeRissanen(const std::vector<Sequence> &sequences);
+  int getNumberOfNodes() const;
 
-  ContextTreeNodePtr getContext(Sequence sequence, Symbol i);
  private:
-  explicit ContextTree(ContextTreeNodePtr root);
+  std::vector<ContextTreeNodePtr> _all_context;
+  int _alphabet_size;
 
-  ContextTreeNodePtr _root;
+  explicit ContextTree(int alphabet_size);
+
+  void printTree(ContextTreeNodePtr node, std::stringstream & out) const;
+  void buildParameters(ContextTreeNodePtr node, std::map<std::string, double> & parameters) const;
+
 };
 
 }  // namespace model

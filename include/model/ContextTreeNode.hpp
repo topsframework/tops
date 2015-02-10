@@ -33,20 +33,39 @@ typedef std::shared_ptr<ContextTreeNode> ContextTreeNodePtr;
 
 class ContextTreeNode {
  public:
-  static ContextTreeNodePtr make(DiscreteIIDModelPtr distribution);
+  static ContextTreeNodePtr make(int alphabet_size);
 
-  int alphabetSize() const;
+  int alphabet_size() const;
+  void setParent(int parent) ;
+  int getParent() ;
+  int id();
+  void setId(int id);
+  void addCount (int s);
+  void addCount (int s, double w);
+  void setCount (int s, double v);
+  std::vector<double> & getCounter ();
+  void setChild(ContextTreeNodePtr child, int symbol);
+  int symbol();
+  void setSymbol(int symbol);
+  void setDistribution(DiscreteIIDModelPtr distribution);
+  ContextTreeNodePtr getChild(int symbol);
+  DiscreteIIDModelPtr getDistribution();
+  void deleteChildren();
+  std::vector<ContextTreeNodePtr> getChildren();
 
   bool isLeaf();
-  ContextTreeNodePtr addChild(Symbol symbol, DiscreteIIDModelPtr distribution);
-  ContextTreeNodePtr getChild(Symbol symbol);
-  DiscreteIIDModelPtr getDistribution();
- private:
-  explicit ContextTreeNode(DiscreteIIDModelPtr distribution);
 
-  bool _leaf;
-  std::map<Symbol, ContextTreeNodePtr> _children;
+ private:
+  explicit ContextTreeNode(int alphabet_size);
+
   DiscreteIIDModelPtr _distribution;
+  std::vector<ContextTreeNodePtr> _child;
+  int _alphabet_size;
+  int _symbol;
+  bool _leaf;
+  std::vector<double> _counter;
+  int _id;
+  int _parent_id;
 };
 
 }  // namespace model
