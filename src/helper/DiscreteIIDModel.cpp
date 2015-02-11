@@ -17,11 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "helper/DiscreteIIDModel.hpp"
-
+// Standard headers
 #include <cmath>
 #include <vector>
 
+// ToPS headers
+#include "helper/DiscreteIIDModel.hpp"
 #include "helper/Random.hpp"
 
 namespace tops {
