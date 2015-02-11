@@ -31,9 +31,18 @@ namespace tops {
 namespace model {
 
 class PhasedRunLengthDistribution;
+
+/**
+ * @typedef PhasedRunLengthDistributionPtr
+ * @brief Alias of pointer to PhasedRunLengthDistribution.
+ */
 using PhasedRunLengthDistributionPtr
     = std::shared_ptr<PhasedRunLengthDistribution>;
 
+/**
+ * @class PhasedRunLengthDistribution
+ * @brief TODO
+ */
 class PhasedRunLengthDistribution : public DiscreteIIDModel {
  public:
   // Static methods

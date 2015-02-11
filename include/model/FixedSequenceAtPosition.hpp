@@ -32,8 +32,17 @@ namespace tops {
 namespace model {
 
 class FixedSequenceAtPosition;
+
+/**
+ * @typedef FixedSequenceAtPositionPtr
+ * @brief Alias of pointer to FixedSequenceAtPosition.
+ */
 using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
 
+/**
+ * @class FixedSequenceAtPosition
+ * @brief TODO
+ */
 class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
  public:
   // Static methods
@@ -45,13 +54,16 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
                                   unsigned int end) const;
   virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
  private:
+  // Instance variables
   int _position;
   Sequence _sequence;
   DiscreteIIDModelPtr _probabilities;
 
-  void addSequence(Sequence & h) const;
-
+  // Constructors
   FixedSequenceAtPosition(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+
+  // Concrete methods
+  void addSequence(Sequence & h) const;
 };
 
 }  // namespace model

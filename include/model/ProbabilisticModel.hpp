@@ -29,6 +29,10 @@
 namespace tops {
 namespace model {
 
+/**
+ * @class ProbabilisticModel
+ * @brief Abstract class that represents all probabilistic models.
+ */
 class ProbabilisticModel {
  public:
   // Purely virtual methods
@@ -41,7 +45,11 @@ class ProbabilisticModel {
   virtual Sequence chooseSequence(Sequence &s, unsigned int size) const = 0;
 };
 
-typedef std::shared_ptr<ProbabilisticModel> ProbabilisticModelPtr;
+/**
+ * @typedef ProbabilisticModelPtr
+ * @brief Alias of pointer to ProbabilisticModel.
+ */
+using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
 
 }  // namespace model
 }  // namespace tops

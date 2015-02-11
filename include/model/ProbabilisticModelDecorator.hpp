@@ -30,9 +30,20 @@ namespace tops {
 namespace model {
 
 class ProbabilisticModelDecorator;
+
+/**
+ * @typedef ProbabilisticModelDecoratorPtr
+ * @brief Alias of pointer to ProbabilisticModelDecorator.
+ */
 using ProbabilisticModelDecoratorPtr
     = std::shared_ptr<ProbabilisticModelDecorator>;
 
+/**
+ * @class ProbabilisticModelDecorator
+ * @brief Base class that defines probabilistic models' decorators.
+ *
+ * It is the easiest way to change the behaviour of a probabilistic model.
+ */
 class ProbabilisticModelDecorator : public ProbabilisticModel {
  public:
   // Static methods

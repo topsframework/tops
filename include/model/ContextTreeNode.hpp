@@ -30,12 +30,23 @@ namespace tops {
 namespace model {
 
 class ContextTreeNode;
-typedef std::shared_ptr<ContextTreeNode> ContextTreeNodePtr;
 
+/**
+ * @typedef ContextTreeNodePtr
+ * @brief Alias of pointer to ContextTreeNode.
+ */
+using ContextTreeNodePtr = std::shared_ptr<ContextTreeNode>;
+
+/**
+ * @class ContextTreeNode
+ * @brief Class that represents a node of a context tree.
+ */
 class ContextTreeNode {
  public:
+  // Static methods
   static ContextTreeNodePtr make(int alphabet_size);
 
+  // Concrete methods
   int alphabet_size() const;
   void setParent(int parent);
   int getParent();
@@ -53,12 +64,10 @@ class ContextTreeNode {
   DiscreteIIDModelPtr getDistribution();
   void deleteChildren();
   std::vector<ContextTreeNodePtr> getChildren();
-
   bool isLeaf();
 
  private:
-  explicit ContextTreeNode(int alphabet_size);
-
+  // Instance variables
   DiscreteIIDModelPtr _distribution;
   std::vector<ContextTreeNodePtr> _child;
   int _alphabet_size;
@@ -67,6 +76,9 @@ class ContextTreeNode {
   std::vector<double> _counter;
   int _id;
   int _parent_id;
+
+  // Constructors
+  explicit ContextTreeNode(int alphabet_size);
 };
 
 }  // namespace model

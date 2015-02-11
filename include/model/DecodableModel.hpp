@@ -25,10 +25,18 @@
 namespace tops {
 namespace model {
 
+/**
+ * @class DecodableModel
+ * @brief TODO
+ */
 class DecodableModel {
 };
 
-typedef std::shared_ptr<DecodableModel> DecodableModelPtr;
+/**
+ * @typedef DecodableModelPtr
+ * @brief Alias of pointer to DecodableModel.
+ */
+using DecodableModelPtr = std::shared_ptr<DecodableModel>;
 
 }  // namespace model
 }  // namespace tops

@@ -35,12 +35,23 @@ namespace tops {
 namespace model {
 
 class ContextTree;
-typedef std::shared_ptr<ContextTree> ContextTreePtr;
 
+/**
+ * @typedef ContextTreePtr
+ * @brief Alias of pointer to ContextTree.
+ */
+using ContextTreePtr = std::shared_ptr<ContextTree>;
+
+/**
+ * @class ContextTree
+ * @brief Class that represents a VLMC's context tree.
+ */
 class ContextTree {
  public:
+  // Static methods
   static ContextTreePtr make(int alphabet_size);
 
+  // Concrete methods
   int alphabetSize() const;
   std::vector<ContextTreeNodePtr> & all_context();
   ContextTreeNodePtr getRoot() const;
@@ -64,11 +75,14 @@ class ContextTree {
   int getNumberOfNodes() const;
 
  private:
+  // Instance variables
   std::vector<ContextTreeNodePtr> _all_context;
   int _alphabet_size;
 
+  // Constructors
   explicit ContextTree(int alphabet_size);
 
+  // Static methods
   void printTree(ContextTreeNodePtr node, std::stringstream & out) const;
   void buildParameters(ContextTreeNodePtr node,
                        std::map<std::string, double> & parameters) const;
