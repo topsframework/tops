@@ -17,10 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "helper/VariableLengthMarkovChain.hpp"
-
+// Standard headers
 #include <cmath>
 
+// ToPS headers
+#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Random.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
@@ -47,35 +48,44 @@ tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(
 tops::model::VariableLengthMarkovChainPtr createMachlerVLMC() {
   auto tree = tops::model::ContextTree::make(2);
   auto root = tree->createContext();
-  root->setDistribution(tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
+  root->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
   auto c0 = tree->createContext();
   root->setChild(c0, 0);
-  c0->setDistribution(tops::model::DiscreteIIDModel::make({log(0.20), log(0.80)}));
+  c0->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.20), log(0.80)}));
   auto c1 = tree->createContext();
   root->setChild(c1, 1);
-  c1->setDistribution(tops::model::DiscreteIIDModel::make({log(0.21), log(0.79)}));
+  c1->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.21), log(0.79)}));
   auto c10 = tree->createContext();
   c1->setChild(c10, 0);
-  c10->setDistribution(tops::model::DiscreteIIDModel::make({log(0.22), log(0.78)}));
+  c10->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.22), log(0.78)}));
   auto c11 = tree->createContext();
   c1->setChild(c11, 1);
-  c11->setDistribution(tops::model::DiscreteIIDModel::make({log(0.25), log(0.75)}));
+  c11->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.25), log(0.75)}));
   auto c100 = tree->createContext();
   c10->setChild(c100, 0);
-  c100->setDistribution(tops::model::DiscreteIIDModel::make({log(0.30), log(0.70)}));
+  c100->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.30), log(0.70)}));
   auto c101 = tree->createContext();
   c10->setChild(c101, 1);
-  c101->setDistribution(tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
+  c101->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
   return tops::model::VariableLengthMarkovChain::make(tree);
 }
 
 tops::model::VariableLengthMarkovChainPtr createVLMCMC() {
   auto tree = tops::model::ContextTree::make(2);
   auto root = tree->createContext();
-  root->setDistribution(tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
+  root->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.50), log(0.50)}));
   auto c0 = tree->createContext();
   root->setChild(c0, 0);
-  c0->setDistribution(tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
+  c0->setDistribution(
+    tops::model::DiscreteIIDModel::make({log(0.10), log(0.90)}));
   return tops::model::VariableLengthMarkovChain::make(tree);
 }
 

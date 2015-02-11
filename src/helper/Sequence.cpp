@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// ToPS headers
 #include "helper/Sequence.hpp"
-
 #include "helper/Random.hpp"
 
 namespace tops {
