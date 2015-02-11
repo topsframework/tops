@@ -85,14 +85,30 @@ class DiscreteIIDModel : public FactorableModel {
   static std::vector<double> normalize(std::vector<double> probabilities);
   static double kernel_normal(double x, double h);
   static double epanechnikov(double x, double h);
-  static void band_den_bin(int n, int nb, double *d, const std::vector<double> &x,  std::vector<double> &cnt);
-  static void band_phi6_bin(int n, int nb, double d, std::vector<double> &x, double h, double *u);
-  static void band_phi4_bin(int n, int nb, double d, std::vector<double> x, double h, double *u);
+  static void band_den_bin(int n,
+                           int nb,
+                           double *d,
+                           const std::vector<double> &x,
+                           std::vector<double> &cnt);
+  static void band_phi6_bin(int n,
+                            int nb,
+                            double d,
+                            std::vector<double> &x,
+                            double h,
+                            double *u);
+  static void band_phi4_bin(int n,
+                            int nb,
+                            double d,
+                            std::vector<double> x,
+                            double h,
+                            double *u);
   static double mean(const std::vector<double> &data);
   static double var(const std::vector<double> &data);
-  static double quantile (std::vector<double> data, double q);
-  static double iqr (const std::vector<double> &data);
-  static double kernel_density_estimation(double x, double bw, const std::vector<double> &data);
+  static double quantile(std::vector<double> data, double q);
+  static double iqr(const std::vector<double> &data);
+  static double kernel_density_estimation(double x,
+                                          double bw,
+                                          const std::vector<double> &data);
   static double sj_bandwidth(const std::vector<double> &data);
 };
 
