@@ -30,7 +30,7 @@ namespace tops {
 namespace model {
 
 class ProbabilisticModel {
-public:
+ public:
   // Purely virtual methods
   virtual int alphabetSize() const = 0;
   virtual double evaluateSequence(const Sequence &s,
