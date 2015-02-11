@@ -26,8 +26,8 @@
 namespace tops {
 namespace model {
 
-double lookup (double x);
-double log_sum (double x, double y);
+double lookup(double x);
+double log_sum(double x, double y);
 
 }  // namespace model
 }  // namespace tops
