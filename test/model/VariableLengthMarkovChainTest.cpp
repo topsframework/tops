@@ -35,7 +35,9 @@
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
+using ::testing::DoubleNear;
 
+using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::DiscreteIIDModel;
@@ -113,4 +115,38 @@ TEST_F(AVLMC, CanBeDecorated) {
               DoubleEq(log(0.50) + log(0.21) + log(0.80)));
   ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
               DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+}
+
+TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
+  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
+  auto vlmc = VariableLengthMarkovChain::trainContextAlgorithm(
+      training_set,
+      2,
+      0.1);
+  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleNear(-2.77259, 1e-4));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+              DoubleNear(-4.85203, 1e-4));
+}
+
+TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
+  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
+  auto vlmc = VariableLengthMarkovChain::trainFixedLengthMarkovChain(
+    training_set, 2, 2, 1.5,
+    {1.0, 2.0, 1.1, 1.2},
+    ProbabilisticModelPtr(NULL));
+  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleNear(-1.26163, 1e-4));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
+              DoubleNear(-5.49634, 1e-4));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+              DoubleNear(-8.21958, 1e-4));
 }
