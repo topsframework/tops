@@ -17,11 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <cmath>
 #include <vector>
 
+// External headers
 #include "gmock/gmock.h"
 
+// ToPS headers
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/Sequence.hpp"
 
