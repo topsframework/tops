@@ -35,6 +35,7 @@
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
+using ::testing::DoubleNear;
 
 using tops::model::Sequence;
 using tops::model::VariableLengthMarkovChain;
@@ -43,6 +44,7 @@ using tops::model::PhasedInhomogeneousMarkovChain;
 using tops::model::PhasedInhomogeneousMarkovChainPtr;
 using tops::model::ProbabilisticModelDecorator;
 using tops::model::ProbabilisticModelDecoratorPtr;
+using tops::model::ProbabilisticModelPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
@@ -105,4 +107,21 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(decorated_imc->evaluateSequence({1, 0, 1}, 0, 3),
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
+}
+
+TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
+  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
+  auto imc
+    = PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
+      training_set, {}, {}, 2, 2, 2, 1.5, {1.0, 1.0, 1.0, 1.0}, ProbabilisticModelPtr(NULL));
+  ASSERT_THAT(imc->alphabetSize(), Eq(2));
+  // ASSERT_THAT(imc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  //             DoubleNear(-0.964648, 1e-4));
+  // ASSERT_THAT(imc->evaluateSequence({1, 1, 1, 1}, 0, 4),
+  //             DoubleNear(-3.56321, 1e-4));
+  // ASSERT_THAT(imc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+  //             DoubleNear(-6.88527, 1e-4));
 }
