@@ -17,11 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <math.h>
 #include <vector>
 
+// External headers
 #include "gmock/gmock.h"
 
+// ToPS headers
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
 #include "model/DiscreteIIDModel.hpp"
@@ -65,32 +68,49 @@ TEST_F(AVLMC, ShouldEvaluateAPosition) {
 }
 
 TEST_F(AVLMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(vlmc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4), DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+  ASSERT_THAT(vlmc->evaluateSequence({0}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluateSequence({1}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.80)));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.20)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.21)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.79)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }
 
 TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
     vlmc->initializePrefixSumArray(data);
-    ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(vlmc->evaluateSequence(data, 0, data.size())));
+    ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()),
+                DoubleEq(vlmc->evaluateSequence(data, 0, data.size())));
   }
 }
 
 TEST_F(AVLMC, CanBeDecorated) {
   auto decorated_vlmc = ProbabilisticModelDecorator::make(vlmc);
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4), DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.80)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.20)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.21)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.79)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
+  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }
