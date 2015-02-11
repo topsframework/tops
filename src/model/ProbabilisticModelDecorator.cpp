@@ -41,15 +41,18 @@ double ProbabilisticModelDecorator::evaluateSequence(const Sequence &s,
   return _model->evaluateSequence(s, begin, end);
 }
 
-double ProbabilisticModelDecorator::evaluatePosition(const Sequence &s, unsigned int i) const {
+double ProbabilisticModelDecorator::evaluatePosition(const Sequence &s,
+                                                     unsigned int i) const {
   return _model->evaluatePosition(s, i);
 }
 
-Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s, unsigned int i) const {
+Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s,
+                                                   unsigned int i) const {
   return _model->choosePosition(s, i);
 }
 
-Sequence ProbabilisticModelDecorator::chooseSequence(Sequence &s, unsigned int size) const {
+Sequence ProbabilisticModelDecorator::chooseSequence(Sequence &s,
+                                                     unsigned int size) const {
   return _model->chooseSequence(s, size);
 }
 
