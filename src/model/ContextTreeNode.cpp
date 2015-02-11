@@ -17,7 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <vector>
 
 #include "ContextTreeNode.hpp"
 
@@ -32,7 +33,7 @@ ContextTreeNode::ContextTreeNode(int alphabet_size) {
   _alphabet_size = alphabet_size;
   _child.resize(_alphabet_size);
   _counter.resize(_alphabet_size);
-  for(int i = 0; i < (int)_counter.size(); i++)
+  for (int i = 0; i < static_cast<int>(_counter.size()); i++)
     _counter[i] = 0;
   _symbol = -1;
   _leaf = true;
@@ -51,7 +52,7 @@ int ContextTreeNode::getParent() {
   return _parent_id;
 }
 
-int ContextTreeNode::id () {
+int ContextTreeNode::id() {
   return _id;
 }
 
@@ -59,24 +60,24 @@ void ContextTreeNode::setId(int id) {
   _id = id;
 }
 
-void ContextTreeNode::addCount (int s) {
+void ContextTreeNode::addCount(int s) {
   _counter[s] += 1.0;
 }
 
-void ContextTreeNode::addCount (int s, double weight) {
+void ContextTreeNode::addCount(int s, double weight) {
   _counter[s] += weight;
 }
 
 
-void ContextTreeNode::setCount (int s, double v) {
+void ContextTreeNode::setCount(int s, double v) {
   _counter[s] = v;
 }
 
-std::vector<double> & ContextTreeNode::getCounter () {
+std::vector<double>& ContextTreeNode::getCounter() {
   return _counter;
 }
 
-void ContextTreeNode::setChild(ContextTreeNodePtr child, int symbol){
+void ContextTreeNode::setChild(ContextTreeNodePtr child, int symbol) {
   // assert((symbol >= 0) && (symbol < (int)_child.size()));
   _child[symbol] = child;
   child->setSymbol(symbol);
@@ -96,24 +97,22 @@ void ContextTreeNode::setDistribution(DiscreteIIDModelPtr distribution) {
   _distribution = distribution;
 }
 
-ContextTreeNodePtr ContextTreeNode::getChild(int symbol){
-  if(!((symbol >= 0) && (symbol < (int)_child.size())))
-    {
-      // std::cerr << "ERROR: ContextTree has reached an invalid node !" << std::endl;
-      // std::cerr << "Symbol id : " << symbol << std::endl;
-      exit(-1);
-      // TODO(igorbonadio): exception!
-      return NULL;
-    }
-  return _child[symbol] ;
+ContextTreeNodePtr ContextTreeNode::getChild(int symbol) {
+  if (!((symbol >= 0) && (symbol < static_cast<int>(_child.size())))) {
+    exit(-1);
+    return NULL;
+  }
+  return _child[symbol];
 }
-DiscreteIIDModelPtr ContextTreeNode::getDistribution(){
+
+DiscreteIIDModelPtr ContextTreeNode::getDistribution() {
   return _distribution;
 }
+
 void ContextTreeNode::deleteChildren() {
   ContextTreeNodePtr n;
-  for(int m = 0; m < (int)_child.size(); m++)
-    if(_child[m] != NULL)
+  for (int m = 0; m < static_cast<int>(_child.size()); m++)
+    if (_child[m] != NULL)
       _child[m]->setParent(-1);
   _child.resize(0);
   _child.resize(_alphabet_size);
@@ -123,7 +122,7 @@ std::vector <ContextTreeNodePtr> ContextTreeNode::getChildren() {
   return _child;
 }
 
-bool ContextTreeNode::isLeaf(){
+bool ContextTreeNode::isLeaf() {
   return _leaf;
 }
 
