@@ -43,7 +43,8 @@ PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::make(
                                     nphase));
 }
 
-PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
+PhasedRunLengthDistributionPtr
+  PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
     DiscreteIIDModelPtr model,
     int delta,
     int input_phase,
@@ -67,9 +68,9 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
                   _output_phase(output_phase),
                   _nphase(nphase) {
   double sum = -HUGE;
-  for(int i = 0; i < alphabetSize(); i++) {
+  for (int i = 0; i < alphabetSize(); i++) {
     int d = i + _delta;
-    if(mod((d + _input_phase-1), _nphase) == _output_phase)
+    if (mod((d + _input_phase-1), _nphase) == _output_phase)
       sum = log_sum(sum, DiscreteIIDModel::probabilityOf(i));
   }
   _normfactor = sum;
@@ -78,28 +79,32 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
 int PhasedRunLengthDistribution::mod(int D, int d) const {
   int r = D%d;
   if (r < 0) {
-    if (d > 0) r = r + d;
-    else r = r - d;
+    if (d > 0)
+      r = r + d;
+    else
+      r = r - d;
   }
   return r;
 }
 
 double PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   int d = s + _delta;
-  if(mod((d + _input_phase-1), _nphase) != _output_phase)
+  if (mod((d + _input_phase-1), _nphase) != _output_phase)
     return -HUGE;
   double result = DiscreteIIDModel::probabilityOf(d);
   return result-_normfactor;
 }
 
 Symbol PhasedRunLengthDistribution::choose() const {
-  int L = (int)(DiscreteIIDModel::choose());
-  while(mod((L + _input_phase-1), _nphase ) != _output_phase) {L++;}
+  int L = static_cast<int>(DiscreteIIDModel::choose());
+  while (mod((L + _input_phase-1), _nphase ) != _output_phase)
+    L++;
 
   int d = L - _delta;
   if (d < 1) {
     L = _delta+1;
-    while(mod((L + _input_phase-1), _nphase ) != _output_phase) {L++;}
+    while (mod((L + _input_phase-1), _nphase ) != _output_phase)
+      L++;
     d = L - _delta;
   }
 
