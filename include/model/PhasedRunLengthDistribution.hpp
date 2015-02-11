@@ -31,13 +31,23 @@ namespace tops {
 namespace model {
 
 class PhasedRunLengthDistribution;
-using PhasedRunLengthDistributionPtr = std::shared_ptr<PhasedRunLengthDistribution>;
+using PhasedRunLengthDistributionPtr
+    = std::shared_ptr<PhasedRunLengthDistribution>;
 
 class PhasedRunLengthDistribution : public DiscreteIIDModel {
  public:
   // Static methods
-  static PhasedRunLengthDistributionPtr make(std::vector<double> probabilities, int delta, int input_phase, int output_phase, int nphase);
-  static PhasedRunLengthDistributionPtr makeFromDiscreteIIDModel(DiscreteIIDModelPtr model, int delta, int input_phase, int output_phase, int nphase);
+  static PhasedRunLengthDistributionPtr make(std::vector<double> probabilities,
+                                             int delta,
+                                             int input_phase,
+                                             int output_phase,
+                                             int nphase);
+  static PhasedRunLengthDistributionPtr makeFromDiscreteIIDModel(
+      DiscreteIIDModelPtr model,
+      int delta,
+      int input_phase,
+      int output_phase,
+      int nphase);
 
   // Virtual methods
   virtual double probabilityOf(Symbol s) const;
@@ -53,7 +63,11 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
   std::vector<double> _probabilities;
 
   // Constructors
-  PhasedRunLengthDistribution(std::vector<double> probabilities, int delta, int input_phase, int output_phase, int nphase);
+  PhasedRunLengthDistribution(std::vector<double> probabilities,
+                              int delta,
+                              int input_phase,
+                              int output_phase,
+                              int nphase);
 
   // Instance methods
   int mod(int D, int d) const;
