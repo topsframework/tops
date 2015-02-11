@@ -30,7 +30,8 @@ namespace tops {
 namespace model {
 
 class ProbabilisticModelDecorator;
-typedef std::shared_ptr<ProbabilisticModelDecorator> ProbabilisticModelDecoratorPtr;
+using ProbabilisticModelDecoratorPtr
+    = std::shared_ptr<ProbabilisticModelDecorator>;
 
 class ProbabilisticModelDecorator : public ProbabilisticModel {
  public:
@@ -49,7 +50,7 @@ class ProbabilisticModelDecorator : public ProbabilisticModel {
   ProbabilisticModelPtr _model;
 
   // Constructors
-  ProbabilisticModelDecorator(ProbabilisticModelPtr model);
+  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model);
 };
 
 }  // namespace model
