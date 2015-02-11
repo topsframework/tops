@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <vector>
 
 // ToPS headers
 #include "VariableLengthMarkovChain.hpp"
@@ -49,9 +50,11 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
   VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
   double loglikelihood = 0.0;
   unsigned int sample_size = 0;
-  for (int i = 0; i < (int) training_set.size(); i++) {
+  for (int i = 0; i < static_cast<int>(training_set.size()); i++) {
           loglikelihood
-            += m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
+            += m->evaluateSequence(training_set[i],
+                                   0,
+                                   training_set[i].size() - 1);
           sample_size += training_set[i].size();
   }
   return m;
@@ -69,7 +72,7 @@ VariableLengthMarkovChainPtr
 
   ContextTreePtr tree = ContextTree::make(alphabet_size);
 
-  if(apriori){
+  if (apriori) {
     tree->initializeCounter(training_set, order, 0, weights);
     tree->normalize(apriori, pseudo_counts);
   } else {
@@ -80,14 +83,13 @@ VariableLengthMarkovChainPtr
   VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
   double loglikelihood = 0.0;
   unsigned int sample_size = 0;
-  for (int i = 0; i < (int) training_set.size(); i++) {
+  for (int i = 0; i < static_cast<int>(training_set.size()); i++) {
     loglikelihood
       += m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
     sample_size += training_set[i].size();
   }
 
   return m;
-
 }
 
 int VariableLengthMarkovChain::alphabetSize() const {
