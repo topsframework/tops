@@ -17,11 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "helper/PhasedRunLengthDistribution.hpp"
-#include "helper/Sequence.hpp"
-
+// Standard headers
 #include <cmath>
 #include <vector>
+
+// ToPS headers
+#include "helper/PhasedRunLengthDistribution.hpp"
+#include "helper/Sequence.hpp"
 
 namespace tops {
 namespace helper {
@@ -33,8 +35,7 @@ tops::model::PhasedRunLengthDistributionPtr createLengthDistribution() {
       12,
       0,
       1,
-      3
-      );
+      3);
 }
 
 }  // namespace helper
