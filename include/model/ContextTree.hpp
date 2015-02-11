@@ -20,10 +20,14 @@
 #ifndef TOPS_MODEL_CONTEXT_TREE_
 #define TOPS_MODEL_CONTEXT_TREE_
 
+// Standard headers
 #include <memory>
 #include <vector>
 #include <set>
+#include <map>
+#include <string>
 
+// ToPS headers
 #include "model/ContextTreeNode.hpp"
 #include "model/Sequence.hpp"
 
@@ -41,14 +45,19 @@ class ContextTree {
   std::vector<ContextTreeNodePtr> & all_context();
   ContextTreeNodePtr getRoot() const;
   ContextTreeNodePtr createContext();
-  ContextTreeNodePtr getContext (int id);
+  ContextTreeNodePtr getContext(int id);
   ContextTreeNodePtr getContext(const Sequence & s, int i);
   std::set<int> getLevelOneNodes();
   void removeContextNotUsed();
   void normalize();
   void normalize(ProbabilisticModelPtr old, double pseudocount);
-  void initializeCounter(const std::vector<Sequence> &sequences, int order, const std::vector<double> &weights);
-  void initializeCounter(const std::vector<Sequence> &sequences, int order, double pseudocounts, const std::vector<double> &weights);
+  void initializeCounter(const std::vector<Sequence> &sequences,
+                         int order,
+                         const std::vector<double> &weights);
+  void initializeCounter(const std::vector<Sequence> &sequences,
+                         int order,
+                         double pseudocounts,
+                         const std::vector<double> &weights);
   void pruneTree(double delta);
   void pruneTreeSmallSampleSize(int small_);
   void initializeContextTreeRissanen(const std::vector<Sequence> &sequences);
@@ -61,8 +70,8 @@ class ContextTree {
   explicit ContextTree(int alphabet_size);
 
   void printTree(ContextTreeNodePtr node, std::stringstream & out) const;
-  void buildParameters(ContextTreeNodePtr node, std::map<std::string, double> & parameters) const;
-
+  void buildParameters(ContextTreeNodePtr node,
+                       std::map<std::string, double> & parameters) const;
 };
 
 }  // namespace model
