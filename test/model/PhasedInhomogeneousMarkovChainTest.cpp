@@ -53,7 +53,8 @@ class APhasedInhomogeneousMarkovChain : public testing::Test {
   PhasedInhomogeneousMarkovChainPtr imc;
 
   virtual void SetUp() {
-    imc = PhasedInhomogeneousMarkovChain::make({createMachlerVLMC(), createVLMCMC()});
+    imc = PhasedInhomogeneousMarkovChain::make({createMachlerVLMC(),
+                                                createVLMCMC()});
   }
 };
 
@@ -62,30 +63,46 @@ TEST_F(APhasedInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(imc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(imc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(imc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.5) + log(0.5) + log(0.80)));
+  ASSERT_THAT(imc->evaluateSequence({0}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({1}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({0, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.90)));
+  ASSERT_THAT(imc->evaluateSequence({0, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.10)));
+  ASSERT_THAT(imc->evaluateSequence({1, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({1, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(imc->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
-TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
+TEST_F(APhasedInhomogeneousMarkovChain,
+       ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
     imc->initializePrefixSumArray(data);
-    ASSERT_THAT(imc->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(imc->evaluateSequence(data, 0, data.size())));
+    ASSERT_THAT(imc->evaluateWithPrefixSumArray(0, data.size()),
+                DoubleEq(imc->evaluateSequence(data, 0, data.size())));
   }
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc = ProbabilisticModelDecorator::make(imc);
-  ASSERT_THAT(decorated_imc->evaluateSequence({0}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({1}, 0, 1), DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({0, 1}, 0, 2), DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({0, 0}, 0, 2), DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({1, 1}, 0, 2), DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0, 1}, 0, 3), DoubleEq(log(0.5) + log(0.5) + log(0.80)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({0}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1}, 0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({0, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.90)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({0, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.10)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0}, 0, 2),
+              DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 1}, 0, 2),
+              DoubleEq(log(0.50) + log(0.50)));
+  ASSERT_THAT(decorated_imc->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
