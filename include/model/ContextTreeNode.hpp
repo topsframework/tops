@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <map>
+#include <vector>
 
 #include "model/DiscreteIIDModel.hpp"
 
@@ -36,14 +37,14 @@ class ContextTreeNode {
   static ContextTreeNodePtr make(int alphabet_size);
 
   int alphabet_size() const;
-  void setParent(int parent) ;
-  int getParent() ;
+  void setParent(int parent);
+  int getParent();
   int id();
   void setId(int id);
-  void addCount (int s);
-  void addCount (int s, double w);
-  void setCount (int s, double v);
-  std::vector<double> & getCounter ();
+  void addCount(int s);
+  void addCount(int s, double w);
+  void setCount(int s, double v);
+  std::vector<double>& getCounter();
   void setChild(ContextTreeNodePtr child, int symbol);
   int symbol();
   void setSymbol(int symbol);
