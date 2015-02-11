@@ -17,11 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <cmath>
 #include <vector>
 
+// External headers
 #include "gmock/gmock.h"
 
+// ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
@@ -80,16 +83,20 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
 
 TEST_F(ADiscreteIIDModel, CanBeDecorated) {
   auto decorated_iid = ProbabilisticModelDecorator::make(iid);
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 0),
+              DoubleEq(log(0.2)));
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 1),
+              DoubleEq(log(0.8)));
+  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 2),
+              DoubleEq(log(0.2)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
     iid->initializePrefixSumArray(data);
-    ASSERT_THAT(iid->evaluateWithPrefixSumArray(0, data.size()), DoubleEq(iid->evaluateSequence(data, 0, data.size())));
+    ASSERT_THAT(iid->evaluateWithPrefixSumArray(0, data.size()),
+                DoubleEq(iid->evaluateSequence(data, 0, data.size())));
   }
 }
 
@@ -106,21 +113,29 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   auto training_set = {sequenceOfLengths()};
-  auto iid = DiscreteIIDModel::trainSmoothedHistogramBurge(training_set, 1.0, 15000);
+  auto iid = DiscreteIIDModel::trainSmoothedHistogramBurge(training_set,
+                                                           1.0,
+                                                           15000);
   ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.70344, 1e-04));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.60463, 1e-04));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
   auto training_set = {sequenceOfLengths()};
-  auto iid = DiscreteIIDModel::trainSmoothedHistogramStanke(training_set, {1}, 15000, 8, 0.5);
+  auto iid = DiscreteIIDModel::trainSmoothedHistogramStanke(training_set,
+                                                            {1},
+                                                            15000,
+                                                            8,
+                                                            0.5);
   ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.9706, 1e-04));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.73428, 1e-04));
 }
 
-TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithm) {
+TEST(DiscreteIIDModel,
+    ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithm) {
   auto training_set = {sequenceOfLengths()};
-  auto iid = DiscreteIIDModel::trainSmoothedHistogramKernelDensity(training_set, 15000);
+  auto iid = DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
+      training_set, 15000);
   ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.72518, 1e-04));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-10.1987, 1e-04));
 }
