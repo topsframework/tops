@@ -17,9 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "Random.hpp"
-
+// Standard headers
 #include <random>
+
+// ToPS headers
+#include "Random.hpp"
 
 namespace tops {
 namespace helper {
