@@ -26,12 +26,26 @@
 namespace tops {
 namespace model {
 
-FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr) {
-  return FixedSequenceAtPositionPtr(new FixedSequenceAtPosition(model, position, sequence, distr));
+FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(
+    ProbabilisticModelPtr model,
+    int position,
+    Sequence sequence,
+    DiscreteIIDModelPtr distr) {
+  return FixedSequenceAtPositionPtr(new FixedSequenceAtPosition(model,
+                                                                position,
+                                                                sequence,
+                                                                distr));
 }
 
-FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr)
-  : ProbabilisticModelDecorator(model), _position(position), _sequence(sequence), _probabilities(distr) {
+FixedSequenceAtPosition::FixedSequenceAtPosition(
+    ProbabilisticModelPtr model,
+    int position,
+    Sequence sequence,
+    DiscreteIIDModelPtr distr)
+      : ProbabilisticModelDecorator(model),
+        _position(position),
+        _sequence(sequence),
+        _probabilities(distr) {
 }
 
 double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
@@ -39,10 +53,14 @@ double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
                                                  unsigned int end) const {
   double result = ProbabilisticModelDecorator::evaluateSequence(s, begin, end);
   int j;
-  for(j = 0; (j < (int)_sequence.size()) && ((_position  + j) < (int)s.size()); j++)
-    if(_sequence[j] != s[_position + j] )
+  for (j = 0;
+       (j < static_cast<int>(_sequence.size()))
+       && ((_position  + j) < static_cast<int>(s.size()));
+       j++) {
+    if (_sequence[j] != s[_position + j] )
       break;
-  if(j != (int)_sequence.size())
+  }
+  if (j != static_cast<int>(_sequence.size()))
     result += _probabilities->probabilityOf(1);
   else
     result += _probabilities->probabilityOf(0);
@@ -50,13 +68,18 @@ double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
 }
 
 void FixedSequenceAtPosition::addSequence(Sequence &h) const {
-  if ((int)_probabilities->choose()  == 1)
+  if (_probabilities->choose() == 1)
     return;
-  for(int i = _position; ((i-_position) < (int)_sequence.size()) && (i < (int)h.size()); i++)
+  for (int i = _position;
+       ((i-_position) < static_cast<int>(_sequence.size()))
+       && (i < static_cast<int>(h.size()));
+       i++) {
     h[i] = _sequence[i-_position];
+  }
 }
 
-Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s, unsigned int size) const {
+Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
+                                                 unsigned int size) const {
   ProbabilisticModelDecorator::chooseSequence(s, size);
   addSequence(s);
   return s;
