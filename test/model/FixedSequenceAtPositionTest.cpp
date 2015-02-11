@@ -17,11 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <cmath>
 #include <vector>
 
+// External headers
 #include "gmock/gmock.h"
 
+// ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/FixedSequenceAtPosition.hpp"
 #include "model/Sequence.hpp"
@@ -43,7 +46,11 @@ using tops::helper::createLoadedCoinIIDModel;
 
 class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
  protected:
-  FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(createLoadedCoinIIDModel(), 3, {1, 0, 1}, DiscreteIIDModel::make({0, -HUGE}));
+  FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(
+      createLoadedCoinIIDModel(),
+      3,
+      {1, 0, 1},
+      DiscreteIIDModel::make({0, -HUGE}));
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldHaveAnAlphabetSize) {
@@ -51,8 +58,12 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 0, 0, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 1, 0, 0, 0}, 0, 8), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 1, 0, 0}, 0, 8), DoubleNear(-10.1029, 1e-4));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 0, 0, 0, 0, 0}, 0, 8),
+              DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 0, 0, 0}, 0, 8),
+              DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 1, 0, 0, 0}, 0, 8),
+              DoubleEq(-HUGE));
+  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 1, 0, 0}, 0, 8),
+              DoubleNear(-10.1029, 1e-4));
 }
