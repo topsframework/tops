@@ -9,6 +9,13 @@
   [ ] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
   [ ] Check training methods of IID and PhasedRunLengthDistribution
   [ ] FixedSequenceAtPosition::prefix_sum_array
+  [ ] Copy TargetModel
+  [ ] Copy SimilarityBasedSequenceWeighting
+  [ ] Copy MDD
+  [ ] Copy GHMM
+  [ ] Copy HMM
+  [ ] MultipleSequentialModel
+
 
 [Tests]
   [ ] Test random functions like choose()
