@@ -16,6 +16,7 @@
   [ ] Copy HMM
   [ ] MultipleSequentialModel
   [ ] TrainInterpolatedMarkovChain
+  [ ] Write IID documentation
 
 
 [Tests]

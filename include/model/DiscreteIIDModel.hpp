@@ -43,9 +43,9 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  * @brief Class that represents an independent and identically
  *        distributed (IID) model.
  *
- * According to [Aaron Clauset](http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf), IID means that if we are given a set of data \f$\{x_i\}\f$, each of these
- * \f$x_i\f$ observations is an independent draw from a fixed probabilistic
- * model. Independence means that
+ * According to [Aaron Clauset], IID means that if we are given a set of data
+ * \f$\{x_i\}\f$, each of these \f$x_i\f$ observations is an independent draw
+ * from a fixed probabilistic model. Independence means that
  *
  * \f[
  * Pr(x_1)\ and\ Pr(x_2) = Pr(x_1) Pr(x_2)
@@ -68,39 +68,118 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  * are iid random variables. If we throw a long sequence of the dice, all of
  * the values we observe are iid random variables.
  *
+ * [Aaron Clauset]: http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf
+ *
  */
 class DiscreteIIDModel : public FactorableModel {
  public:
   // Static methods
+
+  /**
+   * Builds a new discrete iid model defined by probabilities.
+   * @param probabilities probability of each symbol be drawn by this model
+   * @return a new discrete iid model
+   */
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+
+  /**
+   * Trains a new discrete iid model using the maximum likelihood method.
+   * @param training_set a list of sequences that will be used to train this model
+   * @param alphabet_size \f$|X|\f$
+   * @return a trained discrete iid model
+   */
   static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set,
                                      unsigned int alphabet_size);
+
+  /**
+   * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Burge].
+   * @param training_set a list of sequences that will be used to train this model
+   * @param c TODO
+   * @param max_length TODO
+   * @return a trained discrete iid model
+   */
   static DiscreteIIDModelPtr trainSmoothedHistogramBurge(
       std::vector<Sequence> training_set,
       double c,
       unsigned int max_length);
+
+  /**
+   * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Stanke].
+   * @param training_set a list of sequences that will be used to train this model
+   * @param weights a list of weights of each sequence in training_set
+   * @param max_length TODO
+   * @param m TODO
+   * @param slope TODO
+   * @return a trained discrete iid model
+   */
   static DiscreteIIDModelPtr trainSmoothedHistogramStanke(
       std::vector<Sequence> training_set,
       std::vector<unsigned int> weights,
       unsigned int max_length,
       int m,
       double slope);
+
+  /**
+   * Trains a new discrete iid model using the Smoothed Histogram Kernel Density Method defined by [Sheather].
+   * @param training_set a list of sequences that will be used to train this model
+   * @param max_length TODO
+   * @return a trained discrete iid model
+   */
   static DiscreteIIDModelPtr trainSmoothedHistogramKernelDensity(
       std::vector<Sequence> training_set,
       unsigned int max_length);
 
   // Virtual methods
+
+  /**
+   * Gets the alphabet set size.
+   * @return \f$|X|\f$
+   */
   virtual int alphabetSize() const;
+
+  /**
+   * Evaluates the given position of a sequence.
+   * @param s a sequence
+   * @param i position of a sequence's symbol
+   * @return \f$Pr(s[i])\f$
+   */
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+
+  /**
+   * Draws a new symbol in the ith position.
+   * @param s a sequence
+   * @param i a position
+   * @return \f$x,\ x \in X\f$
+   */
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+
+  /**
+   * Draws a new symbol.
+   * @return \f$x,\ x \in X\f$
+   */
   virtual Symbol choose() const;
+
+  /**
+   * Gets the probability of this model draws the given symbol.
+   * @return \f$Pr(s)\f$
+   */
   virtual double probabilityOf(Symbol s) const;
 
   // Concrete methods
+
+  /**
+   * Gets the probabilities this model draws each symbol.
+   * @return \f$\{Pr(x)\},\ x \in X\f$
+   */
   std::vector<double> probabilities();
 
  protected:
   // Constructors
+
+  /**
+   * Constructor. You should not call it directly.
+   * @param probabilities probability of each symbol be drawn by this model
+   */
   explicit DiscreteIIDModel(std::vector<double> probabilities);
 
  private:
