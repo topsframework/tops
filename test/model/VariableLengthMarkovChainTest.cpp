@@ -140,13 +140,13 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
                                         {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
   auto vlmc = VariableLengthMarkovChain::trainFixedLengthMarkovChain(
     training_set, 2, 2, 1.5,
-    {1.0, 2.0, 1.1, 1.2},
+    {1.0, 1.0, 1.0, 1.0},
     ProbabilisticModelPtr(NULL));
   ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
-              DoubleNear(-1.26163, 1e-4));
+              DoubleNear(-1.37235, 1e-4));
   ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
-              DoubleNear(-5.49634, 1e-4));
+              DoubleNear(-5.21625, 1e-4));
   ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
-              DoubleNear(-8.21958, 1e-4));
+              DoubleNear(-7.78482, 1e-4));
 }

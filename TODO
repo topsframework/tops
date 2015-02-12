@@ -15,6 +15,7 @@
   [ ] Copy GHMM
   [ ] Copy HMM
   [ ] MultipleSequentialModel
+  [ ] TrainInterpolatedMarkovChain
 
 
 [Tests]
