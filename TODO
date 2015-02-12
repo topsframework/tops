@@ -21,7 +21,7 @@
 [Tests]
   [ ] Test random functions like choose()
   [x] Test training methods of VLMC
-  [ ] Test training methods of IMC (sometimes they pass... sometimes they don't pass)
+  [x] Test training methods of IMC
 
 [Benchmarks]
   [ ] Improve benchmarks
