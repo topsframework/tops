@@ -55,8 +55,6 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
   static PhasedInhomogeneousMarkovChainPtr trainInterpolatedPhasedMarkovChain(
       std::vector<Sequence> training_set,
-      std::vector<Sequence> training_set_1,
-      std::vector<Sequence> training_set_2,
       unsigned int alphabet_size,
       unsigned int order,
       unsigned int nphases,
