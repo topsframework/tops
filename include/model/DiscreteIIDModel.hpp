@@ -41,7 +41,33 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
 /**
  * @class DiscreteIIDModel
  * @brief Class that represents an independent and identically
- *        distributed model.
+ *        distributed (IID) model.
+ *
+ * According to [Aaron Clauset](http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf), IID means that if we are given a set of data \f$\{x_i\}\f$, each of these
+ * \f$x_i\f$ observations is an independent draw from a fixed probabilistic
+ * model. Independence means that
+ *
+ * \f[
+ * Pr(x_1)\ and\ Pr(x_2) = Pr(x_1) Pr(x_2)
+ * \f]
+ *
+ * That is, the probability of observing two values \f$x_1\f$ and \f$x_2\f$ is
+ * simply the probability of observing \f$x_1\f$ multiplied by the probability
+ * we observe \f$x_2\f$. This implies what’s called conditional independence,
+ * that is,
+ *
+ * \f[
+ * Pr(x_2 | x_1) = Pr(x_2)
+ * \f]
+ *
+ * To give you some intuition about what this means, consider the familiar
+ * process of rolling dice. If we assume that we have 2 regular 6-sided dice
+ * and that they are “fair,” then each of the 6 values occurs with equal
+ * probability. If we throw the dice together, the values they display are iid
+ * random variables. If we throw the dice separately, the values they display
+ * are iid random variables. If we throw a long sequence of the dice, all of
+ * the values we observe are iid random variables.
+ *
  */
 class DiscreteIIDModel : public FactorableModel {
  public:
