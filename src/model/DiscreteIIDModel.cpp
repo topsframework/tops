@@ -87,6 +87,9 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
     for (auto symbol : sequence)
       data.push_back(symbol);
 
+  if (data.size() == 0)
+    return DiscreteIIDModel::make(std::vector<double>{});
+
   std::map<Symbol, double> counter;
   std::map<Symbol, double> sum;
   std::map<Symbol, double>::const_iterator iter;
@@ -419,6 +422,8 @@ int DiscreteIIDModel::alphabetSize() const {
 }
 
 double DiscreteIIDModel::probabilityOf(Symbol s) const {
+  if (s > _probabilities.size())
+    return -HUGE;
   return _probabilities[s];
 }
 
