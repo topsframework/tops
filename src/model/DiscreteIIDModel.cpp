@@ -31,13 +31,19 @@
 namespace tops {
 namespace model {
 
+// Constructor
+
 DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
     : _probabilities(probabilities) {
 }
 
+// Static methods
+
 DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
+
+// Private concrete methods
 
 std::vector<double> DiscreteIIDModel::normalize(
     std::vector<double> probabilities) {
@@ -52,20 +58,22 @@ std::vector<double> DiscreteIIDModel::normalize(
   return log_probabilities;
 }
 
+// public static methods
+
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size) {
-  std::vector<double> probabilities(alphabet_size, 0);
+  std::vector<double> log_probabilities(alphabet_size, 0);
   unsigned int number_of_symbols = 0;
   for (auto sequence : training_set) {
     for (auto symbol : sequence) {
-      probabilities[symbol]++;
+      log_probabilities[symbol]++;
       number_of_symbols++;
     }
   }
   for (Symbol s = 0; s < alphabet_size; s++)
-    probabilities[s] = log(probabilities[s]/number_of_symbols);
-  return DiscreteIIDModel::make(probabilities);
+    log_probabilities[s] = log(log_probabilities[s]/number_of_symbols);
+  return DiscreteIIDModel::make(log_probabilities);
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
@@ -91,32 +99,30 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
       counter[symbol] += 1.0;
   }
   double total = 0.0;
-  for (unsigned int k = 1; k <= max_length; k++) {
-    int start = k - 10;
-    int end = k + 10;
-    if (start < 0)
-      start = 0;
+  for (unsigned int k = 0; k < max_length; k++) {
+    unsigned int start = (k >= 10) ? (k - 10) : 0;
+    unsigned int end = (k + 10 < max_length) ? k + 10 : max_length - 1;
+    
     sum[k] = 0.0;
-    for (int x = start; x < end; x++) {
+    for (unsigned int x = start; x < end; x++) {
       iter = counter.find(x);
       if (iter != counter.end() && iter->second > 0.0) {
         double nx = iter->second;
-        double mean = x+1.0;
+        double mean = x + 1.0;
         double sd = sqrt(2*(x+1.0)*c/nx);
         double px2 = 0.5*(1 + erf(((k+1.5) - mean))/ (sd*sqrt(2.0)));
         double px1 = 0.5*(1 + erf(((k+0.5) - mean))/ (sd*sqrt(2.0)));
-        sum[k] += nx*(px2 - px1);
+        sum[k] += nx * (px2 - px1);
       }
     }
-    sum[k] = sum[k]/data.size();
-    total = total+ sum[k];
+    sum[k] /= data.size();
+    total += sum[k];
   }
   double epsilon = 1e-5;
-  total = total/(1 - max_length*epsilon);
+  total /= 1 - max_length*epsilon;
 
-  std::vector<double> prob;
-  prob.resize(max_length+1);
-  for (int k = 1; k <= max_length; k++) {
+  std::vector<double> prob(max_length);
+  for (unsigned int k = 0; k < max_length; k++) {
     prob[k] = epsilon + sum[k]/total;
   }
 
@@ -158,12 +164,12 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
     double count_left = 0;
     double count_right = 0;
 
-    for (int pos = 0; (pos < L) && (pos < max) ; pos +=1) {
+    for (unsigned int pos = 0; (pos < L) && (pos < max) ; pos +=1) {
       int bwd = static_cast<int>(
         .01 + (a / pow(L, 1.0/5.0) ) * static_cast<double>(pos));
       if (bwd <= 0)
         bwd = 1;
-      for (int j = pos - bwd + 1;  (j <= pos + bwd -1)  ; j++) {
+      for (unsigned int j = pos - bwd + 1;  (j <= pos + bwd -1)  ; j++) {
         if (!(j >= 0 && j < L))
           continue;
         if (j <= pos)
@@ -181,16 +187,15 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
       }
 
       if (pos < L)
-        pi[pos] += kernel_normal(static_cast<double>(0),
-                                 static_cast<double>(bwd)) * counter[pos];
+        pi[pos] += kernel_normal(0.0, bwd) * counter[pos];
       bool negligible = false;
       int j = 1;
       while (!negligible && (pos-j >= 0 || pos+j < L)) {
         double  wj = kernel_normal(j, bwd) * counter[pos];
-        if (pos-j >= 0 && pos-j < static_cast<int>(pi.size())) {
+        if (pos-j >= 0 && pos-j < pi.size()) {
           pi[pos-j] += wj;
         }
-        if (pos+j < static_cast<int>(pi.size()) && pos+j >= 0) {
+        if (pos+j < pi.size() && pos+j >= 0) {
           pi[pos+j] += wj;
         }
         negligible = (wj < 1e-20);

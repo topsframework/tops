@@ -116,8 +116,8 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   auto iid = DiscreteIIDModel::trainSmoothedHistogramBurge(training_set,
                                                            1.0,
                                                            15000);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.70344, 1e-04));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.60463, 1e-04));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.70443, 1e-04));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.60564, 1e-04));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {

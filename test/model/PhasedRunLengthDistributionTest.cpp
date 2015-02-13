@@ -49,12 +49,12 @@ class APhasedRunLengthDistribution : public testing::Test {
 };
 
 TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(distribution->alphabetSize(), Eq(15001));
+  ASSERT_THAT(distribution->alphabetSize(), Eq(15000));
 }
 
 TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
   ASSERT_THAT(distribution->probabilityOf(125), DoubleNear(-4.51625, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-9.99687, 1e-04));
+  ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-9.9957, 1e-04));
   ASSERT_THAT(distribution->probabilityOf(4188), DoubleEq(-HUGE));
 }
 

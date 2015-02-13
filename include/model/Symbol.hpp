@@ -26,7 +26,7 @@
 namespace tops {
 namespace model {
 
-typedef int Symbol;
+using Symbol = unsigned int;
 
 }  // namespace model
 }  // namespace tops
