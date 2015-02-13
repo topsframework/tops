@@ -150,3 +150,22 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
   ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
               DoubleNear(-7.78482, 1e-4));
 }
+
+TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
+  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
+  auto vlmc = VariableLengthMarkovChain::trainInterpolatedMarkovChain(
+    training_set,
+    {1.0, 1.0, 1.0, 1.0},
+    2, 2, 1.5,
+    ProbabilisticModelPtr(NULL));
+  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleNear(-2.77913, 1e-4));
+  ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
+              DoubleNear(-3.00795, 1e-4));
+  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+              DoubleNear(-4.92068, 1e-4));
+}

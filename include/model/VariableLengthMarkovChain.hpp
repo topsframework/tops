@@ -62,6 +62,13 @@ class VariableLengthMarkovChain : public FactorableModel {
       double pseudo_counts,
       std::vector<double> weights,
       ProbabilisticModelPtr apriori);
+  static VariableLengthMarkovChainPtr trainInterpolatedMarkovChain(
+      std::vector<Sequence> training_set,
+      std::vector<double> weights,
+      unsigned int alphabet_size,
+      unsigned int order,
+      double pseudo_counts,
+      ProbabilisticModelPtr apriori);
 
   // Virtual methods
   virtual int alphabetSize() const;
