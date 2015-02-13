@@ -16,7 +16,7 @@
   [ ] Copy HMM
   [ ] Copy MultipleSequentialModel
   [x] Copy TrainInterpolatedMarkovChain
-  [ ] Fix IID documentation (TODO)
+  [ ] Fix IID documentation
 
 
 [Tests]
