@@ -7,16 +7,16 @@
   [ ] DiscreteIIDModel::SmoothedHistogramStanke
   [ ] DiscreteIIDModel::trainSmoothedHistogramBurge
   [ ] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
-  [ ] Check training methods of IID and PhasedRunLengthDistribution
+  [x] Check training methods of IID and PhasedRunLengthDistribution
   [ ] FixedSequenceAtPosition::prefix_sum_array
   [ ] Copy TargetModel
   [ ] Copy SimilarityBasedSequenceWeighting
   [ ] Copy MDD
   [ ] Copy GHMM
   [ ] Copy HMM
-  [ ] MultipleSequentialModel
-  [ ] TrainInterpolatedMarkovChain
-  [ ] Write IID documentation
+  [ ] Copy MultipleSequentialModel
+  [x] Copy TrainInterpolatedMarkovChain
+  [ ] Fix IID documentation (TODO)
 
 
 [Tests]
