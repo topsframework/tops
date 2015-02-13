@@ -129,7 +129,7 @@ class DiscreteIIDModel : public FactorableModel {
       std::vector<Sequence> training_set,
       std::vector<unsigned int> weights,
       unsigned int max_length,
-      int m,
+      unsigned int m,
       double slope);
 
   /**

@@ -133,12 +133,10 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
       std::vector<Sequence> training_set,
       std::vector<unsigned int> weights,
       unsigned int max_length,
-      int m,
+      unsigned int m,
       double slope) {
-  double a = slope;
-  unsigned int max = max_length;
-  unsigned int L = max;
-  max = max + 4 * a * max;
+  unsigned int L = max_length;
+  unsigned int max = L + 4 * slope * L;
 
   std::vector<Symbol> data;
   for (unsigned int i = 0; i < training_set.size(); i++)
@@ -146,71 +144,65 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
       for (unsigned int k = 0; k < weights[i]; k++)
         data.push_back(symbol);
 
-  std::map<Symbol, int> counter;
-  std::vector<double> prob;
+  if (data.size() == 0)
+    return DiscreteIIDModel::make(std::vector<double>{});
 
+  std::map<Symbol, unsigned int> counter;
+  std::vector<double> prob(L);
 
-  std::vector<double> pi;
-  pi.resize(L);
+  for (unsigned int i = 0; i < data.size(); i++) {
+    if (counter.find(data[i]) == counter.end())
+      counter[data[i]] = 1;
+    else
+      counter[data[i]] += 1;
+  }
 
-  if (data.size() > 0) {
-    for (unsigned int i = 0; i < data.size(); i++) {
-      if (counter.find(data[i]) == counter.end())
-        counter[data[i]] = 1.0;
-      else
-        counter[data[i]] += 1.0;
+  unsigned int count_left = 0;
+  unsigned int count_right = 0;
+
+  for (unsigned int pos = 0; (pos < L) && (pos < max); pos++) {
+    double tmp = std::floor(0.01 + slope/pow(L, 1.0/5.0) * pos);
+    unsigned int bwd = (tmp <= 0) ? 1 : static_cast<unsigned int>(tmp);
+    
+    for (unsigned int j = pos - bwd + 1; j <= pos + bwd -1; j++) {
+      if (!(j >= 0 && j < L))
+        continue;
+      if (j <= pos)
+        count_left += (counter[j]) ? 1 : 0;
+      if (j >= pos)
+        count_right += (counter[j]) ? 1 : 0;
     }
 
-    double count_left = 0;
-    double count_right = 0;
-
-    for (unsigned int pos = 0; (pos < L) && (pos < max) ; pos +=1) {
-      int bwd = static_cast<int>(
-        .01 + (a / pow(L, 1.0/5.0) ) * static_cast<double>(pos));
-      if (bwd <= 0)
-        bwd = 1;
-      for (unsigned int j = pos - bwd + 1;  (j <= pos + bwd -1)  ; j++) {
-        if (!(j >= 0 && j < L))
-          continue;
-        if (j <= pos)
-          count_left += (counter[j]) ? 1: 0;
-        if (j >= pos)
-          count_right += (counter[j])? 1: 0;
-      }
-
-      while (count_left < m && count_right < m && bwd < L) {
-        bwd++;
-        if (pos + bwd -1 < L)
-          count_left += counter[pos + bwd - 1] ? 1:0;
-        if (pos - bwd + 1 >= 0)
-          count_right += counter[pos + bwd - 1] ? 1:0;
-      }
-
-      if (pos < L)
-        pi[pos] += kernel_normal(0.0, bwd) * counter[pos];
-      bool negligible = false;
-      int j = 1;
-      while (!negligible && (pos-j >= 0 || pos+j < L)) {
-        double  wj = kernel_normal(j, bwd) * counter[pos];
-        if (pos-j >= 0 && pos-j < pi.size()) {
-          pi[pos-j] += wj;
-        }
-        if (pos+j < pi.size() && pos+j >= 0) {
-          pi[pos+j] += wj;
-        }
-        negligible = (wj < 1e-20);
-        j++;
-      }
+    while (count_left < m && count_right < m && bwd < L) {
+      bwd++;
+      if (pos + bwd -1 < L)
+        count_left += counter[pos + bwd - 1] ? 1:0;
+      if (pos - bwd + 1 >= 0)
+        count_right += counter[pos + bwd - 1] ? 1:0;
     }
 
-    double total = 0;
-    for (long k = 0; k < (int)pi.size(); k++)
-      total += pi[k];
-    prob.resize(L);
-    for (long k = 0; k < (int)pi.size(); k++) {
-      prob[k] = pi[k]/(total) ;
+    if (pos < L)
+      prob[pos] += kernel_normal(0.0, bwd) * counter[pos];
+    bool negligible = false;
+    unsigned int j = 1;
+    while (!negligible && (pos-j >= 0 || pos+j < L)) {
+      double  wj = kernel_normal(j, bwd) * counter[pos];
+      if (pos-j >= 0 && pos-j < prob.size()) {
+        prob[pos-j] += wj;
+      }
+      if (pos+j < prob.size() && pos+j >= 0) {
+        prob[pos+j] += wj;
+      }
+      negligible = (wj < 1e-20);
+      j++;
     }
   }
+
+  double total = 0;
+  for (auto& p : prob)
+    total += p;
+  for (auto& p : prob)
+    p /= total;
 
   return DiscreteIIDModel::make(normalize(prob));
 }
