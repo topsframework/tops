@@ -210,7 +210,6 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
       std::vector<Sequence> training_set,
       unsigned int max_length) {
-  long max = max_length;
 
   std::vector<double> data;
   for (auto sequence : training_set) {
@@ -219,33 +218,27 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
     }
   }
 
-  std::map<long, double> sum;
+  if (data.size() == 0)
+    return DiscreteIIDModel::make(std::vector<double>{});
+
+  std::vector<double> prob(max_length, 0.0);
   double total = 0.0;
 
-  if (data.size() > 0) {
-    double bandwidth = sj_bandwidth(data);
+  double bandwidth = sj_bandwidth(data);
 
-    for (int pos = 0; pos <= max; pos++) {
-      sum[pos] = 0.0;
-      double integral = 0.0;
-      double min = kernel_density_estimation(pos-0.5, bandwidth, data);
-      double max2 = kernel_density_estimation(pos+0.5, bandwidth, data);
-      if (max2 < min) {
-        double aux = min;
-        min = max2;
-        max2 = aux;
-      }
-      integral += min + (max2 - min)/2;
-      sum[pos] = integral;
-      total += integral;
-    }
+  for (unsigned int pos = 0; pos < max_length; pos++) {
+    double min = kernel_density_estimation(pos-0.5, bandwidth, data);
+    double max = kernel_density_estimation(pos+0.5, bandwidth, data);
+
+    if (max < min)
+      std::swap(min, max);
+
+    prob[pos] = min + (max - min)/2;
+    total += prob[pos];
   }
 
-  std::vector<double> prob;
-  prob.resize(max+2);
-  for (int k = 0; k <= max; k++) {
-    prob[k] = sum[k]/total;
-  }
+  for (auto& p : prob)
+    p /= total;
 
   return DiscreteIIDModel::make(normalize(prob));
 }
