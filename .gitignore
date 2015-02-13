@@ -32,3 +32,8 @@ doc/Doxyfile.mk
 # Vagrant
 #==========
 .vagrant
+
+# Vim auxiliar files
+#=====================
+*.swp
+*.swo
