@@ -78,6 +78,10 @@ class DiscreteIIDModel : public FactorableModel {
   /**
    * Builds a new discrete iid model defined by probabilities.
    * @param probabilities probability of each symbol be drawn by this model
+   * @see trainML()
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramStanke()
+   * @see trainSmoothedHistogramKernelDensity()
    * @return a new discrete iid model
    */
   static DiscreteIIDModelPtr make(std::vector<double> probabilities);
@@ -86,6 +90,9 @@ class DiscreteIIDModel : public FactorableModel {
    * Trains a new discrete iid model using the maximum likelihood method.
    * @param training_set a list of sequences that will be used to train this model
    * @param alphabet_size \f$|X|\f$
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramStanke()
+   * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
   static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set,
@@ -96,6 +103,9 @@ class DiscreteIIDModel : public FactorableModel {
    * @param training_set a list of sequences that will be used to train this model
    * @param c TODO
    * @param max_length TODO
+   * @see trainML()
+   * @see trainSmoothedHistogramStanke()
+   * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
   static DiscreteIIDModelPtr trainSmoothedHistogramBurge(
@@ -110,6 +120,9 @@ class DiscreteIIDModel : public FactorableModel {
    * @param max_length TODO
    * @param m TODO
    * @param slope TODO
+   * @see trainML()
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
   static DiscreteIIDModelPtr trainSmoothedHistogramStanke(
@@ -123,6 +136,9 @@ class DiscreteIIDModel : public FactorableModel {
    * Trains a new discrete iid model using the Smoothed Histogram Kernel Density Method defined by [Sheather].
    * @param training_set a list of sequences that will be used to train this model
    * @param max_length TODO
+   * @see trainML()
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramStanke()
    * @return a trained discrete iid model
    */
   static DiscreteIIDModelPtr trainSmoothedHistogramKernelDensity(
@@ -179,6 +195,11 @@ class DiscreteIIDModel : public FactorableModel {
   /**
    * Constructor. You should not call it directly.
    * @param probabilities probability of each symbol be drawn by this model
+   * @see make()
+   * @see trainML()
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramStanke()
+   * @see trainSmoothedHistogramKernelDensity()
    */
   explicit DiscreteIIDModel(std::vector<double> probabilities);
 
