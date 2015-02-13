@@ -102,7 +102,7 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
   for (unsigned int k = 0; k < max_length; k++) {
     unsigned int start = (k >= 10) ? (k - 10) : 0;
     unsigned int end = (k + 10 < max_length) ? k + 10 : max_length - 1;
-    
+
     sum[k] = 0.0;
     for (unsigned int x = start; x < end; x++) {
       iter = counter.find(x);
@@ -163,9 +163,9 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
   for (unsigned int pos = 0; (pos < L) && (pos < max); pos++) {
     double tmp = std::floor(0.01 + slope/pow(L, 1.0/5.0) * pos);
     unsigned int bwd = (tmp <= 0) ? 1 : static_cast<unsigned int>(tmp);
-    
+
     for (unsigned int j = pos - bwd + 1; j <= pos + bwd -1; j++) {
-      if (!(j >= 0 && j < L))
+      if (j >= L)
         continue;
       if (j <= pos)
         count_left += (counter[j]) ? 1 : 0;
@@ -175,9 +175,9 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
 
     while (count_left < m && count_right < m && bwd < L) {
       bwd++;
-      if (pos + bwd -1 < L)
+      if (pos < L - bwd  + 1)
         count_left += counter[pos + bwd - 1] ? 1:0;
-      if (pos - bwd + 1 >= 0)
+      if (pos >= bwd - 1)
         count_right += counter[pos + bwd - 1] ? 1:0;
     }
 
@@ -185,12 +185,13 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
       prob[pos] += kernel_normal(0.0, bwd) * counter[pos];
     bool negligible = false;
     unsigned int j = 1;
-    while (!negligible && (pos-j >= 0 || pos+j < L)) {
+
+    while (!negligible && (pos >= j || pos+j < L)) {
       double  wj = kernel_normal(j, bwd) * counter[pos];
-      if (pos-j >= 0 && pos-j < prob.size()) {
+      if (pos >= j && pos-j < prob.size()) {
         prob[pos-j] += wj;
       }
-      if (pos+j < prob.size() && pos+j >= 0) {
+      if (pos+j < prob.size()) {
         prob[pos+j] += wj;
       }
       negligible = (wj < 1e-20);
