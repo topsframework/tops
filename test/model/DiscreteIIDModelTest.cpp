@@ -32,9 +32,9 @@
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
 
-using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::Eq;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
