@@ -18,11 +18,11 @@
 /***********************************************************************/
 
 // Standard headers
-#include <vector>
+#include <algorithm>
+#include <cmath>
 #include <map>
 #include <string>
-#include <cmath>
-#include <algorithm>
+#include <vector>
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
@@ -31,19 +31,13 @@
 namespace tops {
 namespace model {
 
-// Constructor
-
 DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
     : _probabilities(probabilities) {
 }
 
-// Static methods
-
 DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
-
-// Private concrete methods
 
 std::vector<double> DiscreteIIDModel::normalize(
     std::vector<double> probabilities) {
@@ -57,8 +51,6 @@ std::vector<double> DiscreteIIDModel::normalize(
 
   return log_probabilities;
 }
-
-// public static methods
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     std::vector<Sequence> training_set,
@@ -254,7 +246,6 @@ double DiscreteIIDModel::kernel_normal(double x, double h) {
   return v;
 }
 
-/* Epanechnikov kernel */
 double DiscreteIIDModel::epanechnikov(double x, double h) {
   double a = h * sqrt(5.0);
   double absx = fabs(x);
@@ -265,8 +256,6 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
   }
 }
 
-
-// code from R-1.7.0/src/appl/bandwidths.c
 #define abs9(a) (a > 0 ? a:-a)
   void DiscreteIIDModel::band_den_bin(int n,
                                       int nb,
@@ -294,7 +283,8 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
       }
     }
   }
-  void DiscreteIIDModel::band_phi6_bin(int n,
+
+void DiscreteIIDModel::band_phi6_bin(int n,
                                        int nb,
                                        double d,
                                        std::vector<double> &x,
@@ -314,6 +304,7 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
   sum = 2 * sum - 15 * nn;    /* add in diagonal */
   *u = sum / (nn * (nn - 1) * pow(h, 7.0) * sqrt(2 * M_PI));
 }
+
 void DiscreteIIDModel::band_phi4_bin(int n,
                                      int nb,
                                      double d,
@@ -335,7 +326,6 @@ void DiscreteIIDModel::band_phi4_bin(int n,
   *u = sum / (nn * (nn - 1) * pow(h, 5.0) * sqrt(2 * M_PI));
 }
 
-
 double DiscreteIIDModel::mean(const std::vector<double> &data) {
   double sum = 0.0;
   for (unsigned int i = 0; i < data.size(); i++) {
@@ -353,7 +343,6 @@ double DiscreteIIDModel::var(const std::vector<double> &data) {
   return sum/(static_cast<double>(data.size()) -1.0);
 }
 
-/* quantile */
 double DiscreteIIDModel::quantile(std::vector<double> data, double q) {
   int low_index = static_cast<int>(
     floor(q * (static_cast<double>(data.size()-1))));
@@ -365,7 +354,6 @@ double DiscreteIIDModel::quantile(std::vector<double> data, double q) {
   return (1-h)*data[low_index] + h * data[high_index];
 }
 
-/* interquantile */
 double DiscreteIIDModel::iqr(const std::vector<double> &data) {
   double q1 = quantile(data, 0.25);
   double q2 = quantile(data, 0.75);
