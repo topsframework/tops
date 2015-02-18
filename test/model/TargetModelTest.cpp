@@ -52,9 +52,12 @@ TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
 }
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
-  ASSERT_THAT(target->evaluateSequence({0, 1, 0}, 0, 3), DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluateSequence({0, 1, 1}, 0, 3), DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluateSequence({0, 1, 1, 1}, 0, 4), DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
+  ASSERT_THAT(target->evaluateSequence({0, 1, 0}, 0, 3),
+              DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
+  ASSERT_THAT(target->evaluateSequence({0, 1, 1}, 0, 3),
+              DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
+  ASSERT_THAT(target->evaluateSequence({0, 1, 1, 1}, 0, 4),
+              DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
 }
 
 TEST_F(ATargetModel, ShouldEvaluateASequencePosition) {

@@ -42,7 +42,7 @@ double TargetModel::evaluateSequence(const Sequence &s,
                                      unsigned int begin,
                                      unsigned int end) const {
   std::vector<Symbol> subseq;
-  for (int i = begin; i < end; i++)
+  for (unsigned int i = begin; i < end; i++)
     subseq.push_back(s[i]);
 
   auto iid = DiscreteIIDModel::trainML({subseq}, alphabetSize());
