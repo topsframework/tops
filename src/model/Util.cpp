@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 
 // ToPS headers
 #include "model/Util.hpp"
