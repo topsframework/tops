@@ -24,8 +24,9 @@ script:
   fi
 after_success:
 - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
-    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info
-    make doxy
+    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info &&
+    make doxy &&
+    gh-push ${GH_TOKEN} topsframework/tops-refactoring heads/gh-pages doc/doxygen/html doc/api "[skip ci] Update documentation";
   fi
 env:
   global:
