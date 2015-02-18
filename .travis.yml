@@ -15,6 +15,7 @@ install:
 - gem install coveralls-lcov
 - lcov --version
 - g++ --version
+- gem install gh-push
 before_script:
 - git submodule update --init --recursive
 script:
