@@ -28,6 +28,8 @@ namespace model {
 
 double lookup(double x);
 double log_sum(double x, double y);
+bool close(double a, double b, double tolerance);
+double safe_division(double a, double b);
 
 }  // namespace model
 }  // namespace tops

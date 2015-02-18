@@ -45,5 +45,27 @@ double log_sum(double x, double y) {
   return (y <= -2e20 || x - y >= 7.5) ? x : lookup(x-y) + y;
 }
 
+bool close(double a, double b, double tolerance) {
+  double diff = fabs(a-b);
+
+  double div1 = safe_division(diff, fabs(a));
+  double div2 = safe_division(diff, fabs(b));
+  if ( (div1 <= tolerance) && (div2 <= tolerance)) {
+    return true;
+  }
+  return false;
+}
+
+double safe_division(double a, double b) {
+  if ((b < 1) && (a > b * (std::numeric_limits<double>::max)())) {
+    return (std::numeric_limits<double>::max)();
+  }
+  else if (((b > 1) && (a < b*(std::numeric_limits<double>::min)()) )|| (a == 0)) {
+    return 0;
+  } else {
+    return a/b;
+  }
+}
+
 }  // namespace model
 }  // namespace tops
