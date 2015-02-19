@@ -61,6 +61,62 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
         _alphabet_size(alphabet_size) {
 }
 
+SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
+    std::vector<Sequence> training_set,
+    unsigned int alphabet_size,
+    int skip_offset,
+    int skip_length,
+    Sequence skip_sequence) {
+
+  std::map<Sequence, double> counter;
+  int min_length = 999999999;
+  for (int i = 0; i < (int) training_set.size(); i++) {
+    if (counter.find(training_set[i]) == counter.end()) {
+      counter[training_set[i]] = 1;
+    } else {
+      counter[training_set[i]] += 1;
+    }
+    if((int)training_set[i].size() < min_length)
+      min_length = training_set[i].size();
+  }
+  std::string q;
+  double normalizer = calculate_normalizer(skip_length, skip_offset, min_length, counter, alphabet_size);
+
+  return SimilarityBasedSequenceWeighting::make(alphabet_size, counter, normalizer, skip_offset, skip_length, skip_sequence);
+}
+
+double SimilarityBasedSequenceWeighting::calculate_normalizer(int skip_length, int skip_offset, int max_length, std::map<Sequence, double> & counter, int alphabet_size) {
+  int npatterns_differ_1 = 0;
+  npatterns_differ_1 = (alphabet_size - 1) * (max_length - skip_length);
+  if(skip_length < 0)
+    npatterns_differ_1 = (alphabet_size - 1) * (max_length );
+  double sum = 0.0;
+  for(auto it = counter.begin(); it != counter.end(); it++) {
+    sum += it->second;
+
+    int diff = 0;
+    int np_differ_1  = 0;
+
+    for(auto it2 = counter.begin(); it2 != counter.end(); it2++) {
+      auto a = it->first;
+      auto b = it2->first;
+      for(int i = 0; i < max_length; i++) {
+        if ((i >= skip_offset) && (i <= skip_offset+skip_length)) {
+          if (a[i] != b[i])
+            diff+=2;
+        } else if (a[i] != b[i]) {
+          diff++;
+        }
+      }
+      if (diff == 1) {
+        np_differ_1 ++;
+      }
+    }
+    sum += 0.001*it->second*(npatterns_differ_1 - np_differ_1);
+  }
+  return sum;
+}
+
 int SimilarityBasedSequenceWeighting::alphabetSize() const {
   return _alphabet_size;
 }

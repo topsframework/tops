@@ -105,3 +105,32 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 13),
               DoubleNear(sbsw->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13), 1e-4));
 }
+
+TEST(SBSW, ShouldBeTrained) {
+  std::vector<Sequence> training_set = {
+    {1, 1},
+    {0, 1},
+    {1, 1},
+    {0, 0},
+    {1, 1},
+  };
+  auto sbsw = SimilarityBasedSequenceWeighting::train(training_set, 2, -1, -1, {});
+  ASSERT_THAT(sbsw->evaluateSequence({0}, 0, 1),
+              DoubleEq(-HUGE));
+  ASSERT_THAT(sbsw->evaluateSequence({1}, 0, 1),
+              DoubleEq(-HUGE));
+  ASSERT_THAT(sbsw->evaluateSequence({0, 1}, 0, 2),
+              DoubleNear(-1.60684, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({0, 0}, 0, 2),
+              DoubleNear(-1.60984, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({1, 0}, 0, 2),
+              DoubleNear(-7.1323, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({1, 1}, 0, 2),
+              DoubleNear(-0.511891, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleNear(-7.1323, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleNear(-7.1323, 1e-4));
+  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13),
+              DoubleNear(-7.1323, 1e-4));
+}
