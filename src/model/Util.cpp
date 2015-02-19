@@ -68,5 +68,16 @@ double safe_division(double a, double b) {
   }
 }
 
+int mod(int D, int d) {
+  int r = D%d;
+  if (r < 0) {
+    if (d > 0)
+      r = r + d;
+    else
+      r = r - d;
+  }
+  return r;
+}
+
 }  // namespace model
 }  // namespace tops

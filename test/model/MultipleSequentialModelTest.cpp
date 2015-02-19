@@ -17,22 +17,47 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_UTIL_
-#define TOPS_MODEL_UTIL_
-
-#include <memory>
+// Standard headers
+#include <cmath>
 #include <vector>
 
-namespace tops {
-namespace model {
+// External headers
+#include "gmock/gmock.h"
 
-double lookup(double x);
-double log_sum(double x, double y);
-bool close(double a, double b, double tolerance);
-double safe_division(double a, double b);
-int mod(int D, int d);
+// ToPS headers
+#include "model/MultipleSequentialModel.hpp"
+#include "model/Sequence.hpp"
 
-}  // namespace model
-}  // namespace tops
+#include "helper/DiscreteIIDModel.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
-#endif  // TOPS_MODEL_UTIL_
+using ::testing::DoubleEq;
+using ::testing::DoubleNear;
+using ::testing::Eq;
+
+using tops::model::MultipleSequentialModel;
+using tops::model::MultipleSequentialModelPtr;
+using tops::model::Sequence;
+
+using tops::helper::createLoadedCoinIIDModel;
+using tops::helper::createMachlerVLMC;
+
+class AMultipleSequentialModel : public testing::Test {
+ protected:
+  MultipleSequentialModelPtr mm = MultipleSequentialModel::make(
+    {createLoadedCoinIIDModel(), createMachlerVLMC()},
+    {3, 4});
+};
+
+TEST_F(AMultipleSequentialModel, ShouldHaveAnAlphabetSize) {
+  ASSERT_THAT(mm->alphabetSize(), Eq(2));
+}
+
+TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
+  ASSERT_THAT(mm->evaluateSequence({1, 0, 1}, 0, 3),
+              DoubleNear(-1.83258, 1e-4));
+  ASSERT_THAT(mm->evaluateSequence({1, 0, 1, 0}, 0, 4),
+              DoubleNear(-4.13517, 1e-4));
+  ASSERT_THAT(mm->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13),
+              DoubleNear(-18.6201, 1e-4));
+}

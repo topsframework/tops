@@ -17,22 +17,59 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_UTIL_
-#define TOPS_MODEL_UTIL_
+#ifndef TOPS_MODEL_MULTIPLE_SEQUENTIAL_MODEL_
+#define TOPS_MODEL_MULTIPLE_SEQUENTIAL_MODEL_
 
+// Standard headers
 #include <memory>
 #include <vector>
+
+// ToPS headers
+#include "model/FactorableModel.hpp"
 
 namespace tops {
 namespace model {
 
-double lookup(double x);
-double log_sum(double x, double y);
-bool close(double a, double b, double tolerance);
-double safe_division(double a, double b);
-int mod(int D, int d);
+class MultipleSequentialModel;
+
+/**
+ * @typedef MultipleSequentialModelPtr
+ * @brief Alias of pointer to MultipleSequentialModel.
+ */
+using MultipleSequentialModelPtr
+    = std::shared_ptr<MultipleSequentialModel>;
+
+/**
+ * @class MultipleSequentialModel
+ * @brief TODO
+ */
+class MultipleSequentialModel : public FactorableModel {
+ public:
+  // Static methods
+  static MultipleSequentialModelPtr make(
+      std::vector<ProbabilisticModelPtr> models,
+      std::vector<int> max_length);
+
+  // Virtual methods
+  virtual int alphabetSize() const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+
+ private:
+  // Instance variables
+  std::vector<ProbabilisticModelPtr> _models;
+  std::vector<int> _max_length;
+  unsigned int _idx_not_limited;
+
+  // Constructors
+  MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
+                          std::vector<int> max_length);
+};
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_UTIL_
+#endif  // TOPS_MODEL_MULTIPLE_SEQUENTIAL_MODEL_
