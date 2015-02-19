@@ -4,25 +4,26 @@
   [x] Remove 'alphabet_size' param from ContextTree's contructor
   [x] Remove duplications of benchmark's helper functions
   [ ] Prefix sum array can't be parallelized
-  [ ] DiscreteIIDModel::SmoothedHistogramStanke
-  [ ] DiscreteIIDModel::trainSmoothedHistogramBurge
-  [ ] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
+  [x] DiscreteIIDModel::SmoothedHistogramStanke
+  [x] DiscreteIIDModel::trainSmoothedHistogramBurge
+  [x] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
   [x] Check training methods of IID and PhasedRunLengthDistribution
   [ ] FixedSequenceAtPosition::prefix_sum_array
-  [ ] Copy TargetModel
-  [ ] Copy SimilarityBasedSequenceWeighting
+  [x] Copy TargetModel
+  [x] Copy SimilarityBasedSequenceWeighting
   [ ] Copy MDD
   [ ] Copy GHMM
   [ ] Copy HMM
   [ ] Copy MultipleSequentialModel
   [x] Copy TrainInterpolatedMarkovChain
-  [ ] Fix IID documentation
+  [ ] Should we add a "phased evaluate" method?
 
 
 [Tests]
   [ ] Test random functions like choose()
   [x] Test training methods of VLMC
   [x] Test training methods of IMC
+  [ ] Test evaluation using prefix sum arrays
 
 [Benchmarks]
   [ ] Improve benchmarks
