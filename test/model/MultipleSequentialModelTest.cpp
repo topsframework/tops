@@ -61,3 +61,17 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
   ASSERT_THAT(mm->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13),
               DoubleNear(-18.6201, 1e-4));
 }
+
+TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
+  mm->initializePrefixSumArray({1, 0, 1});
+  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 3),
+              DoubleNear(mm->evaluateSequence({1, 0, 1}, 0, 3), 1e-4));
+
+  mm->initializePrefixSumArray({1, 0, 1, 0});
+  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 4),
+              DoubleNear(mm->evaluateSequence({1, 0, 1, 0}, 0, 4), 1e-4));
+
+  mm->initializePrefixSumArray({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 13),
+              DoubleNear(mm->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13), 1e-4));
+}

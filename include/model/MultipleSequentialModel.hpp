@@ -47,7 +47,7 @@ class MultipleSequentialModel : public FactorableModel {
  public:
   // Static methods
   static MultipleSequentialModelPtr make(
-      std::vector<ProbabilisticModelPtr> models,
+      std::vector<FactorableModelPtr> models,
       std::vector<int> max_length);
 
   // Virtual methods
@@ -57,15 +57,18 @@ class MultipleSequentialModel : public FactorableModel {
                                   unsigned int begin,
                                   unsigned int end) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluateWithPrefixSumArray(int begin, int end);
+  virtual void initializePrefixSumArray(const Sequence &s);
 
  private:
   // Instance variables
-  std::vector<ProbabilisticModelPtr> _models;
+  std::vector<FactorableModelPtr> _models;
   std::vector<int> _max_length;
   unsigned int _idx_not_limited;
+  unsigned int _seqsize;
 
   // Constructors
-  MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
+  MultipleSequentialModel(std::vector<FactorableModelPtr> models,
                           std::vector<int> max_length);
 };
 
