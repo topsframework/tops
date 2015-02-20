@@ -29,6 +29,7 @@
 #include "model/Sequence.hpp"
 
 #include "helper/MaximalDependenceDecomposition.hpp"
+#include "helper/DiscreteIIDModel.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -39,6 +40,8 @@ using tops::model::MaximalDependenceDecompositionPtr;
 using tops::model::Sequence;
 
 using tops::helper::createMDD;
+using tops::helper::createDNAModel;
+using tops::helper::createConsensusSequence;
 
 class AMDD : public testing::Test {
  protected:
@@ -69,4 +72,28 @@ TEST_F(AMDD, ShouldEvaluateASequence) {
               DoubleNear(-11.3069, 1e-4));
   ASSERT_THAT(mdd->evaluateSequence({2, 2, 2, 2, 2, 2, 2, 2, 2}, 0, 9),
               DoubleNear(-8.24662, 1e-4));
+}
+
+TEST(MDD, ShouldBeTrained) {
+  auto consensus_sequence = createConsensusSequence();
+  auto consensus_model = createDNAModel();
+  std::vector<Sequence> training_set = {{1, 0, 3, 1, 3, 2, 3, 0, 1},
+                                        {0, 1, 2, 2, 3, 2, 3, 0, 2},
+                                        {1, 0, 3, 2, 3, 1, 0, 0, 2},
+                                        {0, 1, 2, 1, 3, 1, 0, 0, 3},
+                                        {1, 0, 2, 2, 2, 1, 0, 1, 3},
+                                        {0, 1, 3, 2, 3, 2, 0, 1, 3},
+                                        {1, 0, 2, 1, 3, 2, 3, 1, 0}};
+  auto mdd = MaximalDependenceDecomposition::train(
+    training_set,
+    4,
+    consensus_sequence,
+    consensus_model,
+    2);
+  ASSERT_THAT(mdd->evaluateSequence({1, 0, 2, 2, 3, 2, 0, 0, 3}, 0, 9),
+              DoubleNear(-6.45814, 1e-4));
+  ASSERT_THAT(mdd->evaluateSequence({1, 1, 2, 2, 3, 2, 0, 0, 3}, 0, 9),
+              DoubleNear(-5.765, 1e-4));
+  ASSERT_THAT(mdd->evaluateSequence({1, 1, 3, 2, 3, 2, 0, 0, 0}, 0, 9),
+              DoubleNear(-6.96784, 1e-4));
 }

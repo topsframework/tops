@@ -26,6 +26,7 @@ namespace tops {
 namespace helper {
 
 tops::model::MaximalDependenceDecompositionPtr createMDD();
+tops::model::ConsensusSequence createConsensusSequence();
 
 }  // namespace helper
 }  // namespace tops

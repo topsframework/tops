@@ -28,7 +28,7 @@
 namespace tops {
 namespace helper {
 
-tops::model::MaximalDependenceDecompositionPtr createMDD() {
+tops::model::ConsensusSequence createConsensusSequence() {
   tops::model::ConsensusSequence consensus_sequence;
 
   std::vector<tops::model::Symbol> s1;
@@ -56,7 +56,11 @@ tops::model::MaximalDependenceDecompositionPtr createMDD() {
     tops::model::Consensus c(s);
     consensus_sequence.push_back(c);
   }
+  return consensus_sequence;
+}
 
+tops::model::MaximalDependenceDecompositionPtr createMDD() {
+  tops::model::ConsensusSequence consensus_sequence = createConsensusSequence();
 
   tops::model::ProbabilisticModelPtr consensus_model = createDNAModel();
 

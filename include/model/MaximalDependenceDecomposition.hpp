@@ -29,6 +29,7 @@
 #include "FactorableModel.hpp"
 #include "MaximalDependenceDecompositionNode.hpp"
 #include "Consensus.hpp"
+#include "InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
@@ -47,15 +48,17 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
  */
 class MaximalDependenceDecomposition : public FactorableModel {
  public:
-  static MaximalDependenceDecompositionPtr make(unsigned int alphabet_size, ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);
-
-  // InhomogeneousMarkovChainPtr trainInhomogeneousMarkovChain(SequenceEntryList & sequences);
-  // int getMaximalDependenceIndex(InhomogeneousMarkovChainPtr model, Sequence selected);
-  // void subset(int index, SequenceEntryList & sequences, SequenceEntryList & consensus, SequenceEntryList & nonconsensus);
-  // MaximalDependenceDecompositionNodePtr newNode(std::string node_name, SequenceEntryList & sequences, int divmin, Sequence selected);
-  // void train(SequenceEntryList & sequences, int divmin);
-
-  // MaximalDependenceDecompositionNodePtr initializeTree(const ProbabilisticModelParameters & parameters, std::vector<std::string>& tree);
+  static MaximalDependenceDecompositionPtr make(
+      unsigned int alphabet_size,
+      ConsensusSequence consensus_sequence,
+      ProbabilisticModelPtr consensus_model,
+      MaximalDependenceDecompositionNodePtr tree);
+  static MaximalDependenceDecompositionPtr train(
+      std::vector<Sequence> training_set,
+      unsigned int alphabet_size,
+      ConsensusSequence consensus_sequence,
+      ProbabilisticModelPtr consensus_model,
+      unsigned int minimum_subset);
 
   virtual int alphabetSize() const;
   virtual double evaluateSequence(const Sequence &s,
@@ -69,6 +72,34 @@ class MaximalDependenceDecomposition : public FactorableModel {
   MaximalDependenceDecomposition(unsigned int alphabet_size, ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);
   double _evaluateAux(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
   void _chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
+  static MaximalDependenceDecompositionNodePtr trainTree(
+      std::vector<Sequence> training_set,
+      int divmin,
+      unsigned int alphabet_size,
+      ConsensusSequence consensus_sequence,
+      ProbabilisticModelPtr consensus_model);
+  static MaximalDependenceDecompositionNodePtr newNode(
+      std::string node_name,
+      std::vector<Sequence> & sequences,
+      int divmin,
+      Sequence selected,
+      unsigned int alphabet_size,
+      ConsensusSequence consensus_sequence,
+      ProbabilisticModelPtr consensus_model);
+  static InhomogeneousMarkovChainPtr trainInhomogeneousMarkovChain(
+      std::vector<Sequence> & sequences,
+      unsigned int alphabet_size);
+  static int getMaximalDependenceIndex(
+      InhomogeneousMarkovChainPtr model,
+      Sequence selected,
+      ConsensusSequence consensus_sequence,
+      unsigned int alphabet_size,
+      ProbabilisticModelPtr consensus_model);
+  static void subset(int index,
+                     std::vector<Sequence> & sequences,
+                     std::vector<Sequence> & consensus,
+                     std::vector<Sequence> & nonconsensus,
+                     ConsensusSequence consensus_sequence);
 
 
   MaximalDependenceDecompositionNodePtr _mdd_tree;
