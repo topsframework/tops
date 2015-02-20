@@ -29,6 +29,7 @@ tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size);
 
 tops::model::DiscreteIIDModelPtr createFairCoinIIDModel();
 tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel();
+tops::model::DiscreteIIDModelPtr createDNAModel();
 
 }  // namespace helper
 }  // namespace tops

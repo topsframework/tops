@@ -22,30 +22,52 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/Random.hpp"
+#include "MaximalDependenceDecompositionNode.hpp"
 
 namespace tops {
-namespace helper {
+namespace model {
 
-tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<double> counts;
-  for (int i = 0; i < alphabet_size; i++)
-    counts.push_back(static_cast<double>(generateRandomInteger(alphabet_size)));
-  return tops::model::DiscreteIIDModel::make(counts);
+MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::make(
+    std::string node_name,
+    ProbabilisticModelPtr model,
+    int index) {
+  return MaximalDependenceDecompositionNodePtr(
+    new MaximalDependenceDecompositionNode(node_name, model, index));
 }
 
-tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)});
+MaximalDependenceDecompositionNode::MaximalDependenceDecompositionNode(
+    std::string node_name,
+    ProbabilisticModelPtr model,
+    int index)
+      : _model(model),
+        _index(index),
+        _node_name(node_name) {
 }
 
-tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)});
+int MaximalDependenceDecompositionNode::getIndex() {
+  return _index;
 }
 
-tops::model::DiscreteIIDModelPtr createDNAModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.1), log(0.3), log(0.4), log(0.2)});
+ProbabilisticModelPtr MaximalDependenceDecompositionNode::getModel() {
+  return _model;
 }
 
-}  // namespace helper
+void MaximalDependenceDecompositionNode::setChildern(MaximalDependenceDecompositionNodePtr left, MaximalDependenceDecompositionNodePtr right) {
+  _left = left;
+  _right = right;
+}
+
+void MaximalDependenceDecompositionNode::setChild(MaximalDependenceDecompositionNodePtr child) {
+  _left = child;
+}
+
+MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::getLeft() {
+  return _left;
+}
+
+MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::getRight() {
+  return _right;
+}
+
+}  // namespace model
 }  // namespace tops

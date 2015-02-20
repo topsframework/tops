@@ -17,35 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-#include <vector>
+#ifndef TOPS_HELPER_MAXIMAL_DEPENDENCE_DECOMPOSITION_
+#define TOPS_HELPER_MAXIMAL_DEPENDENCE_DECOMPOSITION_
 
-// ToPS headers
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/Random.hpp"
+#include "model/MaximalDependenceDecomposition.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<double> counts;
-  for (int i = 0; i < alphabet_size; i++)
-    counts.push_back(static_cast<double>(generateRandomInteger(alphabet_size)));
-  return tops::model::DiscreteIIDModel::make(counts);
-}
-
-tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)});
-}
-
-tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)});
-}
-
-tops::model::DiscreteIIDModelPtr createDNAModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.1), log(0.3), log(0.4), log(0.2)});
-}
+tops::model::MaximalDependenceDecompositionPtr createMDD();
 
 }  // namespace helper
 }  // namespace tops
+
+#endif  // TOPS_HELPER_MAXIMAL_DEPENDENCE_DECOMPOSITION_

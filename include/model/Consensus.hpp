@@ -17,35 +17,45 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_CONSENSUS_
+#define TOPS_MODEL_CONSENSUS_
+
 // Standard headers
-#include <cmath>
+#include <memory>
 #include <vector>
 
 // ToPS headers
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/Random.hpp"
+#include "Sequence.hpp"
 
 namespace tops {
-namespace helper {
+namespace model {
 
-tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<double> counts;
-  for (int i = 0; i < alphabet_size; i++)
-    counts.push_back(static_cast<double>(generateRandomInteger(alphabet_size)));
-  return tops::model::DiscreteIIDModel::make(counts);
-}
+class Consensus;
 
-tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)});
-}
+/**
+ * @typedef ConsensusPtr
+ * @brief Alias of pointer to Consensus.
+ */
+using ConsensusPtr = std::shared_ptr<Consensus>;
 
-tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)});
-}
+/**
+ * @class Consensus
+ * @brief TODO
+ */
+class Consensus {
+ public:
+  Consensus(Sequence symbols):_symbols(symbols) {}
+  bool is(int symbol) const;
+  Sequence symbols() {
+    return _symbols;
+  }
+ private:
+  Sequence _symbols;
+};
 
-tops::model::DiscreteIIDModelPtr createDNAModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.1), log(0.3), log(0.4), log(0.2)});
-}
+typedef std::vector<Consensus> ConsensusSequence;
 
-}  // namespace helper
+}  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_CONSENSUS_
