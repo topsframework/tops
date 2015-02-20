@@ -20,6 +20,7 @@
 // Standard headers
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 #include <iostream>
 
