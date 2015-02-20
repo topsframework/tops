@@ -11,12 +11,13 @@
   [ ] FixedSequenceAtPosition::prefix_sum_array
   [x] Copy TargetModel
   [x] Copy SimilarityBasedSequenceWeighting
-  [ ] Copy MDD
+  [x] Copy MDD
   [ ] Copy GHMM
   [ ] Copy HMM
-  [ ] Copy MultipleSequentialModel
+  [x] Copy MultipleSequentialModel
   [x] Copy TrainInterpolatedMarkovChain
   [ ] Should we add a "phased evaluate" method?
+  [ ] Should ProfileHMM be a HMM?
 
 
 [Tests]
