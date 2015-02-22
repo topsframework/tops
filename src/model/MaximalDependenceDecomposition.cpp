@@ -284,5 +284,20 @@ Symbol MaximalDependenceDecomposition::choosePosition(const Sequence &s, unsigne
   return 0;
 }
 
+double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(int begin, int end) {
+  if ((end - begin) != _consensus_sequence.size())
+    return -HUGE;
+  return _prefix_sum_array[begin];
+}
+
+void MaximalDependenceDecomposition::initializePrefixSumArray(const Sequence &s) {
+  _prefix_sum_array.clear();
+  int len = s.size();
+  int clen = _consensus_sequence.size();
+  for (int i = 0; i <= (len - clen); i++) {
+    _prefix_sum_array.push_back(evaluateSequence(s, i, i + clen));
+  }
+}
+
 }  // namespace model
 }  // namespace tops
