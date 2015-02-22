@@ -18,13 +18,14 @@
   [x] Copy TrainInterpolatedMarkovChain
   [ ] Should we add a "phased evaluate" method?
   [ ] Should ProfileHMM be a HMM?
+  [ ] Change PhasedIMC's class name
 
 
 [Tests]
   [ ] Test random functions like choose()
   [x] Test training methods of VLMC
   [x] Test training methods of IMC
-  [ ] Test evaluation using prefix sum arrays
+  [x] Test evaluation using prefix sum arrays
 
 [Benchmarks]
   [ ] Improve benchmarks
