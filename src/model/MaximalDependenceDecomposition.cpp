@@ -83,7 +83,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     std::string node_name,
     std::vector<Sequence> & sequences,
-    int divmin,
+    unsigned int divmin,
     Sequence selected,
     unsigned int alphabet_size,
     ConsensusSequence consensus_sequence,
@@ -97,7 +97,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     selected.push_back(consensus_index);
 
-    Sequence s(consensus_sequence.size(), -1);
+    Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
     double prob = consensus_model->evaluatePosition(s, consensus_index);
     if ( prob >= -0.001 && prob <= 0.001) {
@@ -135,7 +135,7 @@ void MaximalDependenceDecomposition::subset(int index,
                                             std::vector<Sequence> & consensus,
                                             std::vector<Sequence> & nonconsensus,
                                             ConsensusSequence consensus_sequence) {
-  for (int i = 0; i < sequences.size(); i++) {
+  for (unsigned int i = 0; i < sequences.size(); i++) {
     if (consensus_sequence[index].is(sequences[i][index])) {
       consensus.push_back(sequences[i]);
     } else {
@@ -149,11 +149,11 @@ InhomogeneousMarkovChainPtr MaximalDependenceDecomposition::trainInhomogeneousMa
     unsigned int alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> position_specific_vlmcs;
 
-  for (int j = 0; j < sequences[0].size(); j++) {
+  for (unsigned int j = 0; j < sequences[0].size(); j++) {
     std::vector<Sequence> imc_sequences;
 
     Sequence s;
-    for (int i = 0; i < sequences.size(); i++) {
+    for (unsigned int i = 0; i < sequences.size(); i++) {
       s.push_back(sequences[i][j]);
     }
     imc_sequences.push_back(s);
@@ -172,16 +172,16 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     ConsensusSequence consensus_sequence,
     unsigned int alphabet_size,
     ProbabilisticModelPtr consensus_model) {
-  Sequence s(consensus_sequence.size(), -1);
+  Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
   double maximal = -HUGE;
   double maximal_i = -1;
-  for (int i = 0; i < consensus_sequence.size(); i++) {
+  for (unsigned int i = 0; i < consensus_sequence.size(); i++) {
     double sum;
-    for (int j = 0; j < consensus_sequence.size(); j++) {
+    for (unsigned int j = 0; j < consensus_sequence.size(); j++) {
       if (i != j) {
         double x;
         double chi = -HUGE;
-        for (int k = 0; k < alphabet_size; k++) {
+        for (unsigned int k = 0; k < alphabet_size; k++) {
           s[i] = k;
           double e = consensus_model->evaluatePosition(s, i);
           s[j] = k;
@@ -194,7 +194,7 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     }
     if (maximal < sum) {
       bool ok = false;
-      for (int k = 0; k < selected.size(); k++) {
+      for (unsigned int k = 0; k < selected.size(); k++) {
         if (selected[k] == i) {
           ok = true;
           break;
@@ -242,7 +242,7 @@ double MaximalDependenceDecomposition::_evaluateAux(const Sequence & s, MaximalD
     }
   } else { // leaf
     // cout << "nao tem filho" << endl;
-    for (int i = 0; i < s.size(); i++) {
+    for (unsigned int i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
         p += node->getModel()->evaluatePosition(s, i);
       }
@@ -257,7 +257,7 @@ double MaximalDependenceDecomposition::evaluatePosition(const Sequence &s, unsig
 }
 
 Sequence MaximalDependenceDecomposition::chooseSequence(Sequence &s, unsigned int size) const {
-  s = Sequence(size, -1);
+  s = Sequence(size, INVALID_SYMBOL);
   _chooseAux(s, _mdd_tree);
   return s;
 }
@@ -271,8 +271,8 @@ void MaximalDependenceDecomposition::_chooseAux(Sequence & s, MaximalDependenceD
       _chooseAux(s, node->getRight());
     }
   } else { // leaf
-    for (int i = 0; i < s.size(); i++) {
-      if (s[i] == -1) {
+    for (unsigned int i = 0; i < s.size(); i++) {
+      if (s[i] == INVALID_SYMBOL) {
         s[i] = node->getModel()->choosePosition(s, i);
       }
     }

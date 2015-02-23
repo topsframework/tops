@@ -83,7 +83,7 @@ class MaximalDependenceDecomposition : public FactorableModel {
   static MaximalDependenceDecompositionNodePtr newNode(
       std::string node_name,
       std::vector<Sequence> & sequences,
-      int divmin,
+      unsigned int divmin,
       Sequence selected,
       unsigned int alphabet_size,
       ConsensusSequence consensus_sequence,
