@@ -19,6 +19,7 @@
   [ ] Should we add a "phased evaluate" method?
   [ ] Should ProfileHMM be a HMM?
   [ ] Change PhasedIMC's class name
+  [ ] Check if band_den_bin is correct
 
 
 [Tests]
