@@ -58,7 +58,7 @@ class FactorableModel : public ProbabilisticModel {
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;
-  virtual double evaluateWithPrefixSumArray(int begin, int end);
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
   virtual void initializePrefixSumArray(const Sequence &s);
 
  private:

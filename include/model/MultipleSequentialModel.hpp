@@ -57,7 +57,7 @@ class MultipleSequentialModel : public FactorableModel {
                                   unsigned int begin,
                                   unsigned int end) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual double evaluateWithPrefixSumArray(int begin, int end);
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
   virtual void initializePrefixSumArray(const Sequence &s);
 
  private:

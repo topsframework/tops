@@ -181,8 +181,9 @@ Symbol SimilarityBasedSequenceWeighting::choosePosition(const Sequence &s, unsig
   return 0;
 }
 
-double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(int begin, int end) {
-  if ((begin < (int) _scores.size()) && (begin >= 0)){
+double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(unsigned int begin,
+                                                                    unsigned int end) {
+  if (begin < _scores.size()) {
     return _scores[begin];
   }
   return -HUGE;

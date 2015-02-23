@@ -68,7 +68,7 @@ class MaximalDependenceDecomposition : public FactorableModel {
   virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
   virtual void initializePrefixSumArray(const Sequence &s);
-  virtual double evaluateWithPrefixSumArray(int begin, int end);
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
 
  private:
   MaximalDependenceDecomposition(unsigned int alphabet_size, ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);

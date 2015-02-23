@@ -284,7 +284,8 @@ Symbol MaximalDependenceDecomposition::choosePosition(const Sequence &s, unsigne
   return 0;
 }
 
-double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(int begin, int end) {
+double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(unsigned int begin,
+                                                                  unsigned int end) {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   return _prefix_sum_array[begin];

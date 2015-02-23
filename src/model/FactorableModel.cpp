@@ -45,7 +45,8 @@ double FactorableModel::evaluateSequence(const Sequence &s,
   return prob;
 }
 
-double FactorableModel::evaluateWithPrefixSumArray(int begin, int end) {
+double FactorableModel::evaluateWithPrefixSumArray(unsigned int begin,
+                                                   unsigned int end) {
   return _prefix_sum_array[end] - _prefix_sum_array[begin];
 }
 
