@@ -20,6 +20,7 @@
 // Standard headers
 #include <cmath>
 #include <vector>
+#include <algorithm>
 
 // ToPS headers
 #include "Consensus.hpp"
@@ -31,11 +32,7 @@ Consensus::Consensus(const Sequence& symbols)
   : _symbols{symbols} {}
 
 bool Consensus::is(unsigned int symbol) const {
-  for (auto it = _symbols.begin() ; it != _symbols.end(); ++it) {
-    if (*it == symbol)
-      return true;
-  }
-  return false;
+  return std::find(std::begin(_symbols), std::end(_symbols), symbol) != std::end(_symbols);
 }
 
 const Sequence Consensus::symbols() const {
