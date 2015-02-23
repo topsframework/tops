@@ -27,7 +27,7 @@
 namespace tops {
 namespace model {
 
-bool Consensus::is(int symbol) const {
+bool Consensus::is(unsigned int symbol) const {
   for (auto it = _symbols.begin() ; it != _symbols.end(); ++it) {
     if (*it == symbol)
       return true;

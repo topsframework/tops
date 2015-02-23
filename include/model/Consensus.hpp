@@ -45,7 +45,7 @@ using ConsensusPtr = std::shared_ptr<Consensus>;
 class Consensus {
  public:
   Consensus(Sequence symbols):_symbols(symbols) {}
-  bool is(int symbol) const;
+  bool is(unsigned int symbol) const;
   Sequence symbols() {
     return _symbols;
   }
