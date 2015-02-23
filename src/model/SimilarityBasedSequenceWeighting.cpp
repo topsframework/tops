@@ -132,47 +132,42 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
   if (end > s.size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
-
-  std::stringstream qstream;
-  for (int i = begin; (i < (int)end) && (i < (int) (begin + length)); i++) {
-    qstream << std::to_string(s[i]);
-  }
-  std::string q = qstream.str();
-  int psize = 0;
+  
+  Sequence ss;
+  for (unsigned int i = begin; i < end && i < begin + length; i++)
+    ss.push_back(s[i]);
+  
   double sum = 0;
-  for (auto it = _counter.begin(); it != _counter.end();  it++) {
-    std::stringstream qs2;
-    for (auto symbol : it->first)
-      qs2 << std::to_string(symbol);
-    std::string q2 = qs2.str();
-    psize = q2.size();
+  for (auto weight : _counter) {
     int diff = 0;
-    if (q.size() != q2.size()) {
+    if (ss.size() != weight.first.size())
       return -HUGE;
-    }
+
     bool valid = true;
-    for (int i = 0; i < (int)q2.size(); i++) {
+    for (unsigned int i = 0; i < weight.first.size(); i++) {
       if ((i >= _skip_offset) && (i < _skip_offset+_skip_length)) {
-        if(q[i] != _skip_sequence[i-_skip_offset]){
+        if (ss[i] != _skip_sequence[i-_skip_offset]) {
           valid = false;
           break;
         }
-      } else if (q[i] != q2[i]) {
+      } else if (ss[i] != weight.first[i]) {
         diff++;
       }
     }
-    if (!valid) {
+
+    if (!valid)
       return -HUGE;
-    }
+
     if (diff == 1) {
-      sum += 0.001 * it->second;
-    } else if (diff==0) {
-      sum += it->second;
+      sum += 0.001 * weight.second;
+    } else if (diff == 0) {
+      sum += weight.second;
     }
   }
-  if (close(sum , 0.0, 1e-10)) {
+
+  if (close(sum , 0.0, 1e-10))
     return -HUGE;
-  }
+
   return log(sum/(_normalizer));
 }
 

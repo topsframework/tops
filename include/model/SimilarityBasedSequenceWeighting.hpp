@@ -75,8 +75,8 @@ class SimilarityBasedSequenceWeighting : public FactorableModel {
   // Instance variables
   std::vector<double> _scores;
   std::map<Sequence, double> _counter;
-  int _skip_offset;
-  int _skip_length;
+  unsigned int _skip_offset;
+  unsigned int _skip_length;
   Sequence _skip_sequence;
   double _normalizer;
   double _alphabet_size;
