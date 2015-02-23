@@ -27,12 +27,19 @@
 namespace tops {
 namespace model {
 
+Consensus::Consensus(const Sequence& symbols)
+  : _symbols{symbols} {}
+
 bool Consensus::is(unsigned int symbol) const {
   for (auto it = _symbols.begin() ; it != _symbols.end(); ++it) {
     if (*it == symbol)
       return true;
   }
   return false;
+}
+
+const Sequence Consensus::symbols() const {
+  return _symbols;
 }
 
 }  // namespace model

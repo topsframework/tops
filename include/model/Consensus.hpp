@@ -44,11 +44,13 @@ using ConsensusPtr = std::shared_ptr<Consensus>;
  */
 class Consensus {
  public:
-  Consensus(Sequence symbols):_symbols(symbols) {}
+  // Constructors
+  Consensus(const Sequence& symbols);
+
+  // Concrete methods
   bool is(unsigned int symbol) const;
-  Sequence symbols() {
-    return _symbols;
-  }
+  const Sequence symbols() const;
+
  private:
   Sequence _symbols;
 };
