@@ -44,7 +44,8 @@ tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
 }
 
 tops::model::DiscreteIIDModelPtr createDNAModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.1), log(0.3), log(0.4), log(0.2)});
+  return tops::model::DiscreteIIDModel::make(
+      {log(0.1), log(0.3), log(0.4), log(0.2)});
 }
 
 }  // namespace helper

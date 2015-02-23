@@ -32,11 +32,11 @@ tops::model::ConsensusSequence createConsensusSequence() {
   tops::model::ConsensusSequence consensus_sequence;
 
   std::vector<tops::model::Symbol> s1;
-  s1.push_back(0); s1.push_back(1); // a/c
+  s1.push_back(0); s1.push_back(1);  // a/c
   tops::model::Consensus c1(s1);
   consensus_sequence.push_back(c1);
 
-  int x1[] = {0, 2, 2, 3}; // AGGT
+  int x1[] = {0, 2, 2, 3};  // AGGT
   for (int i = 0; i < 4; i++) {
     std::vector<tops::model::Symbol> s;
     s.push_back(x1[i]);
@@ -45,11 +45,11 @@ tops::model::ConsensusSequence createConsensusSequence() {
   }
 
   std::vector<tops::model::Symbol> s2;
-  s2.push_back(0); s2.push_back(2); // a/g
+  s2.push_back(0); s2.push_back(2);  // a/g
   tops::model::Consensus c2(s2);
   consensus_sequence.push_back(c2);
 
-  int x2[] = {0, 2, 3}; // agt
+  int x2[] = {0, 2, 3};  // agt
   for (int i = 0; i < 3; i++) {
     std::vector<tops::model::Symbol> s;
     s.push_back(x2[i]);
@@ -60,26 +60,36 @@ tops::model::ConsensusSequence createConsensusSequence() {
 }
 
 tops::model::MaximalDependenceDecompositionPtr createMDD() {
-  tops::model::ConsensusSequence consensus_sequence = createConsensusSequence();
+  model::ConsensusSequence consensus_sequence = createConsensusSequence();
 
-  tops::model::ProbabilisticModelPtr consensus_model = createDNAModel();
+  model::ProbabilisticModelPtr consensus_model = createDNAModel();
 
-  auto mdd_root = tops::model::MaximalDependenceDecompositionNode::make("root", createDNAModel(), 7);
-  auto mdd_g5 = tops::model::MaximalDependenceDecompositionNode::make("g5", createDNAModel(), 2);
-  auto mdd_h5 = tops::model::MaximalDependenceDecompositionNode::make("h5", createDNAModel(), -1);
-  auto mdd_g5gm1 = tops::model::MaximalDependenceDecompositionNode::make("g5gm1", createDNAModel(), 1);
-  auto mdd_g5hm1 = tops::model::MaximalDependenceDecompositionNode::make("g5hm1", createDNAModel(), -1);
-  auto mdd_g5gm1am2 = tops::model::MaximalDependenceDecompositionNode::make("g5gm1am2", createDNAModel(), 8);
-  auto mdd_g5gm1bm2 = tops::model::MaximalDependenceDecompositionNode::make("g5gm1bm2", createDNAModel(), -1);
-  auto mdd_g5gm1am2u6 = tops::model::MaximalDependenceDecompositionNode::make("g5gm1am2u6", createDNAModel(), -1);
-  auto mdd_g5gm1am2v6 = tops::model::MaximalDependenceDecompositionNode::make("g5gm1am2v6", createDNAModel(), -1);
+  auto mdd_root = model::MaximalDependenceDecompositionNode::make(
+      "root", createDNAModel(), 7);
+  auto mdd_g5 = model::MaximalDependenceDecompositionNode::make(
+      "g5", createDNAModel(), 2);
+  auto mdd_h5 = model::MaximalDependenceDecompositionNode::make(
+      "h5", createDNAModel(), -1);
+  auto mdd_g5gm1 = model::MaximalDependenceDecompositionNode::make(
+      "g5gm1", createDNAModel(), 1);
+  auto mdd_g5hm1 = model::MaximalDependenceDecompositionNode::make(
+      "g5hm1", createDNAModel(), -1);
+  auto mdd_g5gm1am2 = model::MaximalDependenceDecompositionNode::make(
+      "g5gm1am2", createDNAModel(), 8);
+  auto mdd_g5gm1bm2 = model::MaximalDependenceDecompositionNode::make(
+      "g5gm1bm2", createDNAModel(), -1);
+  auto mdd_g5gm1am2u6 = model::MaximalDependenceDecompositionNode::make(
+      "g5gm1am2u6", createDNAModel(), -1);
+  auto mdd_g5gm1am2v6 = model::MaximalDependenceDecompositionNode::make(
+      "g5gm1am2v6", createDNAModel(), -1);
 
   mdd_root->setChildern(mdd_g5, mdd_h5);
   mdd_g5->setChildern(mdd_g5gm1, mdd_g5hm1);
   mdd_g5gm1->setChildern(mdd_g5gm1am2, mdd_g5gm1bm2);
   mdd_g5gm1am2->setChildern(mdd_g5gm1am2u6, mdd_g5gm1am2v6);
 
-  return tops::model::MaximalDependenceDecomposition::make(2, consensus_sequence, consensus_model, mdd_root);
+  return model::MaximalDependenceDecomposition::make(
+      2, consensus_sequence, consensus_model, mdd_root);
 }
 
 }  // namespace helper

@@ -32,7 +32,8 @@ Consensus::Consensus(const Sequence& symbols)
   : _symbols{symbols} {}
 
 bool Consensus::is(unsigned int symbol) const {
-  return std::find(std::begin(_symbols), std::end(_symbols), symbol) != std::end(_symbols);
+  return std::find(
+    std::begin(_symbols), std::end(_symbols), symbol) != std::end(_symbols);
 }
 
 const Sequence Consensus::symbols() const {

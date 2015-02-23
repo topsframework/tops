@@ -206,7 +206,6 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
       std::vector<Sequence> training_set,
       unsigned int max_length) {
-
   std::vector<double> data;
   for (auto sequence : training_set) {
     for (auto symbol : sequence) {
@@ -249,7 +248,7 @@ double DiscreteIIDModel::kernel_normal(double x, double h) {
 double DiscreteIIDModel::epanechnikov(double x, double h) {
   double a = h * sqrt(5.0);
   double absx = fabs(x);
-  if (absx < a ) {
+  if (absx < a) {
     return (3.0/4.0) * (1.0 - (absx/a)*(absx/a))/a;
   } else {
     return 0.0;
@@ -257,32 +256,33 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
 }
 
 #define abs9(a) (a > 0 ? a:-a)
-  void DiscreteIIDModel::band_den_bin(int n,
-                                      int nb,
-                                      double *d,
-                                      const std::vector<double> &x,
-                                      std::vector<double> &cnt) {
-    int   i, j,  nn = n;
-    int ii, jj, iij;
-    double xmin, xmax, rang, dd;
-    for (i = 0; i < nb; i++)
-      cnt.push_back(0);
-    xmin = xmax = x[0];
-    for (i = 1; i < nn; i++) {
-      xmin = std::min(xmin, x[i]);
-      xmax = std::min(xmax, x[i]);
-    }
-    rang = (xmax - xmin) * 1.01;
-    *d = dd = rang / (nb);
-    for (i = 1; i < nn; i++) {
-      ii = (int)(x[i] / dd);
-      for (j = 0; j < i; j++) {
-        jj = (int)(x[j] / dd);
-        iij = abs9((ii - jj));
-        cnt[iij]++;
-      }
+
+void DiscreteIIDModel::band_den_bin(int n,
+                                    int nb,
+                                    double *d,
+                                    const std::vector<double> &x,
+                                    std::vector<double> &cnt) {
+  int   i, j,  nn = n;
+  int ii, jj, iij;
+  double xmin, xmax, rang, dd;
+  for (i = 0; i < nb; i++)
+    cnt.push_back(0);
+  xmin = xmax = x[0];
+  for (i = 1; i < nn; i++) {
+    xmin = std::min(xmin, x[i]);
+    xmax = std::min(xmax, x[i]);
+  }
+  rang = (xmax - xmin) * 1.01;
+  *d = dd = rang / (nb);
+  for (i = 1; i < nn; i++) {
+    ii = (int)(x[i] / dd);
+    for (j = 0; j < i; j++) {
+      jj = (int)(x[j] / dd);
+      iij = abs9((ii - jj));
+      cnt[iij]++;
     }
   }
+}
 
 void DiscreteIIDModel::band_phi6_bin(int n,
                                        int nb,
