@@ -73,22 +73,22 @@ double MultipleSequentialModel::evaluateSequence(const Sequence &s,
   int b = begin;
   int e = 0;
 
-  for (int i = 0; i < _idx_not_limited; i++) {
+  for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
-    if (e >= s.size())
+    if (e >= static_cast<int>(s.size()))
       e = s.size()-1;
     sum += _models[i]->evaluateSequence(s,b,e/*,phase*/);
-    if (e >= (int)end)
+    if (e >= static_cast<int>(end))
       return sum;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
-    if(e >= s.size())
+    if (e >= static_cast<int>(s.size()))
       break;
   }
   int begin_of_not_limited = b;
   e = end;
-  for (int i = _models.size()-1; i > _idx_not_limited ; i--) {
+  for (unsigned int i = _models.size()-1; i > _idx_not_limited ; i--) {
     b = e - _max_length[i] + 1;
     unsigned int phase2 = mod(phase + b - begin_of_not_limited, 3);
     if (b < 0) {
@@ -128,22 +128,22 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
   double sum = 0;
   int b = begin;
   int e = 0;
-  for (int i = 0; i < _idx_not_limited; i++) {
+  for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
-    if (e >= _seqsize)
+    if (e >= static_cast<int>(_seqsize))
       e = _seqsize-1;
     sum += _models[i]->evaluateWithPrefixSumArray(b,e/*,phase*/);
-    if( e >=  (int)end)
+    if (e >= static_cast<int>(end))
       return sum;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
-    if(e>=_seqsize)
+    if (e >= static_cast<int>(_seqsize))
       break;
   }
   int begin_of_not_limited = b;
   e = end;
-  for (int i = _models.size()-1; i > _idx_not_limited ; i--) {
+  for (unsigned int i = _models.size()-1; i > _idx_not_limited ; i--) {
     b = e - _max_length[i] + 1;
     int phase2 = mod(phase + b - begin_of_not_limited, 3);
     if (b < 0) {
