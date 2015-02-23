@@ -176,7 +176,7 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   double maximal = -HUGE;
   double maximal_i = -1;
   for (unsigned int i = 0; i < consensus_sequence.size(); i++) {
-    double sum;
+    double sum = -HUGE;
     for (unsigned int j = 0; j < consensus_sequence.size(); j++) {
       if (i != j) {
         double x;
@@ -189,7 +189,9 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
           x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
-        sum = log_sum(sum, chi);
+        // TODO: check if 1st parameter is 'maximal' or 'sum' or
+        // anything else...
+        sum = log_sum(maximal, chi);
       }
     }
     if (maximal < sum) {
