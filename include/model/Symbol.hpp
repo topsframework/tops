@@ -20,13 +20,15 @@
 #ifndef TOPS_MODEL_SYMBOL_
 #define TOPS_MODEL_SYMBOL_
 
-#include <memory>
-#include <vector>
+// Standard headers
+#include <limits>
 
 namespace tops {
 namespace model {
 
 using Symbol = unsigned int;
+
+const Symbol INVALID_SYMBOL = std::numeric_limits<Symbol>::max();
 
 }  // namespace model
 }  // namespace tops
