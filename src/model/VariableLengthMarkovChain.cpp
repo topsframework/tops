@@ -92,17 +92,17 @@ VariableLengthMarkovChainPtr
   return m;
 }
 
-VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainInterpolatedMarkovChain(
+VariableLengthMarkovChainPtr
+VariableLengthMarkovChain::trainInterpolatedMarkovChain(
     std::vector<Sequence> training_set,
     std::vector<double> weights,
     unsigned int alphabet_size,
     unsigned int order,
     double pseudo_counts,
     ProbabilisticModelPtr apriori) {
-
   auto tree = ContextTree::make(alphabet_size);
 
-  if (apriori != NULL ) {
+  if (apriori != NULL) {
     tree->initializeCounter(training_set, order, 0, weights);
     tree->pruneTreeSmallSampleSize(400);
     tree->normalize(apriori, pseudo_counts);

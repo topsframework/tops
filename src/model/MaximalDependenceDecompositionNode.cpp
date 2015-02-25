@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <string>
 #include <vector>
 
 // ToPS headers
@@ -52,20 +53,25 @@ ProbabilisticModelPtr MaximalDependenceDecompositionNode::getModel() {
   return _model;
 }
 
-void MaximalDependenceDecompositionNode::setChildern(MaximalDependenceDecompositionNodePtr left, MaximalDependenceDecompositionNodePtr right) {
+void MaximalDependenceDecompositionNode::setChildern(
+    MaximalDependenceDecompositionNodePtr left,
+    MaximalDependenceDecompositionNodePtr right) {
   _left = left;
   _right = right;
 }
 
-void MaximalDependenceDecompositionNode::setChild(MaximalDependenceDecompositionNodePtr child) {
+void MaximalDependenceDecompositionNode::setChild(
+    MaximalDependenceDecompositionNodePtr child) {
   _left = child;
 }
 
-MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::getLeft() {
+MaximalDependenceDecompositionNodePtr
+MaximalDependenceDecompositionNode::getLeft() {
   return _left;
 }
 
-MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::getRight() {
+MaximalDependenceDecompositionNodePtr
+MaximalDependenceDecompositionNode::getRight() {
   return _right;
 }
 

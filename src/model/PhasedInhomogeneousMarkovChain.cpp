@@ -48,28 +48,26 @@ PhasedInhomogeneousMarkovChainPtr
     std::vector<double> weights,
     ProbabilisticModelPtr apriori) {
 
-  int length = nphases;
-  std::vector<ContextTreePtr> positional_distribution;
-  std::vector<VariableLengthMarkovChainPtr> vlmcs;
-  positional_distribution.resize(length);
-  vlmcs.resize(length);
+  unsigned int length = nphases;
+  std::vector<ContextTreePtr> positional_distribution(length);
+  std::vector<VariableLengthMarkovChainPtr> vlmcs(length);
 
-  for (int i = 0; i < length; i++) {
+  for (unsigned int i = 0; i < length; i++) {
     std::vector<double> positional_weights;
     std::vector<Sequence> positionalSample;
-    for (int j = 0; j < (int)training_set.size(); j++) {
+    for (unsigned int j = 0; j < training_set.size(); j++) {
       int nseq = 0;
       while (true) {
-        int start = (length) * nseq - order + i;
+        int start = length * nseq - order + i;
         if (start < 0) {
           nseq++;
           continue;
         }
-        int end = (length) * nseq + i;
-        if (end >= (int)(training_set[j].size()))
+        unsigned int end = length * nseq + i;
+        if (end >= training_set[j].size())
           break;
         Sequence s;
-        for (int k = start; k <= end; k++) {
+        for (unsigned int k = start; k <= end; k++) {
           s.push_back(training_set[j][k]);
           positional_weights.push_back(weights[j]);
         }
@@ -85,7 +83,8 @@ PhasedInhomogeneousMarkovChainPtr
       tree->pruneTreeSmallSampleSize(400);
       tree->normalize(apriori, pseudo_counts);
     } else {
-      tree->initializeCounter(positionalSample, order, pseudo_counts, positional_weights);
+      tree->initializeCounter(positionalSample, order, pseudo_counts,
+                              positional_weights);
       tree->pruneTreeSmallSampleSize(400);
       tree->normalize();
     }
