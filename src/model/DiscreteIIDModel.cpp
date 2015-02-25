@@ -275,9 +275,9 @@ void DiscreteIIDModel::band_den_bin(int n,
   rang = (xmax - xmin) * 1.01;
   *d = dd = rang / (nb);
   for (i = 1; i < nn; i++) {
-    ii = (int)(x[i] / dd);
+    ii = static_cast<int>(x[i] / dd);
     for (j = 0; j < i; j++) {
-      jj = (int)(x[j] / dd);
+      jj = static_cast<int>(x[j] / dd);
       iij = abs9((ii - jj));
       cnt[iij]++;
     }

@@ -20,6 +20,7 @@
 // Standard headers
 #include <cmath>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <sstream>
 
@@ -77,7 +78,13 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model) {
   Sequence selected;
-  return newNode("node_r0", training_set, divmin, selected, alphabet_size, consensus_sequence, consensus_model);
+  return newNode("node_r0",
+                 training_set,
+                 divmin,
+                 selected,
+                 alphabet_size,
+                 consensus_sequence,
+                 consensus_model);
 }
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
@@ -88,41 +95,76 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     unsigned int alphabet_size,
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model) {
-  InhomogeneousMarkovChainPtr model = trainInhomogeneousMarkovChain(sequences, alphabet_size);
+  InhomogeneousMarkovChainPtr model = trainInhomogeneousMarkovChain(
+    sequences, alphabet_size);
   MaximalDependenceDecompositionNodePtr mdd_node;
 
-  int consensus_index = getMaximalDependenceIndex(model, selected, consensus_sequence, alphabet_size, consensus_model);
+  int consensus_index = getMaximalDependenceIndex(model,
+                                                  selected,
+                                                  consensus_sequence,
+                                                  alphabet_size,
+                                                  consensus_model);
 
   if (consensus_index >= 0) {
-
     selected.push_back(consensus_index);
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
     double prob = consensus_model->evaluatePosition(s, consensus_index);
-    if ( prob >= -0.001 && prob <= 0.001) {
-      mdd_node = MaximalDependenceDecompositionNode::make(node_name, model, consensus_index);
+    if (prob >= -0.001 && prob <= 0.001) {
+      mdd_node = MaximalDependenceDecompositionNode::make(node_name,
+                                                          model,
+                                                          consensus_index);
       std::stringstream p;
       p << node_name << "_p" << consensus_index;
-      MaximalDependenceDecompositionNodePtr child = newNode(p.str(), sequences, divmin, selected, alphabet_size, consensus_sequence, consensus_model);
+      MaximalDependenceDecompositionNodePtr child = newNode(
+        p.str(),
+        sequences,
+        divmin,
+        selected,
+        alphabet_size,
+        consensus_sequence,
+        consensus_model);
       mdd_node->setChild(child);
     } else {
-
       std::vector<Sequence> consensus_sequences;
       std::vector<Sequence> nonconsensus_sequences;
-      subset(consensus_index, sequences, consensus_sequences, nonconsensus_sequences, consensus_sequence);
+      subset(consensus_index,
+            sequences,
+            consensus_sequences,
+            nonconsensus_sequences,
+            consensus_sequence);
 
-      if ((consensus_sequences.size() > divmin) && (nonconsensus_sequences.size() > divmin)) {
-        mdd_node = MaximalDependenceDecompositionNode::make(node_name, model, consensus_index);
+      if ((consensus_sequences.size() > divmin)
+          && (nonconsensus_sequences.size() > divmin)) {
+        mdd_node = MaximalDependenceDecompositionNode::make(node_name,
+                                                            model,
+                                                            consensus_index);
         std::stringstream p;
         p << node_name << "_p" << consensus_index;
-        MaximalDependenceDecompositionNodePtr left = newNode(p.str(), consensus_sequences, divmin, selected, alphabet_size, consensus_sequence, consensus_model);
+        MaximalDependenceDecompositionNodePtr left = newNode(
+          p.str(),
+          consensus_sequences,
+          divmin,
+          selected,
+          alphabet_size,
+          consensus_sequence,
+          consensus_model);
         std::stringstream n;
         n << node_name << "_n" << consensus_index;
-        MaximalDependenceDecompositionNodePtr right = newNode(n.str(), nonconsensus_sequences, divmin, selected, alphabet_size, consensus_sequence, consensus_model);
+        MaximalDependenceDecompositionNodePtr right = newNode(
+          n.str(),
+          nonconsensus_sequences,
+          divmin,
+          selected,
+          alphabet_size,
+          consensus_sequence,
+          consensus_model);
         mdd_node->setChildern(left, right);
       } else {
-        mdd_node = MaximalDependenceDecompositionNode::make(node_name, model, -1);
+        mdd_node = MaximalDependenceDecompositionNode::make(node_name,
+                                                            model,
+                                                            -1);
       }
     }
   }
@@ -130,11 +172,12 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
   return mdd_node;
 }
 
-void MaximalDependenceDecomposition::subset(int index,
-                                            std::vector<Sequence> & sequences,
-                                            std::vector<Sequence> & consensus,
-                                            std::vector<Sequence> & nonconsensus,
-                                            ConsensusSequence consensus_sequence) {
+void MaximalDependenceDecomposition::subset(
+    int index,
+    std::vector<Sequence> & sequences,
+    std::vector<Sequence> & consensus,
+    std::vector<Sequence> & nonconsensus,
+    ConsensusSequence consensus_sequence) {
   for (unsigned int i = 0; i < sequences.size(); i++) {
     if (consensus_sequence[index].is(sequences[i][index])) {
       consensus.push_back(sequences[i]);
@@ -144,7 +187,8 @@ void MaximalDependenceDecomposition::subset(int index,
   }
 }
 
-InhomogeneousMarkovChainPtr MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
+InhomogeneousMarkovChainPtr
+MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
     std::vector<Sequence> & sequences,
     unsigned int alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> position_specific_vlmcs;
@@ -189,7 +233,7 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
           x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
-        // TODO: check if 1st parameter is 'maximal' or 'sum' or
+        // TODO(igorbonadio): check if 1st parameter is 'maximal' or 'sum' or
         // anything else...
         sum = log_sum(maximal, chi);
       }
@@ -228,7 +272,10 @@ double MaximalDependenceDecomposition::evaluateSequence(
   return _evaluateAux(subseq, _mdd_tree, indexes);
 }
 
-double MaximalDependenceDecomposition::_evaluateAux(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const {
+double MaximalDependenceDecomposition::_evaluateAux(
+    const Sequence & s,
+    MaximalDependenceDecompositionNodePtr node,
+    std::vector<int> &indexes) const {
   double p = 0;
   if (node->getLeft()) {
     p = node->getModel()->evaluatePosition(s, node->getIndex());
@@ -242,7 +289,7 @@ double MaximalDependenceDecomposition::_evaluateAux(const Sequence & s, MaximalD
       // cout << "nao eh consensus" << endl;
       p += _evaluateAux(s, node->getRight(), indexes);
     }
-  } else { // leaf
+  } else {  // leaf
     // cout << "nao tem filho" << endl;
     for (unsigned int i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
@@ -253,26 +300,33 @@ double MaximalDependenceDecomposition::_evaluateAux(const Sequence & s, MaximalD
   return p;
 }
 
-double MaximalDependenceDecomposition::evaluatePosition(const Sequence &s, unsigned int i) const {
-  // TODO
+double MaximalDependenceDecomposition::evaluatePosition(
+    const Sequence &s,
+     unsigned int i) const {
+  // TODO(igorbonadio)
   return -HUGE;
 }
 
-Sequence MaximalDependenceDecomposition::chooseSequence(Sequence &s, unsigned int size) const {
+Sequence MaximalDependenceDecomposition::chooseSequence(
+    Sequence &s,
+    unsigned int size) const {
   s = Sequence(size, INVALID_SYMBOL);
   _chooseAux(s, _mdd_tree);
   return s;
 }
 
-void MaximalDependenceDecomposition::_chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const {
+void MaximalDependenceDecomposition::_chooseAux(
+    Sequence & s,
+    MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
-    s[node->getIndex()] = node->getModel()->choosePosition(s, node->getIndex());
+    s[node->getIndex()] = node->getModel()->choosePosition(s,
+                                                           node->getIndex());
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _chooseAux(s, node->getLeft());
     } else {
       _chooseAux(s, node->getRight());
     }
-  } else { // leaf
+  } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
         s[i] = node->getModel()->choosePosition(s, i);
@@ -281,19 +335,23 @@ void MaximalDependenceDecomposition::_chooseAux(Sequence & s, MaximalDependenceD
   }
 }
 
-Symbol MaximalDependenceDecomposition::choosePosition(const Sequence &s, unsigned int i) const {
-  // TODO
+Symbol MaximalDependenceDecomposition::choosePosition(
+    const Sequence &s,
+    unsigned int i) const {
+  // TODO(igorbonadio)
   return 0;
 }
 
-double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(unsigned int begin,
-                                                                  unsigned int end) {
+double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(
+    unsigned int begin,
+    unsigned int end) {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   return _prefix_sum_array[begin];
 }
 
-void MaximalDependenceDecomposition::initializePrefixSumArray(const Sequence &s) {
+void MaximalDependenceDecomposition::initializePrefixSumArray(
+    const Sequence &s) {
   _prefix_sum_array.clear();
   int len = s.size();
   int clen = _consensus_sequence.size();
