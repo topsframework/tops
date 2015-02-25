@@ -49,7 +49,8 @@ PhasedInhomogeneousMarkovChainPtr
     ProbabilisticModelPtr apriori) {
 
   unsigned int length = nphases;
-  std::vector<ContextTreePtr> positional_distribution(length);
+  // positional_distribution is not used in this method:
+  // std::vector<ContextTreePtr> positional_distribution(length);
   std::vector<VariableLengthMarkovChainPtr> vlmcs(length);
 
   for (unsigned int i = 0; i < length; i++) {
@@ -89,7 +90,7 @@ PhasedInhomogeneousMarkovChainPtr
       tree->normalize();
     }
 
-    positional_distribution[i] = tree;
+    // positional_distribution[i] = tree;
     vlmcs[i] = VariableLengthMarkovChain::make(tree);
   }
 
