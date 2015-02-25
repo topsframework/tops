@@ -80,7 +80,6 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
     if (training_set[i].size() < min_length)
       min_length = training_set[i].size();
   }
-  std::string q;
   double normalizer = calculate_normalizer(skip_length, skip_offset, min_length,
                                            counter, alphabet_size);
 
