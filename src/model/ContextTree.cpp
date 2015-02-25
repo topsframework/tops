@@ -114,7 +114,6 @@ void ContextTree::removeContextNotUsed() {
 }
 
 void ContextTree::normalize() {
-  std::vector <ContextTreeNodePtr> newAllVector;
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     double total = 0;
     std::vector<double> probs(_alphabet_size);
@@ -132,7 +131,6 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
   if (old == NULL) {
       exit(-1);
   }
-  std::vector <ContextTreeNodePtr> newAllVector;
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     double total = 0;
     std::vector<double> probs(_alphabet_size);
@@ -226,7 +224,6 @@ for (int l = 0; l < static_cast<int>(sequences.size()); l ++) {
 void ContextTree::pruneTreeSmallSampleSize(int small_) {
   std::set<int> x = getLevelOneNodes();
   std::vector<int> nodesToPrune(x.begin(), x.end());
-  std::set<int>::iterator it;
 
   while (nodesToPrune.size() > 0) {
     int id = nodesToPrune.back();
@@ -277,7 +274,6 @@ void ContextTree::pruneTree(double delta) {
     sample_size += (getRoot()->getCounter())[l];
   std::set<int> x = getLevelOneNodes();
   std::vector<int> nodesToPrune(x.begin(), x.end());
-  std::set<int>::iterator it;
   double small_ = (static_cast<double>(_alphabet_size))*log(sample_size);
 
   while (nodesToPrune.size() > 0) {
