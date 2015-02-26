@@ -25,7 +25,7 @@
 #include <vector>
 
 // ToPS headers
-#include "model/FactorableModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -43,11 +43,11 @@ using MultipleSequentialModelPtr
  * @class MultipleSequentialModel
  * @brief TODO
  */
-class MultipleSequentialModel : public FactorableModel {
+class MultipleSequentialModel : public ProbabilisticModel {
  public:
   // Static methods
   static MultipleSequentialModelPtr make(
-      std::vector<FactorableModelPtr> models,
+      std::vector<ProbabilisticModelPtr> models,
       std::vector<int> max_length);
 
   // Virtual methods
@@ -62,13 +62,13 @@ class MultipleSequentialModel : public FactorableModel {
 
  private:
   // Instance variables
-  std::vector<FactorableModelPtr> _models;
+  std::vector<ProbabilisticModelPtr> _models;
   std::vector<int> _max_length;
   unsigned int _idx_not_limited;
   unsigned int _seqsize;
 
   // Constructors
-  MultipleSequentialModel(std::vector<FactorableModelPtr> models,
+  MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
                           std::vector<int> max_length);
 };
 

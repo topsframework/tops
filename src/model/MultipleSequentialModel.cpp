@@ -31,14 +31,14 @@ namespace tops {
 namespace model {
 
 MultipleSequentialModelPtr MultipleSequentialModel::make(
-      std::vector<FactorableModelPtr> models,
+      std::vector<ProbabilisticModelPtr> models,
       std::vector<int> max_length) {
   return MultipleSequentialModelPtr(
     new MultipleSequentialModel(models, max_length));
 }
 
 MultipleSequentialModel::MultipleSequentialModel(
-    std::vector<FactorableModelPtr> models,
+    std::vector<ProbabilisticModelPtr> models,
     std::vector<int> max_length) : _models(models),
                                             _max_length(max_length) {
   _idx_not_limited = _models.size() - 1;

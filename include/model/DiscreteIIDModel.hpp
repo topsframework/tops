@@ -25,7 +25,7 @@
 #include <vector>
 
 // ToPS headers
-#include "model/FactorableModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -71,7 +71,7 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  * [Aaron Clauset]: http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf
  *
  */
-class DiscreteIIDModel : public FactorableModel {
+class DiscreteIIDModel : public ProbabilisticModel {
  public:
   // Static methods
 

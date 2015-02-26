@@ -37,12 +37,20 @@ class ProbabilisticModel {
  public:
   // Purely virtual methods
   virtual int alphabetSize() const = 0;
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end) const = 0;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const = 0;
+
+  // Virtual methods
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
+  virtual double evaluateSequence(const Sequence &s,
+                                  unsigned int begin,
+                                  unsigned int end) const;
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
+  virtual void initializePrefixSumArray(const Sequence &s);
+
+ private:
+  // Instance variables
+  std::vector<double> _prefix_sum_array;
 };
 
 /**

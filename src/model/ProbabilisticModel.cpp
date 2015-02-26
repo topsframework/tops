@@ -17,10 +17,42 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "ProbabilisticModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
+
+Sequence ProbabilisticModel::chooseSequence(Sequence &s, unsigned int size) const {
+  for (unsigned int k = 0; k < size; k++) {
+    if (k < s.size())
+      s[k] = choosePosition(s, k);
+    else
+      s.push_back(choosePosition(s, k));
+  }
+  return s;
+}
+
+double ProbabilisticModel::evaluateSequence(const Sequence &s,
+                                          unsigned int begin,
+                                          unsigned int end) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluatePosition(s, i);
+  return prob;
+}
+
+double ProbabilisticModel::evaluateWithPrefixSumArray(unsigned int begin,
+                                                   unsigned int end) {
+  return _prefix_sum_array[end] - _prefix_sum_array[begin];
+}
+
+void ProbabilisticModel::initializePrefixSumArray(const Sequence &s) {
+  _prefix_sum_array.resize(s.size() + 1);
+  _prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < s.size() ; i++) {
+    _prefix_sum_array[i+1] = _prefix_sum_array[i] + evaluatePosition(s, i);
+  }
+}
 
 }  // namespace model
 }  // namespace tops

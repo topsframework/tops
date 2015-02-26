@@ -25,7 +25,7 @@
 #include <vector>
 
 // ToPS headers
-#include "model/FactorableModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 #include "model/ContextTree.hpp"
 
 namespace tops {
@@ -47,7 +47,7 @@ using VariableLengthMarkovChainPtr
  * An variable length Markov chain is a Markov chain that can have different
  * size contexts.
  */
-class VariableLengthMarkovChain : public FactorableModel {
+class VariableLengthMarkovChain : public ProbabilisticModel {
  public:
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);

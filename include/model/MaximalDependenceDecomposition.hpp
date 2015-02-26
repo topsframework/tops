@@ -26,7 +26,7 @@
 #include <string>
 
 // ToPS headers
-#include "FactorableModel.hpp"
+#include "ProbabilisticModel.hpp"
 #include "MaximalDependenceDecompositionNode.hpp"
 #include "Consensus.hpp"
 #include "InhomogeneousMarkovChain.hpp"
@@ -46,7 +46,7 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
  * @class MaximalDependenceDecomposition
  * @brief TODO
  */
-class MaximalDependenceDecomposition : public FactorableModel {
+class MaximalDependenceDecomposition : public ProbabilisticModel {
  public:
   static MaximalDependenceDecompositionPtr make(
       unsigned int alphabet_size,

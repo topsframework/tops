@@ -25,7 +25,7 @@
 #include <vector>
 
 // ToPS headers
-#include "model/FactorableModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
@@ -46,7 +46,7 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * An inhomogeneous Markov chain is a model which suports different Markov
  * chains per position.
  */
-class InhomogeneousMarkovChain : public FactorableModel {
+class InhomogeneousMarkovChain : public ProbabilisticModel {
  public:
   // Static methods
   static InhomogeneousMarkovChainPtr make(

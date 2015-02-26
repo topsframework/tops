@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include "model/ProbabilisticModel.hpp"
+
 namespace tops {
 namespace model {
 
@@ -29,7 +31,7 @@ namespace model {
  * @class DecodableModel
  * @brief TODO
  */
-class DecodableModel {
+class DecodableModel : public ProbabilisticModel {
 };
 
 /**

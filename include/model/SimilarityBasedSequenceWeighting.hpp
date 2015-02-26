@@ -26,7 +26,7 @@
 #include <map>
 
 // ToPS headers
-#include "model/FactorableModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -44,7 +44,7 @@ using SimilarityBasedSequenceWeightingPtr
  * @class SimilarityBasedSequenceWeighting
  * @brief TODO
  */
-class SimilarityBasedSequenceWeighting : public FactorableModel {
+class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
  public:
   // Static methods
   static SimilarityBasedSequenceWeightingPtr make(
