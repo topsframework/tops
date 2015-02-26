@@ -48,14 +48,15 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
   tree->removeContextNotUsed();
   tree->normalize();
   VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
-  double loglikelihood = 0.0;
-  unsigned int sample_size = 0;
-  for (int i = 0; i < static_cast<int>(training_set.size()); i++) {
-          loglikelihood
-            += m->evaluateSequence(training_set[i],
-                                   0,
-                                   training_set[i].size() - 1);
-          sample_size += training_set[i].size();
+  // Comment unused variables (cppcheck)
+  // double loglikelihood = 0.0;
+  // unsigned int sample_size = 0;
+  for (unsigned int i = 0; i < training_set.size(); i++) {
+    // loglikelihood +=
+    m->evaluateSequence(training_set[i],
+                        0,
+                        training_set[i].size() - 1);
+    // sample_size += training_set[i].size();
   }
   return m;
 }
@@ -81,12 +82,13 @@ VariableLengthMarkovChainPtr
   }
 
   VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
-  double loglikelihood = 0.0;
-  unsigned int sample_size = 0;
-  for (int i = 0; i < static_cast<int>(training_set.size()); i++) {
-    loglikelihood
-      += m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
-    sample_size += training_set[i].size();
+  // Comment unused variables (cppcheck)
+  // double loglikelihood = 0.0;
+  // unsigned int sample_size = 0;
+  for (unsigned int i = 0; i < training_set.size(); i++) {
+    // loglikelihood +=
+    m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
+    // sample_size += training_set[i].size();
   }
 
   return m;
