@@ -49,10 +49,6 @@ class AMultipleSequentialModel : public testing::Test {
     {3, 4});
 };
 
-TEST_F(AMultipleSequentialModel, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(mm->alphabetSize(), Eq(2));
-}
-
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
   ASSERT_THAT(mm->evaluateSequence({1, 0, 1}, 0, 3),
               DoubleNear(-1.83258, 1e-4));

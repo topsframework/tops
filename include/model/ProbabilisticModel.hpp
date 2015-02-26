@@ -36,7 +36,6 @@ namespace model {
 class ProbabilisticModel {
  public:
   // Purely virtual methods
-  virtual int alphabetSize() const = 0;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
 

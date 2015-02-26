@@ -38,10 +38,6 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
     : _vlmcs(vlmcs) {
 }
 
-int InhomogeneousMarkovChain::alphabetSize() const {
-  return _vlmcs[0]->alphabetSize();
-}
-
 double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
                                                   unsigned int i) const {
   if (i < _vlmcs.size())

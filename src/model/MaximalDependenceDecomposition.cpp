@@ -254,10 +254,6 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   return maximal_i;
 }
 
-int MaximalDependenceDecomposition::alphabetSize() const {
-  return _alphabet_size;
-}
-
 double MaximalDependenceDecomposition::evaluateSequence(
     const Sequence &s,
     unsigned int begin,

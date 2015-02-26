@@ -54,10 +54,6 @@ class AVLMC : public testing::Test {
   VariableLengthMarkovChainPtr vlmc = createMachlerVLMC();
 };
 
-TEST_F(AVLMC, ShouldHaveAnAlphabet) {
-  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
-}
-
 TEST_F(AVLMC, ShouldEvaluateAPosition) {
   ASSERT_THAT(vlmc->evaluatePosition({0}, 0), DoubleEq(log(0.50)));
   ASSERT_THAT(vlmc->evaluatePosition({1}, 0), DoubleEq(log(0.50)));
@@ -126,7 +122,6 @@ TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
       training_set,
       2,
       0.1);
-  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
               DoubleNear(-2.77259, 1e-4));
   ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
@@ -142,7 +137,6 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
     training_set, 2, 2, 1.5,
     {1.0, 1.0, 1.0, 1.0},
     ProbabilisticModelPtr(NULL));
-  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
               DoubleNear(-1.37235, 1e-4));
   ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
@@ -161,7 +155,6 @@ TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
     {1.0, 1.0, 1.0, 1.0},
     2, 2, 1.5,
     ProbabilisticModelPtr(NULL));
-  ASSERT_THAT(vlmc->alphabetSize(), Eq(2));
   ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
               DoubleNear(-2.77913, 1e-4));
   ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),

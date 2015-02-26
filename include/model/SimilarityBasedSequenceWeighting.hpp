@@ -62,7 +62,6 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
       Sequence skip_sequence);
 
   // Virtual methods
-  virtual int alphabetSize() const;
   virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,

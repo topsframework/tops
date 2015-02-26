@@ -48,10 +48,6 @@ class AMDD : public testing::Test {
   MaximalDependenceDecompositionPtr mdd = createMDD();
 };
 
-TEST_F(AMDD, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(mdd->alphabetSize(), Eq(2));
-}
-
 TEST_F(AMDD, ShouldEvaluateAPosition) {
   ASSERT_THAT(mdd->evaluatePosition({0}, 0), DoubleEq(-HUGE));
   ASSERT_THAT(mdd->evaluatePosition({1}, 0), DoubleEq(-HUGE));

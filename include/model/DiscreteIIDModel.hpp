@@ -146,13 +146,6 @@ class DiscreteIIDModel : public ProbabilisticModel {
       unsigned int max_length);
 
   // Virtual methods
-
-  /**
-   * Gets the alphabet set size.
-   * @return \f$|X|\f$
-   */
-  virtual int alphabetSize() const;
-
   /**
    * Evaluates the given position of a sequence.
    * @param s a sequence
@@ -188,6 +181,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
   std::vector<double> probabilities();
+  int alphabetSize() const;
 
  protected:
   // Constructors

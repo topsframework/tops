@@ -57,10 +57,6 @@ class AnInhomogeneousMarkovChain : public testing::Test {
   }
 };
 
-TEST_F(AnInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(imc->alphabetSize(), Eq(2));
-}
-
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->evaluateSequence({0}, 0, 1),
               DoubleEq(log(0.50)));

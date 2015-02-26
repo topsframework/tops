@@ -57,10 +57,6 @@ MultipleSequentialModel::MultipleSequentialModel(
   }
 }
 
-int MultipleSequentialModel::alphabetSize() const {
-  return _models[0]->alphabetSize();
-}
-
 double MultipleSequentialModel::evaluateSequence(const Sequence &s,
                         unsigned int begin,
                         unsigned int end) const {

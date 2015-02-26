@@ -60,7 +60,6 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
       ProbabilisticModelPtr consensus_model,
       unsigned int minimum_subset);
 
-  virtual int alphabetSize() const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
                                   unsigned int end) const;

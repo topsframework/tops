@@ -31,10 +31,6 @@ ProbabilisticModelDecorator::ProbabilisticModelDecorator(
     ProbabilisticModelPtr model) : _model(model) {
 }
 
-int ProbabilisticModelDecorator::alphabetSize() const {
-  return _model->alphabetSize();
-}
-
 double ProbabilisticModelDecorator::evaluateSequence(const Sequence &s,
                                                      unsigned int begin,
                                                      unsigned int end) const {

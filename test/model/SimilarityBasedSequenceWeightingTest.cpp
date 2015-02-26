@@ -48,10 +48,6 @@ class ASBSW : public testing::Test {
   }
 };
 
-TEST_F(ASBSW, ShouldHaveAnAlphabet) {
-  ASSERT_THAT(sbsw->alphabetSize(), Eq(2));
-}
-
 TEST_F(ASBSW, ShouldEvaluateASequence) {
   ASSERT_THAT(sbsw->evaluateSequence({0}, 0, 1),
               DoubleEq(-HUGE));

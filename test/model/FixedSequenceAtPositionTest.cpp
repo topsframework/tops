@@ -53,10 +53,6 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
       DiscreteIIDModel::make({0, -HUGE}));
 };
 
-TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(iid->alphabetSize(), Eq(2));
-}
-
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
   ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 0, 0, 0, 0, 0}, 0, 8),
               DoubleEq(-HUGE));

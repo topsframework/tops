@@ -117,10 +117,6 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
   return VariableLengthMarkovChain::make(tree);
 }
 
-int VariableLengthMarkovChain::alphabetSize() const {
-  return _context_tree->alphabetSize();
-}
-
 double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
                                                    unsigned int i) const {
   ContextTreeNodePtr c = _context_tree->getContext(s, i);

@@ -124,10 +124,6 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
   return sum;
 }
 
-int SimilarityBasedSequenceWeighting::alphabetSize() const {
-  return _alphabet_size;
-}
-
 double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
                                                           unsigned int i)
                                                           const {

@@ -60,10 +60,6 @@ class APhasedInhomogeneousMarkovChain : public testing::Test {
   }
 };
 
-TEST_F(APhasedInhomogeneousMarkovChain, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(imc->alphabetSize(), Eq(2));
-}
-
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->evaluateSequence({0}, 0, 1),
               DoubleEq(log(0.50)));
@@ -117,7 +113,6 @@ TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
   auto imc
     = PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
       training_set, 2, 2, 2, 1.5, {1.0, 1.0, 1.0, 1.0}, ProbabilisticModelPtr(NULL));
-  ASSERT_THAT(imc->alphabetSize(), Eq(2));
   ASSERT_THAT(imc->evaluateSequence({1, 0, 1, 0}, 0, 4),
               DoubleNear(-2.99504, 1e-4));
   ASSERT_THAT(imc->evaluateSequence({1, 1, 1, 1}, 0, 4),
