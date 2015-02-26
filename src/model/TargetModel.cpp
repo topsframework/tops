@@ -17,8 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <cmath>
+#include <vector>
 
+// ToPS headers
 #include "model/TargetModel.hpp"
 
 namespace tops {

@@ -18,6 +18,7 @@
 /***********************************************************************/
 
 // Standard headers
+#include <map>
 #include <cmath>
 #include <vector>
 #include <string>
@@ -69,38 +70,45 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
     Sequence skip_sequence) {
 
   std::map<Sequence, double> counter;
-  int min_length = 999999999;
-  for (int i = 0; i < (int) training_set.size(); i++) {
+  unsigned int min_length = 999999999;
+  for (unsigned int i = 0; i < training_set.size(); i++) {
     if (counter.find(training_set[i]) == counter.end()) {
       counter[training_set[i]] = 1;
     } else {
       counter[training_set[i]] += 1;
     }
-    if((int)training_set[i].size() < min_length)
+    if (training_set[i].size() < min_length)
       min_length = training_set[i].size();
   }
-  std::string q;
-  double normalizer = calculate_normalizer(skip_length, skip_offset, min_length, counter, alphabet_size);
+  double normalizer = calculate_normalizer(skip_length, skip_offset, min_length,
+                                           counter, alphabet_size);
 
-  return SimilarityBasedSequenceWeighting::make(alphabet_size, counter, normalizer, skip_offset, skip_length, skip_sequence);
+  return SimilarityBasedSequenceWeighting::make(alphabet_size, counter,
+                                                normalizer, skip_offset,
+                                                skip_length, skip_sequence);
 }
 
-double SimilarityBasedSequenceWeighting::calculate_normalizer(int skip_length, int skip_offset, int max_length, std::map<Sequence, double> & counter, int alphabet_size) {
+double SimilarityBasedSequenceWeighting::calculate_normalizer(
+    int skip_length,
+    int skip_offset,
+    int max_length,
+    std::map<Sequence, double> & counter,
+    int alphabet_size) {
   int npatterns_differ_1 = 0;
   npatterns_differ_1 = (alphabet_size - 1) * (max_length - skip_length);
-  if(skip_length < 0)
-    npatterns_differ_1 = (alphabet_size - 1) * (max_length );
+  if (skip_length < 0)
+    npatterns_differ_1 = (alphabet_size - 1) * (max_length);
   double sum = 0.0;
-  for(auto it = counter.begin(); it != counter.end(); it++) {
+  for (auto it = counter.begin(); it != counter.end(); it++) {
     sum += it->second;
 
     int diff = 0;
     int np_differ_1  = 0;
 
-    for(auto it2 = counter.begin(); it2 != counter.end(); it2++) {
+    for (auto it2 = counter.begin(); it2 != counter.end(); it2++) {
       auto a = it->first;
       auto b = it2->first;
-      for(int i = 0; i < max_length; i++) {
+      for (int i = 0; i < max_length; i++) {
         if ((i >= skip_offset) && (i <= skip_offset+skip_length)) {
           if (a[i] != b[i])
             diff+=2;
@@ -108,9 +116,8 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(int skip_length, i
           diff++;
         }
       }
-      if (diff == 1) {
-        np_differ_1 ++;
-      }
+      if (diff == 1)
+        np_differ_1++;
     }
     sum += 0.001*it->second*(npatterns_differ_1 - np_differ_1);
   }
@@ -121,7 +128,9 @@ int SimilarityBasedSequenceWeighting::alphabetSize() const {
   return _alphabet_size;
 }
 
-double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s, unsigned int i) const {
+double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
+                                                          unsigned int i)
+                                                          const {
   return evaluateSequence(s, i, i+1);
 }
 
@@ -132,11 +141,11 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
   if (end > s.size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
-  
+
   Sequence ss;
   for (unsigned int i = begin; i < end && i < begin + length; i++)
     ss.push_back(s[i]);
-  
+
   double sum = 0;
   for (auto weight : _counter) {
     int diff = 0;
@@ -171,22 +180,24 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
   return log(sum/(_normalizer));
 }
 
-Symbol SimilarityBasedSequenceWeighting::choosePosition(const Sequence &s, unsigned int i) const {
-  // TODO
+Symbol SimilarityBasedSequenceWeighting::choosePosition(const Sequence &s,
+                                                        unsigned int i) const {
+  // TODO(igorbonadio)
   return 0;
 }
 
-double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(unsigned int begin,
-                                                                    unsigned int end) {
-  if (begin < _scores.size()) {
+double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(
+    unsigned int begin,
+    unsigned int end) {
+  if (begin < _scores.size())
     return _scores[begin];
-  }
   return -HUGE;
 }
 
-void SimilarityBasedSequenceWeighting::initializePrefixSumArray(const Sequence &s) {
+void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
+    const Sequence &s) {
   _scores.resize(s.size());
-  for (int i = 0; i < (int) s.size(); i++)  {
+  for (unsigned int i = 0; i < s.size(); i++)  {
     _scores[i] = evaluateSequence(s, i, s.size());
   }
 }

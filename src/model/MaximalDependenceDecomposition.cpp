@@ -223,14 +223,13 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     double sum = -HUGE;
     for (unsigned int j = 0; j < consensus_sequence.size(); j++) {
       if (i != j) {
-        double x;
         double chi = -HUGE;
         for (unsigned int k = 0; k < alphabet_size; k++) {
           s[i] = k;
           double e = consensus_model->evaluatePosition(s, i);
           s[j] = k;
           double o = model->evaluatePosition(s, j);
-          x = (o - e)+(o - e)-e;
+          double x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
         // TODO(igorbonadio): check if 1st parameter is 'maximal' or 'sum' or

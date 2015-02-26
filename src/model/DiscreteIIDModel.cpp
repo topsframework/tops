@@ -263,7 +263,6 @@ void DiscreteIIDModel::band_den_bin(int n,
                                     const std::vector<double> &x,
                                     std::vector<double> &cnt) {
   int   i, j,  nn = n;
-  int ii, jj, iij;
   double xmin, xmax, rang, dd;
   for (i = 0; i < nb; i++)
     cnt.push_back(0);
@@ -275,29 +274,28 @@ void DiscreteIIDModel::band_den_bin(int n,
   rang = (xmax - xmin) * 1.01;
   *d = dd = rang / (nb);
   for (i = 1; i < nn; i++) {
-    ii = static_cast<int>(x[i] / dd);
+    int ii = static_cast<int>(x[i] / dd);
     for (j = 0; j < i; j++) {
-      jj = static_cast<int>(x[j] / dd);
-      iij = abs9((ii - jj));
+      int jj = static_cast<int>(x[j] / dd);
+      int iij = abs9((ii - jj));
       cnt[iij]++;
     }
   }
 }
 
 void DiscreteIIDModel::band_phi6_bin(int n,
-                                       int nb,
-                                       double d,
-                                       std::vector<double> &x,
-                                       double h,
-                                       double *u) {
-  int   i, nn = n, nbin = nb;
-  double delta, sum, term;
-  sum = 0.0;
-  for (i = 0; i < nbin; i++) {
-    delta = i * (d) / (h);
+                                     int nb,
+                                     double d,
+                                     std::vector<double> &x,
+                                     double h,
+                                     double *u) {
+  int nn = n, nbin = nb;
+  double sum = 0.0;
+  for (int i = 0; i < nbin; i++) {
+    double delta = i * (d) / (h);
     delta *= delta;
     if (delta >= 1000) break;
-    term = exp(-delta / 2) *
+    double term = exp(-delta / 2) *
       (delta * delta * delta - 15 * delta * delta + 45 * delta - 15);
     sum += term * x[i];
   }
@@ -311,15 +309,13 @@ void DiscreteIIDModel::band_phi4_bin(int n,
                                      std::vector<double> x,
                                      double h,
                                      double *u) {
-  int   i, nn = n, nbin = nb;
-  double delta, sum, term;
-
-  sum = 0.0;
-  for (i = 0; i < nbin; i++) {
-    delta = i * (d) / (h);
+  int nn = n, nbin = nb;
+  double sum = 0.0;
+  for (int i = 0; i < nbin; i++) {
+    double delta = i * (d) / (h);
     delta *= delta;
     if (delta >= 1000) break;
-    term = exp(-delta / 2) * (delta * delta - 6 * delta + 3);
+    double term = exp(-delta / 2) * (delta * delta - 6 * delta + 3);
     sum += term * x[i];
   }
   sum = 2 * sum + nn * 3;     /* add in diagonal */
