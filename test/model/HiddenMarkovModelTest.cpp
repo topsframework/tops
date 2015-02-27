@@ -17,49 +17,39 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-
 // Standard headers
-#include <memory>
+#include <cmath>
 #include <vector>
 
+// External headers
+#include "gmock/gmock.h"
+
 // ToPS headers
-#include "DiscreteIIDModel.hpp"
+#include "model/HiddenMarkovModel.hpp"
+#include "model/Sequence.hpp"
 
-namespace tops {
-namespace model {
+#include "helper/HiddenMarkovModel.hpp"
+#include "helper/Sequence.hpp"
 
-class HiddenMarkovModelState;
+using ::testing::DoubleEq;
+using ::testing::DoubleNear;
+using ::testing::Eq;
 
-/**
- * @typedef HiddenMarkovModelStatePtr
- * @brief Alias of pointer to HiddenMarkovModelState.
- */
-using HiddenMarkovModelStatePtr = std::shared_ptr<HiddenMarkovModelState>;
+using tops::model::HiddenMarkovModel;
+using tops::model::HiddenMarkovModelPtr;
+using tops::model::Sequence;
 
-/**
- * @class HiddenMarkovModelState
- * @brief TODO
- */
-class HiddenMarkovModelState {
- public:
-  static HiddenMarkovModelStatePtr make(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
-  DiscreteIIDModelPtr & emissions();
-  DiscreteIIDModelPtr & transitions();
-  bool isSilent();
-  int symbol();
- private:
-  HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
+using tops::helper::createDishonestCoinCasinoHMM;
 
-  Symbol _symbol;
-  DiscreteIIDModelPtr _emissions;
-  DiscreteIIDModelPtr _transitions;
+class AHiddenMarkovModel : public testing::Test {
+ protected:
+  HiddenMarkovModelPtr hmm = createDishonestCoinCasinoHMM();
 };
 
-typedef std::vector<HiddenMarkovModelState> HiddenMarkovModelStateSequence;
-
-}  // namespace model
-}  // namespace tops
-
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+TEST_F(AHiddenMarkovModel, ShouldHaveEvaluateTheJointProbability) {
+  ASSERT_THAT(hmm->evaluateSequences({0, 0, 1, 1}, {0, 0, 1, 0}, 0, 4),
+              DoubleEq(log(0.5) + log(0.5) +
+                       log(0.9) + log(0.5) +
+                       log(0.1) + log(0.8) +
+                       log(0.3) + log(0.5)));
+}

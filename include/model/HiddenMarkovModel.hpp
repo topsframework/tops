@@ -17,49 +17,61 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_
+#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_
 
 // Standard headers
 #include <memory>
 #include <vector>
 
 // ToPS headers
-#include "DiscreteIIDModel.hpp"
+#include "DecodableModel.hpp"
+#include "HiddenMarkovModelState.hpp"
 
 namespace tops {
 namespace model {
 
-class HiddenMarkovModelState;
+class HiddenMarkovModel;
 
 /**
- * @typedef HiddenMarkovModelStatePtr
- * @brief Alias of pointer to HiddenMarkovModelState.
+ * @typedef HiddenMarkovModelPtr
+ * @brief Alias of pointer to HiddenMarkovModel.
  */
-using HiddenMarkovModelStatePtr = std::shared_ptr<HiddenMarkovModelState>;
+using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
 
 /**
- * @class HiddenMarkovModelState
+ * @class HiddenMarkovModel
  * @brief TODO
  */
-class HiddenMarkovModelState {
+class HiddenMarkovModel : public DecodableModel {
  public:
-  static HiddenMarkovModelStatePtr make(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
-  DiscreteIIDModelPtr & emissions();
-  DiscreteIIDModelPtr & transitions();
-  bool isSilent();
-  int symbol();
- private:
-  HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
+  static HiddenMarkovModelPtr make(
+      std::vector<HiddenMarkovModelStatePtr> states,
+      DiscreteIIDModelPtr initial_probability,
+      unsigned int state_alphabet_size,
+      unsigned int observation_alphabet_size);
 
-  Symbol _symbol;
-  DiscreteIIDModelPtr _emissions;
-  DiscreteIIDModelPtr _transitions;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+
+  virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const;
+  virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const;
+ private:
+  HiddenMarkovModel(
+      std::vector<HiddenMarkovModelStatePtr> states,
+      DiscreteIIDModelPtr initial_probability,
+      unsigned int state_alphabet_size,
+      unsigned int observation_alphabet_size);
+
+  std::vector<HiddenMarkovModelStatePtr> _states;
+    DiscreteIIDModelPtr _initial_probability;
+    unsigned int _state_alphabet_size;
+    unsigned int _observation_alphabet_size;
 };
 
-typedef std::vector<HiddenMarkovModelState> HiddenMarkovModelStateSequence;
+typedef std::vector<HiddenMarkovModel> HiddenMarkovModelSequence;
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_

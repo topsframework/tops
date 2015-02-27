@@ -17,49 +17,33 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-
 // Standard headers
-#include <memory>
+#include <cmath>
 #include <vector>
 
 // ToPS headers
-#include "DiscreteIIDModel.hpp"
+#include "helper/HiddenMarkovModel.hpp"
+#include "helper/DiscreteIIDModel.hpp"
 
 namespace tops {
-namespace model {
+namespace helper {
 
-class HiddenMarkovModelState;
+tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
+  std::vector<tops::model::HiddenMarkovModelStatePtr> states = {
+    tops::model::HiddenMarkovModelState::make(
+      0,
+      createFairCoinIIDModel(),
+      tops::model::DiscreteIIDModel::make({log(0.9), log(0.1)})),
+    tops::model::HiddenMarkovModelState::make(
+      1,
+      createLoadedCoinIIDModel(),
+      tops::model::DiscreteIIDModel::make({log(0.3), log(0.7)}))};
+  return tops::model::HiddenMarkovModel::make(
+    states,
+    tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)}),
+    2,
+    2);
+}
 
-/**
- * @typedef HiddenMarkovModelStatePtr
- * @brief Alias of pointer to HiddenMarkovModelState.
- */
-using HiddenMarkovModelStatePtr = std::shared_ptr<HiddenMarkovModelState>;
-
-/**
- * @class HiddenMarkovModelState
- * @brief TODO
- */
-class HiddenMarkovModelState {
- public:
-  static HiddenMarkovModelStatePtr make(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
-  DiscreteIIDModelPtr & emissions();
-  DiscreteIIDModelPtr & transitions();
-  bool isSilent();
-  int symbol();
- private:
-  HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
-
-  Symbol _symbol;
-  DiscreteIIDModelPtr _emissions;
-  DiscreteIIDModelPtr _transitions;
-};
-
-typedef std::vector<HiddenMarkovModelState> HiddenMarkovModelStateSequence;
-
-}  // namespace model
+}  // namespace helper
 }  // namespace tops
-
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
