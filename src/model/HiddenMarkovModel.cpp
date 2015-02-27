@@ -195,11 +195,18 @@ void HiddenMarkovModel::posteriorDecoding(const Sequence & xs, Sequence & path, 
 }
 
 void HiddenMarkovModel::chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const {
-
+  xs.resize(size);
+  ys.resize(size);
+  for (unsigned int i = 0; i < size; i++)
+    chooseSequencesPosition(xs, ys, i);
 }
 
 void HiddenMarkovModel::chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const {
-
+  if (i == 0)
+    ys[i] = _initial_probabilities->choose();
+  else
+    ys[i] = _states[ys[i-1]]->transitions()->choose();
+  xs[i] = _states[ys[i]]->emissions()->choose();
 }
 
 }  // namespace model
