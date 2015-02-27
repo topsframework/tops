@@ -25,8 +25,9 @@
 #include <vector>
 
 // ToPS headers
-#include "DecodableModel.hpp"
-#include "HiddenMarkovModelState.hpp"
+#include "model/DecodableModel.hpp"
+#include "model/HiddenMarkovModelState.hpp"
+#include "model/Matrix.hpp"
 
 namespace tops {
 namespace model {
@@ -47,15 +48,24 @@ class HiddenMarkovModel : public DecodableModel {
  public:
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
-      DiscreteIIDModelPtr initial_probability,
+      DiscreteIIDModelPtr initial_probabilities,
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size);
 
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &xs, unsigned int i) const;
+  virtual Symbol choosePosition(const Sequence &xs, unsigned int i) const;
 
   virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const;
   virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const;
+  virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const;
+  virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const;
+
+  virtual double viterbi (const Sequence &xs, Sequence &ys, Matrix &gamma) const;
+  virtual double backward(const Sequence & s, Matrix &beta) const;
+  virtual double forward(const Sequence & s, Matrix &alpha) const;
+
+  void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
+  void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
  private:
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,
@@ -64,12 +74,9 @@ class HiddenMarkovModel : public DecodableModel {
       unsigned int observation_alphabet_size);
 
   std::vector<HiddenMarkovModelStatePtr> _states;
-    DiscreteIIDModelPtr _initial_probability;
+    DiscreteIIDModelPtr _initial_probabilities;
     unsigned int _state_alphabet_size;
-    unsigned int _observation_alphabet_size;
 };
-
-typedef std::vector<HiddenMarkovModel> HiddenMarkovModelSequence;
 
 }  // namespace model
 }  // namespace tops

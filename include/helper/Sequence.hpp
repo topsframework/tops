@@ -20,6 +20,8 @@
 #ifndef TOPS_HELPER_SEQUENCE_
 #define TOPS_HELPER_SEQUENCE_
 
+#include <vector>
+
 #include "model/Sequence.hpp"
 
 namespace tops {
@@ -27,6 +29,7 @@ namespace helper {
 
 tops::model::Sequence generateRandomSequence(int size, int alphabet_size);
 tops::model::Sequence sequenceOfLengths();
+std::vector<tops::model::Sequence> generateAllCombinationsOfSymbols(unsigned int size);
 
 }  // namespace helper
 }  // namespace tops

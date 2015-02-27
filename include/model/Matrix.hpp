@@ -17,21 +17,18 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_UTIL_
-#define TOPS_MODEL_UTIL_
+#ifndef TOPS_MODEL_MATRIX_
+#define TOPS_MODEL_MATRIX_
 
-#include <memory>
+// Standard headers
 #include <vector>
 
 namespace tops {
 namespace model {
 
-double log_sum(double x, double y);
-bool close(double a, double b, double tolerance);
-double safe_division(double a, double b);
-int mod(int D, int d);
+using Matrix = std::vector<std::vector<double>>;
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_UTIL_
+#endif  // TOPS_MODEL_MATRIX_

@@ -136,5 +136,28 @@ tops::model::Sequence sequenceOfLengths() {
           100, 226, 104, 246, 5250};
 }
 
+void _generateAllCombinationsOfSymbols(int pos, tops::model::Sequence s, std::vector<tops::model::Sequence> & sequences) {
+  tops::model::Sequence s0 = s;
+  s0[pos] = 0;
+
+  tops::model::Sequence s1 = s;
+  s1[pos] = 1;
+
+  if (pos < s.size() - 1) {
+    _generateAllCombinationsOfSymbols(pos+1, s0, sequences);
+    _generateAllCombinationsOfSymbols(pos+1, s1, sequences);
+  } else {
+    sequences.push_back(s0);
+    sequences.push_back(s1);
+  }
+}
+
+std::vector<tops::model::Sequence> generateAllCombinationsOfSymbols(unsigned int size) {
+  tops::model::Sequence s(size, 0);
+  std::vector<tops::model::Sequence> sequences;
+  _generateAllCombinationsOfSymbols(0, s, sequences);
+  return sequences;
+}
+
 }  // namespace helper
 }  // namespace tops
