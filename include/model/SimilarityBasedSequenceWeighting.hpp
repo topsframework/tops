@@ -78,7 +78,6 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
   unsigned int _skip_length;
   Sequence _skip_sequence;
   double _normalizer;
-  double _alphabet_size;
 
   // Constructors
   SimilarityBasedSequenceWeighting(int alphabet_size, std::map<Sequence, double> counter, double normalizer, int skip_offset, int skip_length, Sequence skip_sequence);

@@ -50,8 +50,7 @@ MaximalDependenceDecomposition::MaximalDependenceDecomposition(
     MaximalDependenceDecompositionNodePtr tree)
       : _mdd_tree(tree),
         _consensus_sequence(consensus_sequence),
-        _consensus_model(consensus_model),
-        _alphabet_size(alphabet_size) {
+        _consensus_model(consensus_model) {
 }
 
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(

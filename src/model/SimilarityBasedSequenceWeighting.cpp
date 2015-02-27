@@ -58,8 +58,7 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
         _skip_offset(skip_offset),
         _skip_length(skip_length),
         _skip_sequence(skip_sequence),
-        _normalizer(normalizer),
-        _alphabet_size(alphabet_size) {
+        _normalizer(normalizer) {
 }
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(

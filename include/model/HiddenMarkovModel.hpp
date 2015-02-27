@@ -64,8 +64,8 @@ class HiddenMarkovModel : public DecodableModel {
   virtual double backward(const Sequence & s, Matrix &beta) const;
   virtual double forward(const Sequence & s, Matrix &alpha) const;
 
-  void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
-  void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
+  virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
+  virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
  private:
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,

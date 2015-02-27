@@ -106,7 +106,6 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   MaximalDependenceDecompositionNodePtr _mdd_tree;
   ConsensusSequence _consensus_sequence;
   ProbabilisticModelPtr _consensus_model;
-  unsigned int _alphabet_size;
   std::vector<double> _prefix_sum_array;
 };
 
