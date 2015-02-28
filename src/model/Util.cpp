@@ -34,12 +34,12 @@ double log_sum(double log_a, double log_b) {
     diff = log_b - log_a;
     if (diff != diff)
       return log_a;
-    return log_a + log(1 + exp(diff));
+    return log_a + log1p(exp(diff));
   } else {
     diff = log_a - log_b;
     if (diff != diff)
       return log_b;
-    return log_b + log(1 + exp(diff));
+    return log_b + log1p(exp(diff));
   }
 }
 
