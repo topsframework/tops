@@ -32,13 +32,12 @@ double log_sum(double log_a, double log_b) {
   double diff;
   if (min > log_b) {
     diff = log_b - log_a;
-    if(diff != diff)
+    if (diff != diff)
       return log_a;
     return log_a + log(1 + exp(diff));
-  }
-  else {
+  } else {
     diff = log_a - log_b;
-    if(diff != diff)
+    if (diff != diff)
       return log_b;
     return log_b + log(1 + exp(diff));
   }
