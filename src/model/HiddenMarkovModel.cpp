@@ -212,9 +212,8 @@ void HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 
   path.resize(xs.size());
 
-  double max;
   for (unsigned int i = 0; i < xs.size(); i++) {
-    max = probabilities[0][i];
+    double max = probabilities[0][i];
     path[i] = 0;
     for (unsigned int k = 1; k < _state_alphabet_size; k++) {
       if (probabilities[k][i] > max) {
