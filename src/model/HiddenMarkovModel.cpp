@@ -82,14 +82,14 @@ double HiddenMarkovModel::viterbi (const Sequence &xs, Sequence &ys, Matrix &gam
   gamma = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
   Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
 
-  for(int k = 0; k < _state_alphabet_size; k++)
+  for(unsigned int k = 0; k < _state_alphabet_size; k++)
     gamma[k][0] = _initial_probabilities->probabilityOf(k) + _states[k]->emissions()->probabilityOf(xs[0]);
 
-  for (int i = 0; i < xs.size() - 1; i++) {
-    for (int k = 0; k < _state_alphabet_size; k++) {
+  for (unsigned int i = 0; i < xs.size() - 1; i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       gamma[k][i+1] =  gamma[0][i] + _states[0]->transitions()->probabilityOf(k);
       psi[k][i+1] = 0;
-      for (int p = 1; p < _state_alphabet_size; p++) {
+      for (unsigned int p = 1; p < _state_alphabet_size; p++) {
         double v = gamma[p][i] + _states[p]->transitions()->probabilityOf(k);
         if (gamma[k][i+1] < v) {
           gamma[k][i+1] = v;
@@ -103,7 +103,7 @@ double HiddenMarkovModel::viterbi (const Sequence &xs, Sequence &ys, Matrix &gam
   ys.resize(xs.size());
   ys[xs.size() - 1] = 0;
   double max = gamma[0][xs.size() - 1];
-  for (int k = 1; k < _state_alphabet_size; k++) {
+  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     if (max < gamma[k][xs.size() - 1]) {
       max = gamma[k][xs.size() - 1];
       ys[xs.size() - 1] = k;
@@ -119,20 +119,20 @@ double HiddenMarkovModel::viterbi (const Sequence &xs, Sequence &ys, Matrix &gam
 double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
   beta = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
 
-  for(int k = 0; k < _state_alphabet_size; k++)
+  for(unsigned int k = 0; k < _state_alphabet_size; k++)
     beta[k][xs.size()-1] = 0.0;
 
   for (int t = xs.size()-2; t >= 0; t--) {
-    for(int i = 0; i < _state_alphabet_size; i++) {
+    for(unsigned int i = 0; i < _state_alphabet_size; i++) {
       beta[i][t] =  _states[i]->transitions()->probabilityOf(0) + _states[0]->emissions()->probabilityOf(xs[t+1]) + beta[0][t+1];
-      for(int j = 1; j < _state_alphabet_size; j++) {
+      for(unsigned int j = 1; j < _state_alphabet_size; j++) {
         beta[i][t] = log_sum(beta[i][t], _states[i]->transitions()->probabilityOf(j) + _states[j]->emissions()->probabilityOf(xs[t+1]) + beta[j][t+1]);
       }
     }
   }
 
   double sum = beta[0][0] + _initial_probabilities->probabilityOf(0) + _states[0]->emissions()->probabilityOf(xs[0]);
-  for(int k = 1; k < _state_alphabet_size; k++) {
+  for(unsigned int k = 1; k < _state_alphabet_size; k++) {
     sum = log_sum(sum, beta[k][0] + _initial_probabilities->probabilityOf(k) + _states[k]->emissions()->probabilityOf(xs[0]));
   }
 
@@ -142,13 +142,13 @@ double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
 double HiddenMarkovModel::forward(const Sequence & xs, Matrix &alpha) const {
   alpha = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
 
-  for(int k = 0; k < _state_alphabet_size; k++)
+  for(unsigned int k = 0; k < _state_alphabet_size; k++)
     alpha[k][0] = _initial_probabilities->probabilityOf(k) + _states[k]->emissions()->probabilityOf(xs[0]);
 
-  for (int t = 0; t < xs.size() - 1; t++) {
-    for (int i = 0; i < _state_alphabet_size; i++) {
+  for (unsigned int t = 0; t < xs.size() - 1; t++) {
+    for (unsigned int i = 0; i < _state_alphabet_size; i++) {
       alpha[i][t+1] =  alpha[0][t] + _states[0]->transitions()->probabilityOf(i);
-      for (int j = 1; j < _state_alphabet_size; j++) {
+      for (unsigned int j = 1; j < _state_alphabet_size; j++) {
         alpha[i][t+1] = log_sum(alpha[i][t+1], alpha[j][t] + _states[j]->transitions()->probabilityOf(i));
       }
       alpha[i][t+1] += _states[i]->emissions()->probabilityOf(xs[t+1]);
@@ -156,7 +156,7 @@ double HiddenMarkovModel::forward(const Sequence & xs, Matrix &alpha) const {
   }
 
   double sum =  alpha[0][xs.size()-1];
-  for (int k = 1; k < _state_alphabet_size; k++) {
+  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     sum = log_sum(sum, alpha[k][xs.size()-1]);
   }
   return sum;
@@ -171,8 +171,8 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence & xs, Matrix & pro
   double full = forward(xs, alpha);
   backward(xs, beta);
 
-  for(int k = 0; k < _state_alphabet_size; k++)
-    for(int i = 0; i < xs.size(); i++)
+  for(unsigned int k = 0; k < _state_alphabet_size; k++)
+    for(unsigned int i = 0; i < xs.size(); i++)
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 
@@ -182,10 +182,10 @@ void HiddenMarkovModel::posteriorDecoding(const Sequence & xs, Sequence & path, 
   path.resize(xs.size());
 
   double max;
-  for (int i = 0; i < xs.size(); i++) {
+  for (unsigned int i = 0; i < xs.size(); i++) {
     max = probabilities[0][i];
     path[i] = 0;
-    for (int k = 1; k < _state_alphabet_size; k++) {
+    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
       if (probabilities[k][i] > max) {
         max = probabilities[k][i];
         path[i] = k;
