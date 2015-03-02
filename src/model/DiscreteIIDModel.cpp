@@ -388,6 +388,7 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
                 &td);
   td = -td;
   if (td < 0 || td != td) {
+    // TODO(igorbonadio) ERROR!
     //    cerr << "sj_bandwidth (WARNING). Dataset very sparse !!!\n" << endl;
     return 0.001;
   }
