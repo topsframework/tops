@@ -24,7 +24,7 @@
 namespace tops {
 namespace helper {
 
-tops::model::Sequence generateRandomSequence(int size, int alphabet_size) {
+tops::model::Sequence generateRandomSequence(unsigned int size, int alphabet_size) {
   tops::model::Sequence sequence;
   for (int i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));
@@ -136,7 +136,7 @@ tops::model::Sequence sequenceOfLengths() {
           100, 226, 104, 246, 5250};
 }
 
-void _generateAllCombinationsOfSymbols(int pos, tops::model::Sequence s, std::vector<tops::model::Sequence> & sequences) {
+void _generateAllCombinationsOfSymbols(unsigned int pos, tops::model::Sequence s, std::vector<tops::model::Sequence> & sequences) {
   tops::model::Sequence s0 = s;
   s0[pos] = 0;
 

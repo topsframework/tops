@@ -27,7 +27,7 @@
 namespace tops {
 namespace helper {
 
-tops::model::Sequence generateRandomSequence(int size, int alphabet_size);
+tops::model::Sequence generateRandomSequence(unsigned int size, int alphabet_size);
 tops::model::Sequence sequenceOfLengths();
 std::vector<tops::model::Sequence> generateAllCombinationsOfSymbols(unsigned int size);
 
