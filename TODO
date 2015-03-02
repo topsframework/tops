@@ -20,6 +20,9 @@
   [ ] Should ProfileHMM be a HMM?
   [ ] Change PhasedIMC's class name
   [ ] Check if band_den_bin is correct
+  [ ] Add PrefixSumArray decorator
+  [ ] Declare overriding function 'override'
+  [ ] Use unique_ptr as default pointer type
 
 
 [Tests]
@@ -32,4 +35,4 @@
   [ ] Improve benchmarks
 
 [New Features]
-  [ ] Add HMM's evaluate algorithm
+  [x] Add HMM's evaluate algorithm
