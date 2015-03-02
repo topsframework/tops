@@ -53,8 +53,18 @@ HiddenMarkovModel::HiddenMarkovModel(
 }
 
 double HiddenMarkovModel::evaluatePosition(const Sequence &xs, unsigned int i) const {
-  // TODO(igorbonadio)
-  return 0.0;
+  Matrix alpha;
+  forward(xs, alpha);
+  double sum_i = -HUGE;
+  double sum_j = -HUGE;
+  for (int k = 0; k < _state_alphabet_size; k++) {
+    sum_i = log_sum(sum_i, alpha[k][i]);
+    if (i != 0)
+      sum_j = log_sum(sum_j, alpha[k][i-1]);
+    else
+      sum_j = 0;
+  }
+  return sum_i - sum_j;
 }
 
 Symbol HiddenMarkovModel::choosePosition(const Sequence &xs, unsigned int i) const {
