@@ -28,8 +28,12 @@
 namespace tops {
 namespace model {
 
-HiddenMarkovModelStatePtr HiddenMarkovModelState::make(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions) {
-  return HiddenMarkovModelStatePtr(new HiddenMarkovModelState(symbol, emissions, transitions));
+HiddenMarkovModelStatePtr HiddenMarkovModelState::make(
+    Symbol symbol,
+    DiscreteIIDModelPtr emissions,
+    DiscreteIIDModelPtr transitions) {
+  return HiddenMarkovModelStatePtr(new HiddenMarkovModelState(
+      symbol, emissions, transitions));
 }
 
 HiddenMarkovModelState::HiddenMarkovModelState(

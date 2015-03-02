@@ -17,12 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
 
-Sequence ProbabilisticModel::chooseSequence(Sequence &s, unsigned int size) const {
+Sequence ProbabilisticModel::chooseSequence(Sequence &s,
+                                            unsigned int size) const {
   for (unsigned int k = 0; k < size; k++) {
     if (k < s.size())
       s[k] = choosePosition(s, k);
