@@ -41,7 +41,6 @@ tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
   return tops::model::HiddenMarkovModel::make(
     states,
     tops::model::DiscreteIIDModel::make({log(0.9), log(0.1)}),
-    2,
     2);
 }
 

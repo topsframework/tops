@@ -32,15 +32,13 @@ namespace tops {
 namespace model {
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
-    int alphabet_size,
     std::map<Sequence, double> counter,
     double normalizer,
     int skip_offset,
     int skip_length,
     Sequence skip_sequence) {
   return SimilarityBasedSequenceWeightingPtr(
-    new SimilarityBasedSequenceWeighting(alphabet_size,
-                                         counter,
+    new SimilarityBasedSequenceWeighting(counter,
                                          normalizer,
                                          skip_offset,
                                          skip_length,
@@ -48,7 +46,6 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
 }
 
 SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
-    int alphabet_size,
     std::map<Sequence, double> counter,
     double normalizer,
     int skip_offset,
@@ -82,7 +79,7 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
   double normalizer = calculate_normalizer(skip_length, skip_offset, min_length,
                                            counter, alphabet_size);
 
-  return SimilarityBasedSequenceWeighting::make(alphabet_size, counter,
+  return SimilarityBasedSequenceWeighting::make(counter,
                                                 normalizer, skip_offset,
                                                 skip_length, skip_sequence);
 }

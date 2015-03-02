@@ -32,19 +32,16 @@ namespace tops {
 namespace model {
 
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
-    unsigned int alphabet_size,
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model,
     MaximalDependenceDecompositionNodePtr tree) {
   return MaximalDependenceDecompositionPtr(
-    new MaximalDependenceDecomposition(alphabet_size,
-                                       consensus_sequence,
+    new MaximalDependenceDecomposition(consensus_sequence,
                                        consensus_model,
                                        tree));
 }
 
 MaximalDependenceDecomposition::MaximalDependenceDecomposition(
-    unsigned int alphabet_size,
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model,
     MaximalDependenceDecompositionNodePtr tree)
@@ -60,7 +57,6 @@ MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(
       ProbabilisticModelPtr consensus_model,
       unsigned int minimum_subset) {
   return MaximalDependenceDecomposition::make(
-    alphabet_size,
     consensus_sequence,
     consensus_model,
     trainTree(training_set,

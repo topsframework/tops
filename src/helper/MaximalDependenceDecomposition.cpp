@@ -89,7 +89,7 @@ tops::model::MaximalDependenceDecompositionPtr createMDD() {
   mdd_g5gm1am2->setChildern(mdd_g5gm1am2u6, mdd_g5gm1am2v6);
 
   return model::MaximalDependenceDecomposition::make(
-      2, consensus_sequence, consensus_model, mdd_root);
+      consensus_sequence, consensus_model, mdd_root);
 }
 
 }  // namespace helper

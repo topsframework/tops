@@ -49,7 +49,6 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
 class MaximalDependenceDecomposition : public ProbabilisticModel {
  public:
   static MaximalDependenceDecompositionPtr make(
-      unsigned int alphabet_size,
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model,
       MaximalDependenceDecompositionNodePtr tree);
@@ -70,7 +69,7 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
 
  private:
-  MaximalDependenceDecomposition(unsigned int alphabet_size, ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);
+  MaximalDependenceDecomposition(ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);
   double _evaluateAux(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
   void _chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
   static MaximalDependenceDecompositionNodePtr trainTree(

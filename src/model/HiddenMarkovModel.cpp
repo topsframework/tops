@@ -32,20 +32,17 @@ namespace model {
 HiddenMarkovModelPtr HiddenMarkovModel::make(
     std::vector<HiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probability,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size) {
+    unsigned int state_alphabet_size) {
   return HiddenMarkovModelPtr(new HiddenMarkovModel(
     states,
     initial_probability,
-    state_alphabet_size,
-    observation_alphabet_size));
+    state_alphabet_size));
 }
 
 HiddenMarkovModel::HiddenMarkovModel(
     std::vector<HiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size)
+    unsigned int state_alphabet_size)
     : _states(states),
       _initial_probabilities(initial_probabilities),
       _state_alphabet_size(state_alphabet_size) {

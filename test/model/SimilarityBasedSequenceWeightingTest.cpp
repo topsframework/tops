@@ -44,7 +44,7 @@ class ASBSW : public testing::Test {
     std::map<Sequence, double> counter;
     counter[{1, 1}] = 2;
     counter[{0, 0}] = 4;
-    sbsw = SimilarityBasedSequenceWeighting::make(2, counter, 6, -1, -1, {1, 0});
+    sbsw = SimilarityBasedSequenceWeighting::make(counter, 6, -1, -1, {1, 0});
   }
 };
 
