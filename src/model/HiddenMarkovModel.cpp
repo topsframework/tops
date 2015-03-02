@@ -51,21 +51,27 @@ HiddenMarkovModel::HiddenMarkovModel(
       _state_alphabet_size(state_alphabet_size) {
 }
 
+double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
+                                  unsigned int begin,
+                                  unsigned int end) const {
+  Matrix alpha;
+  forward(xs, alpha);
+  double sum_end = -HUGE;
+  double sum_begin = -HUGE;
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    sum_end = log_sum(sum_end, alpha[k][end-1]);
+    if (begin != 0)
+      sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
+    else
+      sum_begin = 0;
+  }
+  return sum_end - sum_begin;
+}
+
 double HiddenMarkovModel::evaluatePosition(
     const Sequence &xs,
     unsigned int i) const {
-  Matrix alpha;
-  forward(xs, alpha);
-  double sum_i = -HUGE;
-  double sum_j = -HUGE;
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    sum_i = log_sum(sum_i, alpha[k][i]);
-    if (i != 0)
-      sum_j = log_sum(sum_j, alpha[k][i-1]);
-    else
-      sum_j = 0;
-  }
-  return sum_i - sum_j;
+  return evaluateSequence(xs, i, i+1);
 }
 
 Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,

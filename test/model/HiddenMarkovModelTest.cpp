@@ -69,6 +69,18 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheProbabilityOfSequence) {
               DoubleEq(hmm->forward({1}, alpha)));
 }
 
+TEST_F(AHiddenMarkovModel, ShouldEvaluateTheProbabilityOfPosition) {
+  Matrix alpha;
+  ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 0),
+              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 0, 1)));
+
+  ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 1),
+              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 1, 2)));
+
+  ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 2),
+              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 2, 3)));
+}
+
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   std::vector<std::vector<Sequence>> test_set = {
     {{0},{0}},
