@@ -30,7 +30,7 @@ namespace helper {
 tops::model::Sequence generateRandomSequence(
     unsigned int size, int alphabet_size) {
   tops::model::Sequence sequence;
-  for (int i = 0; i < size; i++) {
+  for (unsigned int i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));
   }
   return sequence;
