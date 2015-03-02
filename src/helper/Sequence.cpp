@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <vector>
+
 // ToPS headers
 #include "helper/Sequence.hpp"
 #include "helper/Random.hpp"
@@ -24,7 +27,8 @@
 namespace tops {
 namespace helper {
 
-tops::model::Sequence generateRandomSequence(unsigned int size, int alphabet_size) {
+tops::model::Sequence generateRandomSequence(
+    unsigned int size, int alphabet_size) {
   tops::model::Sequence sequence;
   for (int i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));
@@ -136,7 +140,9 @@ tops::model::Sequence sequenceOfLengths() {
           100, 226, 104, 246, 5250};
 }
 
-void _generateAllCombinationsOfSymbols(unsigned int pos, tops::model::Sequence s, std::vector<tops::model::Sequence> & sequences) {
+void _generateAllCombinationsOfSymbols(
+    unsigned int pos, tops::model::Sequence s,
+    std::vector<tops::model::Sequence> * sequences) {
   tops::model::Sequence s0 = s;
   s0[pos] = 0;
 
@@ -147,15 +153,16 @@ void _generateAllCombinationsOfSymbols(unsigned int pos, tops::model::Sequence s
     _generateAllCombinationsOfSymbols(pos+1, s0, sequences);
     _generateAllCombinationsOfSymbols(pos+1, s1, sequences);
   } else {
-    sequences.push_back(s0);
-    sequences.push_back(s1);
+    sequences->push_back(s0);
+    sequences->push_back(s1);
   }
 }
 
-std::vector<tops::model::Sequence> generateAllCombinationsOfSymbols(unsigned int size) {
+std::vector<tops::model::Sequence> generateAllCombinationsOfSymbols(
+    unsigned int size) {
   tops::model::Sequence s(size, 0);
   std::vector<tops::model::Sequence> sequences;
-  _generateAllCombinationsOfSymbols(0, s, sequences);
+  _generateAllCombinationsOfSymbols(0, s, &sequences);
   return sequences;
 }
 
