@@ -32,20 +32,65 @@ namespace model {
 HiddenMarkovModelPtr HiddenMarkovModel::make(
     std::vector<HiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probability,
-    unsigned int state_alphabet_size) {
+    unsigned int state_alphabet_size,
+    unsigned int observation_alphabet_size) {
   return HiddenMarkovModelPtr(new HiddenMarkovModel(
     states,
     initial_probability,
-    state_alphabet_size));
+    state_alphabet_size,
+    observation_alphabet_size));
 }
 
 HiddenMarkovModel::HiddenMarkovModel(
     std::vector<HiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
-    unsigned int state_alphabet_size)
+    unsigned int state_alphabet_size,
+    unsigned int observation_alphabet_size)
     : _states(states),
       _initial_probabilities(initial_probabilities),
-      _state_alphabet_size(state_alphabet_size) {
+      _state_alphabet_size(state_alphabet_size),
+      _observation_alphabet_size(observation_alphabet_size) {
+}
+
+HiddenMarkovModelPtr HiddenMarkovModel::trainML(
+    std::vector<Sequence> observation_training_set,
+    std::vector<Sequence> state_training_set,
+    unsigned int state_alphabet_size,
+    unsigned int observation_alphabet_size,
+    double pseudocont) {
+  std::vector<double> initial_probabilities(state_alphabet_size, pseudocont);
+  Matrix emissions(state_alphabet_size,
+                   std::vector<double>(observation_alphabet_size, pseudocont));
+  Matrix transitions(state_alphabet_size,
+                     std::vector<double>(state_alphabet_size, pseudocont));;
+
+  for (unsigned int i = 0; i < observation_training_set.size(); i++) {
+    initial_probabilities[state_training_set[i][0]] += 1.0;
+    for (unsigned int j = 0; j < observation_training_set[i].size(); j++) {
+      emissions[state_training_set[i][j]][observation_training_set[i][j]]
+        += 1.0;
+      if(j < state_training_set[i].size() - 1) {
+        transitions[state_training_set[i][j]][state_training_set[i][j+1]]
+          += 1.0;
+      }
+    }
+  }
+
+  initial_probabilities = DiscreteIIDModel::normalize(initial_probabilities);
+  std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+  for (unsigned int i = 0; i < state_alphabet_size; i++) {
+    transitions[i] = DiscreteIIDModel::normalize(transitions[i]);
+    emissions[i] = DiscreteIIDModel::normalize(emissions[i]);
+    states[i] = HiddenMarkovModelState::make(
+      i,
+      DiscreteIIDModel::make(emissions[i]),
+      DiscreteIIDModel::make(transitions[i]));
+  }
+
+  return make(states,
+              DiscreteIIDModel::make(initial_probabilities),
+              state_alphabet_size,
+              observation_alphabet_size);
 }
 
 double HiddenMarkovModel::evaluateSequence(const Sequence &xs,

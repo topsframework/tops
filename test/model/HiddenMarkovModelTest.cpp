@@ -140,3 +140,21 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
     ASSERT_THAT(path, Eq(test[1]));
   }
 }
+
+TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
+  std::vector<Sequence> observation_training_set = {
+    {0, 0, 0, 1, 1},
+    {0, 0, 0, 1, 0, 0, 1, 1},
+    {0, 0, 0, 1, 1, 0, 0},
+  };
+  std::vector<Sequence> state_training_set = {
+    {1, 1, 1, 1, 1},
+    {0, 1, 1, 0, 0, 0, 1, 1},
+    {0, 0, 0, 0, 0, 1, 0},
+  };
+  auto trained_hmm = HiddenMarkovModel::trainML(observation_training_set, state_training_set, 2, 2, 0.1);
+  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {0, 0, 0}, 0, 3), DoubleNear(-2.32992, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {1, 1, 1}, 0, 3), DoubleNear(-3.20183, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {1, 1, 1}, 0, 3), DoubleNear(-4.39373, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {0, 0, 0}, 0, 3), DoubleNear(-4.81600, 1e-4));
+}

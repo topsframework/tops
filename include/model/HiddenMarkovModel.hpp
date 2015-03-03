@@ -49,7 +49,14 @@ class HiddenMarkovModel : public DecodableModel {
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probabilities,
-      unsigned int state_alphabet_size);
+      unsigned int state_alphabet_size,
+      unsigned int observation_alphabet_size);
+
+  static HiddenMarkovModelPtr trainML(std::vector<Sequence> observation_training_set,
+                                      std::vector<Sequence> state_training_set,
+                                      unsigned int state_alphabet_size,
+                                      unsigned int observation_alphabet_size,
+                                      double pseudocont);
 
   virtual double evaluateSequence(const Sequence &xs,
                                   unsigned int begin,
@@ -68,15 +75,18 @@ class HiddenMarkovModel : public DecodableModel {
 
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
   virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
+
  private:
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probability,
-      unsigned int state_alphabet_size);
+      unsigned int state_alphabet_size,
+      unsigned int observation_alphabet_size);
 
   std::vector<HiddenMarkovModelStatePtr> _states;
     DiscreteIIDModelPtr _initial_probabilities;
     unsigned int _state_alphabet_size;
+    unsigned int _observation_alphabet_size;
 };
 
 }  // namespace model
