@@ -62,7 +62,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainML(
   Matrix emissions(state_alphabet_size,
                    std::vector<double>(observation_alphabet_size, pseudocont));
   Matrix transitions(state_alphabet_size,
-                     std::vector<double>(state_alphabet_size, pseudocont));;
+                     std::vector<double>(state_alphabet_size, pseudocont));
 
   for (unsigned int i = 0; i < observation_training_set.size(); i++) {
     initial_probabilities[state_training_set[i][0]] += 1.0;
@@ -92,6 +92,131 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainML(
               state_alphabet_size,
               observation_alphabet_size);
 }
+
+HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
+    std::vector<Sequence> observation_training_set,
+    HiddenMarkovModelPtr initial_model,
+    unsigned int maxiterations,
+    double diff_threshold) {
+  int state_alphabet_size = initial_model->stateAlphabetSize();
+  int observation_alphabet_size = initial_model->observationAlphabetSize();
+
+  double diff  = 10.0;
+
+  auto model = initial_model;
+  for (int s = 0; s < observation_training_set.size(); s++) {
+    double last =10000;
+    for (int iterations = 0; iterations < maxiterations; iterations++) {
+      std::vector<double> pi(state_alphabet_size);
+      Matrix A(state_alphabet_size,
+               std::vector<double>(observation_alphabet_size));
+      Matrix E(state_alphabet_size,
+               std::vector<double>(state_alphabet_size));
+
+      Matrix alpha;
+      Matrix beta;
+
+      double P = model->forward(observation_training_set[s], alpha);
+      model->backward(observation_training_set[s], beta);
+
+      double sum = alpha[0][0] + beta[0][0];
+      for(int i = 1; i < state_alphabet_size; i++)
+        sum = log_sum(sum, alpha[i][0] + beta[i][0]);
+
+      for (int i = 0; i < state_alphabet_size; i++)
+        pi[i] = alpha[i][0] + beta[i][0] - sum;
+
+      for (int i = 0; i < state_alphabet_size; i++) {
+        for (int j = 0; j < state_alphabet_size; j++) {
+          int t = 0;
+          double sum = -HUGE;
+          if (t < observation_training_set[s].size()-1) {
+            sum = alpha[i][t] + model->state(i)->transitions()->probabilityOf(j) + model->state(j)->emissions()->probabilityOf(observation_training_set[s][t+1]) + beta[j][t+1];
+            for (t = 1; t < observation_training_set[s].size()-1; t++)
+              sum = log_sum(sum, alpha[i][t] + model->state(i)->transitions()->probabilityOf(j) + model->state(j)->emissions()->probabilityOf(observation_training_set[s][t+1]) + beta[j][t+1]);
+          }
+          A[i][j] = sum;
+        }
+
+        for (int sigma = 0; sigma < observation_alphabet_size; sigma++) {
+          int t = 0;
+          double sum = -HUGE;
+          bool first = true;
+          for (t = 0; t < (int)observation_training_set[s].size(); t++) {
+            if ((sigma == observation_training_set[s][t]) && first) {
+              sum = alpha[i][t] + beta[i][t];
+              first = false;
+            } else if(sigma == observation_training_set[s][t]) {
+              sum = log_sum(sum, alpha[i][t] + beta[i][t]);
+            }
+          }
+          E[i][sigma] = sum;
+        }
+      }
+
+      std::vector<double> sumA(state_alphabet_size);
+      std::vector<double> sumE(observation_alphabet_size);
+      for (int k = 0; k < state_alphabet_size; k++) {
+        int l = 0;
+        if (l < state_alphabet_size) {
+          sumA[k] = A[k][l];
+          for(l = 1; l < state_alphabet_size; l++)
+            sumA[k] = log_sum(sumA[k], A[k][l]);
+        }
+        int b = 0;
+        if (b < observation_alphabet_size) {
+          sumE[k] = E[k][b];
+          for ( b = 1; b < observation_alphabet_size; b++)
+            sumE[k] = log_sum(sumE[k], E[k][b]);
+        }
+      }
+
+      std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+      for (int k = 0; k < state_alphabet_size; k++) {
+        for (int l = 0; l < state_alphabet_size; l++) {
+          A[k][l] = A[k][l] - sumA[k];
+        }
+        for (int b = 0; b <observation_alphabet_size; b++) {
+          E[k][b] = E[k][b] - sumE[k];
+        }
+        states[k] = HiddenMarkovModelState::make(
+          k,
+          DiscreteIIDModel::make(E[k]),
+          DiscreteIIDModel::make(A[k]));
+      }
+
+      model = HiddenMarkovModel::make(
+        states,
+        DiscreteIIDModel::make(pi),
+        state_alphabet_size,
+        observation_alphabet_size);
+
+      diff = fabs(last - P);
+      // std::cerr << "iteration: " << iterations << std::endl;
+      // fprintf(stderr, "LL: %lf\n" , P );
+      // std::cerr << "Diff: " << diff << std::endl;
+      last = P;
+
+      if (diff < diff_threshold)
+        break;
+    }
+  }
+
+  return model;
+}
+
+HiddenMarkovModelStatePtr HiddenMarkovModel::state(unsigned int i) const {
+  return _states[i];
+}
+
+unsigned int HiddenMarkovModel::stateAlphabetSize() const {
+  return _state_alphabet_size;
+}
+
+unsigned int HiddenMarkovModel::observationAlphabetSize() const {
+  return _observation_alphabet_size;
+}
+
 
 double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
                                   unsigned int begin,

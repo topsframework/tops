@@ -21,6 +21,8 @@
 #include <cmath>
 #include <vector>
 
+#include <iostream>
+
 // External headers
 #include "gmock/gmock.h"
 
@@ -157,4 +159,17 @@ TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
   ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {1, 1, 1}, 0, 3), DoubleNear(-3.20183, 1e-4));
   ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {1, 1, 1}, 0, 3), DoubleNear(-4.39373, 1e-4));
   ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {0, 0, 0}, 0, 3), DoubleNear(-4.81600, 1e-4));
+}
+
+TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
+  std::vector<Sequence> observation_training_set = {
+    {0, 0, 0, 1, 1},
+    {0, 0, 0, 1, 0, 0, 1, 1},
+    {0, 0, 0, 1, 1, 0, 0},
+  };
+  auto trained_hmm = HiddenMarkovModel::trainBaumWelch(observation_training_set, hmm, 500, 1e-4);
+  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {0, 0, 0}, 0, 3), DoubleNear(-1.65545, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {1, 1, 1}, 0, 3), DoubleNear(-311.83440, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {1, 1, 1}, 0, 3), DoubleNear(-313.26651, 1e-4));
+  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {0, 0, 0}, 0, 3), DoubleNear(-110.38680, 1e-4));
 }

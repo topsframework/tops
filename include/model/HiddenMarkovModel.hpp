@@ -58,6 +58,11 @@ class HiddenMarkovModel : public DecodableModel {
                                       unsigned int observation_alphabet_size,
                                       double pseudocont);
 
+  static HiddenMarkovModelPtr trainBaumWelch(std::vector<Sequence> observation_training_set,
+                                      HiddenMarkovModelPtr initial_model,
+                                      unsigned int maxiterations,
+                                      double diff_threshold);
+
   virtual double evaluateSequence(const Sequence &xs,
                                   unsigned int begin,
                                   unsigned int end) const;
@@ -75,6 +80,10 @@ class HiddenMarkovModel : public DecodableModel {
 
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
   virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
+
+  unsigned int stateAlphabetSize() const;
+  unsigned int observationAlphabetSize() const;
+  HiddenMarkovModelStatePtr state(unsigned int i) const;
 
  private:
   HiddenMarkovModel(
