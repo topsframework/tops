@@ -13,7 +13,7 @@
   [x] Copy SimilarityBasedSequenceWeighting
   [x] Copy MDD
   [ ] Copy GHMM
-  [ ] Copy HMM
+  [x] Copy HMM
   [x] Copy MultipleSequentialModel
   [x] Copy TrainInterpolatedMarkovChain
   [ ] Should we add a "phased evaluate" method?
