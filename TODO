@@ -1,29 +1,27 @@
 [Refactoring]
-  [ ] Almost all functions are virtual. Verify if it is necessary
-  [x] Remove _self
-  [x] Remove 'alphabet_size' param from ContextTree's contructor
-  [x] Remove duplications of benchmark's helper functions
-  [ ] Prefix sum array can't be parallelized
-  [x] DiscreteIIDModel::SmoothedHistogramStanke
-  [x] DiscreteIIDModel::trainSmoothedHistogramBurge
-  [x] DiscreteIIDModel::trainSmoothedHistogramKernelDensity
-  [x] Check training methods of IID and PhasedRunLengthDistribution
-  [ ] FixedSequenceAtPosition::prefix_sum_array
-  [x] Copy TargetModel
-  [x] Copy SimilarityBasedSequenceWeighting
-  [x] Copy MDD
+
   [ ] Copy GHMM
-  [x] Copy HMM
-  [x] Copy MultipleSequentialModel
-  [x] Copy TrainInterpolatedMarkovChain
+  [ ] Copy Model selection techniques
+  [ ] Prefix sum array can't be parallelized. Should we use a decorator?
+  [ ] Implement FixedSequenceAtPosition::prefix_sum_array
+  [ ] Almost all functions are virtual. Verify if it is necessary
   [ ] Should we add a "phased evaluate" method?
   [ ] Should ProfileHMM be a HMM?
   [ ] Change PhasedIMC's class name
   [ ] Check if band_den_bin is correct
-  [ ] Add PrefixSumArray decorator
   [ ] Declare overriding function 'override'
   [ ] Use unique_ptr as default pointer type
-
+  [x] Copy DiscreteIIDModel::SmoothedHistogramStanke
+  [x] Copy DiscreteIIDModel::trainSmoothedHistogramBurge
+  [x] Copy DiscreteIIDModel::trainSmoothedHistogramKernelDensity
+  [x] Check training methods of IID and PhasedRunLengthDistribution
+  [x] Copy TargetModel
+  [x] Copy SimilarityBasedSequenceWeighting
+  [x] Copy MDD
+  [x] Copy HMM
+  [x] Copy MultipleSequentialModel
+  [x] Copy TrainInterpolatedMarkovChain
+  [x] Add HMM's evaluate algorithm
 
 [Tests]
   [ ] Test random functions like choose()
@@ -32,7 +30,4 @@
   [x] Test evaluation using prefix sum arrays
 
 [Benchmarks]
-  [ ] Improve benchmarks
-
-[New Features]
-  [x] Add HMM's evaluate algorithm
+  [ ] Implement benchmarks

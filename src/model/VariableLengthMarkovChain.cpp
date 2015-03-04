@@ -47,18 +47,7 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
   tree->pruneTree(delta);
   tree->removeContextNotUsed();
   tree->normalize();
-  VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
-  // Comment unused variables (cppcheck)
-  // double loglikelihood = 0.0;
-  // unsigned int sample_size = 0;
-  for (unsigned int i = 0; i < training_set.size(); i++) {
-    // loglikelihood +=
-    m->evaluateSequence(training_set[i],
-                        0,
-                        training_set[i].size() - 1);
-    // sample_size += training_set[i].size();
-  }
-  return m;
+  return VariableLengthMarkovChain::make(tree);
 }
 
 VariableLengthMarkovChainPtr
@@ -81,17 +70,7 @@ VariableLengthMarkovChainPtr
     tree->normalize();
   }
 
-  VariableLengthMarkovChainPtr m = VariableLengthMarkovChain::make(tree);
-  // Comment unused variables (cppcheck)
-  // double loglikelihood = 0.0;
-  // unsigned int sample_size = 0;
-  for (unsigned int i = 0; i < training_set.size(); i++) {
-    // loglikelihood +=
-    m->evaluateSequence(training_set[i], 0, training_set[i].size() - 1);
-    // sample_size += training_set[i].size();
-  }
-
-  return m;
+  return VariableLengthMarkovChain::make(tree);
 }
 
 VariableLengthMarkovChainPtr
