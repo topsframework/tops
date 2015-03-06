@@ -11,6 +11,7 @@
   [ ] Check if band_den_bin is correct
   [ ] Declare overriding function 'override'
   [ ] Use unique_ptr as default pointer type
+  [ ] Add phased evaliate version of IMC, PhasedIMC and MultipleSequentialModel
   [x] Copy DiscreteIIDModel::SmoothedHistogramStanke
   [x] Copy DiscreteIIDModel::trainSmoothedHistogramBurge
   [x] Copy DiscreteIIDModel::trainSmoothedHistogramKernelDensity
