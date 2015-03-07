@@ -69,7 +69,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainML(
     for (unsigned int j = 0; j < observation_training_set[i].size(); j++) {
       emissions[state_training_set[i][j]][observation_training_set[i][j]]
         += 1.0;
-      if(j < state_training_set[i].size() - 1) {
+      if (j < state_training_set[i].size() - 1) {
         transitions[state_training_set[i][j]][state_training_set[i][j+1]]
           += 1.0;
       }
@@ -98,15 +98,18 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
     HiddenMarkovModelPtr initial_model,
     unsigned int maxiterations,
     double diff_threshold) {
-  unsigned int state_alphabet_size = initial_model->stateAlphabetSize();
-  unsigned int observation_alphabet_size = initial_model->observationAlphabetSize();
+  unsigned int state_alphabet_size
+      = initial_model->stateAlphabetSize();
+  unsigned int observation_alphabet_size
+      = initial_model->observationAlphabetSize();
 
   double diff  = 10.0;
 
   auto model = initial_model;
   for (unsigned int s = 0; s < observation_training_set.size(); s++) {
-    double last =10000;
-    for (unsigned int iterations = 0; iterations < maxiterations; iterations++) {
+    double last = 10000;
+    for (unsigned int iterations = 0; iterations < maxiterations;
+         iterations++) {
       std::vector<double> pi(state_alphabet_size);
       Matrix A(state_alphabet_size,
                std::vector<double>(observation_alphabet_size));
@@ -120,7 +123,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
       model->backward(observation_training_set[s], beta);
 
       double sum = alpha[0][0] + beta[0][0];
-      for(unsigned int i = 1; i < state_alphabet_size; i++)
+      for (unsigned int i = 1; i < state_alphabet_size; i++)
         sum = log_sum(sum, alpha[i][0] + beta[i][0]);
 
       for (unsigned int i = 0; i < state_alphabet_size; i++)
@@ -131,22 +134,30 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
           unsigned int t = 0;
           double sum = -HUGE;
           if (t < observation_training_set[s].size()-1) {
-            sum = alpha[i][t] + model->state(i)->transitions()->probabilityOf(j) + model->state(j)->emissions()->probabilityOf(observation_training_set[s][t+1]) + beta[j][t+1];
+            sum = alpha[i][t] + model->state(i)->transitions()->probabilityOf(j)
+                + model->state(j)->emissions()->probabilityOf(
+                    observation_training_set[s][t+1])
+                + beta[j][t+1];
             for (t = 1; t < observation_training_set[s].size()-1; t++)
-              sum = log_sum(sum, alpha[i][t] + model->state(i)->transitions()->probabilityOf(j) + model->state(j)->emissions()->probabilityOf(observation_training_set[s][t+1]) + beta[j][t+1]);
+              sum = log_sum(sum,
+                  alpha[i][t] + model->state(i)->transitions()->probabilityOf(j)
+                  + model->state(j)->emissions()->probabilityOf(
+                      observation_training_set[s][t+1])
+                  + beta[j][t+1]);
           }
           A[i][j] = sum;
         }
 
-        for (unsigned int sigma = 0; sigma < observation_alphabet_size; sigma++) {
-          int t = 0;
+        for (unsigned int sigma = 0; sigma < observation_alphabet_size;
+            sigma++) {
           double sum = -HUGE;
           bool first = true;
-          for (t = 0; t < (int)observation_training_set[s].size(); t++) {
+          for (unsigned int t = 0; t < observation_training_set[s].size();
+              t++) {
             if ((sigma == observation_training_set[s][t]) && first) {
               sum = alpha[i][t] + beta[i][t];
               first = false;
-            } else if(sigma == observation_training_set[s][t]) {
+            } else if (sigma == observation_training_set[s][t]) {
               sum = log_sum(sum, alpha[i][t] + beta[i][t]);
             }
           }
@@ -160,7 +171,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
         unsigned int l = 0;
         if (l < state_alphabet_size) {
           sumA[k] = A[k][l];
-          for(l = 1; l < state_alphabet_size; l++)
+          for (l = 1; l < state_alphabet_size; l++)
             sumA[k] = log_sum(sumA[k], A[k][l]);
         }
         unsigned int b = 0;
