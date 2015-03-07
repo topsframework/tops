@@ -95,12 +95,14 @@ PhasedInhomogeneousMarkovChainPtr
 }
 
 double PhasedInhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
-                                                        unsigned int i) const {
+                                                        unsigned int i,
+                                                        unsigned int phase) const {
   return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
 }
 
 Symbol PhasedInhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                   unsigned int i) const {
+                                                      unsigned int i,
+                                                      unsigned int phase) const {
   return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
 }
 

@@ -51,13 +51,14 @@ class MultipleSequentialModel : public ProbabilisticModel {
       std::vector<int> max_length);
 
   // Virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
-                                  unsigned int end) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
-  virtual void initializePrefixSumArray(const Sequence &s);
+                                  unsigned int end,
+                                  unsigned int phase = 0) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
+  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
 
  private:
   // Instance variables

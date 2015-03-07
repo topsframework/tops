@@ -219,8 +219,9 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
 
 
 double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
-                                  unsigned int begin,
-                                  unsigned int end) const {
+                                           unsigned int begin,
+                                           unsigned int end,
+                                           unsigned int phase) const {
   Matrix alpha;
   forward(xs, alpha);
   double sum_end = -HUGE;
@@ -237,12 +238,14 @@ double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
 
 double HiddenMarkovModel::evaluatePosition(
     const Sequence &xs,
-    unsigned int i) const {
+    unsigned int i,
+    unsigned int phase) const {
   return evaluateSequence(xs, i, i+1);
 }
 
 Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,
-                                         unsigned int i) const {
+                                         unsigned int i,
+                                         unsigned int phase) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;
 }

@@ -48,10 +48,11 @@ class TargetModel : public DiscreteIIDModel {
   static TargetModelPtr make(int alphabet_size);
 
   // Virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
-                                  unsigned int end) const;
+                                  unsigned int end,
+                                  unsigned int phase = 0) const;
 
  private:
   // Constructors

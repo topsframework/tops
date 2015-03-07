@@ -24,7 +24,8 @@ namespace tops {
 namespace model {
 
 Sequence ProbabilisticModel::chooseSequence(Sequence &s,
-                                            unsigned int size) const {
+                                            unsigned int size,
+                                            unsigned int phase) const {
   for (unsigned int k = 0; k < size; k++) {
     if (k < s.size())
       s[k] = choosePosition(s, k);
@@ -36,7 +37,8 @@ Sequence ProbabilisticModel::chooseSequence(Sequence &s,
 
 double ProbabilisticModel::evaluateSequence(const Sequence &s,
                                           unsigned int begin,
-                                          unsigned int end) const {
+                                          unsigned int end,
+                                          unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluatePosition(s, i);
@@ -44,11 +46,12 @@ double ProbabilisticModel::evaluateSequence(const Sequence &s,
 }
 
 double ProbabilisticModel::evaluateWithPrefixSumArray(unsigned int begin,
-                                                   unsigned int end) {
+                                                      unsigned int end,
+                                                      unsigned int phase) {
   return _prefix_sum_array[end] - _prefix_sum_array[begin];
 }
 
-void ProbabilisticModel::initializePrefixSumArray(const Sequence &s) {
+void ProbabilisticModel::initializePrefixSumArray(const Sequence &s, unsigned int phase) {
   _prefix_sum_array.resize(s.size() + 1);
   _prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < s.size() ; i++) {

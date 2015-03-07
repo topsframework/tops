@@ -36,14 +36,15 @@ TargetModel::TargetModel(int alphabet_size)
       std::vector<double>(alphabet_size, log(1.0/alphabet_size))) {
 }
 
-double TargetModel::evaluatePosition(const Sequence &s, unsigned int i) const {
+double TargetModel::evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase) const {
   auto iid = DiscreteIIDModel::trainML({s}, alphabetSize());
   return iid->evaluatePosition(s, i);
 }
 
 double TargetModel::evaluateSequence(const Sequence &s,
                                      unsigned int begin,
-                                     unsigned int end) const {
+                                     unsigned int end,
+                                     unsigned int phase) const {
   std::vector<Symbol> subseq;
   for (unsigned int i = begin; i < end; i++)
     subseq.push_back(s[i]);

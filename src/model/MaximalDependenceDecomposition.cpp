@@ -252,7 +252,8 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
 double MaximalDependenceDecomposition::evaluateSequence(
     const Sequence &s,
     unsigned int begin,
-    unsigned int end) const {
+    unsigned int end,
+    unsigned int phase) const {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   auto first = s.begin() + begin;
@@ -292,14 +293,16 @@ double MaximalDependenceDecomposition::_evaluateAux(
 
 double MaximalDependenceDecomposition::evaluatePosition(
     const Sequence &s,
-     unsigned int i) const {
+     unsigned int i,
+     unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
 
 Sequence MaximalDependenceDecomposition::chooseSequence(
     Sequence &s,
-    unsigned int size) const {
+    unsigned int size,
+    unsigned int phase) const {
   s = Sequence(size, INVALID_SYMBOL);
   _chooseAux(s, _mdd_tree);
   return s;
@@ -327,21 +330,24 @@ void MaximalDependenceDecomposition::_chooseAux(
 
 Symbol MaximalDependenceDecomposition::choosePosition(
     const Sequence &s,
-    unsigned int i) const {
+    unsigned int i,
+    unsigned int phase) const {
   // TODO(igorbonadio)
   return 0;
 }
 
 double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(
     unsigned int begin,
-    unsigned int end) {
+    unsigned int end,
+    unsigned int phase) {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   return _prefix_sum_array[begin];
 }
 
 void MaximalDependenceDecomposition::initializePrefixSumArray(
-    const Sequence &s) {
+    const Sequence &s,
+    unsigned int phase) {
   _prefix_sum_array.clear();
   int len = s.size();
   int clen = _consensus_sequence.size();

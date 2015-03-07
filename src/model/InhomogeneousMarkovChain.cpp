@@ -39,7 +39,8 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 }
 
 double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
-                                                  unsigned int i) const {
+                                                  unsigned int i,
+                                                  unsigned int phase) const {
   if (i < _vlmcs.size())
     return _vlmcs[i]->evaluatePosition(s, i);
   else
@@ -47,7 +48,8 @@ double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
 }
 
 Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                             unsigned int i) const {
+                                                unsigned int i,
+                                                unsigned int phase) const {
   if (i < _vlmcs.size())
     return _vlmcs[i]->choosePosition(s, i);
   else

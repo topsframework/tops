@@ -51,10 +51,11 @@ class ProbabilisticModelDecorator : public ProbabilisticModel {
   // Virtual methods
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
+                                  unsigned int end,
+                                  unsigned int phase = 0) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
  protected:
   // Instance variables
   ProbabilisticModelPtr _model;
