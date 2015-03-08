@@ -53,8 +53,8 @@ class InhomogeneousMarkovChain : public ProbabilisticModel {
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
  protected:
   // Instance variables

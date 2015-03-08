@@ -121,7 +121,8 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 }
 
 double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
-                                                          unsigned int i)
+                                                          unsigned int i,
+                                                          unsigned int phase)
                                                           const {
   return evaluateSequence(s, i, i+1);
 }
@@ -129,7 +130,8 @@ double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
 double SimilarityBasedSequenceWeighting::evaluateSequence(
     const Sequence &s,
     unsigned int begin,
-    unsigned int end) const {
+    unsigned int end,
+    unsigned int phase) const {
   if (end > s.size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
@@ -173,21 +175,23 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
 }
 
 Symbol SimilarityBasedSequenceWeighting::choosePosition(const Sequence &s,
-                                                        unsigned int i) const {
+                                                        unsigned int i,
+                                                        unsigned int phase) const {
   // TODO(igorbonadio)
   return 0;
 }
 
 double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(
     unsigned int begin,
-    unsigned int end) {
+    unsigned int end,
+    unsigned int phase) {
   if (begin < _scores.size())
     return _scores[begin];
   return -HUGE;
 }
 
 void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
-    const Sequence &s) {
+    const Sequence &s, unsigned int phase) {
   _scores.resize(s.size());
   for (unsigned int i = 0; i < s.size(); i++)  {
     _scores[i] = evaluateSequence(s, i, s.size());

@@ -97,7 +97,8 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 }
 
 double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
-                                                   unsigned int i) const {
+                                                   unsigned int i,
+                                                   unsigned int phase) const {
   ContextTreeNodePtr c = _context_tree->getContext(s, i);
   if (c == NULL)
     return -HUGE;
@@ -106,7 +107,8 @@ double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
 }
 
 Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
-                                              unsigned int i) const {
+                                                 unsigned int i,
+                                                 unsigned int phase) const {
   ContextTreeNodePtr c = _context_tree->getContext(s, i);
   if (c == NULL)
     // TODO(igorbonadio): ERROR!

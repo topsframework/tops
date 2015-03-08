@@ -71,8 +71,8 @@ class VariableLengthMarkovChain : public ProbabilisticModel {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
  private:
   // Instance variables

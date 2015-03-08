@@ -154,7 +154,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param i position of a sequence's symbol
    * @return \f$Pr(s[i])\f$
    */
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
   /**
    * Draws a new symbol in the ith position.
@@ -162,7 +162,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param i a position
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
   /**
    * Draws a new symbol.

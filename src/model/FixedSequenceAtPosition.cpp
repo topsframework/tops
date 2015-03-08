@@ -50,7 +50,8 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(
 
 double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
                                                  unsigned int begin,
-                                                 unsigned int end) const {
+                                                 unsigned int end,
+                                                 unsigned int phase) const {
   double result = ProbabilisticModelDecorator::evaluateSequence(s, begin, end);
   int j;
   for (j = 0;
@@ -79,7 +80,8 @@ void FixedSequenceAtPosition::addSequence(Sequence &h) const {
 }
 
 Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
-                                                 unsigned int size) const {
+                                                 unsigned int size,
+                                                 unsigned int phase) const {
   ProbabilisticModelDecorator::chooseSequence(s, size);
   addSequence(s);
   return s;

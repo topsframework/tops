@@ -36,16 +36,17 @@ namespace model {
 class ProbabilisticModel {
  public:
   // Purely virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i) const = 0;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i) const = 0;
+  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const = 0;
+  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size) const;
+  virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
-                                  unsigned int end) const;
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end);
-  virtual void initializePrefixSumArray(const Sequence &s);
+                                  unsigned int end,
+                                  unsigned int phase = 0) const;
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
+  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
 
  private:
   // Instance variables
