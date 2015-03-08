@@ -36,7 +36,9 @@ TargetModel::TargetModel(int alphabet_size)
       std::vector<double>(alphabet_size, log(1.0/alphabet_size))) {
 }
 
-double TargetModel::evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase) const {
+double TargetModel::evaluatePosition(const Sequence &s,
+                                     unsigned int i,
+                                     unsigned int phase) const {
   auto iid = DiscreteIIDModel::trainML({s}, alphabetSize());
   return iid->evaluatePosition(s, i);
 }

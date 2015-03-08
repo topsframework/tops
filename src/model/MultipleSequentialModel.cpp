@@ -161,7 +161,8 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
   return sum;
 }
 
-void MultipleSequentialModel::initializePrefixSumArray(const Sequence &s, unsigned int phase) {
+void MultipleSequentialModel::initializePrefixSumArray(const Sequence &s,
+                                                       unsigned int phase) {
   for (unsigned int i = 0; i < _models.size(); i++)
     _models[i]->initializePrefixSumArray(s);
   _seqsize = s.size();
