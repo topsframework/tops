@@ -103,7 +103,7 @@ double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
   if (c == NULL)
     return -HUGE;
   else
-    return c->getDistribution()->probabilityOf(s[i]);
+    return c->getDistribution()->evaluatePosition(s, i);
 }
 
 Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
@@ -114,7 +114,7 @@ Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
     // TODO(igorbonadio): ERROR!
     return 0;
   else
-    return c->getDistribution()->evaluatePosition(s, i);
+    return c->getDistribution()->choosePosition(s, i);
 }
 
 

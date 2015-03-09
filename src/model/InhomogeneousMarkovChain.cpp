@@ -41,8 +41,8 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
                                                   unsigned int i,
                                                   unsigned int phase) const {
-  if (i < _vlmcs.size())
-    return _vlmcs[i]->evaluatePosition(s, i);
+  if (i + phase < _vlmcs.size())
+    return _vlmcs[i + phase]->evaluatePosition(s, i);
   else
     return -HUGE;
 }
@@ -50,8 +50,8 @@ double InhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
 Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
                                                 unsigned int i,
                                                 unsigned int phase) const {
-  if (i < _vlmcs.size())
-    return _vlmcs[i]->choosePosition(s, i);
+  if (i + phase < _vlmcs.size())
+    return _vlmcs[i + phase]->choosePosition(s, i);
   else
     return 0;  // TODO(igorbonadio): ERROR!
 }

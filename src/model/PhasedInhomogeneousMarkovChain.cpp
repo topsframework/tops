@@ -97,14 +97,34 @@ PhasedInhomogeneousMarkovChainPtr
 double PhasedInhomogeneousMarkovChain::evaluatePosition(const Sequence &s,
                                                         unsigned int i,
                                                         unsigned int phase) const {
-  return _vlmcs[i % _vlmcs.size()]->evaluatePosition(s, i);
+  return _vlmcs[(i + phase) % _vlmcs.size()]->evaluatePosition(s, i);
 }
 
 Symbol PhasedInhomogeneousMarkovChain::choosePosition(const Sequence &s,
                                                       unsigned int i,
                                                       unsigned int phase) const {
-  return _vlmcs[i % _vlmcs.size()]->choosePosition(s, i);
+  return _vlmcs[(i + phase) % _vlmcs.size()]->choosePosition(s, i);
 }
+
+double PhasedInhomogeneousMarkovChain::evaluateWithPrefixSumArray(
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) {
+  return _prefix_sum_matrix[phase][end] - _prefix_sum_matrix[phase][begin];
+}
+
+void PhasedInhomogeneousMarkovChain::initializePrefixSumArray(
+    const Sequence &s,
+    unsigned int phase) {
+  _prefix_sum_matrix = Matrix(_vlmcs.size(), std::vector<double>(s.size() + 1));
+  for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
+    _prefix_sum_matrix[t][0] = 0;
+    for (unsigned int i = 0; i < s.size() ; i++) {
+      _prefix_sum_matrix[t][i+1] = _prefix_sum_matrix[t][i] + evaluatePosition(s, i, t);
+    }
+  }
+}
+
 
 }  // namespace model
 }  // namespace tops

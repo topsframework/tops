@@ -105,7 +105,7 @@ double MultipleSequentialModel::evaluateSequence(const Sequence &s,
 double MultipleSequentialModel::evaluatePosition(const Sequence &s,
                                                  unsigned int i,
                                                  unsigned int phase) const {
-  return evaluateSequence(s, i, i);
+  return evaluateSequence(s, i, i, phase);
 }
 
 Symbol MultipleSequentialModel::choosePosition(const Sequence &s,
@@ -130,7 +130,7 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
     e = b + _max_length[i] - 1;
     if (e >= static_cast<int>(_seqsize))
       e = _seqsize-1;
-    sum += _models[i]->evaluateWithPrefixSumArray(b, e/*, phase*/);
+    sum += _models[i]->evaluateWithPrefixSumArray(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
@@ -148,7 +148,7 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += _models[i]->evaluateWithPrefixSumArray(b, e/*,phase2*/);
+    sum += _models[i]->evaluateWithPrefixSumArray(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
@@ -156,7 +156,7 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0) {
     sum += _models[_idx_not_limited]->evaluateWithPrefixSumArray(
-        begin_of_not_limited, end_of_not_limited/*, phase*/);
+        begin_of_not_limited, end_of_not_limited, phase);
   }
   return sum;
 }

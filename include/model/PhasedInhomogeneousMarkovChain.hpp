@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
+#include "model/Matrix.hpp"
 
 namespace tops {
 namespace model {
@@ -66,7 +67,13 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
+  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
+  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+
  private:
+  // Instance variables
+  Matrix _prefix_sum_matrix;
+
   // Constructors
   PhasedInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
