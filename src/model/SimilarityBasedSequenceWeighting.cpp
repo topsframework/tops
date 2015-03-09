@@ -174,9 +174,10 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
   return log(sum/(_normalizer));
 }
 
-Symbol SimilarityBasedSequenceWeighting::choosePosition(const Sequence &s,
-                                                        unsigned int i,
-                                                        unsigned int phase) const {
+Symbol SimilarityBasedSequenceWeighting::choosePosition(
+    const Sequence &s,
+    unsigned int i,
+    unsigned int phase) const {
   // TODO(igorbonadio)
   return 0;
 }

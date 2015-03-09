@@ -51,7 +51,8 @@ double ProbabilisticModel::evaluateWithPrefixSumArray(unsigned int begin,
   return _prefix_sum_array[end] - _prefix_sum_array[begin];
 }
 
-void ProbabilisticModel::initializePrefixSumArray(const Sequence &s, unsigned int phase) {
+void ProbabilisticModel::initializePrefixSumArray(const Sequence &s,
+                                                  unsigned int phase) {
   _prefix_sum_array.resize(s.size() + 1);
   _prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < s.size() ; i++) {
