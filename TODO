@@ -1,5 +1,11 @@
 [Refactoring]
-
+  [ ] Implements bayes-classifier app
+  [ ] Implements evaluate app
+  [ ] Implements posterior-decoding app
+  [ ] Implements simulate app
+  [ ] Implements train app
+  [ ] Implements viterbi-decoding app
+  [ ] Implements ToPS-lang
   [ ] Copy GHMM
   [ ] Copy Model selection techniques
   [ ] Prefix sum array can't be parallelized. Should we use a decorator?
@@ -10,7 +16,7 @@
   [ ] Check if band_den_bin is correct
   [ ] Declare overriding function 'override'
   [ ] Use unique_ptr as default pointer type
-  [ ] Add phased evaluate version of IMC, PhasedIMC and MultipleSequentialModel
+  [ ] Add phased version of evaluate of IMC, PhasedIMC and MultipleSequentialModel
   [ ] Fix HMM's Baum-Welch algorithm
   [x] Should we add a "phased evaluate" method?
   [x] Copy DiscreteIIDModel::SmoothedHistogramStanke
