@@ -40,15 +40,9 @@ GeneralizedHiddenMarkovModelExplicitDurationState::GeneralizedHiddenMarkovModelE
     Symbol name) : GeneralizedHiddenMarkovModelState(observation, transition, name) {
 };
 
-void GeneralizedHiddenMarkovModelExplicitDurationState::setDuration(ProbabilisticModelPtr d) {
-  // TODO(igorbonadio)
-  // _duration = d;
-  // ProbabilisticModelParameters p = d->parameters();
-  // ProbabilisticModelParameterValuePtr par = p.getOptionalParameterValue("number_of_phases");
-  // if(par != NULL)
-  //     _number_of_phases = par->getInt();
-  // else
-  //     _number_of_phases = 1;
+void GeneralizedHiddenMarkovModelExplicitDurationState::setDuration(DiscreteIIDModelPtr d, unsigned int number_of_phases) {
+  _duration = d;
+  _number_of_phases = number_of_phases;
 }
 
 ProbabilisticModelPtr GeneralizedHiddenMarkovModelExplicitDurationState::duration() const {
@@ -56,16 +50,14 @@ ProbabilisticModelPtr GeneralizedHiddenMarkovModelExplicitDurationState::duratio
 }
 
 int GeneralizedHiddenMarkovModelExplicitDurationState::chooseDuration() const {
-  // TODO(igorbonadio)
-  return 0.0;//_duration->choose();
+  return _duration->choose();
 }
  bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
   return false;
 }
 
 double GeneralizedHiddenMarkovModelExplicitDurationState::duration_probability(int l) const {
-  // TODO(igorbonadio)
-  return 0;//_duration->probabilityOf(l);
+  return _duration->probabilityOf(l);
 }
 
 void GeneralizedHiddenMarkovModelExplicitDurationState::choosePredecessor (Matrix & alpha, int base, int & state, int & position, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states) {
