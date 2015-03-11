@@ -23,6 +23,7 @@
 
 // ToPS headers
 #include "model/GeneralizedHiddenMarkovModelExplicityDurationState.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
 #include "model/Random.hpp"
 #include "model/Util.hpp"
 
@@ -148,9 +149,8 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::choosePredecessor (Matri
 
     // check if it can emmit the current state given the boundaries
     int nphase = getInputPhase();
-    // TODO(igorbonadio)
-    // if(observation()->inhomogeneous() != NULL)
-    //   nphase = observation()->inhomogeneous()->maximumTimeValue() + 1;
+    if(observation()->inhomogeneous() != NULL)
+      nphase = observation()->inhomogeneous()->maximumTimeValue();
     if(getStart() > 0 && getStop() > 0) {
       if((d-getStart() >= 0) && (base + getStop () < s.size())) {
   double joinable = observation()->evaluateWithPrefixSumArray(d-getStart(),base+getStop(), mod(getInputPhase()-getStart(), nphase));
@@ -214,9 +214,8 @@ double GeneralizedHiddenMarkovModelExplicitDurationState::backwardSum(Matrix &be
   it++;
   continue;
       }
-  // TODO(igorbonadio)
-  // if(_observation->inhomogeneous() != NULL)
-  //   phase = _observation->inhomogeneous()->maximumTimeValue() + 1;
+  if(_observation->inhomogeneous() != NULL)
+    phase = _observation->inhomogeneous()->maximumTimeValue();
       if(getStart() > 0 && getStop() > 0) {
   if((base+1-getStart() >= 0) && ((*it) + getStop() < s.size())) {
     double joinable = _observation->evaluateWithPrefixSumArray(base+1-getStart(),(*it)+getStop(), mod(getInputPhase()-getStart(), phase));
@@ -265,9 +264,8 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::forwardSum (Matrix & alp
   it++;
   continue;
       }
-      // TODO(igorbonadio)
-  //     if(observation()->inhomogeneous() != NULL)
-  // phase = observation()->inhomogeneous()->maximumTimeValue() + 1;
+  if(observation()->inhomogeneous() != NULL)
+    phase = observation()->inhomogeneous()->maximumTimeValue();
       if(getStart() > 0 && getStop() > 0) {
   if(((*it)+1-getStart() >= 0) && (base + getStop() < (int)s.size())) {
     double joinable = observation()->evaluateWithPrefixSumArray((*it)+1-getStart(),base+getStop(), mod(getInputPhase()-getStart(), phase));
@@ -321,9 +319,8 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::forwardSum (Matrix & alp
   it++;
   continue;
       }
-      // TODO(igorbonadio)
-  //     if(observation()->inhomogeneous() != NULL)
-  // phase = observation()->inhomogeneous()->maximumTimeValue() + 1;
+      if(observation()->inhomogeneous() != NULL)
+  phase = observation()->inhomogeneous()->maximumTimeValue();
       if(getStart() > 0 && getStop() > 0) {
   if(((*it)+1-getStart() >= 0) && (base + getStop() < (int)s.size())) {
     double joinable = observation()->evaluateWithPrefixSumArray((*it)+1-getStart(),base+getStop(), mod(getInputPhase()-getStart(), phase));

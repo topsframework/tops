@@ -56,5 +56,13 @@ Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
     return 0;  // TODO(igorbonadio): ERROR!
 }
 
+InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
+  return this;
+}
+
+unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
+  return _vlmcs.size();
+}
+
 }  // namespace model
 }  // namespace tops

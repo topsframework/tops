@@ -29,6 +29,9 @@
 namespace tops {
 namespace model {
 
+class InhomogeneousMarkovChain;
+using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
+
 /**
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
@@ -47,6 +50,8 @@ class ProbabilisticModel {
                                   unsigned int phase = 0) const;
   virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
   virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+
+  virtual InhomogeneousMarkovChain* inhomogeneous();
 
  private:
   // Instance variables

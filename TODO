@@ -1,4 +1,5 @@
 [Refactoring]
+  [ ] Remove inhomogeneous() method
   [ ] Implements bayes-classifier app
   [ ] Implements evaluate app
   [ ] Implements posterior-decoding app
