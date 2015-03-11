@@ -46,7 +46,7 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::setDuration(DiscreteIIDM
   _number_of_phases = number_of_phases;
 }
 
-ProbabilisticModelPtr GeneralizedHiddenMarkovModelExplicitDurationState::duration() const {
+DiscreteIIDModelPtr GeneralizedHiddenMarkovModelExplicitDurationState::duration() const {
  return _duration;
 }
 
@@ -69,8 +69,7 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::choosePredecessor (Matri
           diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
       if(_number_of_phases <= 0)
           _number_of_phases = 1;
-      // TODO(igorbonadio)
-      int offset = 0; //duration()->size();
+      int offset = duration()->alphabetSize();
 
       if(offset > 15000)
           offset = 15000;
@@ -98,8 +97,7 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::choosePredecessor (Matri
           diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
       if(_number_of_phases <= 0)
           _number_of_phases = 1;
-        // TODO(igorbonadio)
-      int offset = 0;//duration()->size();
+      int offset = duration()->alphabetSize();
       if(offset > 15000)
           offset = 15000;
 
@@ -189,8 +187,7 @@ double GeneralizedHiddenMarkovModelExplicitDurationState::backwardSum(Matrix &be
       diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
     if(_number_of_phases <= 0)
       _number_of_phases = 1;
-    // TODO(igorbonadio)
-    int offset = 0;//_duration->size();
+    int offset = duration()->alphabetSize();
     if(offset > 15000)
       offset = 15000;
     int maxbase = (base + diff + offset) ;
@@ -240,8 +237,7 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::forwardSum (Matrix & alp
       diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
     if(_number_of_phases <= 0)
       _number_of_phases = 1;
-    // TODO(igorbonadio)
-    int offset = 0;//duration()->size();
+    int offset = duration()->alphabetSize();
     if(offset > 15000)
       offset = 15000;
     int minbase = (base - diff - offset) ;
@@ -295,8 +291,7 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::forwardSum (Matrix & alp
       diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
     if(_number_of_phases <= 0)
       _number_of_phases = 1;
-    // TODO(igorbonadio)
-    int offset = 0;//duration()->size();
+    int offset = duration()->alphabetSize();
     if(offset > 15000)
       offset = 15000;
     int minbase = (base - diff - offset) ;

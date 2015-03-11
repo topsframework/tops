@@ -44,7 +44,7 @@ class GeneralizedHiddenMarkovModelExplicitDurationState: public GeneralizedHidde
   virtual void posteriorSum (Matrix & alpha, Matrix &beta, Matrix &postProbs, const Sequence & s, int base, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states, std::vector< std::list<int> > &valid_positions, double prob, int stateNumber);
   virtual void choosePredecessor (Matrix & alpha, int base, int & state, int & position, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states);
   virtual void setDuration(DiscreteIIDModelPtr d, unsigned int number_of_phases = 1) ;
-  virtual ProbabilisticModelPtr duration() const ;
+  virtual DiscreteIIDModelPtr duration() const ;
   virtual int chooseDuration() const ;
   virtual bool isGeometricDuration() const ;
   virtual double duration_probability(int l) const ;
