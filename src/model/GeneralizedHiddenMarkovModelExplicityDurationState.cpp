@@ -92,9 +92,6 @@ void GeneralizedHiddenMarkovModelExplicitDurationState::choosePredecessor (Matri
   }
 
   void GeneralizedHiddenMarkovModelExplicitDurationState::findBestPredecessor (Matrix & gamma, Matrix &psi, Matrix &psilen, const Sequence & s, int base, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states, std::map < int, std::list<int> >  & valid_positions){
-      int diff = 0;
-      if(_number_of_phases  > 1)
-          diff = mod(getOutputPhase() - getInputPhase(),_number_of_phases);
       if(_number_of_phases <= 0)
           _number_of_phases = 1;
       int offset = duration()->alphabetSize();
