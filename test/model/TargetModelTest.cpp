@@ -52,30 +52,22 @@ TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
 }
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
-  ASSERT_THAT(target->evaluateSequence({0, 1, 0}, 0, 3),
+  ASSERT_THAT(target->evaluate({0, 1, 0})->probabilityOf(0, 3),
               DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluateSequence({0, 1, 1}, 0, 3),
+  ASSERT_THAT(target->evaluate({0, 1, 1})->probabilityOf(0, 3),
               DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluateSequence({0, 1, 1, 1}, 0, 4),
+  ASSERT_THAT(target->evaluate({0, 1, 1, 1})->probabilityOf(0, 4),
               DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
 }
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   target->initializePrefixSumArray({0, 1, 0});
   ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 3),
-              DoubleEq(target->evaluateSequence({0, 1, 0}, 0, 3)));
+              DoubleEq(target->evaluate({0, 1, 0})->probabilityOf(0, 3)));
   target->initializePrefixSumArray({0, 1, 1});
   ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 3),
-              DoubleEq(target->evaluateSequence({0, 1, 1}, 0, 3)));
+              DoubleEq(target->evaluate({0, 1, 1})->probabilityOf(0, 3)));
   target->initializePrefixSumArray({0, 1, 1, 1});
   ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 4),
-              DoubleEq(target->evaluateSequence({0, 1, 1, 1}, 0, 4)));
-}
-
-
-
-TEST_F(ATargetModel, ShouldEvaluateASequencePosition) {
-  ASSERT_THAT(target->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(2.0/3.0)));
-  ASSERT_THAT(target->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(1.0/3.0)));
-  ASSERT_THAT(target->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(2.0/3.0)));
+              DoubleEq(target->evaluate({0, 1, 1, 1})->probabilityOf(0, 4)));
 }

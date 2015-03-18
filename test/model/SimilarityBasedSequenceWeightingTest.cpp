@@ -49,57 +49,46 @@ class ASBSW : public testing::Test {
 };
 
 TEST_F(ASBSW, ShouldEvaluateASequence) {
-  ASSERT_THAT(sbsw->evaluateSequence({0}, 0, 1),
+  ASSERT_THAT(sbsw->evaluate({0})->probabilityOf(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluateSequence({1}, 0, 1),
+  ASSERT_THAT(sbsw->evaluate({1})->probabilityOf(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluateSequence({0, 1}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({0, 1})->probabilityOf(0, 2),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({0, 0}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({0, 0})->probabilityOf(0, 2),
               DoubleNear(-0.405465, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({1, 0})->probabilityOf(0, 2),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 1}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({1, 1})->probabilityOf(0, 2),
               DoubleNear(-1.09861, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1}, 0, 3),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1})->probabilityOf(0, 3),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
               DoubleNear(-6.90776, 1e-4));
-}
-
-TEST_F(ASBSW, ShouldEvaluateAPosition) {
-  ASSERT_THAT(sbsw->evaluatePosition({0}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({1}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({0, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({0, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({1, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({1, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({1, 0, 1}, 2), DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluatePosition({1, 0, 1, 0}, 3), DoubleEq(-HUGE));
 }
 
 TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
   sbsw->initializePrefixSumArray({0});
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 1),
-              DoubleNear(sbsw->evaluateSequence({0}, 0, 1), 1e-4));
+              DoubleNear(sbsw->evaluate({0})->probabilityOf(0, 1), 1e-4));
 
   sbsw->initializePrefixSumArray({0, 1});
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 2),
-              DoubleNear(sbsw->evaluateSequence({0, 1}, 0, 2), 1e-4));
+              DoubleNear(sbsw->evaluate({0, 1})->probabilityOf(0, 2), 1e-4));
 
   sbsw->initializePrefixSumArray({1, 0, 1});
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 3),
-              DoubleNear(sbsw->evaluateSequence({1, 0, 1}, 0, 3), 1e-4));
+              DoubleNear(sbsw->evaluate({1, 0, 1})->probabilityOf(0, 3), 1e-4));
 
   sbsw->initializePrefixSumArray({1, 0, 1, 0});
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 4),
-              DoubleNear(sbsw->evaluateSequence({1, 0, 1, 0}, 0, 4), 1e-4));
+              DoubleNear(sbsw->evaluate({1, 0, 1, 0})->probabilityOf(0, 4), 1e-4));
 
   sbsw->initializePrefixSumArray({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
   ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 13),
-              DoubleNear(sbsw->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13), 1e-4));
+              DoubleNear(sbsw->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
 }
 
 TEST(SBSW, ShouldBeTrained) {
@@ -111,22 +100,22 @@ TEST(SBSW, ShouldBeTrained) {
     {1, 1},
   };
   auto sbsw = SimilarityBasedSequenceWeighting::train(training_set, 2, -1, -1, {});
-  ASSERT_THAT(sbsw->evaluateSequence({0}, 0, 1),
+  ASSERT_THAT(sbsw->evaluate({0})->probabilityOf(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluateSequence({1}, 0, 1),
+  ASSERT_THAT(sbsw->evaluate({1})->probabilityOf(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluateSequence({0, 1}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({0, 1})->probabilityOf(0, 2),
               DoubleNear(-1.60684, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({0, 0}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({0, 0})->probabilityOf(0, 2),
               DoubleNear(-1.60984, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({1, 0})->probabilityOf(0, 2),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 1}, 0, 2),
+  ASSERT_THAT(sbsw->evaluate({1, 1})->probabilityOf(0, 2),
               DoubleNear(-0.511891, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1}, 0, 3),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1})->probabilityOf(0, 3),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluateSequence({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 13),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
               DoubleNear(-7.1323, 1e-4));
 }

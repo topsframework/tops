@@ -54,12 +54,12 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 0, 0, 0, 0, 0}, 0, 8),
+  ASSERT_THAT(iid->evaluate({0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 0, 0, 0}, 0, 8),
+  ASSERT_THAT(iid->evaluate({0, 0, 0, 1, 0, 0, 0, 0})->probabilityOf(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 1, 0, 0, 0}, 0, 8),
+  ASSERT_THAT(iid->evaluate({0, 0, 0, 1, 1, 0, 0, 0})->probabilityOf(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluateSequence({0, 0, 0, 1, 0, 1, 0, 0}, 0, 8),
+  ASSERT_THAT(iid->evaluate({0, 0, 0, 1, 0, 1, 0, 0})->probabilityOf(0, 8),
               DoubleNear(-10.1029, 1e-4));
 }

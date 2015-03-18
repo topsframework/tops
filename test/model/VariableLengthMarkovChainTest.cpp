@@ -55,32 +55,32 @@ class AVLMC : public testing::Test {
 };
 
 TEST_F(AVLMC, ShouldEvaluateAPosition) {
-  ASSERT_THAT(vlmc->evaluatePosition({0}, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluatePosition({1}, 0), DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluatePosition({0, 1}, 1), DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->evaluatePosition({0, 0}, 1), DoubleEq(log(0.20)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 0}, 1), DoubleEq(log(0.21)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 1}, 1), DoubleEq(log(0.79)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 0, 1}, 2), DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->evaluatePosition({1, 0, 1, 0}, 3), DoubleEq(log(0.10)));
+  ASSERT_THAT(vlmc->evaluate({0})->probabilityOf(0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluate({1})->probabilityOf(0, 1), DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->evaluate({0, 1})->probabilityOf(1, 2), DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->evaluate({0, 0})->probabilityOf(1, 2), DoubleEq(log(0.20)));
+  ASSERT_THAT(vlmc->evaluate({1, 0})->probabilityOf(1, 2), DoubleEq(log(0.21)));
+  ASSERT_THAT(vlmc->evaluate({1, 1})->probabilityOf(1, 2), DoubleEq(log(0.79)));
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1})->probabilityOf(2, 3), DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1, 0})->probabilityOf(3, 4), DoubleEq(log(0.10)));
 }
 
 TEST_F(AVLMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(vlmc->evaluateSequence({0}, 0, 1),
+  ASSERT_THAT(vlmc->evaluate({0})->probabilityOf(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluateSequence({1}, 0, 1),
+  ASSERT_THAT(vlmc->evaluate({1})->probabilityOf(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 1}, 0, 2),
+  ASSERT_THAT(vlmc->evaluate({0, 1})->probabilityOf(0, 2),
               DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 0}, 0, 2),
+  ASSERT_THAT(vlmc->evaluate({0, 0})->probabilityOf(0, 2),
               DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0}, 0, 2),
+  ASSERT_THAT(vlmc->evaluate({1, 0})->probabilityOf(0, 2),
               DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 1}, 0, 2),
+  ASSERT_THAT(vlmc->evaluate({1, 1})->probabilityOf(0, 2),
               DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1}, 0, 3),
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1})->probabilityOf(0, 3),
               DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }
 
@@ -89,28 +89,8 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
     auto data = generateRandomSequence(i, 2);
     vlmc->initializePrefixSumArray(data);
     ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()),
-                DoubleEq(vlmc->evaluateSequence(data, 0, data.size())));
+                DoubleEq(vlmc->evaluate(data)->probabilityOf(0, data.size())));
   }
-}
-
-TEST_F(AVLMC, CanBeDecorated) {
-  auto decorated_vlmc = ProbabilisticModelDecorator::make(vlmc);
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0}, 0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1}, 0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 1}, 0, 2),
-              DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({0, 0}, 0, 2),
-              DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0}, 0, 2),
-              DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 1}, 0, 2),
-              DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1}, 0, 3),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(decorated_vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
@@ -122,9 +102,9 @@ TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
       training_set,
       2,
       0.1);
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(-2.77259, 1e-4));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+  ASSERT_THAT(vlmc->evaluate({0, 0, 0, 1, 1, 1, 1})->probabilityOf(0, 7),
               DoubleNear(-4.85203, 1e-4));
 }
 
@@ -137,11 +117,11 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
     training_set, 2, 2, 1.5,
     {1.0, 1.0, 1.0, 1.0},
     ProbabilisticModelPtr(NULL));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(-1.37235, 1e-4));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 1, 1, 1})->probabilityOf(0, 4),
               DoubleNear(-5.21625, 1e-4));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+  ASSERT_THAT(vlmc->evaluate({0, 0, 0, 1, 1, 1, 1})->probabilityOf(0, 7),
               DoubleNear(-7.78482, 1e-4));
 }
 
@@ -155,10 +135,10 @@ TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
     {1.0, 1.0, 1.0, 1.0},
     2, 2, 1.5,
     ProbabilisticModelPtr(NULL));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 0, 1, 0}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(-2.77913, 1e-4));
-  ASSERT_THAT(vlmc->evaluateSequence({1, 1, 1, 1}, 0, 4),
+  ASSERT_THAT(vlmc->evaluate({1, 1, 1, 1})->probabilityOf(0, 4),
               DoubleNear(-3.00795, 1e-4));
-  ASSERT_THAT(vlmc->evaluateSequence({0, 0, 0, 1, 1, 1, 1}, 0, 7),
+  ASSERT_THAT(vlmc->evaluate({0, 0, 0, 1, 1, 1, 1})->probabilityOf(0, 7),
               DoubleNear(-4.92068, 1e-4));
 }

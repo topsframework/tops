@@ -71,24 +71,15 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
     for (auto symbol : data) {
       result += iid->probabilityOf(symbol);
     }
-    ASSERT_THAT(iid->evaluateSequence(data, 0, 4), DoubleEq(result));
+    ASSERT_THAT(iid->evaluate(data)->probabilityOf(0, 4), DoubleEq(result));
   }
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
-  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 0), DoubleEq(log(0.2)));
-  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 1), DoubleEq(log(0.8)));
-  ASSERT_THAT(iid->evaluatePosition({0, 1, 0}, 2), DoubleEq(log(0.2)));
-}
-
-TEST_F(ADiscreteIIDModel, CanBeDecorated) {
-  auto decorated_iid = ProbabilisticModelDecorator::make(iid);
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 0),
-              DoubleEq(log(0.2)));
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 1),
-              DoubleEq(log(0.8)));
-  ASSERT_THAT(decorated_iid->evaluatePosition({0, 1, 0}, 2),
-              DoubleEq(log(0.2)));
+  auto evaluate = iid->evaluate({0, 1, 0});
+  ASSERT_THAT(evaluate->probabilityOf(0, 1), DoubleEq(log(0.2)));
+  ASSERT_THAT(evaluate->probabilityOf(1, 2), DoubleEq(log(0.8)));
+  ASSERT_THAT(evaluate->probabilityOf(2, 3), DoubleEq(log(0.2)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {

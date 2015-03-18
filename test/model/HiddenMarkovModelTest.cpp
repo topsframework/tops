@@ -61,26 +61,26 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
 
 TEST_F(AHiddenMarkovModel, ShouldEvaluateTheProbabilityOfSequence) {
   Matrix alpha;
-  ASSERT_THAT(hmm->evaluateSequence({0, 0, 1}, 0, 3),
+  ASSERT_THAT(hmm->evaluate({0, 0, 1})->probabilityOf(0, 3),
               DoubleEq(hmm->forward({0, 0, 1}, alpha)));
 
-  ASSERT_THAT(hmm->evaluateSequence({0, 1, 1}, 0, 2),
+  ASSERT_THAT(hmm->evaluate({0, 1, 1})->probabilityOf(0, 2),
               DoubleEq(hmm->forward({0, 1}, alpha)));
 
-  ASSERT_THAT(hmm->evaluateSequence({1, 1, 1}, 0, 1),
+  ASSERT_THAT(hmm->evaluate({1, 1, 1})->probabilityOf(0, 1),
               DoubleEq(hmm->forward({1}, alpha)));
 }
 
 TEST_F(AHiddenMarkovModel, ShouldEvaluateTheProbabilityOfPosition) {
   Matrix alpha;
   ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 0),
-              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 0, 1)));
+              DoubleEq(hmm->evaluate({0, 0, 1})->probabilityOf(0, 1)));
 
   ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 1),
-              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 1, 2)));
+              DoubleEq(hmm->evaluate({0, 0, 1})->probabilityOf(1, 2)));
 
   ASSERT_THAT(hmm->evaluatePosition({0, 0, 1}, 2),
-              DoubleEq(hmm->evaluateSequence({0, 0, 1}, 2, 3)));
+              DoubleEq(hmm->evaluate({0, 0, 1})->probabilityOf(2, 3)));
 }
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
