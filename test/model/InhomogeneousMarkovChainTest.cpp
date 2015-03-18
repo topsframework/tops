@@ -77,9 +77,8 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    imc->initializePrefixSumArray(data);
     ASSERT_THAT(
-        imc->evaluateWithPrefixSumArray(0, data.size()),
+        imc->evaluate(data)->probabilityOf(0, data.size()),
         DoubleEq(imc->evaluate(data)->probabilityOf(0, data.size())));
   }
 }

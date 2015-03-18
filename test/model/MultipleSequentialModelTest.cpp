@@ -59,15 +59,12 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
 }
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  mm->initializePrefixSumArray({1, 0, 1});
-  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 3),
+  ASSERT_THAT(mm->evaluate({1, 0, 1})->probabilityOf(0, 3),
               DoubleNear(mm->evaluate({1, 0, 1})->probabilityOf(0, 3), 1e-4));
 
-  mm->initializePrefixSumArray({1, 0, 1, 0});
-  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 4),
+  ASSERT_THAT(mm->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(mm->evaluate({1, 0, 1, 0})->probabilityOf(0, 4), 1e-4));
 
-  mm->initializePrefixSumArray({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-  ASSERT_THAT(mm->evaluateWithPrefixSumArray(0, 13),
+  ASSERT_THAT(mm->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
               DoubleNear(mm->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
 }

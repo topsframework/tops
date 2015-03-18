@@ -17,49 +17,43 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_EVALUATOR_MODEL_
-#define TOPS_MODEL_EVALUATOR_MODEL_
+#ifndef TOPS_MODEL_CACHED_EVALUATOR_MODEL_
+#define TOPS_MODEL_CACHED_EVALUATOR_MODEL_
 
 // Standard headers
 #include <memory>
 
 // ToPS headers
+#include "model/Evaluator.hpp"
 #include "model/Sequence.hpp"
 
 namespace tops {
 namespace model {
 
-class ProbabilisticModel;
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
-
-class Evaluator;
+class CachedEvaluator;
 
 /**
- * @typedef EvaluatorPtr
- * @brief Alias of pointer to Evaluator.
+ * @typedef CachedEvaluatorPtr
+ * @brief Alias of pointer to CachedEvaluator.
  */
-using EvaluatorPtr = std::shared_ptr<Evaluator>;
+using CachedEvaluatorPtr = std::shared_ptr<CachedEvaluator>;
 
 /**
- * @class Evaluator
+ * @class CachedEvaluator
  * @brief TODO
  */
-class Evaluator {
+class CachedEvaluator : public Evaluator {
  public:
   // Static methods
-  static EvaluatorPtr make(ProbabilisticModelPtr m, const Sequence &s);
+  static CachedEvaluatorPtr make(ProbabilisticModelPtr m, const Sequence &s);
 
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0) const;
- protected:
-  // Instace variables
-  ProbabilisticModelPtr _model;
-  Sequence _sequence;
-
+ private:
   // Constructors
-  Evaluator(ProbabilisticModelPtr m, const Sequence &s);
+  CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s);
 };
 
 }  // namespace model

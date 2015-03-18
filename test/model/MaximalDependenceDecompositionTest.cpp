@@ -71,17 +71,13 @@ TEST_F(AMDD, ShouldEvaluateASequence) {
 }
 
 TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
-  mdd->initializePrefixSumArray({0});
-  ASSERT_THAT(mdd->evaluateWithPrefixSumArray(0, 1),
+  ASSERT_THAT(mdd->evaluate({0})->probabilityOf(0, 1),
               DoubleEq(mdd->evaluate({0})->probabilityOf(0, 1)));
-  mdd->initializePrefixSumArray({1, 0, 2, 2, 3, 2, 0, 0, 3});
-  ASSERT_THAT(mdd->evaluateWithPrefixSumArray(0, 9),
+  ASSERT_THAT(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
               DoubleEq(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9)));
-  mdd->initializePrefixSumArray({1, 2, 2, 2, 3, 2, 0, 2, 3});
-  ASSERT_THAT(mdd->evaluateWithPrefixSumArray(0, 9),
+  ASSERT_THAT(mdd->evaluate({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9),
               DoubleEq(mdd->evaluate({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9)));
-  mdd->initializePrefixSumArray({2, 2, 2, 2, 2, 2, 2, 2, 2});
-  ASSERT_THAT(mdd->evaluateWithPrefixSumArray(0, 9),
+  ASSERT_THAT(mdd->evaluate({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9),
               DoubleEq(mdd->evaluate({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9)));
 }
 

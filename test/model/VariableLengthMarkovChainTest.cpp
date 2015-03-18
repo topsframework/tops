@@ -87,8 +87,7 @@ TEST_F(AVLMC, ShouldEvaluateASequence) {
 TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    vlmc->initializePrefixSumArray(data);
-    ASSERT_THAT(vlmc->evaluateWithPrefixSumArray(0, data.size()),
+    ASSERT_THAT(vlmc->evaluate(data)->probabilityOf(0, data.size()),
                 DoubleEq(vlmc->evaluate(data)->probabilityOf(0, data.size())));
   }
 }

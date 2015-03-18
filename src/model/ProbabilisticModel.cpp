@@ -19,6 +19,7 @@
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
+#include "model/CachedEvaluator.hpp"
 
 namespace tops {
 namespace model {
@@ -64,7 +65,9 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s) {
+EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s, bool cached) {
+  if (cached)
+    return CachedEvaluator::make(shared_from_this(), s);
   return Evaluator::make(shared_from_this(), s);
 }
 

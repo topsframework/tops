@@ -70,24 +70,19 @@ TEST_F(ASBSW, ShouldEvaluateASequence) {
 }
 
 TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
-  sbsw->initializePrefixSumArray({0});
-  ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 1),
+  ASSERT_THAT(sbsw->evaluate({0})->probabilityOf(0, 1),
               DoubleNear(sbsw->evaluate({0})->probabilityOf(0, 1), 1e-4));
 
-  sbsw->initializePrefixSumArray({0, 1});
-  ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 2),
+  ASSERT_THAT(sbsw->evaluate({0, 1})->probabilityOf(0, 2),
               DoubleNear(sbsw->evaluate({0, 1})->probabilityOf(0, 2), 1e-4));
 
-  sbsw->initializePrefixSumArray({1, 0, 1});
-  ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 3),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1})->probabilityOf(0, 3),
               DoubleNear(sbsw->evaluate({1, 0, 1})->probabilityOf(0, 3), 1e-4));
 
-  sbsw->initializePrefixSumArray({1, 0, 1, 0});
-  ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 4),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0})->probabilityOf(0, 4),
               DoubleNear(sbsw->evaluate({1, 0, 1, 0})->probabilityOf(0, 4), 1e-4));
 
-  sbsw->initializePrefixSumArray({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-  ASSERT_THAT(sbsw->evaluateWithPrefixSumArray(0, 13),
+  ASSERT_THAT(sbsw->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
               DoubleNear(sbsw->evaluate({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
 }
 

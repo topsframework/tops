@@ -61,13 +61,10 @@ TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
 }
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  target->initializePrefixSumArray({0, 1, 0});
-  ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 3),
+  ASSERT_THAT(target->evaluate({0, 1, 0})->probabilityOf(0, 3),
               DoubleEq(target->evaluate({0, 1, 0})->probabilityOf(0, 3)));
-  target->initializePrefixSumArray({0, 1, 1});
-  ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 3),
+  ASSERT_THAT(target->evaluate({0, 1, 1})->probabilityOf(0, 3),
               DoubleEq(target->evaluate({0, 1, 1})->probabilityOf(0, 3)));
-  target->initializePrefixSumArray({0, 1, 1, 1});
-  ASSERT_THAT(target->evaluateWithPrefixSumArray(0, 4),
+  ASSERT_THAT(target->evaluate({0, 1, 1, 1})->probabilityOf(0, 4),
               DoubleEq(target->evaluate({0, 1, 1, 1})->probabilityOf(0, 4)));
 }

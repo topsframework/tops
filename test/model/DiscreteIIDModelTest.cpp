@@ -85,9 +85,8 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    iid->initializePrefixSumArray(data);
-    ASSERT_THAT(iid->evaluateWithPrefixSumArray(0, data.size()),
-                DoubleEq(iid->evaluateSequence(data, 0, data.size())));
+    ASSERT_THAT(iid->evaluate(data, true)->probabilityOf(0, data.size()),
+                DoubleEq(iid->evaluate(data)->probabilityOf(0, data.size())));
   }
 }
 

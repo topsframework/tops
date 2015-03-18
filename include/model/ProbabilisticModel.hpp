@@ -44,7 +44,7 @@ class ProbabilisticModel : public std::enable_shared_from_this<ProbabilisticMode
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual EvaluatorPtr evaluate(const Sequence &s);
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
