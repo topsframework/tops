@@ -64,5 +64,9 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
+EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s) {
+  return Evaluator::make(shared_from_this(), s);
+}
+
 }  // namespace model
 }  // namespace tops

@@ -25,6 +25,7 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
+#include "model/Evaluator.hpp"
 
 namespace tops {
 namespace model {
@@ -36,13 +37,14 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
-class ProbabilisticModel {
+class ProbabilisticModel : public std::enable_shared_from_this<ProbabilisticModel>{
  public:
   // Purely virtual methods
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const = 0;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const = 0;
 
   // Virtual methods
+  virtual EvaluatorPtr evaluate(const Sequence &s);
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,
                                   unsigned int begin,
