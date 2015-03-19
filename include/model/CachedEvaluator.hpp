@@ -52,10 +52,15 @@ class CachedEvaluator : public Evaluator {
                                unsigned int end,
                                unsigned int phase = 0);
 
-  void *memory;
+  template<typename T>
+  T& memory() {
+    return *static_cast<T*>(_memory);
+  }
+
  private:
   // Constructors
   CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s, void *memory);
+  void *_memory;
 };
 
 }  // namespace model

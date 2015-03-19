@@ -24,8 +24,8 @@
 namespace tops {
 namespace model {
 
-CachedEvaluator::CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s, void *mem)
-    : Evaluator(m, s), memory(mem) {
+CachedEvaluator::CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s, void *memory)
+    : Evaluator(m, s), _memory(memory) {
 }
 
 CachedEvaluatorPtr CachedEvaluator::make(ProbabilisticModelPtr m, const Sequence &s, void *memory) {

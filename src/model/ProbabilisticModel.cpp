@@ -73,14 +73,14 @@ EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s, bool cached) {
 
 // TODO(igorbonadio): It is just a concept test.
 void ProbabilisticModel::initializePrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int phase) {
-  std::vector<double> &prefix_sum_array = *static_cast<std::vector<double>*>(evaluator->memory);
+  auto &prefix_sum_array = evaluator->memory<std::vector<double>>();
   prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < evaluator->sequence.size() ; i++)
     prefix_sum_array[i+1] = prefix_sum_array[i] + evaluatePosition(evaluator->sequence, i);
 }
 
 double ProbabilisticModel::evaluateWithPrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int begin, unsigned int end, unsigned int phase) const {
-  std::vector<double> &prefix_sum_array = *static_cast<std::vector<double>*>(evaluator->memory);
+  auto &prefix_sum_array = evaluator->memory<std::vector<double>>();
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }
 
