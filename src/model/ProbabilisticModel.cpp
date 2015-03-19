@@ -19,7 +19,6 @@
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
-#include "model/CachedEvaluator.hpp"
 
 namespace tops {
 namespace model {
@@ -65,22 +64,31 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s, bool cached) {
+ProbabilisticModel::EPtr ProbabilisticModel::evaluate(const Sequence &s,
+                                                      bool cached) {
   if (cached)
-    return CachedEvaluator::make(shared_from_this(), s, new std::vector<double>(s.size() + 1));
-  return Evaluator::make(shared_from_this(), s);
+    return CachedEvaluator<ProbabilisticModel>::make(
+        shared_from_this(), s, cache(s.size() + 1));
+  return Evaluator<ProbabilisticModel>::make(shared_from_this(), s);
 }
 
 // TODO(igorbonadio): It is just a concept test.
-void ProbabilisticModel::initializePrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int phase) {
-  auto &prefix_sum_array = evaluator->memory<std::vector<double>>();
+void ProbabilisticModel::initializePrefixSumArray(
+    CEPtr evaluator,
+    unsigned int phase) {
+  auto &prefix_sum_array = evaluator->memory();
   prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < evaluator->sequence.size() ; i++)
-    prefix_sum_array[i+1] = prefix_sum_array[i] + evaluatePosition(evaluator->sequence, i);
+    prefix_sum_array[i+1] = prefix_sum_array[i] 
+        + evaluatePosition(evaluator->sequence, i);
 }
 
-double ProbabilisticModel::evaluateWithPrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int begin, unsigned int end, unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->memory<std::vector<double>>();
+double ProbabilisticModel::evaluateWithPrefixSumArray(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->memory();
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }
 
