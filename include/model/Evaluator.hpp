@@ -44,7 +44,7 @@ using EvaluatorPtr = std::shared_ptr<Evaluator>;
  * @class Evaluator
  * @brief TODO
  */
-class Evaluator {
+class Evaluator : public std::enable_shared_from_this<Evaluator> {
  public:
   // Static methods
   static EvaluatorPtr make(ProbabilisticModelPtr m, const Sequence &s);
@@ -52,11 +52,11 @@ class Evaluator {
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
-                               unsigned int phase = 0) const;
+                               unsigned int phase = 0);
+  Sequence sequence;
  protected:
   // Instace variables
   ProbabilisticModelPtr _model;
-  Sequence _sequence;
 
   // Constructors
   Evaluator(ProbabilisticModelPtr m, const Sequence &s);

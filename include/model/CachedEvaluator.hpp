@@ -45,15 +45,17 @@ using CachedEvaluatorPtr = std::shared_ptr<CachedEvaluator>;
 class CachedEvaluator : public Evaluator {
  public:
   // Static methods
-  static CachedEvaluatorPtr make(ProbabilisticModelPtr m, const Sequence &s);
+  static CachedEvaluatorPtr make(ProbabilisticModelPtr m, const Sequence &s, void *memory);
 
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
-                               unsigned int phase = 0) const;
+                               unsigned int phase = 0);
+
+  void *memory;
  private:
   // Constructors
-  CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s);
+  CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s, void *memory);
 };
 
 }  // namespace model

@@ -26,6 +26,7 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
+#include "model/CachedEvaluator.hpp"
 
 namespace tops {
 namespace model {
@@ -52,6 +53,10 @@ class ProbabilisticModel : public std::enable_shared_from_this<ProbabilisticMode
                                   unsigned int phase = 0) const;
   virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
   virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+
+  // TODO(igorbonadio): It is just a concept test.
+  virtual void initializePrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int phase = 0);
+  virtual double evaluateWithPrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int begin, unsigned int end, unsigned int phase = 0) const;
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 

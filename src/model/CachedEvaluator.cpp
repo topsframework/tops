@@ -24,18 +24,20 @@
 namespace tops {
 namespace model {
 
-CachedEvaluator::CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s)
-    : Evaluator(m, s) {
+CachedEvaluator::CachedEvaluator(ProbabilisticModelPtr m, const Sequence &s, void *mem)
+    : Evaluator(m, s), memory(mem) {
 }
 
-CachedEvaluatorPtr CachedEvaluator::make(ProbabilisticModelPtr m, const Sequence &s) {
-  return CachedEvaluatorPtr(new CachedEvaluator(m, s));
+CachedEvaluatorPtr CachedEvaluator::make(ProbabilisticModelPtr m, const Sequence &s, void *memory) {
+  auto evaluator = CachedEvaluatorPtr(new CachedEvaluator(m, s, memory));
+  m->initializePrefixSumArray(evaluator);
+  return evaluator;
 }
 
 double CachedEvaluator::probabilityOf(unsigned int begin,
                                       unsigned int end,
-                                      unsigned int phase) const {
-  return _model->evaluateSequence(_sequence, begin, end, phase);
+                                      unsigned int phase) {
+  return _model->evaluateWithPrefixSumArray(std::static_pointer_cast<CachedEvaluator>(shared_from_this()), begin, end, phase);
 }
 
 }  // namespace model

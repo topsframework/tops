@@ -67,8 +67,21 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
 
 EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s, bool cached) {
   if (cached)
-    return CachedEvaluator::make(shared_from_this(), s);
+    return CachedEvaluator::make(shared_from_this(), s, new std::vector<double>(s.size() + 1));
   return Evaluator::make(shared_from_this(), s);
+}
+
+// TODO(igorbonadio): It is just a concept test.
+void ProbabilisticModel::initializePrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int phase) {
+  std::vector<double> &prefix_sum_array = *static_cast<std::vector<double>*>(evaluator->memory);
+  prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < evaluator->sequence.size() ; i++)
+    prefix_sum_array[i+1] = prefix_sum_array[i] + evaluatePosition(evaluator->sequence, i);
+}
+
+double ProbabilisticModel::evaluateWithPrefixSumArray(CachedEvaluatorPtr evaluator, unsigned int begin, unsigned int end, unsigned int phase) const {
+  std::vector<double> &prefix_sum_array = *static_cast<std::vector<double>*>(evaluator->memory);
+  return prefix_sum_array[end] - prefix_sum_array[begin];
 }
 
 }  // namespace model

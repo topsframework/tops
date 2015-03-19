@@ -25,7 +25,7 @@ namespace tops {
 namespace model {
 
 Evaluator::Evaluator(ProbabilisticModelPtr m, const Sequence &s)
-    : _model(m), _sequence(s) {
+    : sequence(s), _model(m) {
 }
 
 EvaluatorPtr Evaluator::make(ProbabilisticModelPtr m, const Sequence &s) {
@@ -34,8 +34,8 @@ EvaluatorPtr Evaluator::make(ProbabilisticModelPtr m, const Sequence &s) {
 
 double Evaluator::probabilityOf(unsigned int begin,
                                 unsigned int end,
-                                unsigned int phase) const {
-  return _model->evaluateSequence(_sequence, begin, end, phase);
+                                unsigned int phase) {
+  return _model->evaluateSequence(sequence, begin, end, phase);
 }
 
 }  // namespace model
