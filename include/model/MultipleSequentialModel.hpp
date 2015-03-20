@@ -65,19 +65,18 @@ class MultipleSequentialModel : public ProbabilisticModel {
 
   virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
 
-  virtual void initializePrefixSumArray(CEPtr evaluator,
-                                        unsigned int phase = 0);
-  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
-                                            unsigned int begin,
-                                            unsigned int end,
-                                            unsigned int phase = 0) const;
+  void initializePrefixSumArray(CEPtr evaluator,
+                                unsigned int phase = 0);
+  double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase = 0) const;
 
  private:
   // Instance variables
   std::vector<ProbabilisticModelPtr> _models;
   std::vector<int> _max_length;
   unsigned int _idx_not_limited;
-  unsigned int _seqsize;
 
   // Constructors
   MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,

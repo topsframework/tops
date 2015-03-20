@@ -64,12 +64,12 @@ class ProbabilisticModel
                                   unsigned int end,
                                   unsigned int phase = 0) const;
 
-  virtual void initializePrefixSumArray(CEPtr evaluator,
-                                        unsigned int phase = 0);
-  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
-                                            unsigned int begin,
-                                            unsigned int end,
-                                            unsigned int phase = 0) const;
+  void initializePrefixSumArray(CEPtr evaluator,
+                                unsigned int phase = 0);
+  double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase = 0) const;
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 };

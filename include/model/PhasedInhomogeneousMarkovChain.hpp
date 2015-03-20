@@ -74,12 +74,12 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual void initializePrefixSumArray(CEPtr evaluator,
-                                        unsigned int phase = 0);
-  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
-                                            unsigned int begin,
-                                            unsigned int end,
-                                            unsigned int phase = 0) const;
+  void initializePrefixSumArray(CEPtr evaluator,
+                                unsigned int phase = 0);
+  double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase = 0) const;
 
  private:
   // Constructors
