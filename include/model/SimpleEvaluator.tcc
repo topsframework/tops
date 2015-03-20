@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_EVALUATOR_MODEL_
-#define TOPS_MODEL_EVALUATOR_MODEL_
+#ifndef TOPS_MODEL_SIMPLE_EVALUATOR_
+#define TOPS_MODEL_SIMPLE_EVALUATOR_
 
 // Standard headers
 #include <memory>
@@ -38,33 +38,33 @@ namespace model {
 */
 
 template<typename Model>
-class Evaluator;
+class SimpleEvaluator;
 
 /**
- * @typedef EvaluatorPtr
- * @brief Alias of pointer to Evaluator.
+ * @typedef SimpleEvaluatorPtr
+ * @brief Alias of pointer to SimpleEvaluator.
  */
 template<typename Model>
-using EvaluatorPtr = std::shared_ptr<Evaluator<Model>>;
+using SimpleEvaluatorPtr = std::shared_ptr<SimpleEvaluator<Model>>;
 
 /**
- * @class Evaluator
+ * @class SimpleEvaluator
  * @brief TODO
  */
 template<typename Model>
-class Evaluator : public std::enable_shared_from_this<Evaluator<Model>> {
+class SimpleEvaluator : public Evaluator {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
 
   // Static methods
   template<typename... Ts>
-  static EvaluatorPtr<Model> make(Ts... args);
+  static SimpleEvaluatorPtr<Model> make(Ts... args);
 
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
-                               unsigned int phase = 0);
+                               unsigned int phase = 0) override;
   Sequence sequence;
 
  protected:
@@ -72,7 +72,7 @@ class Evaluator : public std::enable_shared_from_this<Evaluator<Model>> {
   ModelPtr _model;
 
   // Constructors
-  Evaluator(ModelPtr m, const Sequence &s);
+  SimpleEvaluator(ModelPtr m, const Sequence &s);
 };
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -88,9 +88,9 @@ class Evaluator : public std::enable_shared_from_this<Evaluator<Model>> {
 
 template<typename Model>
 template<typename... Ts>
-EvaluatorPtr<Model> Evaluator<Model>::make(Ts... args) {
-  auto evaluator = EvaluatorPtr<Model>(
-      new Evaluator<Model>(std::forward<Ts>(args)...));
+SimpleEvaluatorPtr<Model> SimpleEvaluator<Model>::make(Ts... args) {
+  auto evaluator = SimpleEvaluatorPtr<Model>(
+      new SimpleEvaluator<Model>(std::forward<Ts>(args)...));
   return evaluator;
 }
 
@@ -99,9 +99,9 @@ EvaluatorPtr<Model> Evaluator<Model>::make(Ts... args) {
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-double Evaluator<Model>::probabilityOf(unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) {
+double SimpleEvaluator<Model>::probabilityOf(unsigned int begin,
+                                             unsigned int end,
+                                             unsigned int phase) {
   return _model->evaluateSequence(sequence, begin, end, phase);
 }
 
@@ -110,7 +110,7 @@ double Evaluator<Model>::probabilityOf(unsigned int begin,
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-Evaluator<Model>::Evaluator(ModelPtr m, const Sequence &s)
+SimpleEvaluator<Model>::SimpleEvaluator(ModelPtr m, const Sequence &s)
     : sequence(s), _model(m) {
 }
 

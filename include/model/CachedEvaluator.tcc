@@ -27,7 +27,7 @@
 #include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Evaluator.tcc"
+#include "model/SimpleEvaluator.tcc"
 
 namespace tops {
 namespace model {
@@ -55,7 +55,7 @@ using CachedEvaluatorPtr = std::shared_ptr<CachedEvaluator<Model>>;
  * @brief TODO
  */
 template<typename Model>
-class CachedEvaluator : public Evaluator<Model> {
+class CachedEvaluator : public SimpleEvaluator<Model> {
  public:
   // Alias
   using cache = typename Model::cache;
@@ -68,7 +68,7 @@ class CachedEvaluator : public Evaluator<Model> {
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
-                               unsigned int phase = 0);
+                               unsigned int phase = 0) override;
 
   cache& memory() {
     return _memory;
@@ -112,10 +112,11 @@ double CachedEvaluator<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
   this->_model->initializePrefixSumArray(
-      std::static_pointer_cast<CachedEvaluator<Model>>(this->shared_from_this()));
+      std::static_pointer_cast<CachedEvaluator<Model>>(
+      this->shared_from_this()));
   return this->_model->evaluateWithPrefixSumArray(
-      std::static_pointer_cast<CachedEvaluator<Model>>(this->shared_from_this()),
-                                                       begin, end, phase);
+      std::static_pointer_cast<CachedEvaluator<Model>>(
+      this->shared_from_this()), begin, end, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -123,11 +124,10 @@ double CachedEvaluator<Model>::probabilityOf(unsigned int begin,
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-CachedEvaluator<Model>::CachedEvaluator(
-    ModelPtr m,
-    const Sequence &s,
-    cache&& memory)
-    : Evaluator<Model>(m, s), _memory(std::forward<cache>(memory)) {
+CachedEvaluator<Model>::CachedEvaluator(ModelPtr m,
+                                        const Sequence &s,
+                                        cache&& memory)
+    : SimpleEvaluator<Model>(m, s), _memory(std::forward<cache>(memory)) {
 }
 
 }  // namespace model

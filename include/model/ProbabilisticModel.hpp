@@ -25,9 +25,10 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
+#include "model/Evaluator.hpp"
 
 // ToPS templates
-#include "model/Evaluator.tcc"
+#include "model/SimpleEvaluator.tcc"
 #include "model/CachedEvaluator.tcc"
 
 namespace tops {
@@ -40,11 +41,12 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
-class ProbabilisticModel : public std::enable_shared_from_this<ProbabilisticModel>{
+class ProbabilisticModel 
+    : public std::enable_shared_from_this<ProbabilisticModel>{
  public:
   // Alias
   using cache = std::vector<double>;
-  using EPtr  = EvaluatorPtr<ProbabilisticModel>;
+  using SEPtr = SimpleEvaluatorPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorPtr<ProbabilisticModel>;
 
   // Purely virtual methods
@@ -54,7 +56,7 @@ class ProbabilisticModel : public std::enable_shared_from_this<ProbabilisticMode
                                 unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual EPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
   virtual double evaluateSequence(const Sequence &s,

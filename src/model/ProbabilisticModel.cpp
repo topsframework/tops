@@ -64,12 +64,14 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-ProbabilisticModel::EPtr ProbabilisticModel::evaluate(const Sequence &s,
-                                                      bool cached) {
+EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s,
+                                       bool cached) {
   if (cached)
-    return CachedEvaluator<ProbabilisticModel>::make(
-        shared_from_this(), s, cache(s.size() + 1));
-  return Evaluator<ProbabilisticModel>::make(shared_from_this(), s);
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<ProbabilisticModel>::make(
+        shared_from_this(), s, cache(s.size() + 1)));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<ProbabilisticModel>::make(shared_from_this(), s));
 }
 
 // TODO(igorbonadio): It is just a concept test.
