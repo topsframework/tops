@@ -111,10 +111,10 @@ template<typename Model>
 double CachedEvaluator<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
-  this->_model->initializePrefixSumArray(
+  this->_model->initializeCachedEvaluator(
       std::static_pointer_cast<CachedEvaluator<Model>>(
       this->shared_from_this()));
-  return this->_model->evaluateWithPrefixSumArray(
+  return this->_model->cachedProbabilityOf(
       std::static_pointer_cast<CachedEvaluator<Model>>(
       this->shared_from_this()), begin, end, phase);
 }

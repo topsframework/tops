@@ -136,7 +136,7 @@ double MultipleSequentialModel::probabilityOf(
   return sum;
 }
 
-void MultipleSequentialModel::initializePrefixSumArray(
+void MultipleSequentialModel::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &evaluators = evaluator->memory();
@@ -144,7 +144,7 @@ void MultipleSequentialModel::initializePrefixSumArray(
     evaluators[i] = _models[i]->evaluate(evaluator->sequence, true);
 }
 
-double MultipleSequentialModel::evaluateWithPrefixSumArray(
+double MultipleSequentialModel::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,
     unsigned int end,

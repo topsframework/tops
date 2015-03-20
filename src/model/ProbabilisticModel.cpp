@@ -59,7 +59,7 @@ double ProbabilisticModel::probabilityOf(SEPtr evaluator,
   return prob;
 }
 
-void ProbabilisticModel::initializePrefixSumArray(
+void ProbabilisticModel::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
@@ -69,7 +69,7 @@ void ProbabilisticModel::initializePrefixSumArray(
         + evaluatePosition(evaluator->sequence, i);
 }
 
-double ProbabilisticModel::evaluateWithPrefixSumArray(
+double ProbabilisticModel::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,
     unsigned int end,

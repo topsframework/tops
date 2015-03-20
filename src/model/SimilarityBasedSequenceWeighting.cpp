@@ -197,7 +197,7 @@ double SimilarityBasedSequenceWeighting::probabilityOf(
   return log(sum/(_normalizer));
 }
 
-void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
+void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
@@ -206,7 +206,7 @@ void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
   }
 }
 
-double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(
+double SimilarityBasedSequenceWeighting::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,
     unsigned int end,

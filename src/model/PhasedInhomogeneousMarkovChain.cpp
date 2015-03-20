@@ -133,7 +133,7 @@ double PhasedInhomogeneousMarkovChain::probabilityOf(
   return prob;
 }
 
-void PhasedInhomogeneousMarkovChain::initializePrefixSumArray(
+void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_matrix = evaluator->memory();
@@ -145,7 +145,7 @@ void PhasedInhomogeneousMarkovChain::initializePrefixSumArray(
   }
 }
 
-double PhasedInhomogeneousMarkovChain::evaluateWithPrefixSumArray(
+double PhasedInhomogeneousMarkovChain::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,
     unsigned int end,

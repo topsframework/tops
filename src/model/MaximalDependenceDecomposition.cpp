@@ -351,7 +351,7 @@ double MaximalDependenceDecomposition::_probabilityOf(
   return p;
 }
 
-void MaximalDependenceDecomposition::initializePrefixSumArray(
+void MaximalDependenceDecomposition::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
@@ -362,7 +362,7 @@ void MaximalDependenceDecomposition::initializePrefixSumArray(
     prefix_sum_array.push_back(probabilityOf(evaluator, i, i + clen));
   }
 }
-double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(
+double MaximalDependenceDecomposition::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,
     unsigned int end,

@@ -80,9 +80,9 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
                        unsigned int end,
                        unsigned int phase = 0) const;
 
-  void initializePrefixSumArray(CEPtr evaluator,
+  void initializeCachedEvaluator(CEPtr evaluator,
                                 unsigned int phase = 0);
-  double evaluateWithPrefixSumArray(CEPtr evaluator,
+  double cachedProbabilityOf(CEPtr evaluator,
                                     unsigned int begin,
                                     unsigned int end,
                                     unsigned int phase = 0) const;
