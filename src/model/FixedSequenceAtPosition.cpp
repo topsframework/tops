@@ -48,25 +48,25 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(
         _probabilities(distr) {
 }
 
-double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
-                                                 unsigned int begin,
-                                                 unsigned int end,
-                                                 unsigned int phase) const {
-  double result = ProbabilisticModelDecorator::evaluateSequence(s, begin, end);
-  int j;
-  for (j = 0;
-       (j < static_cast<int>(_sequence.size()))
-       && ((_position  + j) < static_cast<int>(s.size()));
-       j++) {
-    if (_sequence[j] != s[_position + j] )
-      break;
-  }
-  if (j != static_cast<int>(_sequence.size()))
-    result += _probabilities->probabilityOf(1);
-  else
-    result += _probabilities->probabilityOf(0);
-  return result;
-}
+// double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
+//                                                  unsigned int begin,
+//                                                  unsigned int end,
+//                                                  unsigned int phase) const {
+//   double result = ProbabilisticModelDecorator::evaluateSequence(s, begin, end);
+//   int j;
+//   for (j = 0;
+//        (j < static_cast<int>(_sequence.size()))
+//        && ((_position  + j) < static_cast<int>(s.size()));
+//        j++) {
+//     if (_sequence[j] != s[_position + j] )
+//       break;
+//   }
+//   if (j != static_cast<int>(_sequence.size()))
+//     result += _probabilities->probabilityOf(1);
+//   else
+//     result += _probabilities->probabilityOf(0);
+//   return result;
+// }
 
 void FixedSequenceAtPosition::addSequence(Sequence &h) const {
   if (_probabilities->choose() == 1)
@@ -85,6 +85,36 @@ Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
   ProbabilisticModelDecorator::chooseSequence(s, size);
   addSequence(s);
   return s;
+}
+
+EvaluatorPtr FixedSequenceAtPosition::evaluate(
+    const Sequence &s,
+    bool cached) {
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<FixedSequenceAtPosition>::make(
+        std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
+        s));
+}
+
+double FixedSequenceAtPosition::probabilityOf(
+    SEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  double result = _model->evaluate(evaluator->sequence)->probabilityOf(begin, end, phase);
+  int j;
+  for (j = 0;
+       (j < static_cast<int>(_sequence.size()))
+       && ((_position  + j) < static_cast<int>(evaluator->sequence.size()));
+       j++) {
+    if (_sequence[j] != evaluator->sequence[_position + j] )
+      break;
+  }
+  if (j != static_cast<int>(_sequence.size()))
+    result += _probabilities->probabilityOf(1);
+  else
+    result += _probabilities->probabilityOf(0);
+  return result;
 }
 
 }  // namespace model

@@ -35,16 +35,6 @@ Sequence ProbabilisticModel::chooseSequence(Sequence &s,
   return s;
 }
 
-double ProbabilisticModel::evaluateSequence(const Sequence &s,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const {
-  double prob = 0;
-  for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(s, i);
-  return prob;
-}
-
 InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
@@ -59,7 +49,16 @@ EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s,
       SimpleEvaluator<ProbabilisticModel>::make(shared_from_this(), s));
 }
 
-// TODO(igorbonadio): It is just a concept test.
+double ProbabilisticModel::probabilityOf(SEPtr evaluator,
+                                         unsigned int begin,
+                                         unsigned int end,
+                                         unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluatePosition(evaluator->sequence, i);
+  return prob;
+}
+
 void ProbabilisticModel::initializePrefixSumArray(
     CEPtr evaluator,
     unsigned int phase) {

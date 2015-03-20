@@ -122,6 +122,16 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
         s));
 }
 
+double PhasedInhomogeneousMarkovChain::probabilityOf(
+    SEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluatePosition(evaluator->sequence, i);
+  return prob;
+}
 
 void PhasedInhomogeneousMarkovChain::initializePrefixSumArray(
     CEPtr evaluator,

@@ -102,7 +102,12 @@ template<typename Model>
 double SimpleEvaluator<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
-  return _model->evaluateSequence(sequence, begin, end, phase);
+  return this->_model->probabilityOf(
+    std::static_pointer_cast<SimpleEvaluator<Model>>(
+      this->shared_from_this()),
+    begin,
+    end,
+    phase);
 }
 
 /*----------------------------------------------------------------------------*/

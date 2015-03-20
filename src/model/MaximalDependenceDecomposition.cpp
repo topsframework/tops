@@ -249,48 +249,6 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   return maximal_i;
 }
 
-double MaximalDependenceDecomposition::evaluateSequence(
-    const Sequence &s,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  if ((end - begin) != _consensus_sequence.size())
-    return -HUGE;
-  auto first = s.begin() + begin;
-  auto last = s.begin() + end;
-  Sequence subseq(first, last);
-  std::vector<int> indexes;
-  return _evaluateAux(subseq, _mdd_tree, indexes);
-}
-
-double MaximalDependenceDecomposition::_evaluateAux(
-    const Sequence & s,
-    MaximalDependenceDecompositionNodePtr node,
-    std::vector<int> &indexes) const {
-  double p = 0;
-  if (node->getLeft()) {
-    p = node->getModel()->evaluatePosition(s, node->getIndex());
-    indexes.push_back(node->getIndex());
-    // cout << node->getIndex() << endl;
-    // cout << "tem filho" << endl;
-    if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
-      // cout << "eh consensus" << endl;
-      p += _evaluateAux(s, node->getLeft(), indexes);
-    } else {
-      // cout << "nao eh consensus" << endl;
-      p += _evaluateAux(s, node->getRight(), indexes);
-    }
-  } else {  // leaf
-    // cout << "nao tem filho" << endl;
-    for (unsigned int i = 0; i < s.size(); i++) {
-      if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
-        p += node->getModel()->evaluatePosition(s, i);
-      }
-    }
-  }
-  return p;
-}
-
 double MaximalDependenceDecomposition::evaluatePosition(
     const Sequence &s,
      unsigned int i,
@@ -351,6 +309,48 @@ EvaluatorPtr MaximalDependenceDecomposition::evaluate(
         s));
 }
 
+double MaximalDependenceDecomposition::probabilityOf(
+    SEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  if ((end - begin) != _consensus_sequence.size())
+    return -HUGE;
+  auto first = evaluator->sequence.begin() + begin;
+  auto last = evaluator->sequence.begin() + end;
+  Sequence subseq(first, last);
+  std::vector<int> indexes;
+  return _probabilityOf(subseq, _mdd_tree, indexes);
+}
+
+double MaximalDependenceDecomposition::_probabilityOf(
+    const Sequence & s,
+    MaximalDependenceDecompositionNodePtr node,
+    std::vector<int> &indexes) const {
+  double p = 0;
+  if (node->getLeft()) {
+    p = node->getModel()->evaluatePosition(s, node->getIndex());
+    indexes.push_back(node->getIndex());
+    // cout << node->getIndex() << endl;
+    // cout << "tem filho" << endl;
+    if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
+      // cout << "eh consensus" << endl;
+      p += _probabilityOf(s, node->getLeft(), indexes);
+    } else {
+      // cout << "nao eh consensus" << endl;
+      p += _probabilityOf(s, node->getRight(), indexes);
+    }
+  } else {  // leaf
+    // cout << "nao tem filho" << endl;
+    for (unsigned int i = 0; i < s.size(); i++) {
+      if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
+        p += node->getModel()->evaluatePosition(s, i);
+      }
+    }
+  }
+  return p;
+}
+
 void MaximalDependenceDecomposition::initializePrefixSumArray(
     CEPtr evaluator,
     unsigned int phase) {
@@ -359,7 +359,7 @@ void MaximalDependenceDecomposition::initializePrefixSumArray(
   int len = evaluator->sequence.size();
   int clen = _consensus_sequence.size();
   for (int i = 0; i <= (len - clen); i++) {
-    prefix_sum_array.push_back(evaluateSequence(evaluator->sequence, i, i + clen));
+    prefix_sum_array.push_back(probabilityOf(evaluator, i, i + clen));
   }
 }
 double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(

@@ -124,21 +124,44 @@ double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
                                                           unsigned int i,
                                                           unsigned int phase)
                                                           const {
-  return evaluateSequence(s, i, i+1);
+  // TODO(igorbonadio)
+  return -HUGE;
 }
 
-double SimilarityBasedSequenceWeighting::evaluateSequence(
+Symbol SimilarityBasedSequenceWeighting::choosePosition(
     const Sequence &s,
+    unsigned int i,
+    unsigned int phase) const {
+  // TODO(igorbonadio)
+  return 0;
+}
+
+EvaluatorPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
+                                                        bool cached) {
+  if (cached)
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<SimilarityBasedSequenceWeighting>::make(
+          std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
+          s,
+          cache(s.size())));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<SimilarityBasedSequenceWeighting>::make(
+        std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
+        s));
+}
+
+double SimilarityBasedSequenceWeighting::probabilityOf(
+    SEPtr evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  if (end > s.size())
+  if (end > evaluator->sequence.size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
 
   Sequence ss;
   for (unsigned int i = begin; i < end && i < begin + length; i++)
-    ss.push_back(s[i]);
+    ss.push_back(evaluator->sequence[i]);
 
   double sum = 0;
   for (auto weight : _counter) {
@@ -174,34 +197,12 @@ double SimilarityBasedSequenceWeighting::evaluateSequence(
   return log(sum/(_normalizer));
 }
 
-Symbol SimilarityBasedSequenceWeighting::choosePosition(
-    const Sequence &s,
-    unsigned int i,
-    unsigned int phase) const {
-  // TODO(igorbonadio)
-  return 0;
-}
-
-EvaluatorPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
-                                                        bool cached) {
-  if (cached)
-    return std::static_pointer_cast<Evaluator>(
-        CachedEvaluator<SimilarityBasedSequenceWeighting>::make(
-          std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
-          s,
-          cache(s.size())));
-  return std::static_pointer_cast<Evaluator>(
-      SimpleEvaluator<SimilarityBasedSequenceWeighting>::make(
-        std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
-        s));
-}
-
 void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
   for (unsigned int i = 0; i < evaluator->sequence.size(); i++)  {
-    prefix_sum_array[i] = evaluateSequence(evaluator->sequence, i, evaluator->sequence.size());
+    prefix_sum_array[i] = probabilityOf(evaluator, i, evaluator->sequence.size());
   }
 }
 

@@ -56,13 +56,15 @@ class ProbabilisticModel
                                 unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase = 0) const;
+
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  double probabilityOf(SEPtr evaluator,
+                       unsigned int begin,
+                       unsigned int end,
+                       unsigned int phase = 0) const;
 
   void initializePrefixSumArray(CEPtr evaluator,
                                 unsigned int phase = 0);

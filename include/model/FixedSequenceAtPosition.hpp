@@ -45,15 +45,21 @@ using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
  */
 class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
  public:
+  // Alias
+  using SEPtr = SimpleEvaluatorPtr<FixedSequenceAtPosition>;
+
   // Static methods
   static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
 
   // Virtual methods
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase = 0) const;
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
+
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  double probabilityOf(SEPtr evaluator,
+                       unsigned int begin,
+                       unsigned int end,
+                       unsigned int phase = 0) const;
  private:
   // Instance variables
   int _position;

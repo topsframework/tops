@@ -57,13 +57,14 @@ class MultipleSequentialModel : public ProbabilisticModel {
 
   // Virtual methods
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
   virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  double probabilityOf(SEPtr evaluator,
+                       unsigned int begin,
+                       unsigned int end,
+                       unsigned int phase = 0) const;
 
   void initializePrefixSumArray(CEPtr evaluator,
                                 unsigned int phase = 0);

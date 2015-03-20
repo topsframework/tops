@@ -228,30 +228,29 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
 
-
-double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
-                                           unsigned int begin,
-                                           unsigned int end,
-                                           unsigned int phase) const {
-  Matrix alpha;
-  forward(xs, alpha);
-  double sum_end = -HUGE;
-  double sum_begin = -HUGE;
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    sum_end = log_sum(sum_end, alpha[k][end-1]);
-    if (begin != 0)
-      sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
-    else
-      sum_begin = 0;
-  }
-  return sum_end - sum_begin;
-}
+// double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
+//                                            unsigned int begin,
+//                                            unsigned int end,
+//                                            unsigned int phase) const {
+//   Matrix alpha;
+//   forward(xs, alpha);
+//   double sum_end = -HUGE;
+//   double sum_begin = -HUGE;
+//   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+//     sum_end = log_sum(sum_end, alpha[k][end-1]);
+//     if (begin != 0)
+//       sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
+//     else
+//       sum_begin = 0;
+//   }
+//   return sum_end - sum_begin;
+// }
 
 double HiddenMarkovModel::evaluatePosition(
     const Sequence &xs,
     unsigned int i,
     unsigned int phase) const {
-  return evaluateSequence(xs, i, i+1);
+  return -HUGE;
 }
 
 Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,

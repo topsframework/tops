@@ -39,21 +39,11 @@ TargetModel::TargetModel(int alphabet_size)
 double TargetModel::evaluatePosition(const Sequence &s,
                                      unsigned int i,
                                      unsigned int phase) const {
-  auto iid = DiscreteIIDModel::trainML({s}, alphabetSize());
-  return iid->evaluatePosition(s, i);
+  return sequenceDistribution(s)->evaluatePosition(s, i);
 }
 
-double TargetModel::evaluateSequence(const Sequence &s,
-                                     unsigned int begin,
-                                     unsigned int end,
-                                     unsigned int phase) const {
-  std::vector<Symbol> subseq;
-  for (unsigned int i = begin; i < end; i++)
-    subseq.push_back(s[i]);
-
-  auto iid = DiscreteIIDModel::trainML({subseq}, alphabetSize());
-
-  return iid->evaluateSequence(s, begin, end);
+DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence &s) const {
+  return DiscreteIIDModel::trainML({s}, alphabetSize());
 }
 
 }  // namespace model

@@ -49,10 +49,9 @@ class TargetModel : public DiscreteIIDModel {
 
   // Virtual methods
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual double evaluateSequence(const Sequence &s,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase = 0) const;
+
+  // Concrete methods
+  DiscreteIIDModelPtr sequenceDistribution(const Sequence &s) const;
 
  private:
   // Constructors
