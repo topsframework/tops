@@ -41,7 +41,7 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
-class ProbabilisticModel 
+class ProbabilisticModel
     : public std::enable_shared_from_this<ProbabilisticModel>{
  public:
   // Alias
@@ -63,13 +63,7 @@ class ProbabilisticModel
                                   unsigned int begin,
                                   unsigned int end,
                                   unsigned int phase = 0) const;
-  virtual double evaluateWithPrefixSumArray(unsigned int begin,
-                                            unsigned int end,
-                                            unsigned int phase = 0);
-  virtual void initializePrefixSumArray(const Sequence &s,
-                                        unsigned int phase = 0);
 
-  // TODO(igorbonadio): It is just a concept test.
   virtual void initializePrefixSumArray(CEPtr evaluator,
                                         unsigned int phase = 0);
   virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
@@ -78,10 +72,6 @@ class ProbabilisticModel
                                             unsigned int phase = 0) const;
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
-
- private:
-  // Instance variables
-  cache _prefix_sum_array;
 };
 
 /**

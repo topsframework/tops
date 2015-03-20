@@ -48,6 +48,11 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
  */
 class MaximalDependenceDecomposition : public ProbabilisticModel {
  public:
+  // Alias
+  using cache = std::vector<double>;
+  using SEPtr = SimpleEvaluatorPtr<MaximalDependenceDecomposition>;
+  using CEPtr = CachedEvaluatorPtr<MaximalDependenceDecomposition>;
+
   static MaximalDependenceDecompositionPtr make(
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model,
@@ -66,8 +71,15 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
+
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  virtual void initializePrefixSumArray(CEPtr evaluator,
+                                        unsigned int phase = 0);
+  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                            unsigned int begin,
+                                            unsigned int end,
+                                            unsigned int phase = 0) const;
 
  private:
   MaximalDependenceDecomposition(ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);

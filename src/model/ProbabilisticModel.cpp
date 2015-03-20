@@ -45,27 +45,12 @@ double ProbabilisticModel::evaluateSequence(const Sequence &s,
   return prob;
 }
 
-double ProbabilisticModel::evaluateWithPrefixSumArray(unsigned int begin,
-                                                      unsigned int end,
-                                                      unsigned int phase) {
-  return _prefix_sum_array[end] - _prefix_sum_array[begin];
-}
-
-void ProbabilisticModel::initializePrefixSumArray(const Sequence &s,
-                                                  unsigned int phase) {
-  _prefix_sum_array.resize(s.size() + 1);
-  _prefix_sum_array[0] = 0;
-  for (unsigned int i = 0; i < s.size() ; i++) {
-    _prefix_sum_array[i+1] = _prefix_sum_array[i] + evaluatePosition(s, i);
-  }
-}
-
 InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
 EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s,
-                                       bool cached) {
+                                          bool cached) {
   if (cached)
     return std::static_pointer_cast<Evaluator>(
         CachedEvaluator<ProbabilisticModel>::make(
@@ -81,7 +66,7 @@ void ProbabilisticModel::initializePrefixSumArray(
   auto &prefix_sum_array = evaluator->memory();
   prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < evaluator->sequence.size() ; i++)
-    prefix_sum_array[i+1] = prefix_sum_array[i] 
+    prefix_sum_array[i+1] = prefix_sum_array[i]
         + evaluatePosition(evaluator->sequence, i);
 }
 

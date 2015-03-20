@@ -45,6 +45,11 @@ using MultipleSequentialModelPtr
  */
 class MultipleSequentialModel : public ProbabilisticModel {
  public:
+  // Alias
+  using cache = std::vector<EvaluatorPtr>;
+  using SEPtr = SimpleEvaluatorPtr<MultipleSequentialModel>;
+  using CEPtr = CachedEvaluatorPtr<MultipleSequentialModel>;
+
   // Static methods
   static MultipleSequentialModelPtr make(
       std::vector<ProbabilisticModelPtr> models,
@@ -57,8 +62,15 @@ class MultipleSequentialModel : public ProbabilisticModel {
                                   unsigned int end,
                                   unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
-  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  virtual void initializePrefixSumArray(CEPtr evaluator,
+                                        unsigned int phase = 0);
+  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                            unsigned int begin,
+                                            unsigned int end,
+                                            unsigned int phase = 0) const;
 
  private:
   // Instance variables

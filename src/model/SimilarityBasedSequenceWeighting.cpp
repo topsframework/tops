@@ -182,21 +182,38 @@ Symbol SimilarityBasedSequenceWeighting::choosePosition(
   return 0;
 }
 
-double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) {
-  if (begin < _scores.size())
-    return _scores[begin];
-  return -HUGE;
+EvaluatorPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
+                                                        bool cached) {
+  if (cached)
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<SimilarityBasedSequenceWeighting>::make(
+          std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
+          s,
+          cache(s.size())));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<SimilarityBasedSequenceWeighting>::make(
+        std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
+        s));
 }
 
 void SimilarityBasedSequenceWeighting::initializePrefixSumArray(
-    const Sequence &s, unsigned int phase) {
-  _scores.resize(s.size());
-  for (unsigned int i = 0; i < s.size(); i++)  {
-    _scores[i] = evaluateSequence(s, i, s.size());
+    CEPtr evaluator,
+    unsigned int phase) {
+  auto &prefix_sum_array = evaluator->memory();
+  for (unsigned int i = 0; i < evaluator->sequence.size(); i++)  {
+    prefix_sum_array[i] = evaluateSequence(evaluator->sequence, i, evaluator->sequence.size());
   }
+}
+
+double SimilarityBasedSequenceWeighting::evaluateWithPrefixSumArray(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->memory();
+  if (begin < prefix_sum_array.size())
+    return prefix_sum_array[begin];
+  return -HUGE;
 }
 
 }  // namespace model

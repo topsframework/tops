@@ -46,6 +46,11 @@ using SimilarityBasedSequenceWeightingPtr
  */
 class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
  public:
+  // Alias
+  using cache = std::vector<double>;
+  using SEPtr = SimpleEvaluatorPtr<SimilarityBasedSequenceWeighting>;
+  using CEPtr = CachedEvaluatorPtr<SimilarityBasedSequenceWeighting>;
+
   // Static methods
   static SimilarityBasedSequenceWeightingPtr make(
       std::map<Sequence, double> counter,
@@ -67,12 +72,19 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
                                   unsigned int end,
                                   unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
-  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
+  virtual void initializePrefixSumArray(CEPtr evaluator,
+                                        unsigned int phase = 0);
+  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                            unsigned int begin,
+                                            unsigned int end,
+                                            unsigned int phase = 0) const;
 
  private:
   // Instance variables
-  std::vector<double> _scores;
+  cache _scores;
   std::map<Sequence, double> _counter;
   unsigned int _skip_offset;
   unsigned int _skip_length;

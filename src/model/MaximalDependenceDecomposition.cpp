@@ -336,24 +336,41 @@ Symbol MaximalDependenceDecomposition::choosePosition(
   return 0;
 }
 
-double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) {
-  if ((end - begin) != _consensus_sequence.size())
-    return -HUGE;
-  return _prefix_sum_array[begin];
+EvaluatorPtr MaximalDependenceDecomposition::evaluate(
+    const Sequence &s,
+    bool cached) {
+  if (cached)
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<MaximalDependenceDecomposition>::make(
+          std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
+          s,
+          cache()));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<MaximalDependenceDecomposition>::make(
+        std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
+        s));
 }
 
 void MaximalDependenceDecomposition::initializePrefixSumArray(
-    const Sequence &s,
+    CEPtr evaluator,
     unsigned int phase) {
-  _prefix_sum_array.clear();
-  int len = s.size();
+  auto &prefix_sum_array = evaluator->memory();
+  prefix_sum_array.clear();
+  int len = evaluator->sequence.size();
   int clen = _consensus_sequence.size();
   for (int i = 0; i <= (len - clen); i++) {
-    _prefix_sum_array.push_back(evaluateSequence(s, i, i + clen));
+    prefix_sum_array.push_back(evaluateSequence(evaluator->sequence, i, i + clen));
   }
+}
+double MaximalDependenceDecomposition::evaluateWithPrefixSumArray(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->memory();
+  if ((end - begin) != _consensus_sequence.size())
+    return -HUGE;
+  return prefix_sum_array[begin];
 }
 
 }  // namespace model

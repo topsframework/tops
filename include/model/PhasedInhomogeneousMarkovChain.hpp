@@ -51,6 +51,11 @@ using PhasedInhomogeneousMarkovChainPtr
  */
 class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
  public:
+  // Alias
+  using cache = Matrix;
+  using SEPtr = SimpleEvaluatorPtr<PhasedInhomogeneousMarkovChain>;
+  using CEPtr = CachedEvaluatorPtr<PhasedInhomogeneousMarkovChain>;
+
   // Static methods
   static PhasedInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
@@ -64,16 +69,19 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual double evaluateWithPrefixSumArray(unsigned int begin, unsigned int end, unsigned int phase = 0);
-  virtual void initializePrefixSumArray(const Sequence &s, unsigned int phase = 0);
+  virtual void initializePrefixSumArray(CEPtr evaluator,
+                                        unsigned int phase = 0);
+  virtual double evaluateWithPrefixSumArray(CEPtr evaluator,
+                                            unsigned int begin,
+                                            unsigned int end,
+                                            unsigned int phase = 0) const;
 
  private:
-  // Instance variables
-  Matrix _prefix_sum_matrix;
-
   // Constructors
   PhasedInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);

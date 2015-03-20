@@ -120,23 +120,48 @@ Symbol MultipleSequentialModel::choosePosition(const Sequence &s,
   return _models.back()->choosePosition(s, i);
 }
 
-double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
-                                                           unsigned int end,
-                                                           unsigned int phase) {
+EvaluatorPtr MultipleSequentialModel::evaluate(const Sequence &s,
+                                               bool cached) {
+  if (cached)
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<MultipleSequentialModel>::make(
+          std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
+          s,
+          cache(_models.size())));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<MultipleSequentialModel>::make(
+        std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
+        s));
+}
+
+void MultipleSequentialModel::initializePrefixSumArray(
+    CEPtr evaluator,
+    unsigned int phase) {
+  auto &evaluators = evaluator->memory();
+  for (unsigned int i = 0; i < _models.size(); i++)
+    evaluators[i] = _models[i]->evaluate(evaluator->sequence, true);
+}
+
+double MultipleSequentialModel::evaluateWithPrefixSumArray(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &evaluators = evaluator->memory();
   double sum = 0;
   int b = begin;
   int e = 0;
   for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
-    if (e >= static_cast<int>(_seqsize))
-      e = _seqsize-1;
-    sum += _models[i]->evaluateWithPrefixSumArray(b, e, phase);
+    if (e >= static_cast<int>(evaluator->sequence.size()))
+      e = evaluator->sequence.size()-1;
+    sum += evaluators[i]->probabilityOf(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
-    if (e >= static_cast<int>(_seqsize))
+    if (e >= static_cast<int>(evaluator->sequence.size()))
       break;
   }
   int begin_of_not_limited = b;
@@ -148,24 +173,17 @@ double MultipleSequentialModel::evaluateWithPrefixSumArray(unsigned int begin,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += _models[i]->evaluateWithPrefixSumArray(b, e, phase2);
+    sum += evaluators[i]->probabilityOf(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0) {
-    sum += _models[_idx_not_limited]->evaluateWithPrefixSumArray(
+    sum += evaluators[_idx_not_limited]->probabilityOf(
         begin_of_not_limited, end_of_not_limited, phase);
   }
   return sum;
-}
-
-void MultipleSequentialModel::initializePrefixSumArray(const Sequence &s,
-                                                       unsigned int phase) {
-  for (unsigned int i = 0; i < _models.size(); i++)
-    _models[i]->initializePrefixSumArray(s);
-  _seqsize = s.size();
 }
 
 }  // namespace model

@@ -108,23 +108,40 @@ Symbol PhasedInhomogeneousMarkovChain::choosePosition(
   return _vlmcs[(i + phase) % _vlmcs.size()]->choosePosition(s, i);
 }
 
-double PhasedInhomogeneousMarkovChain::evaluateWithPrefixSumArray(
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) {
-  return _prefix_sum_matrix[phase][end] - _prefix_sum_matrix[phase][begin];
+EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
+                                                      bool cached) {
+  if (cached)
+    return std::static_pointer_cast<Evaluator>(
+        CachedEvaluator<PhasedInhomogeneousMarkovChain>::make(
+          std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
+          s,
+          cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
+  return std::static_pointer_cast<Evaluator>(
+      SimpleEvaluator<PhasedInhomogeneousMarkovChain>::make(
+        std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
+        s));
 }
 
+
 void PhasedInhomogeneousMarkovChain::initializePrefixSumArray(
-    const Sequence &s,
+    CEPtr evaluator,
     unsigned int phase) {
-  _prefix_sum_matrix = Matrix(_vlmcs.size(), std::vector<double>(s.size() + 1));
+  auto &prefix_sum_matrix = evaluator->memory();
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
-    _prefix_sum_matrix[t][0] = 0;
-    for (unsigned int i = 0; i < s.size() ; i++) {
-      _prefix_sum_matrix[t][i+1] = _prefix_sum_matrix[t][i] + evaluatePosition(s, i, t);
+    prefix_sum_matrix[t][0] = 0;
+    for (unsigned int i = 0; i < evaluator->sequence.size() ; i++) {
+      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence, i, t);
     }
   }
+}
+
+double PhasedInhomogeneousMarkovChain::evaluateWithPrefixSumArray(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &prefix_sum_matrix = evaluator->memory();
+  return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
 }
 
 
