@@ -110,8 +110,8 @@ CachedEvaluatorImplPtr<Model> CachedEvaluatorImpl<Model>::make(Ts... args) {
 
 template<typename Model>
 double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
-                                             unsigned int end,
-                                             unsigned int phase) {
+                                                 unsigned int end,
+                                                 unsigned int phase) {
   if (!_initialized) {
     this->_model->initializeCachedEvaluator(
         std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
@@ -129,8 +129,8 @@ double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
 
 template<typename Model>
 CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
-                                        const Sequence &s,
-                                        cache&& memory)
+                                                const Sequence &s,
+                                                cache&& memory)
     : SimpleEvaluatorImpl<Model>(m, s), _memory(std::forward<cache>(memory)) {
 }
 

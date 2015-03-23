@@ -23,7 +23,7 @@
 namespace tops {
 namespace model {
 
-Evaluator::Evaluator(EvaluatorImplPtr impl) : _impl(impl) {
+Evaluator::Evaluator(EvaluatorImplPtr &&impl) : _impl(std::move(impl)) {
 }
 
 double Evaluator::probabilityOf(unsigned int begin,

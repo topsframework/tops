@@ -54,7 +54,7 @@ class Evaluator : public std::enable_shared_from_this<Evaluator> {
                                unsigned int end,
                                unsigned int phase = 0);
  protected:
-  Evaluator(EvaluatorImplPtr impl);
+  Evaluator(EvaluatorImplPtr &&impl);
 
   EvaluatorImplPtr _impl;
 };
