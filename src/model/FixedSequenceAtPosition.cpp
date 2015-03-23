@@ -87,13 +87,13 @@ Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
   return s;
 }
 
-EvaluatorImplPtr FixedSequenceAtPosition::evaluate(
+EvaluatorPtr FixedSequenceAtPosition::evaluate(
     const Sequence &s,
     bool cached) {
-  return std::static_pointer_cast<EvaluatorImpl>(
-      SimpleEvaluatorImpl<FixedSequenceAtPosition>::make(
-        std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
-        s));
+  return Evaluator::make(
+    SimpleEvaluatorImpl<FixedSequenceAtPosition>::make(
+      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
+      s));
 }
 
 double FixedSequenceAtPosition::probabilityOf(

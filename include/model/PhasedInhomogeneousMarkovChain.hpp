@@ -73,7 +73,7 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual EvaluatorImplPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
 
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,

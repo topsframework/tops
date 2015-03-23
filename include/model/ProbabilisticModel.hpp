@@ -25,7 +25,7 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/EvaluatorImpl.hpp"
+#include "model/Evaluator.hpp"
 
 // ToPS templates
 #include "model/SimpleEvaluatorImpl.tcc"
@@ -59,7 +59,7 @@ class ProbabilisticModel
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
 
-  virtual EvaluatorImplPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 

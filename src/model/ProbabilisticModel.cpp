@@ -39,14 +39,15 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-EvaluatorImplPtr ProbabilisticModel::evaluate(const Sequence &s,
+EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s,
                                           bool cached) {
   if (cached)
-    return std::static_pointer_cast<EvaluatorImpl>(
-        CachedEvaluatorImpl<ProbabilisticModel>::make(
+    return Evaluator::make(
+      CachedEvaluatorImpl<ProbabilisticModel>::make(
         shared_from_this(), s, cache(s.size() + 1)));
-  return std::static_pointer_cast<EvaluatorImpl>(
-      SimpleEvaluatorImpl<ProbabilisticModel>::make(shared_from_this(), s));
+  return Evaluator::make(
+    SimpleEvaluatorImpl<ProbabilisticModel>::make(
+      shared_from_this(), s));
 }
 
 double ProbabilisticModel::probabilityOf(SEPtr evaluator,
