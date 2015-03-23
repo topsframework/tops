@@ -17,25 +17,25 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_EVALUATOR_
-#define TOPS_MODEL_EVALUATOR_
+#ifndef TOPS_MODEL_EVALUATOR_IMPL_
+#define TOPS_MODEL_EVALUATOR_IMPL_
 
 namespace tops {
 namespace model {
 
-class Evaluator;
+class EvaluatorImpl;
 
 /**
- * @typedef EvaluatorPtr
- * @brief Alias of pointer to Evaluator.
+ * @typedef EvaluatorImplPtr
+ * @brief Alias of pointer to EvaluatorImpl.
  */
-using EvaluatorPtr = std::shared_ptr<Evaluator>;
+using EvaluatorImplPtr = std::shared_ptr<EvaluatorImpl>;
 
 /**
- * @class Evaluator
+ * @class EvaluatorImpl
  * @brief TODO
  */
-class Evaluator : public std::enable_shared_from_this<Evaluator> {
+class EvaluatorImpl : public std::enable_shared_from_this<EvaluatorImpl> {
  public:
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,

@@ -294,17 +294,17 @@ Symbol MaximalDependenceDecomposition::choosePosition(
   return 0;
 }
 
-EvaluatorPtr MaximalDependenceDecomposition::evaluate(
+EvaluatorImplPtr MaximalDependenceDecomposition::evaluate(
     const Sequence &s,
     bool cached) {
   if (cached)
-    return std::static_pointer_cast<Evaluator>(
-        CachedEvaluator<MaximalDependenceDecomposition>::make(
+    return std::static_pointer_cast<EvaluatorImpl>(
+        CachedEvaluatorImpl<MaximalDependenceDecomposition>::make(
           std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
           s,
           cache()));
-  return std::static_pointer_cast<Evaluator>(
-      SimpleEvaluator<MaximalDependenceDecomposition>::make(
+  return std::static_pointer_cast<EvaluatorImpl>(
+      SimpleEvaluatorImpl<MaximalDependenceDecomposition>::make(
         std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
         s));
 }

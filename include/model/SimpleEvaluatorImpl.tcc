@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_SIMPLE_EVALUATOR_
-#define TOPS_MODEL_SIMPLE_EVALUATOR_
+#ifndef TOPS_MODEL_SIMPLE_EVALUATOR_IMPL_
+#define TOPS_MODEL_SIMPLE_EVALUATOR_IMPL_
 
 // Standard headers
 #include <memory>
@@ -38,28 +38,28 @@ namespace model {
 */
 
 template<typename Model>
-class SimpleEvaluator;
+class SimpleEvaluatorImpl;
 
 /**
- * @typedef SimpleEvaluatorPtr
- * @brief Alias of pointer to SimpleEvaluator.
+ * @typedef SimpleEvaluatorImplPtr
+ * @brief Alias of pointer to SimpleEvaluatorImpl.
  */
 template<typename Model>
-using SimpleEvaluatorPtr = std::shared_ptr<SimpleEvaluator<Model>>;
+using SimpleEvaluatorImplPtr = std::shared_ptr<SimpleEvaluatorImpl<Model>>;
 
 /**
- * @class SimpleEvaluator
+ * @class SimpleEvaluatorImpl
  * @brief TODO
  */
 template<typename Model>
-class SimpleEvaluator : public Evaluator {
+class SimpleEvaluatorImpl : public EvaluatorImpl {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
 
   // Static methods
   template<typename... Ts>
-  static SimpleEvaluatorPtr<Model> make(Ts... args);
+  static SimpleEvaluatorImplPtr<Model> make(Ts... args);
 
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
@@ -72,7 +72,7 @@ class SimpleEvaluator : public Evaluator {
   ModelPtr _model;
 
   // Constructors
-  SimpleEvaluator(ModelPtr m, const Sequence &s);
+  SimpleEvaluatorImpl(ModelPtr m, const Sequence &s);
 };
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -88,9 +88,9 @@ class SimpleEvaluator : public Evaluator {
 
 template<typename Model>
 template<typename... Ts>
-SimpleEvaluatorPtr<Model> SimpleEvaluator<Model>::make(Ts... args) {
-  auto evaluator = SimpleEvaluatorPtr<Model>(
-      new SimpleEvaluator<Model>(std::forward<Ts>(args)...));
+SimpleEvaluatorImplPtr<Model> SimpleEvaluatorImpl<Model>::make(Ts... args) {
+  auto evaluator = SimpleEvaluatorImplPtr<Model>(
+      new SimpleEvaluatorImpl<Model>(std::forward<Ts>(args)...));
   return evaluator;
 }
 
@@ -99,11 +99,11 @@ SimpleEvaluatorPtr<Model> SimpleEvaluator<Model>::make(Ts... args) {
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-double SimpleEvaluator<Model>::probabilityOf(unsigned int begin,
+double SimpleEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
   return this->_model->probabilityOf(
-    std::static_pointer_cast<SimpleEvaluator<Model>>(
+    std::static_pointer_cast<SimpleEvaluatorImpl<Model>>(
       this->shared_from_this()),
     begin,
     end,
@@ -115,7 +115,7 @@ double SimpleEvaluator<Model>::probabilityOf(unsigned int begin,
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-SimpleEvaluator<Model>::SimpleEvaluator(ModelPtr m, const Sequence &s)
+SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m, const Sequence &s)
     : sequence(s), _model(m) {
 }
 

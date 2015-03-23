@@ -50,8 +50,8 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
  public:
   // Alias
   using cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorPtr<MaximalDependenceDecomposition>;
-  using CEPtr = CachedEvaluatorPtr<MaximalDependenceDecomposition>;
+  using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
+  using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
 
   static MaximalDependenceDecompositionPtr make(
       ConsensusSequence consensus_sequence,
@@ -68,7 +68,7 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorImplPtr evaluate(const Sequence &s, bool cached = false);
 
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,

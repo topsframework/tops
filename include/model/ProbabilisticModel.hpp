@@ -25,11 +25,11 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/Evaluator.hpp"
+#include "model/EvaluatorImpl.hpp"
 
 // ToPS templates
-#include "model/SimpleEvaluator.tcc"
-#include "model/CachedEvaluator.tcc"
+#include "model/SimpleEvaluatorImpl.tcc"
+#include "model/CachedEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -46,8 +46,8 @@ class ProbabilisticModel
  public:
   // Alias
   using cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorPtr<ProbabilisticModel>;
-  using CEPtr = CachedEvaluatorPtr<ProbabilisticModel>;
+  using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
+  using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
   virtual double evaluatePosition(const Sequence &s, unsigned int i,
@@ -59,7 +59,7 @@ class ProbabilisticModel
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorImplPtr evaluate(const Sequence &s, bool cached = false);
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 

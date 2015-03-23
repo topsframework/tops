@@ -136,16 +136,16 @@ Symbol SimilarityBasedSequenceWeighting::choosePosition(
   return 0;
 }
 
-EvaluatorPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
+EvaluatorImplPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
                                                         bool cached) {
   if (cached)
-    return std::static_pointer_cast<Evaluator>(
-        CachedEvaluator<SimilarityBasedSequenceWeighting>::make(
+    return std::static_pointer_cast<EvaluatorImpl>(
+        CachedEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
           std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
           s,
           cache(s.size())));
-  return std::static_pointer_cast<Evaluator>(
-      SimpleEvaluator<SimilarityBasedSequenceWeighting>::make(
+  return std::static_pointer_cast<EvaluatorImpl>(
+      SimpleEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
         std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
         s));
 }

@@ -108,16 +108,16 @@ Symbol PhasedInhomogeneousMarkovChain::choosePosition(
   return _vlmcs[(i + phase) % _vlmcs.size()]->choosePosition(s, i);
 }
 
-EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
+EvaluatorImplPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
                                                       bool cached) {
   if (cached)
-    return std::static_pointer_cast<Evaluator>(
-        CachedEvaluator<PhasedInhomogeneousMarkovChain>::make(
+    return std::static_pointer_cast<EvaluatorImpl>(
+        CachedEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
           std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
           s,
           cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
-  return std::static_pointer_cast<Evaluator>(
-      SimpleEvaluator<PhasedInhomogeneousMarkovChain>::make(
+  return std::static_pointer_cast<EvaluatorImpl>(
+      SimpleEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
         std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
         s));
 }

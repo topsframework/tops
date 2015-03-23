@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_CACHED_EVALUATOR_MODEL_
-#define TOPS_MODEL_CACHED_EVALUATOR_MODEL_
+#ifndef TOPS_MODEL_CACHED_EVALUATOR_IMPL_
+#define TOPS_MODEL_CACHED_EVALUATOR_IMPL_
 
 // Standard headers
 #include <memory>
@@ -27,13 +27,13 @@
 #include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/SimpleEvaluator.tcc"
+#include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
 
 template<typename Model>
-class CachedEvaluator;
+class CachedEvaluatorImpl;
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -44,18 +44,18 @@ class CachedEvaluator;
 */
 
 /**
- * @typedef CachedEvaluatorPtr
- * @brief Alias of pointer to CachedEvaluator.
+ * @typedef CachedEvaluatorImplPtr
+ * @brief Alias of pointer to CachedEvaluatorImpl.
  */
 template<typename Model>
-using CachedEvaluatorPtr = std::shared_ptr<CachedEvaluator<Model>>;
+using CachedEvaluatorImplPtr = std::shared_ptr<CachedEvaluatorImpl<Model>>;
 
 /**
- * @class CachedEvaluator
+ * @class CachedEvaluatorImpl
  * @brief TODO
  */
 template<typename Model>
-class CachedEvaluator : public SimpleEvaluator<Model> {
+class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
  public:
   // Alias
   using cache = typename Model::cache;
@@ -63,7 +63,7 @@ class CachedEvaluator : public SimpleEvaluator<Model> {
 
   // Static methods
   template<typename... Ts>
-  static CachedEvaluatorPtr<Model> make(Ts... args);
+  static CachedEvaluatorImplPtr<Model> make(Ts... args);
 
   // Concrete methods
   virtual double probabilityOf(unsigned int begin,
@@ -79,7 +79,7 @@ class CachedEvaluator : public SimpleEvaluator<Model> {
   cache _memory;
 
   // Constructors
-  CachedEvaluator(ModelPtr m, const Sequence &s,
+  CachedEvaluatorImpl(ModelPtr m, const Sequence &s,
                   cache&& memory);
 };
 
@@ -97,9 +97,9 @@ class CachedEvaluator : public SimpleEvaluator<Model> {
 
 template<typename Model>
 template<typename... Ts>
-CachedEvaluatorPtr<Model> CachedEvaluator<Model>::make(Ts... args) {
-  auto evaluator = CachedEvaluatorPtr<Model>(
-      new CachedEvaluator<Model>(std::forward<Ts>(args)...));
+CachedEvaluatorImplPtr<Model> CachedEvaluatorImpl<Model>::make(Ts... args) {
+  auto evaluator = CachedEvaluatorImplPtr<Model>(
+      new CachedEvaluatorImpl<Model>(std::forward<Ts>(args)...));
   return evaluator;
 }
 
@@ -108,14 +108,14 @@ CachedEvaluatorPtr<Model> CachedEvaluator<Model>::make(Ts... args) {
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-double CachedEvaluator<Model>::probabilityOf(unsigned int begin,
+double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
   this->_model->initializeCachedEvaluator(
-      std::static_pointer_cast<CachedEvaluator<Model>>(
+      std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
       this->shared_from_this()));
   return this->_model->cachedProbabilityOf(
-      std::static_pointer_cast<CachedEvaluator<Model>>(
+      std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
       this->shared_from_this()), begin, end, phase);
 }
 
@@ -124,10 +124,10 @@ double CachedEvaluator<Model>::probabilityOf(unsigned int begin,
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
-CachedEvaluator<Model>::CachedEvaluator(ModelPtr m,
+CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
                                         const Sequence &s,
                                         cache&& memory)
-    : SimpleEvaluator<Model>(m, s), _memory(std::forward<cache>(memory)) {
+    : SimpleEvaluatorImpl<Model>(m, s), _memory(std::forward<cache>(memory)) {
 }
 
 }  // namespace model

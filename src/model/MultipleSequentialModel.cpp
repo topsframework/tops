@@ -76,16 +76,16 @@ Symbol MultipleSequentialModel::choosePosition(const Sequence &s,
   return _models.back()->choosePosition(s, i);
 }
 
-EvaluatorPtr MultipleSequentialModel::evaluate(const Sequence &s,
+EvaluatorImplPtr MultipleSequentialModel::evaluate(const Sequence &s,
                                                bool cached) {
   if (cached)
-    return std::static_pointer_cast<Evaluator>(
-        CachedEvaluator<MultipleSequentialModel>::make(
+    return std::static_pointer_cast<EvaluatorImpl>(
+        CachedEvaluatorImpl<MultipleSequentialModel>::make(
           std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
           s,
           cache(_models.size())));
-  return std::static_pointer_cast<Evaluator>(
-      SimpleEvaluator<MultipleSequentialModel>::make(
+  return std::static_pointer_cast<EvaluatorImpl>(
+      SimpleEvaluatorImpl<MultipleSequentialModel>::make(
         std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
         s));
 }
