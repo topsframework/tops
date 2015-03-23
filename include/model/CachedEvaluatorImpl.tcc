@@ -77,6 +77,7 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
  private:
   // Instance variables
   cache _memory;
+  bool _initialized = false;
 
   // Constructors
   CachedEvaluatorImpl(ModelPtr m, const Sequence &s,
@@ -111,9 +112,12 @@ template<typename Model>
 double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
                                              unsigned int end,
                                              unsigned int phase) {
-  this->_model->initializeCachedEvaluator(
-      std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
-      this->shared_from_this()));
+  if (!_initialized) {
+    this->_model->initializeCachedEvaluator(
+        std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
+        this->shared_from_this()));
+    _initialized = true;
+  }
   return this->_model->cachedProbabilityOf(
       std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
       this->shared_from_this()), begin, end, phase);
