@@ -19,6 +19,7 @@
   [ ] Use unique_ptr as default pointer type
   [ ] Add phased version of evaluate of IMC, PhasedIMC and MultipleSequentialModel
   [ ] Fix HMM's Baum-Welch algorithm
+  [ ] Refactor evaluate methods
   [x] Should we add a "phased evaluate" method?
   [x] Copy DiscreteIIDModel::SmoothedHistogramStanke
   [x] Copy DiscreteIIDModel::trainSmoothedHistogramBurge
