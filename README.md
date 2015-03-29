@@ -1,4 +1,4 @@
-[![Tops](https://raw.githubusercontent.com/topsframework/topsframework.github.io/master/tops.png)](http://topsframework.github.io/)
+[![Tops](https://raw.githubusercontent.com/topsframework/topsframework.github.io/master/tops-cover.png)](http://topsframework.github.io/)
 
 [![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
 [![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
