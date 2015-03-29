@@ -1,36 +1,47 @@
 language: cpp
+
 compiler:
-- gcc
+  - gcc
+  - clang
+
 before_install:
-- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-- sudo apt-get -qq update
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -qq update
+
 install:
-- sudo apt-get -qq install gcc-4.9 g++-4.9
-- sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
-- sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
-- wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
-- tar xf lcov_1.11.orig.tar.gz
-- sudo make -C lcov-1.11/ install
-- gem install coveralls-lcov
-- lcov --version
-- g++ --version
-- gem install gh-push
-- sudo apt-get install doxygen
+  - sudo apt-get -qq install gcc-4.9 g++-4.9
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
+  - wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
+  - tar xf lcov_1.11.orig.tar.gz
+  - sudo make -C lcov-1.11/ install
+  - gem install coveralls-lcov
+  - lcov --version
+  - g++ --version
+  - gem install gh-push
+  - sudo apt-get install doxygen
+
 before_script:
-- git submodule update --init --recursive
+  - git submodule update --init --recursive
+
 script:
-- if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then make test-coverage COV_IGNORE='*/helper/*';
-  fi
+  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
+      make test-coverage COV_IGNORE='*/helper/*';
+    fi
+
 after_success:
 - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
-    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info &&
-    make doxy &&
-    gh-push ${GH_TOKEN} topsframework/tops-refactoring heads/gh-pages doc/doxygen/html doc/api "[skip ci] Update documentation";
+    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info
+    && make doxy
+    && gh-push ${GH_TOKEN} topsframework/tops-refactoring heads/gh-pages doc/doxygen/html
+       doc/api "[skip ci] Update documentation";
   fi
+
 env:
   global:
-  - secure: JaaaKGDY+6k1AutLv0S8UVrzJUjaFz8Ly25mLzjLHBeqmApFBzwp0mgkgAakQAYbprp8VKiJ/SxTEvYS+ScjYamnSzymmwBjWb5bmJSL5JgY1HkWZ9o1kt8Fpv5S237hEVN4rDl3m37n8dqe7gpTCVSaFtZNQ8/WUWp+RwddonY=
-  - secure: ONQqqR4cHAAqpYJKF8ymkR9vtheaCv6KIj7Q0rrmZ7nPrj5xzOC7Ij9oLtkTedbmubGWz+7V8iVd2Imj8v8dDA9r2/erPvNL9PBZFGt/IbS2Hh5eQxRhkKVwI2YFaWD0AwIGJMHFm7fea5XUoiyrldIrcaVi4rkmStFycmp6rbA=
+    - secure: JaaaKGDY+6k1AutLv0S8UVrzJUjaFz8Ly25mLzjLHBeqmApFBzwp0mgkgAakQAYbprp8VKiJ/SxTEvYS+ScjYamnSzymmwBjWb5bmJSL5JgY1HkWZ9o1kt8Fpv5S237hEVN4rDl3m37n8dqe7gpTCVSaFtZNQ8/WUWp+RwddonY=
+    - secure: ONQqqR4cHAAqpYJKF8ymkR9vtheaCv6KIj7Q0rrmZ7nPrj5xzOC7Ij9oLtkTedbmubGWz+7V8iVd2Imj8v8dDA9r2/erPvNL9PBZFGt/IbS2Hh5eQxRhkKVwI2YFaWD0AwIGJMHFm7fea5XUoiyrldIrcaVi4rkmStFycmp6rbA=
+
 addons:
   coverity_scan:
     project:
