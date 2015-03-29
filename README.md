@@ -1,5 +1,9 @@
 [![Tops](https://raw.githubusercontent.com/topsframework/topsframework.github.io/master/tops-cover.png)](http://topsframework.github.io/)
 
+[Website](http://topsframework.github.io/) |
+[Documentation](http://topsframework.github.io/tops-refactoring/doc/api/) |
+[Tutorial](http://topsframework.github.io/tutorial.pdf)
+
 [![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
 [![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/4131/badge.svg)](https://scan.coverity.com/projects/4131)
@@ -29,8 +33,7 @@ probabilistic models, and the development of new programs.
 Documentation
 ==============
 
-http://topsframework.github.io/tutorial.pdf
-http://topsframework.github.io/tops-refactoring/doc/api/
+
 
 Git Repository
 ===============
