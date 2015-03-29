@@ -9,13 +9,13 @@ facilitates the integration of probabilistic models for sequences
 over an user defined alphabet. ToPS contains the implementation of 
 eight distinct models to analyze discrete sequences:
 
-1. Independent and identically distributed model
+1. Independent and identically distributed model (IID)
 2. Variable-Length Markov Chain (VLMC)
-3. Inhomogeneous Markov Chain
-4. Hidden Markov Model
+3. Inhomogeneous Markov Chain (IMC)
+4. Hidden Markov Model (HMM)
 5. Pair Hidden Markov Model
 6. Profile Hidden Markov Model
-7. Similarity Based Sequence Weighting
+7. Similarity Based Sequence Weighting (SBSW)
 8. Generalized Hidden Markov Model (GHMM)
 
 Users can implement models either by manual description of the 
@@ -27,38 +27,38 @@ portable system that facilitates the implementation of other
 probabilistic models, and the development of new programs.
 
 Documentation
-=============
+==============
 
-http://tops.sourceforge.net/tutorial.pdf
-http://tops.sourceforge.net/api.html
+http://topsframework.github.io/tutorial.pdf
+http://topsframework.github.io/tops-refactoring/doc/api/
 
 Git Repository
-==============
+===============
 
 You can download the development version of ToPS by executing the 
 command below:
 
 ```bash
-git clone https://github.com/ayoshiaki/tops.git
+git clone --recursive https://github.com/topsframework/tops-refactoring.git
 ```
 
 Platforms
-=========
+==========
 
 ToPS was designed to run on Unix/Linux operating systems. 
-Tested platforms include: MacOS X and Ubuntu Linux.
+Tested platforms include: MacOS X, Ubuntu Linux and Arch Linux.
 
 Software Requirement
-====================
+=====================
 
-ToPS was written in C++. It was compiled using the g++ version 4.2.1 
-and it requires:
+ToPS was written in C++. It was compiled and tested using g++ 4.9.2 
+and clang 3.6.0. Besides one of the compilers, it requires:
 
-- Boost C++ Libraries version 1.52
 - Git
+- GNU Make
 
 Installing ToPS
-===============
+================
 
 1. Download ToPS from GitHub  
 
