@@ -81,6 +81,9 @@ class HiddenMarkovModel : public DecodableModel {
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
 
+  virtual Labeling labeling(const Sequence &xs, Matrix &probabilities, 
+                            Labeling::Method method) const override;
+
   virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
   virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 

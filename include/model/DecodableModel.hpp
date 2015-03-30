@@ -44,6 +44,9 @@ class DecodableModel : public ProbabilisticModel {
   virtual double forward(const Sequence & s, Matrix &alpha) const = 0;
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const = 0;
 
+  virtual Labeling labeling(const Sequence &xs, Matrix &probabilities, 
+                            Labeling::Method method) const = 0;
+
   virtual Labeling viterbi (const Sequence &xs, Matrix &gamma) const = 0;
   virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };

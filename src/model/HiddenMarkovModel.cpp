@@ -281,6 +281,18 @@ double HiddenMarkovModel::evaluateSequences(const Sequence &xs,
   return prob;
 }
 
+Labeling HiddenMarkovModel::labeling(const Sequence &xs,
+                                     Matrix &probabilities,
+                                     Labeling::Method method) const {
+  switch (method) {
+    case Labeling::Method::bestPath:
+     return viterbi(xs, probabilities);
+    case Labeling::Method::posteriorDecoding:
+     return posteriorDecoding(xs, probabilities);
+  }
+  return Labeling();
+}
+
 Labeling HiddenMarkovModel::viterbi(const Sequence &xs,
                                     Matrix &gamma) const {
   gamma = std::vector<std::vector<double>>(

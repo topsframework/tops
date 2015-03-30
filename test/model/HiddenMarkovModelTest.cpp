@@ -41,6 +41,7 @@ using ::testing::Eq;
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
 using tops::model::Sequence;
+using tops::model::Labeling;
 using tops::model::Matrix;
 using tops::model::log_sum;
 
@@ -68,7 +69,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   };
   for(auto test : test_set) {
     Matrix gamma;
-    auto labeling = hmm->viterbi(test[0], gamma);
+    auto labeling = hmm->labeling(test[0], gamma, Labeling::Method::bestPath);
     
     ASSERT_THAT(labeling.probability(),
                 DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
@@ -115,7 +116,7 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
 
   for(auto test : test_set) {
     Matrix gamma;
-    auto labeling = hmm->posteriorDecoding(test[0], gamma);
+    auto labeling = hmm->labeling(test[0], gamma, Labeling::Method::posteriorDecoding);
 
     ASSERT_THAT(labeling.probability(),
                 DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
