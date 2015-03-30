@@ -84,10 +84,10 @@ class HiddenMarkovModel : public DecodableModel {
   virtual Labeling labeling(const Sequence &xs, Matrix &probabilities, 
                             Labeling::Method method) const override;
 
+ private:
   virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
   virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 
- private:
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probability,

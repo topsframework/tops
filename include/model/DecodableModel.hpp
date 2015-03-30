@@ -35,6 +35,7 @@ namespace model {
  * @brief TODO
  */
 class DecodableModel : public ProbabilisticModel {
+ public:
   virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const = 0;
   virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const = 0;
   virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const = 0;
@@ -47,6 +48,7 @@ class DecodableModel : public ProbabilisticModel {
   virtual Labeling labeling(const Sequence &xs, Matrix &probabilities, 
                             Labeling::Method method) const = 0;
 
+ private:
   virtual Labeling viterbi (const Sequence &xs, Matrix &gamma) const = 0;
   virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };
