@@ -103,15 +103,15 @@ double MultipleSequentialModel::probabilityOf(
 
   for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
-    if (e >= static_cast<int>(evaluator->sequence.size()))
-      e = evaluator->sequence.size()-1;
-    sum += _models[i]->evaluate(evaluator->sequence)->probabilityOf(b, e, phase);
+    if (e >= static_cast<int>(evaluator->sequence().size()))
+      e = evaluator->sequence().size()-1;
+    sum += _models[i]->evaluate(evaluator->sequence())->probabilityOf(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
-    if (e >= static_cast<int>(evaluator->sequence.size()))
+    if (e >= static_cast<int>(evaluator->sequence().size()))
       break;
   }
   int begin_of_not_limited = b;
@@ -123,14 +123,14 @@ double MultipleSequentialModel::probabilityOf(
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += _models[i]->evaluate(evaluator->sequence)->probabilityOf(b, e, phase2);
+    sum += _models[i]->evaluate(evaluator->sequence())->probabilityOf(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0)
-    sum += _models[_idx_not_limited]->evaluate(evaluator->sequence)->probabilityOf(
+    sum += _models[_idx_not_limited]->evaluate(evaluator->sequence())->probabilityOf(
       begin_of_not_limited, end_of_not_limited, phase);
   return sum;
 }
@@ -140,7 +140,7 @@ void MultipleSequentialModel::initializeCachedEvaluator(
     unsigned int phase) {
   auto &evaluators = evaluator->memory();
   for (unsigned int i = 0; i < _models.size(); i++)
-    evaluators[i] = _models[i]->evaluate(evaluator->sequence, true);
+    evaluators[i] = _models[i]->evaluate(evaluator->sequence(), true);
 }
 
 double MultipleSequentialModel::cachedProbabilityOf(
@@ -154,15 +154,15 @@ double MultipleSequentialModel::cachedProbabilityOf(
   int e = 0;
   for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
-    if (e >= static_cast<int>(evaluator->sequence.size()))
-      e = evaluator->sequence.size()-1;
+    if (e >= static_cast<int>(evaluator->sequence().size()))
+      e = evaluator->sequence().size()-1;
     sum += evaluators[i]->probabilityOf(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
-    if (e >= static_cast<int>(evaluator->sequence.size()))
+    if (e >= static_cast<int>(evaluator->sequence().size()))
       break;
   }
   int begin_of_not_limited = b;

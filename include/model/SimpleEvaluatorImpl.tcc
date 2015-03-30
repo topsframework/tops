@@ -65,11 +65,16 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0) override;
-  Sequence sequence;
+
+  Labeling labeling(Labeling::Method method);
+
+  Sequence& sequence() { return _sequence; }
+  const Sequence& sequence() const { return _sequence; }
 
  protected:
   // Instace variables
   ModelPtr _model;
+  Sequence _sequence;
 
   // Constructors
   SimpleEvaluatorImpl(ModelPtr m, const Sequence &s);
@@ -116,7 +121,7 @@ double SimpleEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
 
 template<typename Model>
 SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m, const Sequence &s)
-    : sequence(s), _model(m) {
+    : _model(m), _sequence(s) {
 }
 
 }  // namespace model

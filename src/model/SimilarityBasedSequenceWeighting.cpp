@@ -154,13 +154,13 @@ double SimilarityBasedSequenceWeighting::probabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  if (end > evaluator->sequence.size())
+  if (end > evaluator->sequence().size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
 
   Sequence ss;
   for (unsigned int i = begin; i < end && i < begin + length; i++)
-    ss.push_back(evaluator->sequence[i]);
+    ss.push_back(evaluator->sequence()[i]);
 
   double sum = 0;
   for (auto weight : _counter) {
@@ -200,8 +200,8 @@ void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
-  for (unsigned int i = 0; i < evaluator->sequence.size(); i++)  {
-    prefix_sum_array[i] = probabilityOf(evaluator, i, evaluator->sequence.size());
+  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
+    prefix_sum_array[i] = probabilityOf(evaluator, i, evaluator->sequence().size());
   }
 }
 

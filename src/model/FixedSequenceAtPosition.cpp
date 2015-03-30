@@ -101,13 +101,13 @@ double FixedSequenceAtPosition::probabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  double result = _model->evaluate(evaluator->sequence)->probabilityOf(begin, end, phase);
+  double result = _model->evaluate(evaluator->sequence())->probabilityOf(begin, end, phase);
   int j;
   for (j = 0;
        (j < static_cast<int>(_sequence.size()))
-       && ((_position  + j) < static_cast<int>(evaluator->sequence.size()));
+       && ((_position  + j) < static_cast<int>(evaluator->sequence().size()));
        j++) {
-    if (_sequence[j] != evaluator->sequence[_position + j] )
+    if (_sequence[j] != evaluator->sequence()[_position + j] )
       break;
   }
   if (j != static_cast<int>(_sequence.size()))

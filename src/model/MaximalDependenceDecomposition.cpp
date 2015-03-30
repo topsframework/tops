@@ -315,8 +315,8 @@ double MaximalDependenceDecomposition::probabilityOf(
     unsigned int phase) const {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
-  auto first = evaluator->sequence.begin() + begin;
-  auto last = evaluator->sequence.begin() + end;
+  auto first = evaluator->sequence().begin() + begin;
+  auto last = evaluator->sequence().begin() + end;
   Sequence subseq(first, last);
   std::vector<int> indexes;
   return _probabilityOf(subseq, _mdd_tree, indexes);
@@ -355,7 +355,7 @@ void MaximalDependenceDecomposition::initializeCachedEvaluator(
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
   prefix_sum_array.clear();
-  int len = evaluator->sequence.size();
+  int len = evaluator->sequence().size();
   int clen = _consensus_sequence.size();
   for (int i = 0; i <= (len - clen); i++) {
     prefix_sum_array.push_back(probabilityOf(evaluator, i, i + clen));

@@ -56,7 +56,7 @@ double ProbabilisticModel::probabilityOf(SEPtr evaluator,
                                          unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(evaluator->sequence, i);
+    prob += evaluatePosition(evaluator->sequence(), i);
   return prob;
 }
 
@@ -65,9 +65,9 @@ void ProbabilisticModel::initializeCachedEvaluator(
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->memory();
   prefix_sum_array[0] = 0;
-  for (unsigned int i = 0; i < evaluator->sequence.size() ; i++)
+  for (unsigned int i = 0; i < evaluator->sequence().size() ; i++)
     prefix_sum_array[i+1] = prefix_sum_array[i]
-        + evaluatePosition(evaluator->sequence, i);
+        + evaluatePosition(evaluator->sequence(), i);
 }
 
 double ProbabilisticModel::cachedProbabilityOf(

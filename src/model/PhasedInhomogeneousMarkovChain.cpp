@@ -128,7 +128,7 @@ double PhasedInhomogeneousMarkovChain::probabilityOf(
     unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(evaluator->sequence, i);
+    prob += evaluatePosition(evaluator->sequence(), i);
   return prob;
 }
 
@@ -138,8 +138,8 @@ void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
   auto &prefix_sum_matrix = evaluator->memory();
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
     prefix_sum_matrix[t][0] = 0;
-    for (unsigned int i = 0; i < evaluator->sequence.size() ; i++) {
-      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence, i, t);
+    for (unsigned int i = 0; i < evaluator->sequence().size() ; i++) {
+      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence(), i, t);
     }
   }
 }
