@@ -28,6 +28,7 @@
 #include "model/DecodableModel.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/Matrix.hpp"
+#include "model/Labeling.hpp"
 
 namespace tops {
 namespace model {
@@ -71,16 +72,17 @@ class HiddenMarkovModel : public DecodableModel {
   virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const;
   virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const;
 
-  virtual double viterbi (const Sequence &xs, Sequence &ys, Matrix &gamma) const;
   virtual double backward(const Sequence & s, Matrix &beta) const;
   virtual double forward(const Sequence & s, Matrix &alpha) const;
 
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
-  virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
 
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
+
+  virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
+  virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 
  private:
   HiddenMarkovModel(

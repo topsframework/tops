@@ -22,8 +22,10 @@
 
 #include <memory>
 
+// ToPS headers
 #include "model/ProbabilisticModel.hpp"
 #include "model/Matrix.hpp"
+#include "model/Labeling.hpp"
 
 namespace tops {
 namespace model {
@@ -37,11 +39,13 @@ class DecodableModel : public ProbabilisticModel {
   virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const = 0;
   virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const = 0;
   virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const = 0;
-  virtual double viterbi (const Sequence &xs, Sequence &ys, Matrix &gamma) const = 0;
+
   virtual double backward(const Sequence & s, Matrix &beta) const = 0;
   virtual double forward(const Sequence & s, Matrix &alpha) const = 0;
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const = 0;
-  virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const = 0;
+
+  virtual Labeling viterbi (const Sequence &xs, Matrix &gamma) const = 0;
+  virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };
 
 /**

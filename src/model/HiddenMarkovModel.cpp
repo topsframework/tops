@@ -281,9 +281,8 @@ double HiddenMarkovModel::evaluateSequences(const Sequence &xs,
   return prob;
 }
 
-double HiddenMarkovModel::viterbi(const Sequence &xs,
-                                  Sequence &ys,
-                                  Matrix &gamma) const {
+Labeling HiddenMarkovModel::viterbi(const Sequence &xs,
+                                    Matrix &gamma) const {
   gamma = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
@@ -309,7 +308,7 @@ double HiddenMarkovModel::viterbi(const Sequence &xs,
     }
   }
 
-  ys.resize(xs.size());
+  Sequence ys(xs.size());
   ys[xs.size() - 1] = 0;
   double max = gamma[0][xs.size() - 1];
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
@@ -322,7 +321,7 @@ double HiddenMarkovModel::viterbi(const Sequence &xs,
     ys[i-1] = psi[ys[i]][i];
   }
 
-  return max;
+  return Labeling(max, ys);
 }
 
 double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
@@ -402,12 +401,11 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence & xs,
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 
-void HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                          Sequence &path,
-                                          Matrix &probabilities) const {
+Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
+                                              Matrix &probabilities) const {
   posteriorProbabilities(xs, probabilities);
 
-  path.resize(xs.size());
+  Sequence path(xs.size());
 
   for (unsigned int i = 0; i < xs.size(); i++) {
     double max = probabilities[0][i];
@@ -419,6 +417,7 @@ void HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       }
     }
   }
+  return Labeling(evaluateSequences(xs, path, 0, xs.size()), path);
 }
 
 void HiddenMarkovModel::chooseSequences(Sequence &xs,

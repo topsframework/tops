@@ -67,10 +67,12 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
   };
   for(auto test : test_set) {
-    Sequence path;
     Matrix gamma;
-    ASSERT_THAT(hmm->viterbi(test[0], path, gamma), DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
-    ASSERT_THAT(path, Eq(test[1]));
+    auto labeling = hmm->viterbi(test[0], gamma);
+    
+    ASSERT_THAT(labeling.probability(),
+                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
 
@@ -112,10 +114,12 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   };
 
   for(auto test : test_set) {
-    Sequence path;
     Matrix gamma;
-    hmm->posteriorDecoding(test[0], path, gamma);
-    ASSERT_THAT(path, Eq(test[1]));
+    auto labeling = hmm->posteriorDecoding(test[0], gamma);
+
+    ASSERT_THAT(labeling.probability(),
+                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
 
