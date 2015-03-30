@@ -321,7 +321,7 @@ Labeling HiddenMarkovModel::viterbi(const Sequence &xs,
     ys[i-1] = psi[ys[i]][i];
   }
 
-  return Labeling(max, ys);
+  return Labeling(max, std::move(ys));
 }
 
 double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
@@ -417,7 +417,7 @@ Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       }
     }
   }
-  return Labeling(evaluateSequences(xs, path, 0, xs.size()), path);
+  return Labeling(evaluateSequences(xs, path, 0, xs.size()), std::move(path));
 }
 
 void HiddenMarkovModel::chooseSequences(Sequence &xs,

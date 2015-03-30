@@ -34,7 +34,8 @@ class Labeling {
 
   // Constructors
   Labeling();
-  Labeling(double probability, Sequence sequence);
+  Labeling(double probability, const Sequence& sequence);
+  Labeling(double probability, Sequence&& sequence);
 
   // Getters
   double probability() const;

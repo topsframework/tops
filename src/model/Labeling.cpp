@@ -27,7 +27,11 @@ Labeling::Labeling()
     : _probability(), _sequence() {
 }
 
-Labeling::Labeling(double probability, Sequence sequence)
+Labeling::Labeling(double probability, const Sequence& sequence)
+    : _probability(probability), _sequence(sequence) {
+}
+
+Labeling::Labeling(double probability, Sequence&& sequence)
     : _probability(probability), _sequence(std::move(sequence)) {
 }
 
