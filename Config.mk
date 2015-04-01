@@ -46,7 +46,7 @@ LDLIBS          :=
 CPPFLAGS        := # Precompiler Flags
 ASFLAGS         := # Assembly Flags
 CFLAGS          := # C Flags
-CXXFLAGS        := -ansi -Wall -O2 -std=c++11 \
+CXXFLAGS        := -ansi -Wall -O2 -std=c++14 \
                    # -pedantic
 LDFLAGS         :=
 
