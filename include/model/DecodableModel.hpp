@@ -36,6 +36,7 @@ namespace model {
  */
 class DecodableModel : public ProbabilisticModel {
  public:
+
   virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const = 0;
   virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const = 0;
   virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const = 0;

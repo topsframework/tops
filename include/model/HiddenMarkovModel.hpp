@@ -30,6 +30,9 @@
 #include "model/Matrix.hpp"
 #include "model/Labeling.hpp"
 
+// ToPS templates
+#include "model/SimpleEvaluatorImpl.tcc"
+
 namespace tops {
 namespace model {
 
@@ -47,6 +50,8 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
  */
 class HiddenMarkovModel : public DecodableModel {
  public:
+  //using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
+
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probabilities,
@@ -80,6 +85,11 @@ class HiddenMarkovModel : public DecodableModel {
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
+
+  Labeling simpleLabeling(SimpleEvaluatorImplPtr<HiddenMarkovModel> evaluator, Labeling::Method method) const {
+    Matrix probabilities;
+    return labeling(evaluator->sequence(), probabilities, method);
+  }
 
   virtual Labeling labeling(const Sequence &xs, Matrix &probabilities, 
                             Labeling::Method method) const override;

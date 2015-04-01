@@ -81,7 +81,7 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
 
   // Constructors
   CachedEvaluatorImpl(ModelPtr m, const Sequence &s,
-                  cache&& memory);
+                      cache&& memory);
 };
 
 /*
