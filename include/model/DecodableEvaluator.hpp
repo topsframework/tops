@@ -51,6 +51,9 @@ class DecodableEvaluator : public Evaluator {
         new DecodableEvaluator(std::forward<Ts>(args)...));
   }
 
+  // Virtual methods
+  virtual Labeling labeling(Labeling::Method method) const;
+
  protected:
   // Constructors
   DecodableEvaluator(EvaluatorImplPtr &&impl);
