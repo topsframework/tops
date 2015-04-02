@@ -23,13 +23,22 @@
 namespace tops {
 namespace model {
 
-Evaluator::Evaluator(EvaluatorImplPtr &&impl) : _impl(std::move(impl)) {
+Evaluator::Evaluator(EvaluatorImplPtr &&impl)
+    : _impl(std::move(impl)) {
 }
 
-double Evaluator::probabilityOf(unsigned int begin,
-                                unsigned int end,
-                                unsigned int phase) {
+inline double Evaluator::probabilityOf(unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) {
   return _impl->probabilityOf(begin, end, phase);
+}
+
+inline Sequence& Evaluator::sequence() {
+  return _impl->sequence();
+}
+
+inline const Sequence& Evaluator::sequence() const {
+  return _impl->sequence();
 }
 
 }  // namespace model

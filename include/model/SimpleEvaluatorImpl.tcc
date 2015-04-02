@@ -72,15 +72,16 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
   template<typename... Ts>
   static SimpleEvaluatorImplPtr<Model, Decodable> make(Ts... args);
 
-  // Concrete methods
+  // Virtual methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0) override;
 
   virtual Labeling labeling(Labeling::Method method) override;
 
-  Sequence& sequence() { return _sequence; }
-  const Sequence& sequence() const { return _sequence; }
+  // Virtual getters
+  virtual Sequence& sequence() override { return _sequence; }
+  virtual const Sequence& sequence() const override { return _sequence; }
 
  protected:
   // Instace variables
@@ -94,10 +95,12 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
 template<typename Model>
 class SimpleEvaluatorImpl<Model, is_decodable<Model>> : public EvaluatorImpl {
  public:
+  // Virtual methods
   virtual Labeling labeling(Labeling::Method method) override;
 
-  Sequence& sequence() { return _sequence; }
-  const Sequence& sequence() const { return _sequence; }
+  // Virtual getters
+  virtual Sequence& sequence() override { return _sequence; }
+  virtual const Sequence& sequence() const override { return _sequence; }
 
  protected:
   // Instace variables

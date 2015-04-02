@@ -49,10 +49,15 @@ class Evaluator : public std::enable_shared_from_this<Evaluator> {
     return EvaluatorPtr(new Evaluator(std::forward<Ts>(args)...));
   }
 
-  // Concrete methods
+  // Virtual methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0);
+
+  // Virtual getters
+  virtual Sequence& sequence();
+  virtual const Sequence& sequence() const;
+
  protected:
   Evaluator(EvaluatorImplPtr &&impl);
 
