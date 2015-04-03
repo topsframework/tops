@@ -42,27 +42,31 @@ class DecodableModel;
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<typename Model, typename Decodable>
+template<typename Model>
 class SimpleEvaluatorImpl;
 
 // Auxiliar tests
 template<typename Model>
 using is_decodable
-    = std::enable_if_t<std::is_base_of<DecodableModel, Model>::value>;
+    = std::enable_if_t<std::is_base_of<DecodableModel, Model>::value, bool>;
+
+template<typename Model>
+using not_decodable
+    = std::enable_if_t<!std::is_base_of<DecodableModel, Model>::value, bool>;
 
 /**
  * @typedef SimpleEvaluatorImplPtr
  * @brief Alias of pointer to SimpleEvaluatorImpl.
  */
-template<typename Model, typename Decodable = void>
+template<typename Model>
 using SimpleEvaluatorImplPtr
-    = std::shared_ptr<SimpleEvaluatorImpl<Model, Decodable>>;
+    = std::shared_ptr<SimpleEvaluatorImpl<Model>>;
 
 /**
  * @class SimpleEvaluatorImpl
  * @brief TODO
  */
-template<typename Model, typename Decodable = void>
+template<typename Model>
 class SimpleEvaluatorImpl : public EvaluatorImpl {
  public:
   // Alias
@@ -70,7 +74,7 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
 
   // Static methods
   template<typename... Ts>
-  static SimpleEvaluatorImplPtr<Model, Decodable> make(Ts... args);
+  static SimpleEvaluatorImplPtr<Model> make(Ts... args);
 
   // Virtual methods
   virtual double probabilityOf(unsigned int begin,
@@ -90,21 +94,15 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
 
   // Constructors
   SimpleEvaluatorImpl(ModelPtr m, const Sequence &s);
-};
 
-template<typename Model>
-class SimpleEvaluatorImpl<Model, is_decodable<Model>> : public EvaluatorImpl {
- public:
-  // Virtual methods
-  virtual Labeling labeling(Labeling::Method method) override;
+ private:
+  template<typename M = Model>
+  Labeling labelingImpl(Labeling::Method method,
+                        not_decodable<M>* dummy = nullptr);
 
-  // Virtual getters
-  virtual Sequence& sequence() override { return _sequence; }
-  virtual const Sequence& sequence() const override { return _sequence; }
-
- protected:
-  // Instace variables
-  Sequence _sequence;
+  template<typename M = Model>
+  Labeling labelingImpl(Labeling::Method method,
+                        is_decodable<M>* dummy = nullptr);
 };
 
 /*
@@ -119,44 +117,54 @@ class SimpleEvaluatorImpl<Model, is_decodable<Model>> : public EvaluatorImpl {
 /*                             Static methods                                 */
 /*----------------------------------------------------------------------------*/
 
-template<typename Model, typename Decodable>
+template<typename Model>
 template<typename... Ts>
-SimpleEvaluatorImplPtr<Model, Decodable>
-SimpleEvaluatorImpl<Model, Decodable>::make(Ts... args) {
-  auto evaluator = SimpleEvaluatorImplPtr<Model, Decodable>(
-      new SimpleEvaluatorImpl<Model, Decodable>(std::forward<Ts>(args)...));
+SimpleEvaluatorImplPtr<Model>
+SimpleEvaluatorImpl<Model>::make(Ts... args) {
+  auto evaluator = SimpleEvaluatorImplPtr<Model>(
+      new SimpleEvaluatorImpl<Model>(std::forward<Ts>(args)...));
   return evaluator;
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             Virtual methods                                */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+double SimpleEvaluatorImpl<Model>::probabilityOf(
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) {
+  return this->_model->probabilityOf(
+    std::static_pointer_cast<SimpleEvaluatorImpl<Model>>(
+      this->shared_from_this()),
+      begin,
+      end,
+      phase);
+}
+
+template<typename Model>
+Labeling SimpleEvaluatorImpl<Model>::labeling(Labeling::Method method) {
+  return labelingImpl(method);
 }
 
 /*----------------------------------------------------------------------------*/
 /*                            Concrete methods                                */
 /*----------------------------------------------------------------------------*/
 
-template<typename Model, typename Decodable>
-double SimpleEvaluatorImpl<Model, Decodable>::probabilityOf(
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) {
-  return this->_model->probabilityOf(
-    std::static_pointer_cast<SimpleEvaluatorImpl<Model, Decodable>>(
-      this->shared_from_this()),
-    begin,
-    end,
-    phase);
-}
-
-template<typename Model, typename Decodable>
-Labeling SimpleEvaluatorImpl<Model, Decodable>::labeling(
-    Labeling::Method method) {
+template<typename Model>
+template<typename M>
+Labeling SimpleEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
+                                                  not_decodable<M>* dummy) {
   return Labeling();
 }
 
 template<typename Model>
-Labeling SimpleEvaluatorImpl<
-    Model, is_decodable<Model>
->::labeling(Labeling::Method method) {
+template<typename M>
+Labeling SimpleEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
+                                                  is_decodable<M>* dummy) {
   return this->_model->simpleLabeling(
-    std::static_pointer_cast<SimpleEvaluatorImpl<Model, is_decodable<Model>>>(
+    std::static_pointer_cast<SimpleEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);
 }
@@ -165,9 +173,9 @@ Labeling SimpleEvaluatorImpl<
 /*                              Constructors                                  */
 /*----------------------------------------------------------------------------*/
 
-template<typename Model, typename Decodable>
-SimpleEvaluatorImpl<Model, Decodable>::SimpleEvaluatorImpl(ModelPtr m,
-                                                           const Sequence &s)
+template<typename Model>
+SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m,
+                                                const Sequence &s)
     : _model(m), _sequence(s) {
 }
 
