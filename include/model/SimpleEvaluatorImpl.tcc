@@ -96,6 +96,7 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
   SimpleEvaluatorImpl(ModelPtr m, const Sequence &s);
 
  private:
+  // Concrete methods
   template<typename M = Model>
   Labeling labelingImpl(Labeling::Method method,
                         not_decodable<M>* dummy = nullptr);

@@ -70,11 +70,13 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
                                unsigned int end,
                                unsigned int phase = 0) override;
 
+  virtual Labeling labeling(Labeling::Method method) override;
+
   cache& memory() {
     return _memory;
   }
 
- private:
+ protected:
   // Instance variables
   cache _memory;
   bool _initialized = false;
@@ -82,6 +84,16 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
   // Constructors
   CachedEvaluatorImpl(ModelPtr m, const Sequence &s,
                       cache&& memory);
+
+ private:
+  // Concrete methods
+  template<typename M = Model>
+  Labeling labelingImpl(Labeling::Method method,
+                        not_decodable<M>* dummy = nullptr);
+
+  template<typename M = Model>
+  Labeling labelingImpl(Labeling::Method method,
+                        is_decodable<M>* dummy = nullptr);
 };
 
 /*
@@ -105,7 +117,7 @@ CachedEvaluatorImplPtr<Model> CachedEvaluatorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             Virtual methods                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -121,6 +133,32 @@ double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
   return this->_model->cachedProbabilityOf(
       std::static_pointer_cast<CachedEvaluatorImpl<Model>>(
       this->shared_from_this()), begin, end, phase);
+}
+
+template<typename Model>
+Labeling CachedEvaluatorImpl<Model>::labeling(Labeling::Method method) {
+  return labelingImpl(method);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                            Concrete methods                                */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+template<typename M>
+Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
+                                                  not_decodable<M>* dummy) {
+  return Labeling();
+}
+
+template<typename Model>
+template<typename M>
+Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
+                                                  is_decodable<M>* dummy) {
+  return this->_model->CachedLabeling(
+    std::static_pointer_cast<CachedEvaluatorImpl<M>>(
+      this->shared_from_this()),
+      method);
 }
 
 /*----------------------------------------------------------------------------*/
