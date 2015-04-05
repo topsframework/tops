@@ -63,7 +63,7 @@ double ProbabilisticModel::probabilityOf(SEPtr evaluator,
 void ProbabilisticModel::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < evaluator->sequence().size() ; i++)
     prefix_sum_array[i+1] = prefix_sum_array[i]
@@ -75,7 +75,7 @@ double ProbabilisticModel::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }
 

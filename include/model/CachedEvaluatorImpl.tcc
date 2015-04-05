@@ -72,18 +72,18 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
 
   virtual Labeling labeling(Labeling::Method method) override;
 
-  Cache& memory() {
-    return _memory;
+  Cache& cache() {
+    return _cache;
   }
 
  protected:
   // Instance variables
-  Cache _memory;
+  Cache _cache;
   bool _initialized = false;
 
   // Constructors
   CachedEvaluatorImpl(ModelPtr m, const Sequence &s,
-                      Cache&& memory);
+                      Cache&& cache);
 
  private:
   // Concrete methods
@@ -168,8 +168,8 @@ Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
 template<typename Model>
 CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
                                                 const Sequence &s,
-                                                Cache&& memory)
-    : SimpleEvaluatorImpl<Model>(m, s), _memory(std::forward<Cache>(memory)) {
+                                                Cache&& cache)
+    : SimpleEvaluatorImpl<Model>(m, s), _cache(std::forward<Cache>(cache)) {
 }
 
 }  // namespace model

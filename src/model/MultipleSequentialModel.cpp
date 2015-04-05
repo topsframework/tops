@@ -138,7 +138,7 @@ double MultipleSequentialModel::probabilityOf(
 void MultipleSequentialModel::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &evaluators = evaluator->memory();
+  auto &evaluators = evaluator->cache();
   for (unsigned int i = 0; i < _models.size(); i++)
     evaluators[i] = _models[i]->evaluator(evaluator->sequence(), true);
 }
@@ -148,7 +148,7 @@ double MultipleSequentialModel::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &evaluators = evaluator->memory();
+  auto &evaluators = evaluator->cache();
   double sum = 0;
   int b = begin;
   int e = 0;

@@ -135,7 +135,7 @@ double PhasedInhomogeneousMarkovChain::probabilityOf(
 void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &prefix_sum_matrix = evaluator->memory();
+  auto &prefix_sum_matrix = evaluator->cache();
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
     prefix_sum_matrix[t][0] = 0;
     for (unsigned int i = 0; i < evaluator->sequence().size() ; i++) {
@@ -149,7 +149,7 @@ double PhasedInhomogeneousMarkovChain::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &prefix_sum_matrix = evaluator->memory();
+  auto &prefix_sum_matrix = evaluator->cache();
   return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
 }
 

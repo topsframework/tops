@@ -199,7 +199,7 @@ double SimilarityBasedSequenceWeighting::probabilityOf(
 void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
     prefix_sum_array[i] = probabilityOf(evaluator, i, evaluator->sequence().size());
   }
@@ -210,7 +210,7 @@ double SimilarityBasedSequenceWeighting::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
   return -HUGE;

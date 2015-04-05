@@ -353,7 +353,7 @@ double MaximalDependenceDecomposition::_probabilityOf(
 void MaximalDependenceDecomposition::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   prefix_sum_array.clear();
   int len = evaluator->sequence().size();
   int clen = _consensus_sequence.size();
@@ -366,7 +366,7 @@ double MaximalDependenceDecomposition::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->memory();
+  auto &prefix_sum_array = evaluator->cache();
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   return prefix_sum_array[begin];
