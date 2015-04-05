@@ -44,7 +44,7 @@ EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
   if (cached)
     return Evaluator::make(
       CachedEvaluatorImpl<ProbabilisticModel>::make(
-        shared_from_this(), s, cache(s.size() + 1)));
+        shared_from_this(), s, Cache(s.size() + 1)));
   return Evaluator::make(
     SimpleEvaluatorImpl<ProbabilisticModel>::make(
       shared_from_this(), s));

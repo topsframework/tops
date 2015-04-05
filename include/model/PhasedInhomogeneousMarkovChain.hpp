@@ -52,7 +52,7 @@ using PhasedInhomogeneousMarkovChainPtr
 class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
  public:
   // Alias
-  using cache = Matrix;
+  using Cache = Matrix;
   using SEPtr = SimpleEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
   using CEPtr = CachedEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
 

@@ -45,7 +45,7 @@ class ProbabilisticModel
     : public std::enable_shared_from_this<ProbabilisticModel>{
  public:
   // Alias
-  using cache = std::vector<double>;
+  using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 

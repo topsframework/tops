@@ -142,7 +142,7 @@ EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
   //   return Evaluator::make(
   //     CachedEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
   //       std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
-  //       s, cache(s.size())));
+  //       s, Cache(s.size())));
   return Evaluator::make(
     SimpleEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
       std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),

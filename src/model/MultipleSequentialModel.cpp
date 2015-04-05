@@ -82,7 +82,7 @@ EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
     return Evaluator::make(
       CachedEvaluatorImpl<MultipleSequentialModel>::make(
         std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
-        s, cache(_models.size())));
+        s, Cache(_models.size())));
   return Evaluator::make(
     SimpleEvaluatorImpl<MultipleSequentialModel>::make(
       std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),

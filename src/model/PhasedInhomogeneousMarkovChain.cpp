@@ -114,7 +114,7 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
     return Evaluator::make(
       CachedEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
         std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
-        s, cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
+        s, Cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
   return Evaluator::make(
     SimpleEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
       std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),

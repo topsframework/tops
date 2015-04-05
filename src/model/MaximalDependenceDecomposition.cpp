@@ -301,7 +301,7 @@ EvaluatorPtr MaximalDependenceDecomposition::evaluator(
     return Evaluator::make(
       CachedEvaluatorImpl<MaximalDependenceDecomposition>::make(
         std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
-        s, cache()));
+        s, Cache()));
   return Evaluator::make(
     SimpleEvaluatorImpl<MaximalDependenceDecomposition>::make(
       std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),

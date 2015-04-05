@@ -46,7 +46,7 @@ using MultipleSequentialModelPtr
 class MultipleSequentialModel : public ProbabilisticModel {
  public:
   // Alias
-  using cache = std::vector<EvaluatorPtr>;
+  using Cache = std::vector<EvaluatorPtr>;
   using SEPtr = SimpleEvaluatorImplPtr<MultipleSequentialModel>;
   using CEPtr = CachedEvaluatorImplPtr<MultipleSequentialModel>;
 
