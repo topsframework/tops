@@ -108,7 +108,7 @@ Symbol PhasedInhomogeneousMarkovChain::choosePosition(
   return _vlmcs[(i + phase) % _vlmcs.size()]->choosePosition(s, i);
 }
 
-EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
+EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
                                                       bool cached) {
   if (cached)
     return Evaluator::make(

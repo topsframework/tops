@@ -87,7 +87,7 @@ Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
   return s;
 }
 
-EvaluatorPtr FixedSequenceAtPosition::evaluate(
+EvaluatorPtr FixedSequenceAtPosition::evaluator(
     const Sequence &s,
     bool cached) {
   return Evaluator::make(
@@ -101,7 +101,7 @@ double FixedSequenceAtPosition::probabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  double result = _model->evaluate(evaluator->sequence())->probabilityOf(begin, end, phase);
+  double result = _model->evaluator(evaluator->sequence())->probabilityOf(begin, end, phase);
   int j;
   for (j = 0;
        (j < static_cast<int>(_sequence.size()))

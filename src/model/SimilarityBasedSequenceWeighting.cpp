@@ -136,7 +136,7 @@ Symbol SimilarityBasedSequenceWeighting::choosePosition(
   return 0;
 }
 
-EvaluatorPtr SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
+EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
                                                         bool cached) {
   // if (cached)
   //   return Evaluator::make(

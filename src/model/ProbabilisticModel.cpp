@@ -39,7 +39,7 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-EvaluatorPtr ProbabilisticModel::evaluate(const Sequence &s,
+EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
                                           bool cached) {
   if (cached)
     return Evaluator::make(

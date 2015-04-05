@@ -294,7 +294,7 @@ Symbol MaximalDependenceDecomposition::choosePosition(
   return 0;
 }
 
-EvaluatorPtr MaximalDependenceDecomposition::evaluate(
+EvaluatorPtr MaximalDependenceDecomposition::evaluator(
     const Sequence &s,
     bool cached) {
   if (cached)
