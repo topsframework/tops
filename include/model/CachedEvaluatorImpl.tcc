@@ -155,7 +155,7 @@ template<typename Model>
 template<typename M>
 Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
                                                   is_decodable<M>* dummy) {
-  return this->_model->CachedLabeling(
+  return this->_model->cachedLabeling(
     std::static_pointer_cast<CachedEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);

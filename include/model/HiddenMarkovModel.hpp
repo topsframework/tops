@@ -29,6 +29,7 @@
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/Matrix.hpp"
 #include "model/Labeling.hpp"
+#include "model/DecodableEvaluator.hpp"
 
 // ToPS templates
 #include "model/SimpleEvaluatorImpl.tcc"
@@ -50,7 +51,10 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
  */
 class HiddenMarkovModel : public DecodableModel {
  public:
-  //using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
+  // Alias
+  using Cache = DecodableModel::Cache;
+  using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
+  using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
 
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
@@ -88,6 +92,25 @@ class HiddenMarkovModel : public DecodableModel {
 
   virtual Labeling labeling(const Sequence &xs, Matrix &probabilities,
                             Labeling::Method method) const override;
+
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s, bool cached = false);
+
+  // Concrete methods
+  double probabilityOf(SEPtr evaluator,
+                       unsigned int begin,
+                       unsigned int end,
+                       unsigned int phase = 0) const;
+
+  void initializeCachedEvaluator(CEPtr evaluator,
+                                unsigned int phase = 0);
+  double cachedProbabilityOf(CEPtr evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase = 0) const;
+
+  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
+  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
 
  private:
   virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
