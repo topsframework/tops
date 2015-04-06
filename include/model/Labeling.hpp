@@ -17,29 +17,38 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_LABELING_
+#define TOPS_MODEL_LABELING_
+
 // ToPS headers
-#include "Evaluator.hpp"
+#include "Sequence.hpp"
 
 namespace tops {
 namespace model {
 
-Evaluator::Evaluator(EvaluatorImplPtr &&impl)
-    : _impl(std::move(impl)) {
-}
+// Inner classes
+class Labeling {
+ public:
+  // Symbols
+  enum class Method { bestPath, posteriorDecoding };
 
-inline double Evaluator::probabilityOf(unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) {
-  return _impl->probabilityOf(begin, end, phase);
-}
+  // Constructors
+  Labeling();
+  Labeling(double probability, const Sequence& sequence);
+  Labeling(double probability, Sequence&& sequence);
 
-inline Sequence& Evaluator::sequence() {
-  return _impl->sequence();
-}
+  // Getters
+  double probability() const;
 
-inline const Sequence& Evaluator::sequence() const {
-  return _impl->sequence();
-}
+  Sequence& sequence();
+  const Sequence& sequence() const;
+
+ private:
+  double _probability;
+  Sequence _sequence;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif

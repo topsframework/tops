@@ -41,6 +41,7 @@ using ::testing::Eq;
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
 using tops::model::Sequence;
+using tops::model::Labeling;
 using tops::model::Matrix;
 using tops::model::log_sum;
 
@@ -67,10 +68,12 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
   };
   for(auto test : test_set) {
-    Sequence path;
     Matrix gamma;
-    ASSERT_THAT(hmm->viterbi(test[0], path, gamma), DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
-    ASSERT_THAT(path, Eq(test[1]));
+    auto labeling = hmm->decodableEvaluator(test[0])->labeling(Labeling::Method::bestPath);
+
+    ASSERT_THAT(labeling.probability(),
+                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
 
@@ -99,7 +102,7 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
       px = log_sum(px, hmm->evaluateSequences(observations, y, 0, observations.size()));
     }
     Matrix alpha;
-    ASSERT_THAT(hmm->forward(observations, alpha), DoubleEq(px));
+    ASSERT_THAT(hmm->evaluator(observations)->probabilityOf(0, observations.size()), DoubleEq(px));
   }
 }
 
@@ -112,10 +115,12 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   };
 
   for(auto test : test_set) {
-    Sequence path;
     Matrix gamma;
-    hmm->posteriorDecoding(test[0], path, gamma);
-    ASSERT_THAT(path, Eq(test[1]));
+    auto labeling = hmm->decodableEvaluator(test[0])->labeling(Labeling::Method::posteriorDecoding);
+
+    ASSERT_THAT(labeling.probability(),
+                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
 

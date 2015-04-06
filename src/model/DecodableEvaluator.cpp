@@ -27,5 +27,9 @@ DecodableEvaluator::DecodableEvaluator(EvaluatorImplPtr &&impl)
     : Evaluator(std::move(impl)) {
 }
 
+Labeling DecodableEvaluator::labeling(Labeling::Method method) const {
+  return _impl->labeling(method);
+}
+
 }  // namespace model
 }  // namespace tops

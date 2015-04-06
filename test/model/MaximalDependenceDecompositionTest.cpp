@@ -60,25 +60,25 @@ TEST_F(AMDD, ShouldEvaluateAPosition) {
 }
 
 TEST_F(AMDD, ShouldEvaluateASequence) {
-  ASSERT_THAT(mdd->evaluate({0})->probabilityOf(0, 1),
+  ASSERT_THAT(mdd->evaluator({0})->probabilityOf(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
               DoubleNear(-14.0795, 1e-4));
-  ASSERT_THAT(mdd->evaluate({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9),
               DoubleNear(-11.3069, 1e-4));
-  ASSERT_THAT(mdd->evaluate({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9),
               DoubleNear(-8.24662, 1e-4));
 }
 
 TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(mdd->evaluate({0}, true)->probabilityOf(0, 1),
-              DoubleEq(mdd->evaluate({0})->probabilityOf(0, 1)));
-  ASSERT_THAT(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3}, true)->probabilityOf(0, 9),
-              DoubleEq(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9)));
-  ASSERT_THAT(mdd->evaluate({1, 2, 2, 2, 3, 2, 0, 2, 3}, true)->probabilityOf(0, 9),
-              DoubleEq(mdd->evaluate({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9)));
-  ASSERT_THAT(mdd->evaluate({2, 2, 2, 2, 2, 2, 2, 2, 2}, true)->probabilityOf(0, 9),
-              DoubleEq(mdd->evaluate({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9)));
+  ASSERT_THAT(mdd->evaluator({0}, true)->probabilityOf(0, 1),
+              DoubleEq(mdd->evaluator({0})->probabilityOf(0, 1)));
+  ASSERT_THAT(mdd->evaluator({1, 0, 2, 2, 3, 2, 0, 0, 3}, true)->probabilityOf(0, 9),
+              DoubleEq(mdd->evaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9)));
+  ASSERT_THAT(mdd->evaluator({1, 2, 2, 2, 3, 2, 0, 2, 3}, true)->probabilityOf(0, 9),
+              DoubleEq(mdd->evaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9)));
+  ASSERT_THAT(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2}, true)->probabilityOf(0, 9),
+              DoubleEq(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9)));
 }
 
 TEST(MDD, ShouldBeTrained) {
@@ -97,10 +97,10 @@ TEST(MDD, ShouldBeTrained) {
     consensus_sequence,
     consensus_model,
     2);
-  ASSERT_THAT(mdd->evaluate({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
               DoubleNear(-6.45814, 1e-4));
-  ASSERT_THAT(mdd->evaluate({1, 1, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})->probabilityOf(0, 9),
               DoubleNear(-5.765, 1e-4));
-  ASSERT_THAT(mdd->evaluate({1, 1, 3, 2, 3, 2, 0, 0, 0})->probabilityOf(0, 9),
+  ASSERT_THAT(mdd->evaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})->probabilityOf(0, 9),
               DoubleNear(-6.96784, 1e-4));
 }

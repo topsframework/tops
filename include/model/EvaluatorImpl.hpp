@@ -20,6 +20,9 @@
 #ifndef TOPS_MODEL_EVALUATOR_IMPL_
 #define TOPS_MODEL_EVALUATOR_IMPL_
 
+// ToPS headers
+#include "Labeling.hpp"
+
 namespace tops {
 namespace model {
 
@@ -37,10 +40,16 @@ using EvaluatorImplPtr = std::shared_ptr<EvaluatorImpl>;
  */
 class EvaluatorImpl : public std::enable_shared_from_this<EvaluatorImpl> {
  public:
-  // Concrete methods
+  // Virtual methods
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0) = 0;
+
+  virtual Labeling labeling(Labeling::Method method) = 0;
+
+  // Virtual getters
+  virtual Sequence& sequence() = 0;
+  virtual const Sequence& sequence() const = 0;
 };
 
 }  // namespace model

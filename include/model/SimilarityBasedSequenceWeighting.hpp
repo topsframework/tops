@@ -47,7 +47,7 @@ using SimilarityBasedSequenceWeightingPtr
 class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
  public:
   // Alias
-  using cache = std::vector<double>;
+  using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
   using CEPtr = CachedEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
 
@@ -69,7 +69,7 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,
@@ -85,7 +85,7 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
 
  private:
   // Instance variables
-  cache _scores;
+  Cache _scores;
   std::map<Sequence, double> _counter;
   unsigned int _skip_offset;
   unsigned int _skip_length;

@@ -45,7 +45,7 @@ class ProbabilisticModel
     : public std::enable_shared_from_this<ProbabilisticModel>{
  public:
   // Alias
-  using cache = std::vector<double>;
+  using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
@@ -59,7 +59,7 @@ class ProbabilisticModel
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 

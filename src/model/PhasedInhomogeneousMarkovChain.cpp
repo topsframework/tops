@@ -108,13 +108,13 @@ Symbol PhasedInhomogeneousMarkovChain::choosePosition(
   return _vlmcs[(i + phase) % _vlmcs.size()]->choosePosition(s, i);
 }
 
-EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluate(const Sequence &s,
+EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
                                                       bool cached) {
   if (cached)
     return Evaluator::make(
       CachedEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
         std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
-        s, cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
+        s, Cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
   return Evaluator::make(
     SimpleEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
       std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
@@ -128,18 +128,18 @@ double PhasedInhomogeneousMarkovChain::probabilityOf(
     unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(evaluator->sequence, i);
+    prob += evaluatePosition(evaluator->sequence(), i);
   return prob;
 }
 
 void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
     CEPtr evaluator,
     unsigned int phase) {
-  auto &prefix_sum_matrix = evaluator->memory();
+  auto &prefix_sum_matrix = evaluator->cache();
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
     prefix_sum_matrix[t][0] = 0;
-    for (unsigned int i = 0; i < evaluator->sequence.size() ; i++) {
-      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence, i, t);
+    for (unsigned int i = 0; i < evaluator->sequence().size() ; i++) {
+      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence(), i, t);
     }
   }
 }
@@ -149,7 +149,7 @@ double PhasedInhomogeneousMarkovChain::cachedProbabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
-  auto &prefix_sum_matrix = evaluator->memory();
+  auto &prefix_sum_matrix = evaluator->cache();
   return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
 }
 

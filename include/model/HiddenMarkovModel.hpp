@@ -28,6 +28,11 @@
 #include "model/DecodableModel.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/Matrix.hpp"
+#include "model/Labeling.hpp"
+#include "model/DecodableEvaluator.hpp"
+
+// ToPS templates
+#include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -46,6 +51,11 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
  */
 class HiddenMarkovModel : public DecodableModel {
  public:
+  // Alias
+  using Cache = DecodableModel::Cache;
+  using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
+  using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
+
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probabilities,
@@ -71,18 +81,41 @@ class HiddenMarkovModel : public DecodableModel {
   virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const;
   virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const;
 
-  virtual double viterbi (const Sequence &xs, Sequence &ys, Matrix &gamma) const;
   virtual double backward(const Sequence & s, Matrix &beta) const;
   virtual double forward(const Sequence & s, Matrix &alpha) const;
 
   virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
-  virtual void posteriorDecoding(const Sequence & xs, Sequence & path, Matrix & probabilities) const;
 
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
 
+  virtual Labeling labeling(const Sequence &xs, Matrix &probabilities,
+                            Labeling::Method method) const override;
+
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s, bool cached = false);
+
+  // Concrete methods
+  double probabilityOf(SEPtr evaluator,
+                       unsigned int begin,
+                       unsigned int end,
+                       unsigned int phase = 0) const;
+
+  void initializeCachedEvaluator(CEPtr evaluator,
+                                unsigned int phase = 0);
+  double cachedProbabilityOf(CEPtr evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase = 0) const;
+
+  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
+  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
+
  private:
+  virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
+  virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
+
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probability,

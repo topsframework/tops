@@ -17,28 +17,34 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// ToPS headers
-#include "Evaluator.hpp"
+// Libraries
+#include "Labeling.hpp"
 
 namespace tops {
 namespace model {
 
-Evaluator::Evaluator(EvaluatorImplPtr &&impl)
-    : _impl(std::move(impl)) {
+Labeling::Labeling()
+    : _probability(), _sequence() {
 }
 
-inline double Evaluator::probabilityOf(unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) {
-  return _impl->probabilityOf(begin, end, phase);
+Labeling::Labeling(double probability, const Sequence& sequence)
+    : _probability(probability), _sequence(sequence) {
 }
 
-inline Sequence& Evaluator::sequence() {
-  return _impl->sequence();
+Labeling::Labeling(double probability, Sequence&& sequence)
+    : _probability(probability), _sequence(std::move(sequence)) {
 }
 
-inline const Sequence& Evaluator::sequence() const {
-  return _impl->sequence();
+double Labeling::probability() const {
+  return _probability;
+}
+
+Sequence& Labeling::sequence() {
+  return _sequence;
+}
+
+const Sequence& Labeling::sequence() const {
+  return _sequence;
 }
 
 }  // namespace model

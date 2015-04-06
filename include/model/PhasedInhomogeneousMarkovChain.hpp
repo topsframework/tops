@@ -52,7 +52,7 @@ using PhasedInhomogeneousMarkovChainPtr
 class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
  public:
   // Alias
-  using cache = Matrix;
+  using Cache = Matrix;
   using SEPtr = SimpleEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
   using CEPtr = CachedEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
 
@@ -73,7 +73,7 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,

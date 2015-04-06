@@ -49,7 +49,7 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
 class MaximalDependenceDecomposition : public ProbabilisticModel {
  public:
   // Alias
-  using cache = std::vector<double>;
+  using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
   using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
 
@@ -68,7 +68,7 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
 
-  virtual EvaluatorPtr evaluate(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,
