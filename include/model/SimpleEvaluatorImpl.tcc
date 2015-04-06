@@ -47,12 +47,12 @@ class SimpleEvaluatorImpl;
 
 // Auxiliar tests
 template<typename Model>
-using is_decodable
-    = std::enable_if_t<std::is_base_of<DecodableModel, Model>::value, bool>;
+using is_decodable = typename
+  std::enable_if<std::is_base_of<DecodableModel, Model>::value, bool>::type;
 
 template<typename Model>
-using not_decodable
-    = std::enable_if_t<!std::is_base_of<DecodableModel, Model>::value, bool>;
+using not_decodable = typename
+  std::enable_if<!std::is_base_of<DecodableModel, Model>::value, bool>::type;
 
 /**
  * @typedef SimpleEvaluatorImplPtr
