@@ -49,14 +49,14 @@ class AMDD : public testing::Test {
 };
 
 TEST_F(AMDD, ShouldEvaluateAPosition) {
-  ASSERT_THAT(mdd->evaluatePosition({0}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({0, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({0, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0, 1}, 2), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0, 1, 0}, 3), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0}, 0), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1}, 0), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0, 1}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0, 0}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 1}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0, 1}, 2), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0, 1, 0}, 3), DoubleEq(-HUGE));
 }
 
 TEST_F(AMDD, ShouldEvaluateASequence) {

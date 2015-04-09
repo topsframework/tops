@@ -246,9 +246,9 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
 //   return sum_end - sum_begin;
 // }
 
-double HiddenMarkovModel::evaluatePosition(
+double HiddenMarkovModel::evaluate(
     const Sequence &xs,
-    unsigned int i,
+    unsigned int pos,
     unsigned int phase) const {
   return -HUGE;
 }

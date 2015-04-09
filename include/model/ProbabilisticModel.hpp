@@ -50,8 +50,9 @@ class ProbabilisticModel
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i,
-                                  unsigned int phase = 0) const = 0;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const = 0;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i,
                                 unsigned int phase = 0) const = 0;
 

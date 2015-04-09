@@ -69,7 +69,7 @@ class HiddenMarkovModel : public DecodableModel {
                                       unsigned int maxiterations,
                                       double diff_threshold);
 
-  virtual double evaluatePosition(const Sequence &xs, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &xs, unsigned int pos, unsigned int phase = 0) const;
   virtual Symbol choosePosition(const Sequence &xs, unsigned int i, unsigned int phase = 0) const;
 
   virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const;
