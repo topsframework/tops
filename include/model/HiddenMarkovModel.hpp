@@ -56,52 +56,68 @@ class HiddenMarkovModel : public DecodableModel {
   using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
 
+  // Static methods
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probabilities,
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size);
 
-  static HiddenMarkovModelPtr trainML(std::vector<Sequence> observation_training_set,
-                                      std::vector<Sequence> state_training_set,
-                                      unsigned int state_alphabet_size,
-                                      unsigned int observation_alphabet_size,
-                                      double pseudocont);
+  static HiddenMarkovModelPtr trainML(
+      std::vector<Sequence> observation_training_set,
+      std::vector<Sequence> state_training_set,
+      unsigned int state_alphabet_size,
+      unsigned int observation_alphabet_size,
+      double pseudocont);
 
-  static HiddenMarkovModelPtr trainBaumWelch(std::vector<Sequence> observation_training_set,
-                                      HiddenMarkovModelPtr initial_model,
-                                      unsigned int maxiterations,
-                                      double diff_threshold);
+  static HiddenMarkovModelPtr trainBaumWelch(
+      std::vector<Sequence> observation_training_set,
+      HiddenMarkovModelPtr initial_model,
+      unsigned int maxiterations,
+      double diff_threshold);
 
-  virtual double evaluate(const Sequence &xs, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &xs, unsigned int i, unsigned int phase = 0) const;
+  // Virtual methods
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false);
+  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
+                                                   bool cached = false);
 
-  virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const;
-  virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const;
-  virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const;
-  virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const;
+  virtual double evaluate(const Sequence &xs,
+                          unsigned int pos,
+                          unsigned int phase = 0) const;
+  virtual double evaluateSequences(const Sequence &xs,
+                                   const Sequence &ys,
+                                   unsigned int begin,
+                                   unsigned int end) const;
+  virtual double evaluateSequencesPosition(const Sequence &xs,
+                                           const Sequence &ys,
+                                           unsigned int i) const;
 
-  virtual double backward(const Sequence & s, Matrix &beta) const;
-  virtual double forward(const Sequence & s, Matrix &alpha) const;
+  virtual Symbol choosePosition(const Sequence &xs,
+                                unsigned int i,
+                                unsigned int phase = 0) const;
+  virtual void chooseSequences(Sequence &xs,
+                               Sequence &ys,
+                               unsigned int size) const;
+  virtual void chooseSequencesPosition(Sequence &xs,
+                                       Sequence &ys,
+                                       unsigned int i) const;
 
-  virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const;
-
-  unsigned int stateAlphabetSize() const;
-  unsigned int observationAlphabetSize() const;
-  HiddenMarkovModelStatePtr state(unsigned int i) const;
+  virtual double backward(const Sequence &s,
+                          Matrix &beta) const;
+  virtual double forward(const Sequence &s,
+                         Matrix &alpha) const;
+  virtual void posteriorProbabilities(const Sequence &xs,
+                                      Matrix &probabilities) const;
 
   virtual Labeling labeling(const Sequence &xs, Matrix &probabilities,
                             Labeling::Method method) const override;
-
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
-  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s, bool cached = false);
 
   // Concrete methods
   double probabilityOf(SEPtr evaluator,
                        unsigned int begin,
                        unsigned int end,
                        unsigned int phase = 0) const;
-
   void initializeCachedEvaluator(CEPtr evaluator,
                                 unsigned int phase = 0);
   double cachedProbabilityOf(CEPtr evaluator,
@@ -112,10 +128,12 @@ class HiddenMarkovModel : public DecodableModel {
   Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
   Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
 
- private:
-  virtual Labeling viterbi(const Sequence &xs, Matrix &gamma) const override;
-  virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
+  unsigned int stateAlphabetSize() const;
+  unsigned int observationAlphabetSize() const;
+  HiddenMarkovModelStatePtr state(unsigned int i) const;
 
+ protected:
+  // Constructors
   HiddenMarkovModel(
       std::vector<HiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probability,
@@ -126,6 +144,13 @@ class HiddenMarkovModel : public DecodableModel {
     DiscreteIIDModelPtr _initial_probabilities;
     unsigned int _state_alphabet_size;
     unsigned int _observation_alphabet_size;
+
+ private:
+  // Virtual methods
+  virtual Labeling viterbi(const Sequence &xs,
+                           Matrix &gamma) const override;
+  virtual Labeling posteriorDecoding(const Sequence &xs,
+                                     Matrix &probabilities) const override;
 };
 
 }  // namespace model

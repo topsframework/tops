@@ -43,24 +43,44 @@ class DecodableModel : public ProbabilisticModel {
     Matrix alpha, beta, gamma, posterior_decoding;
   };
 
-  virtual double evaluateSequences(const Sequence &xs, const Sequence &ys, unsigned int begin, unsigned int end) const = 0;
-  virtual double evaluateSequencesPosition(const Sequence &xs, const Sequence &ys, unsigned int i) const = 0;
-  virtual void chooseSequences(Sequence &xs, Sequence &ys, unsigned int size) const = 0;
-  virtual void chooseSequencesPosition(Sequence &xs, Sequence &ys, unsigned int i) const = 0;
+  // Virtual methods
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) = 0;
+  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
+                                                   bool cached = false) = 0;
 
-  virtual double backward(const Sequence & s, Matrix &beta) const = 0;
-  virtual double forward(const Sequence & s, Matrix &alpha) const = 0;
-  virtual void posteriorProbabilities(const Sequence & xs, Matrix & probabilities) const = 0;
+  virtual double evaluateSequences(const Sequence &xs,
+                                   const Sequence &ys,
+                                   unsigned int begin,
+                                   unsigned int end) const = 0;
+  virtual double evaluateSequencesPosition(const Sequence &xs,
+                                           const Sequence &ys,
+                                           unsigned int i) const = 0;
 
-  virtual Labeling labeling(const Sequence &xs, Matrix &probabilities,
+  virtual void chooseSequences(Sequence &xs,
+                               Sequence &ys,
+                               unsigned int size) const = 0;
+  virtual void chooseSequencesPosition(Sequence &xs,
+                                       Sequence &ys,
+                                       unsigned int i) const = 0;
+
+  virtual double backward(const Sequence &s,
+                          Matrix &beta) const = 0;
+  virtual double forward(const Sequence &s,
+                         Matrix &alpha) const = 0;
+  virtual void posteriorProbabilities(const Sequence &xs,
+                                      Matrix &probabilities) const = 0;
+
+  virtual Labeling labeling(const Sequence &xs,
+                            Matrix &probabilities,
                             Labeling::Method method) const = 0;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false) = 0;
-  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s, bool cached = false) = 0;
-
  private:
-  virtual Labeling viterbi (const Sequence &xs, Matrix &gamma) const = 0;
-  virtual Labeling posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
+  // Virtual methods
+  virtual Labeling viterbi(const Sequence &xs,
+                           Matrix &gamma) const = 0;
+  virtual Labeling posteriorDecoding(const Sequence &xs,
+                                     Matrix &probabilities) const = 0;
 };
 
 /**
