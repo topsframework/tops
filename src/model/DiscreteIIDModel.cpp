@@ -412,10 +412,10 @@ double DiscreteIIDModel::probabilityOf(Symbol s) const {
   return _probabilities[s];
 }
 
-double DiscreteIIDModel::evaluatePosition(const Sequence &s,
-                                          unsigned int i,
-                                          unsigned int phase) const {
-  return probabilityOf(s[i]);
+double DiscreteIIDModel::evaluate(const Sequence &s,
+                                  unsigned int pos,
+                                  unsigned int phase) const {
+  return probabilityOf(s[pos]);
 }
 
 Symbol DiscreteIIDModel::choose() const {

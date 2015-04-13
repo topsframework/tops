@@ -31,10 +31,10 @@ ProbabilisticModelDecorator::ProbabilisticModelDecorator(
     ProbabilisticModelPtr model) : _model(model) {
 }
 
-double ProbabilisticModelDecorator::evaluatePosition(const Sequence &s,
-                                                     unsigned int i,
-                                                     unsigned int phase) const {
-  return _model->evaluatePosition(s, i);
+double ProbabilisticModelDecorator::evaluate(const Sequence &s,
+                                             unsigned int pos,
+                                             unsigned int phase) const {
+  return _model->evaluate(s, pos);
 }
 
 Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s,

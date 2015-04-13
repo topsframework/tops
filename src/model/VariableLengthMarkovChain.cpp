@@ -96,14 +96,14 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
   return VariableLengthMarkovChain::make(tree);
 }
 
-double VariableLengthMarkovChain::evaluatePosition(const Sequence &s,
-                                                   unsigned int i,
-                                                   unsigned int phase) const {
-  ContextTreeNodePtr c = _context_tree->getContext(s, i);
+double VariableLengthMarkovChain::evaluate(const Sequence &s,
+                                           unsigned int pos,
+                                           unsigned int phase) const {
+  ContextTreeNodePtr c = _context_tree->getContext(s, pos);
   if (c == NULL)
     return -HUGE;
   else
-    return c->getDistribution()->evaluatePosition(s, i);
+    return c->getDistribution()->evaluate(s, pos);
 }
 
 Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,

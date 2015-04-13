@@ -105,7 +105,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
-    double prob = consensus_model->evaluatePosition(s, consensus_index);
+    double prob = consensus_model->evaluate(s, consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
                                                           model,
@@ -221,9 +221,9 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
         double chi = -HUGE;
         for (unsigned int k = 0; k < alphabet_size; k++) {
           s[i] = k;
-          double e = consensus_model->evaluatePosition(s, i);
+          double e = consensus_model->evaluate(s, i);
           s[j] = k;
-          double o = model->evaluatePosition(s, j);
+          double o = model->evaluate(s, j);
           double x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
@@ -249,9 +249,9 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   return maximal_i;
 }
 
-double MaximalDependenceDecomposition::evaluatePosition(
+double MaximalDependenceDecomposition::evaluate(
     const Sequence &s,
-     unsigned int i,
+     unsigned int pos,
      unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
@@ -328,7 +328,7 @@ double MaximalDependenceDecomposition::_probabilityOf(
     std::vector<int> &indexes) const {
   double p = 0;
   if (node->getLeft()) {
-    p = node->getModel()->evaluatePosition(s, node->getIndex());
+    p = node->getModel()->evaluate(s, node->getIndex());
     indexes.push_back(node->getIndex());
     // cout << node->getIndex() << endl;
     // cout << "tem filho" << endl;
@@ -343,7 +343,7 @@ double MaximalDependenceDecomposition::_probabilityOf(
     // cout << "nao tem filho" << endl;
     for (unsigned int i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
-        p += node->getModel()->evaluatePosition(s, i);
+        p += node->getModel()->evaluate(s, i);
       }
     }
   }

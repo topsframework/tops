@@ -317,9 +317,9 @@ double HiddenMarkovModel::cachedProbabilityOf(CEPtr evaluator,
          - evaluator->cache().prefix_sum_array[begin];
 }
 
-double HiddenMarkovModel::evaluatePosition(
+double HiddenMarkovModel::evaluate(
     const Sequence &xs,
-    unsigned int i,
+    unsigned int pos,
     unsigned int phase) const {
   return -HUGE;
 }
