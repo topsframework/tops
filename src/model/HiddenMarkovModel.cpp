@@ -352,6 +352,13 @@ double HiddenMarkovModel::evaluateSequences(const Sequence &xs,
   return prob;
 }
 
+double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
+                                              const Sequence &s,
+                                              unsigned int begin,
+                                              unsigned int end) const {
+  return evaluateSequences(evaluator->sequence(), s, begin, end);
+}
+
 Labeling HiddenMarkovModel::labeling(const Sequence &xs,
                                      Matrix &probabilities,
                                      Labeling::Method method) const {

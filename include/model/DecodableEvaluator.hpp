@@ -52,6 +52,11 @@ class DecodableEvaluator : public Evaluator {
   }
 
   // Virtual methods
+  virtual double probabilityOf(const Sequence &s,
+                               unsigned int begin,
+                               unsigned int end);
+
+  // Virtual methods
   virtual Labeling labeling(Labeling::Method method) const;
 
  protected:

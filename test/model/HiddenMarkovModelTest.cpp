@@ -54,7 +54,7 @@ class AHiddenMarkovModel : public testing::Test {
 };
 
 TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
-  ASSERT_THAT(hmm->evaluateSequences({0, 0, 1}, {0, 1, 1}, 0, 3),
+  ASSERT_THAT(hmm->decodableEvaluator({0, 0, 1})->probabilityOf({0, 1, 1}, 0, 3),
               DoubleEq(log(0.9) + log(0.5) +
                        log(0.3) + log(0.2) +
                        log(0.5) + log(0.8)));

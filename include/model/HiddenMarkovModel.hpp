@@ -125,6 +125,11 @@ class HiddenMarkovModel : public DecodableModel {
                                     unsigned int end,
                                     unsigned int phase = 0) const;
 
+  double simpleProbabilityOf(SEPtr evaluator,
+                             const Sequence& s,
+                             unsigned int begin,
+                             unsigned int end) const;
+
   Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
   Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
 
