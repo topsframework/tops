@@ -250,27 +250,33 @@ EvaluatorPtr HiddenMarkovModel::evaluator(const Sequence &s, bool cached) {
   return decodableEvaluator(s, cached);
 }
 
-DecodableEvaluatorPtr HiddenMarkovModel::decodableEvaluator(const Sequence &s, bool cached) {
+DecodableEvaluatorPtr HiddenMarkovModel::decodableEvaluator(const Sequence &s,
+                                                            bool cached) {
   if (cached)
     return DecodableEvaluator::make(
       CachedEvaluatorImpl<HiddenMarkovModel>::make(
-        std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()), s, Cache()));
+        std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()),
+        s, Cache()));
   return DecodableEvaluator::make(
     SimpleEvaluatorImpl<HiddenMarkovModel>::make(
       std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()), s));
 }
 
-Labeling HiddenMarkovModel::simpleLabeling(SEPtr evaluator, Labeling::Method method) {
+Labeling HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
+                                           Labeling::Method method) {
   Matrix matrix;
   return labeling(evaluator->sequence(), matrix, method);
 }
 
-Labeling HiddenMarkovModel::cachedLabeling(CEPtr evaluator, Labeling::Method method) {
+Labeling HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
+                                           Labeling::Method method) {
   switch (method) {
     case Labeling::Method::bestPath:
-     return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
+      return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
     case Labeling::Method::posteriorDecoding:
-     return labeling(evaluator->sequence(), evaluator->cache().posterior_decoding, method);
+      return labeling(evaluator->sequence(),
+                      evaluator->cache().posterior_decoding,
+                      method);
   }
   // TODO(igorbonadio): Throw exception!
   return Labeling();
@@ -357,9 +363,9 @@ Labeling HiddenMarkovModel::labeling(const Sequence &xs,
                                      Labeling::Method method) const {
   switch (method) {
     case Labeling::Method::bestPath:
-     return viterbi(xs, probabilities);
+      return viterbi(xs, probabilities);
     case Labeling::Method::posteriorDecoding:
-     return posteriorDecoding(xs, probabilities);
+      return posteriorDecoding(xs, probabilities);
   }
   return Labeling();
 }
