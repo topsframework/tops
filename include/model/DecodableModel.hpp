@@ -49,9 +49,9 @@ class DecodableModel : public ProbabilisticModel {
   virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
                                                    bool cached = false) = 0;
 
-  virtual double evaluateSequencesPosition(const Sequence &xs,
-                                           const Sequence &ys,
-                                           unsigned int i) const = 0;
+  virtual double evaluate(const Sequence &xs,
+                          const Sequence &ys,
+                          unsigned int i) const = 0;
 
   virtual void chooseSequences(Sequence &xs,
                                Sequence &ys,

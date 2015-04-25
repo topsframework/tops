@@ -337,9 +337,9 @@ Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,
   return INVALID_SYMBOL;
 }
 
-double HiddenMarkovModel::evaluateSequencesPosition(const Sequence &xs,
-                                                    const Sequence &ys,
-                                                    unsigned int i) const {
+double HiddenMarkovModel::evaluate(const Sequence &xs,
+                                   const Sequence &ys,
+                                   unsigned int i) const {
   double transition;
   if (i == 0)
     transition = _initial_probabilities->probabilityOf(ys[0]);
@@ -354,7 +354,7 @@ double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
                                               unsigned int end) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluateSequencesPosition(evaluator->sequence(), s, i);
+    prob += evaluate(evaluator->sequence(), s, i);
   return prob;
 }
 

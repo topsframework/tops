@@ -85,9 +85,9 @@ class HiddenMarkovModel : public DecodableModel {
   virtual double evaluate(const Sequence &xs,
                           unsigned int pos,
                           unsigned int phase = 0) const;
-  virtual double evaluateSequencesPosition(const Sequence &xs,
-                                           const Sequence &ys,
-                                           unsigned int i) const;
+  virtual double evaluate(const Sequence &xs,
+                          const Sequence &ys,
+                          unsigned int i) const;
 
   virtual Symbol choosePosition(const Sequence &xs,
                                 unsigned int i,
