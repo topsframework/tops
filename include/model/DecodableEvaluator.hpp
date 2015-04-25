@@ -44,6 +44,9 @@ using DecodableEvaluatorPtr = std::shared_ptr<DecodableEvaluator>;
  */
 class DecodableEvaluator : public Evaluator {
  public:
+  // Hidden name method inhiterance
+  using Evaluator::probabilityOf;
+
   // Static methods
   template<typename... Ts>
   static DecodableEvaluatorPtr make(Ts... args) {

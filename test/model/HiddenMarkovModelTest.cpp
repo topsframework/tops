@@ -20,7 +20,6 @@
 // Standard headers
 #include <cmath>
 #include <vector>
-
 #include <iostream>
 
 // External headers
@@ -68,11 +67,11 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
   };
   for(auto test : test_set) {
-    Matrix gamma;
-    auto labeling = hmm->decodableEvaluator(test[0])->labeling(Labeling::Method::bestPath);
+    auto evaluator = hmm->decodableEvaluator(test[0]);
+    auto labeling = evaluator->labeling(Labeling::Method::bestPath);
 
     ASSERT_THAT(labeling.probability(),
-                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+                DoubleEq(evaluator->probabilityOf(test[1], 0, test[1].size())));
     ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
@@ -97,12 +96,13 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
 
   for (auto observations : test_set) {
     double px = -HUGE;
+    auto evaluator = hmm->decodableEvaluator(observations);
+
     std::vector<Sequence> labels = generateAllCombinationsOfSymbols(observations.size());
     for (auto y : labels) {
-      px = log_sum(px, hmm->evaluateSequences(observations, y, 0, observations.size()));
+      px = log_sum(px, evaluator->probabilityOf(y, 0, observations.size()));
     }
-    Matrix alpha;
-    ASSERT_THAT(hmm->evaluator(observations)->probabilityOf(0, observations.size()), DoubleEq(px));
+    ASSERT_THAT(evaluator->probabilityOf(0, observations.size()), DoubleEq(px));
   }
 }
 
@@ -115,11 +115,11 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   };
 
   for(auto test : test_set) {
-    Matrix gamma;
-    auto labeling = hmm->decodableEvaluator(test[0])->labeling(Labeling::Method::posteriorDecoding);
+    auto evaluator = hmm->decodableEvaluator(test[0]);
+    auto labeling = evaluator->labeling(Labeling::Method::posteriorDecoding);
 
     ASSERT_THAT(labeling.probability(),
-                DoubleEq(hmm->evaluateSequences(test[0], test[1], 0, test[0].size())));
+                DoubleEq(evaluator->probabilityOf(test[1], 0, test[1].size())));
     ASSERT_THAT(labeling.sequence(), Eq(test[1]));
   }
 }
@@ -135,11 +135,17 @@ TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
     {0, 1, 1, 0, 0, 0, 1, 1},
     {0, 0, 0, 0, 0, 1, 0},
   };
-  auto trained_hmm = HiddenMarkovModel::trainML(observation_training_set, state_training_set, 2, 2, 0.1);
-  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {0, 0, 0}, 0, 3), DoubleNear(-2.32992, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {1, 1, 1}, 0, 3), DoubleNear(-3.20183, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {1, 1, 1}, 0, 3), DoubleNear(-4.39373, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {0, 0, 0}, 0, 3), DoubleNear(-4.81600, 1e-4));
+
+  auto trained_hmm = HiddenMarkovModel::trainML(
+      observation_training_set, state_training_set, 2, 2, 0.1);
+
+  auto evaluator0 = trained_hmm->decodableEvaluator({0, 0, 0});
+  auto evaluator1 = trained_hmm->decodableEvaluator({1, 1, 1});
+
+  ASSERT_THAT(evaluator0->probabilityOf({0, 0, 0}, 0, 3), DoubleNear(-2.32992, 1e-4));
+  ASSERT_THAT(evaluator0->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-3.20183, 1e-4));
+  ASSERT_THAT(evaluator1->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-4.39373, 1e-4));
+  ASSERT_THAT(evaluator1->probabilityOf({0, 0, 0}, 0, 3), DoubleNear(-4.81600, 1e-4));
 }
 
 TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
@@ -148,9 +154,15 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
     {0, 0, 0, 1, 0, 0, 1, 1},
     {0, 0, 0, 1, 1, 0, 0},
   };
-  auto trained_hmm = HiddenMarkovModel::trainBaumWelch(observation_training_set, hmm, 500, 1e-4);
-  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {0, 0, 0}, 0, 3), DoubleNear(-1.65545, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({0, 0, 0}, {1, 1, 1}, 0, 3), DoubleNear(-311.83440, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {1, 1, 1}, 0, 3), DoubleNear(-313.26651, 1e-4));
-  ASSERT_THAT(trained_hmm->evaluateSequences({1, 1, 1}, {0, 0, 0}, 0, 3), DoubleNear(-110.38680, 1e-4));
+
+  auto trained_hmm = HiddenMarkovModel::trainBaumWelch(
+      observation_training_set, hmm, 500, 1e-4);
+
+  auto evaluator0 = trained_hmm->decodableEvaluator({0, 0, 0});
+  auto evaluator1 = trained_hmm->decodableEvaluator({1, 1, 1});
+
+  ASSERT_THAT(evaluator0->probabilityOf({0, 0, 0}, 0, 3), DoubleNear(-1.65545, 1e-4));
+  ASSERT_THAT(evaluator0->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-311.83440, 1e-4));
+  ASSERT_THAT(evaluator1->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-313.26651, 1e-4));
+  ASSERT_THAT(evaluator1->probabilityOf({0, 0, 0}, 0, 3), DoubleNear(-110.38680, 1e-4));
 }
