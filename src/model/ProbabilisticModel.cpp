@@ -50,10 +50,10 @@ EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
       shared_from_this(), s));
 }
 
-double ProbabilisticModel::probabilityOf(SEPtr evaluator,
-                                         unsigned int begin,
-                                         unsigned int end,
-                                         unsigned int phase) const {
+double ProbabilisticModel::simpleProbabilityOf(SEPtr evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluate(evaluator->sequence(), i);

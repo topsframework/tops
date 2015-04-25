@@ -96,7 +96,7 @@ EvaluatorPtr FixedSequenceAtPosition::evaluator(
       s));
 }
 
-double FixedSequenceAtPosition::probabilityOf(
+double FixedSequenceAtPosition::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,

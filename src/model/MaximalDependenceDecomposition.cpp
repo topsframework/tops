@@ -308,7 +308,7 @@ EvaluatorPtr MaximalDependenceDecomposition::evaluator(
       s));
 }
 
-double MaximalDependenceDecomposition::probabilityOf(
+double MaximalDependenceDecomposition::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,
@@ -358,9 +358,10 @@ void MaximalDependenceDecomposition::initializeCachedEvaluator(
   int len = evaluator->sequence().size();
   int clen = _consensus_sequence.size();
   for (int i = 0; i <= (len - clen); i++) {
-    prefix_sum_array.push_back(probabilityOf(evaluator, i, i + clen));
+    prefix_sum_array.push_back(simpleProbabilityOf(evaluator, i, i + clen));
   }
 }
+
 double MaximalDependenceDecomposition::cachedProbabilityOf(
     CEPtr evaluator,
     unsigned int begin,

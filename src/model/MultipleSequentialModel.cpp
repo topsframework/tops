@@ -89,7 +89,7 @@ EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
       s));
 }
 
-double MultipleSequentialModel::probabilityOf(
+double MultipleSequentialModel::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,

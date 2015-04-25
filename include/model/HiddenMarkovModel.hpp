@@ -110,16 +110,17 @@ class HiddenMarkovModel : public DecodableModel {
                             Labeling::Method method) const override;
 
   // Concrete methods
-  double probabilityOf(SEPtr evaluator,
-                       unsigned int begin,
-                       unsigned int end,
-                       unsigned int phase = 0) const;
   void initializeCachedEvaluator(CEPtr evaluator,
-                                unsigned int phase = 0);
+                                 unsigned int phase = 0);
+
+  double simpleProbabilityOf(SEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
   double cachedProbabilityOf(CEPtr evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int phase = 0) const;
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
 
   double simpleProbabilityOf(SEPtr evaluator,
                              const Sequence& s,

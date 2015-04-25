@@ -282,10 +282,10 @@ Labeling HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
   return Labeling();
 }
 
-double HiddenMarkovModel::probabilityOf(SEPtr evaluator,
-                                     unsigned int begin,
-                                     unsigned int end,
-                                     unsigned int phase) const {
+double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
+                                              unsigned int begin,
+                                              unsigned int end,
+                                              unsigned int phase) const {
   Matrix alpha;
   forward(evaluator->sequence(), alpha);
   double sum_end = -HUGE;

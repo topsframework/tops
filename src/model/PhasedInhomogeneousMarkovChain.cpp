@@ -121,7 +121,7 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
       s));
 }
 
-double PhasedInhomogeneousMarkovChain::probabilityOf(
+double PhasedInhomogeneousMarkovChain::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,

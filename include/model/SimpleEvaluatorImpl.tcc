@@ -152,7 +152,7 @@ double SimpleEvaluatorImpl<Model>::probabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) {
-  return this->_model->probabilityOf(
+  return this->_model->simpleProbabilityOf(
     std::static_pointer_cast<SimpleEvaluatorImpl<Model>>(
       this->shared_from_this()),
       begin, end, phase);

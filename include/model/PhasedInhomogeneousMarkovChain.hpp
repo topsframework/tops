@@ -75,17 +75,18 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
-  double probabilityOf(SEPtr evaluator,
-                       unsigned int begin,
-                       unsigned int end,
-                       unsigned int phase = 0) const;
-
+  // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
-                                unsigned int phase = 0);
+                                 unsigned int phase = 0);
+
+  double simpleProbabilityOf(SEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
   double cachedProbabilityOf(CEPtr evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int phase = 0) const;
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
 
  private:
   // Constructors
