@@ -1,15 +1,11 @@
 language: cpp
 
-compiler:
-  - gcc
-  - clang
-
-os:
-  - linux
-  - osx
-
 matrix:
   include:
+    - os: linux
+      compiler: clang++
+    - os: linux
+      compiler: g++
     - os: osx
       compiler: clang++
     - os: osx
