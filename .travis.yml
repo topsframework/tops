@@ -1,15 +1,14 @@
+sudo: required
+
 language: cpp
 
-matrix:
-  include:
-    - os: linux
-      compiler: clang++
-    - os: linux
-      compiler: g++
-    - os: osx
-      compiler: clang++
-    - os: osx
-      compiler: g++
+os:
+  - linux
+  - osx
+
+compiler:
+  - clang++
+  - g++
 
 before_install:
   - if [ $TRAVIS_OS_NAME = linux ]; then
