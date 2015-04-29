@@ -8,6 +8,13 @@ os:
   - linux
   - osx
 
+matrix:
+  include:
+    - os: osx
+      compiler: clang++
+    - os: osx
+      compiler: g++
+
 before_install:
   - if [ $TRAVIS_OS_NAME = linux ]; then
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
@@ -28,6 +35,8 @@ install:
       brew tap homebrew/versions;
       brew install llvm --with-clang --with-asan;
       brew install gcc49;
+      alias gcc=/usr/bin/g++-4.9;
+      alias gcov=/usr/bin/gcov-4.9;
       brew install lcov;
     fi
   - gem install coveralls-lcov;
