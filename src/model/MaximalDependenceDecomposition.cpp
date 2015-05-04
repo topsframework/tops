@@ -262,7 +262,7 @@ Sequence MaximalDependenceDecomposition::chooseSequence(
     unsigned int size,
     unsigned int phase) const {
   s = Sequence(size, INVALID_SYMBOL);
-  _chooseAux(s, _mdd_tree);
+  // _chooseAux(s, _mdd_tree);
   return s;
 }
 

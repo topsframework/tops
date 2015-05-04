@@ -39,6 +39,7 @@ using ::testing::ContainerEq;
 using tops::model::MaximalDependenceDecomposition;
 using tops::model::MaximalDependenceDecompositionPtr;
 using tops::model::Sequence;
+using tops::model::INVALID_SYMBOL;
 
 using tops::helper::createMDD;
 using tops::helper::createDNAModel;
@@ -83,8 +84,8 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
 }
 
 TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
-  // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(mdd->generator()->choose(5), ContainerEq(Sequence{2, 2, 2, 2, 2}));
+  // TODO(igorbonadio): implement method
+  ASSERT_THAT(mdd->generator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 
