@@ -61,5 +61,5 @@ TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
 
 TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(distribution->generator()->choose(5), ContainerEq(Sequence{107, 107, 107, 107, 107}));
+  ASSERT_THAT(distribution->generator()->choose(5), ContainerEq(Sequence(5, 1169)));
 }

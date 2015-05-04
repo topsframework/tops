@@ -28,7 +28,7 @@ namespace tops {
 namespace model {
 
 double generateRandomDouble() {
-  std::default_random_engine generator(42);
+  std::mt19937 generator(42);
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
   return distribution(generator);
 }
