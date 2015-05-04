@@ -23,7 +23,9 @@
 namespace tops {
 namespace model {
 
-double generateRandomDouble();
+void resetRandom();
+
+double generateRandomDouble(bool reset = false);
 
 }  // namespace model
 }  // namespace tops
