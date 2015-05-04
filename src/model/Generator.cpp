@@ -17,8 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Libraries
-#include "Generator.hpp"
+// ToPS headers
+#include "model/Generator.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {

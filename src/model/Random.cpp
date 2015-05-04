@@ -17,18 +17,18 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "Random.hpp"
-
+// Standard headers
 #include <chrono>
 #include <random>
+
+// ToPS headers
+#include "model/Random.hpp"
 
 namespace tops {
 namespace model {
 
-std::default_random_engine generator(
-  std::chrono::system_clock::now().time_since_epoch().count());
-
-int generateRandomDouble() {
+double generateRandomDouble() {
+  std::default_random_engine generator(42);
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
   return distribution(generator);
 }

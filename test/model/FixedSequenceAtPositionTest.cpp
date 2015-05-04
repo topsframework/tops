@@ -35,6 +35,7 @@
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::ContainerEq;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
@@ -62,4 +63,8 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
               DoubleEq(-HUGE));
   ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 0, 1, 0, 0})->probabilityOf(0, 8),
               DoubleNear(-10.1029, 1e-4));
+}
+
+TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldChooseSequenceWithSeed42) {
+  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 1, 1, 1, 0}));
 }

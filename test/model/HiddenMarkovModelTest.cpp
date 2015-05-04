@@ -36,6 +36,7 @@
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
@@ -43,6 +44,7 @@ using tops::model::Sequence;
 using tops::model::Labeling;
 using tops::model::Matrix;
 using tops::model::log_sum;
+using tops::model::INVALID_SYMBOL;
 
 using tops::helper::createDishonestCoinCasinoHMM;
 using tops::helper::generateAllCombinationsOfSymbols;
@@ -165,4 +167,9 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   ASSERT_THAT(evaluator0->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-311.83440, 1e-4));
   ASSERT_THAT(evaluator1->probabilityOf({1, 1, 1}, 0, 3), DoubleNear(-313.26651, 1e-4));
   ASSERT_THAT(evaluator1->probabilityOf({0, 0, 0}, 0, 3), DoubleNear(-110.38680, 1e-4));
+}
+
+TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): implement method
+  ASSERT_THAT(hmm->generator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }

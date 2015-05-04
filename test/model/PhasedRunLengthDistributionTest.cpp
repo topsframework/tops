@@ -34,6 +34,7 @@
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::ContainerEq;
 
 using tops::model::PhasedRunLengthDistribution;
 using tops::model::PhasedRunLengthDistributionPtr;
@@ -58,3 +59,7 @@ TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
   ASSERT_THAT(distribution->probabilityOf(4188), DoubleEq(-HUGE));
 }
 
+TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  ASSERT_THAT(distribution->generator()->choose(5), ContainerEq(Sequence{107, 107, 107, 107, 107}));
+}

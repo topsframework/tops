@@ -34,6 +34,7 @@
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::MaximalDependenceDecomposition;
 using tops::model::MaximalDependenceDecompositionPtr;
@@ -80,6 +81,12 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2}, true)->probabilityOf(0, 9),
               DoubleEq(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9)));
 }
+
+TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  ASSERT_THAT(mdd->generator()->choose(5), ContainerEq(Sequence{2, 2, 2, 2, 2}));
+}
+
 
 TEST(MDD, ShouldBeTrained) {
   auto consensus_sequence = createConsensusSequence();

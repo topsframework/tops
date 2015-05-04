@@ -26,6 +26,7 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
+#include "model/Generator.hpp"
 
 // ToPS templates
 #include "model/SimpleEvaluatorImpl.tcc"
@@ -59,6 +60,8 @@ class ProbabilisticModel
   // Virtual methods
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
+
+  virtual GeneratorPtr generator();
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 

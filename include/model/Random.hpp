@@ -23,7 +23,7 @@
 namespace tops {
 namespace model {
 
-int generateRandomDouble();
+double generateRandomDouble();
 
 }  // namespace model
 }  // namespace tops

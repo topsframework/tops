@@ -35,6 +35,7 @@
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
@@ -88,6 +89,10 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
     ASSERT_THAT(iid->evaluator(data, true)->probabilityOf(0, data.size()),
                 DoubleEq(iid->evaluator(data)->probabilityOf(0, data.size())));
   }
+}
+
+TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
+  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 1, 1, 1, 1}));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {

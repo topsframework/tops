@@ -31,6 +31,7 @@
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::ContainerEq;
 
 using tops::model::SimilarityBasedSequenceWeighting;
 using tops::model::SimilarityBasedSequenceWeightingPtr;
@@ -84,6 +85,11 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
 
   ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->probabilityOf(0, 13),
               DoubleNear(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
+}
+
+TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  ASSERT_THAT(sbsw->generator()->choose(5), ContainerEq(Sequence{0, 0, 0, 0, 0}));
 }
 
 TEST(SBSW, ShouldBeTrained) {

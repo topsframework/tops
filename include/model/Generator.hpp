@@ -24,10 +24,14 @@
 #include <memory>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
+#include "model/Sequence.hpp"
+
 
 namespace tops {
 namespace model {
+
+class ProbabilisticModel;
+using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
 
 class Generator;
 
@@ -50,8 +54,8 @@ class Generator : public std::enable_shared_from_this<Generator> {
   }
 
   // Virtual methods
-  inline virtual Sequence choose(unsigned int size,
-                                 unsigned int phase = 0) const;
+  virtual Sequence choose(unsigned int size,
+                          unsigned int phase = 0) const;
 
  protected:
   Generator(ProbabilisticModelPtr &&model);
