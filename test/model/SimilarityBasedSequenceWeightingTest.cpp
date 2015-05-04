@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -89,6 +90,7 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
+  tops::model::resetRandom();
   ASSERT_THAT(sbsw->generator()->choose(5), ContainerEq(Sequence{0, 0, 0, 0, 0}));
 }
 

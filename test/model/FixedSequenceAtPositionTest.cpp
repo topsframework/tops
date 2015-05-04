@@ -28,6 +28,7 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/FixedSequenceAtPosition.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
@@ -66,5 +67,6 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
 }
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 1, 1, 1, 0}));
+  tops::model::resetRandom();
+  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
 }

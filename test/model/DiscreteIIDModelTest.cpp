@@ -28,6 +28,7 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
@@ -92,7 +93,8 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 }
 
 TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 1, 1, 1, 1}));
+  tops::model::resetRandom();
+  ASSERT_THAT(iid->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {

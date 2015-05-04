@@ -32,6 +32,7 @@
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+#include "model/Random.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -95,7 +96,8 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(vlmc->generator()->choose(5), ContainerEq(Sequence{1, 1, 1, 1, 1}));
+  tops::model::resetRandom();
+  ASSERT_THAT(vlmc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {

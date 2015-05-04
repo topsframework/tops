@@ -29,6 +29,7 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
@@ -103,5 +104,6 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
 }
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 1, 0, 0, 0}));
+  tops::model::resetRandom();
+  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 0, 0, 0, 0}));
 }
