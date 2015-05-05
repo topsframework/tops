@@ -79,10 +79,10 @@ void FixedSequenceAtPosition::addSequence(Sequence &h) const {
   }
 }
 
-Sequence FixedSequenceAtPosition::chooseSequence(Sequence &s,
-                                                 unsigned int size,
+Sequence FixedSequenceAtPosition::chooseSequence(unsigned int size,
                                                  unsigned int phase) const {
-  ProbabilisticModelDecorator::chooseSequence(s, size);
+  Sequence s;
+  s = ProbabilisticModelDecorator::chooseSequence(size, phase);
   addSequence(s);
   return s;
 }

@@ -58,7 +58,7 @@ class ProbabilisticModel
                                 unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size,
+  virtual Sequence chooseSequence(unsigned int size,
                                   unsigned int phase = 0) const;
 
   virtual GeneratorPtr generator();

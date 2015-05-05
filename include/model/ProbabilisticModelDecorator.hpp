@@ -53,7 +53,7 @@ class ProbabilisticModelDecorator : public ProbabilisticModel {
   virtual Symbol choosePosition(const Sequence &s,
                                 unsigned int i,
                                 unsigned int phase = 0) const override;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
+  virtual Sequence chooseSequence(unsigned int size, unsigned int phase = 0) const;
  protected:
   // Instance variables
   ProbabilisticModelPtr _model;

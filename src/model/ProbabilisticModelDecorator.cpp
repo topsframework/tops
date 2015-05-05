@@ -43,10 +43,9 @@ Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s,
   return _model->choosePosition(s, i);
 }
 
-Sequence ProbabilisticModelDecorator::chooseSequence(Sequence &s,
-                                                     unsigned int size,
+Sequence ProbabilisticModelDecorator::chooseSequence(unsigned int size,
                                                      unsigned int phase) const {
-  return _model->chooseSequence(s, size);
+  return _model->chooseSequence(size, phase);
 }
 
 

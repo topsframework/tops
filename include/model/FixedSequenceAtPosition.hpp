@@ -52,8 +52,7 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
   static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
 
   // Virtual methods
-  virtual Sequence chooseSequence(Sequence &s,
-                                  unsigned int size,
+  virtual Sequence chooseSequence(unsigned int size,
                                   unsigned int phase = 0) const override;
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
