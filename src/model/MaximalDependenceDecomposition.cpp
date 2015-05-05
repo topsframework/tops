@@ -268,8 +268,8 @@ void MaximalDependenceDecomposition::_chooseAux(
     Sequence & s,
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
-    s[node->getIndex()] = node->getModel()->choosePosition(s,
-                                                           node->getIndex());
+    s[node->getIndex()] = node->getModel()->choose(s,
+                                                   node->getIndex());
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _chooseAux(s, node->getLeft());
     } else {
@@ -278,16 +278,15 @@ void MaximalDependenceDecomposition::_chooseAux(
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->choosePosition(s, i);
+        s[i] = node->getModel()->choose(s, i);
       }
     }
   }
 }
 
-Symbol MaximalDependenceDecomposition::choosePosition(
-    const Sequence &s,
-    unsigned int pos,
-    unsigned int phase) const {
+Symbol MaximalDependenceDecomposition::choose(const Sequence &s,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
   // TODO(igorbonadio)
   return 0;
 }

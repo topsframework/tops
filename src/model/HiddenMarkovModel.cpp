@@ -312,9 +312,9 @@ double HiddenMarkovModel::evaluate(
   return -HUGE;
 }
 
-Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
+Symbol HiddenMarkovModel::choose(const Sequence &xs,
+                                 unsigned int pos,
+                                 unsigned int phase) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;
 }

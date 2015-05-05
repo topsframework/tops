@@ -101,11 +101,11 @@ double PhasedInhomogeneousMarkovChain::evaluate(
   return _vlmcs[(pos + phase) % _vlmcs.size()]->evaluate(s, pos);
 }
 
-Symbol PhasedInhomogeneousMarkovChain::choosePosition(
+Symbol PhasedInhomogeneousMarkovChain::choose(
     const Sequence &s,
     unsigned int pos,
     unsigned int phase) const {
-  return _vlmcs[(pos + phase) % _vlmcs.size()]->choosePosition(s, pos);
+  return _vlmcs[(pos + phase) % _vlmcs.size()]->choose(s, pos);
 }
 
 EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,

@@ -54,9 +54,9 @@ class ProbabilisticModel
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const = 0;
-  virtual Symbol choosePosition(const Sequence &s,
-                                unsigned int pos,
-                                unsigned int phase = 0) const = 0;
+  virtual Symbol choose(const Sequence &s,
+                        unsigned int pos,
+                        unsigned int phase = 0) const = 0;
 
   // Virtual methods
   virtual Sequence chooseSequence(unsigned int size,

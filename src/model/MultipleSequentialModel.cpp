@@ -64,16 +64,16 @@ double MultipleSequentialModel::evaluate(const Sequence &s,
   return -HUGE;
 }
 
-Symbol MultipleSequentialModel::choosePosition(const Sequence &s,
-                                               unsigned int pos,
-                                               unsigned int phase) const {
+Symbol MultipleSequentialModel::choose(const Sequence &s,
+                                       unsigned int pos,
+                                       unsigned int phase) const {
   int index = pos;
   for (unsigned int j = 0; j < _models.size(); j++) {
     index -= _max_length[j];
     if (index < 0)
-      return _models[j]->choosePosition(s, pos);
+      return _models[j]->choose(s, pos);
   }
-  return _models.back()->choosePosition(s, pos);
+  return _models.back()->choose(s, pos);
 }
 
 EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
