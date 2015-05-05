@@ -23,8 +23,8 @@
 namespace tops {
 namespace model {
 
-Sequence ProbabilisticModel::chooseSequence(unsigned int size,
-                                            unsigned int phase) const {
+Sequence ProbabilisticModel::choose(unsigned int size,
+                                    unsigned int phase) const {
   Sequence s;
   for (unsigned int k = 0; k < size; k++)
       s.push_back(choose(s, k));

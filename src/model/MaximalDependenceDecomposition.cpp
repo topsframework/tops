@@ -257,7 +257,7 @@ double MaximalDependenceDecomposition::evaluate(
   return -HUGE;
 }
 
-Sequence MaximalDependenceDecomposition::chooseSequence(
+Sequence MaximalDependenceDecomposition::choose(
     unsigned int size,
     unsigned int phase) const {
   // _chooseAux(s, _mdd_tree);

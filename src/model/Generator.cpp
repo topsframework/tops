@@ -30,7 +30,7 @@ Generator::Generator(ProbabilisticModelPtr &&model)
 
 inline Sequence Generator::choose(unsigned int size,
                                   unsigned int phase) const {
-  return _model->chooseSequence(size, phase);
+  return _model->choose(size, phase);
 }
 
 }  // namespace model
