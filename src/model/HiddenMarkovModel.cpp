@@ -313,7 +313,7 @@ double HiddenMarkovModel::evaluate(
 }
 
 Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,
-                                         unsigned int i,
+                                         unsigned int pos,
                                          unsigned int phase) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;

@@ -38,9 +38,9 @@ double ProbabilisticModelDecorator::evaluate(const Sequence &s,
 }
 
 Symbol ProbabilisticModelDecorator::choosePosition(const Sequence &s,
-                                                   unsigned int i,
+                                                   unsigned int pos,
                                                    unsigned int phase) const {
-  return _model->choosePosition(s, i);
+  return _model->choosePosition(s, pos);
 }
 
 Sequence ProbabilisticModelDecorator::chooseSequence(unsigned int size,

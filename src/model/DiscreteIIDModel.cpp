@@ -429,7 +429,7 @@ Symbol DiscreteIIDModel::choose() const {
 }
 
 Symbol DiscreteIIDModel::choosePosition(const Sequence &s,
-                                        unsigned int i,
+                                        unsigned int pos,
                                         unsigned int phase) const {
   return choose();
 }

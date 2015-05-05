@@ -54,7 +54,9 @@ class InhomogeneousMarkovChain : public ProbabilisticModel {
 
   // Virtual methods
   virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Symbol choosePosition(const Sequence &s,
+                                unsigned int pos,
+                                unsigned int phase = 0) const override;
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
   virtual unsigned int maximumTimeValue();

@@ -107,14 +107,14 @@ double VariableLengthMarkovChain::evaluate(const Sequence &s,
 }
 
 Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
-                                                 unsigned int i,
+                                                 unsigned int pos,
                                                  unsigned int phase) const {
-  ContextTreeNodePtr c = _context_tree->getContext(s, i);
+  ContextTreeNodePtr c = _context_tree->getContext(s, pos);
   if (c == NULL)
     // TODO(igorbonadio): ERROR!
     return 0;
   else
-    return c->getDistribution()->choosePosition(s, i);
+    return c->getDistribution()->choosePosition(s, pos);
 }
 
 
