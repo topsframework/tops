@@ -21,43 +21,48 @@
 #define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
 
 // Standard headers
+#include <memory>
 #include <vector>
 
 // ToPS headers
-#include "model/GeneralizedHiddenMarkovModelState.hpp"
+#include "GeneralizedHiddenMarkovModelState.hpp"
+#include "ProbabilisticModel.hpp"
+#include "DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
 
 class GeneralizedHiddenMarkovModelSignalState;
 
+/**
+ * @typedef GeneralizedHiddenMarkovModelSignalStatePtr
+ * @brief Alias of pointer to GeneralizedHiddenMarkovModelSignalState.
+ */
 using GeneralizedHiddenMarkovModelSignalStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
 
-class GeneralizedHiddenMarkovModelSignalState: public GeneralizedHiddenMarkovModelState {
-  GeneralizedHiddenMarkovModelSignalState() ;
-  GeneralizedHiddenMarkovModelSignalState(
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition, Symbol name);
+/**
+ * @class GeneralizedHiddenMarkovModelSignalState
+ * @brief TODO
+ */
+class GeneralizedHiddenMarkovModelSignalState : public GeneralizedHiddenMarkovModelState {
+ public:
+  static GeneralizedHiddenMarkovModelSignalStatePtr make(Symbol symbol,
+                                                         ProbabilisticModelPtr observation,
+                                                         DiscreteIIDModelPtr transition,
+                                                         int duration_size);
 
-  virtual int size() const ;
-  virtual void setSize(int s);
-  virtual int chooseDuration() const ;
-  virtual double getThreshold() const ;
-  virtual void setThreshold(double threshold) ;
-  virtual double duration_probability(int l) const ;
-  virtual void fixTransitionDistribution () const ;
-  virtual void findBestPredecessor (Matrix & gamma, Matrix &psi, Matrix &psilen, const Sequence & s, int base, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states, std::map < int, std::list<int> >  & valid_positions );
-  virtual void forwardSum (Matrix & alpha, const Sequence & s, int base, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states, std::vector< std::list<int> > &valid_positions);
-  virtual double backwardSum(Matrix &beta, const Sequence &s, int base, std::vector< std::list<int> > &valid_positions);
-  virtual void posteriorSum (Matrix & alpha, Matrix &beta, Matrix &postProbs, const Sequence & s, int base, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states, std::vector< std::list<int> > &valid_positions, double prob, int stateNumber);
-  virtual void choosePredecessor (Matrix & alpha, int base, int & state, int & position, const std::vector<GeneralizedHiddenMarkovModelStatePtr> & all_states);
+  virtual double durationProbability(int l) const;
+  virtual int maximumDurationSize() const;
 
  private:
-  int _size;
-  double _threshold;
+  GeneralizedHiddenMarkovModelSignalState(Symbol symbol,
+                                          ProbabilisticModelPtr observation,
+                                          DiscreteIIDModelPtr transition,
+                                          int duration_size);
+  int _duration_size;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
+#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
