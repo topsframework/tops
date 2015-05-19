@@ -72,7 +72,7 @@ class VariableLengthMarkovChain : public ProbabilisticModel {
 
   // Virtual methods
   virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choose(const Sequence &s,
+  virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
 

@@ -312,7 +312,7 @@ double HiddenMarkovModel::evaluate(
   return -HUGE;
 }
 
-Symbol HiddenMarkovModel::choose(const Sequence &xs,
+Symbol HiddenMarkovModel::choose(const Sequence &context,
                                  unsigned int pos,
                                  unsigned int phase) const {
   // TODO(igorbonadio)

@@ -428,7 +428,7 @@ Symbol DiscreteIIDModel::choose() const {
   return _probabilities.size()-1;
 }
 
-Symbol DiscreteIIDModel::choose(const Sequence &s,
+Symbol DiscreteIIDModel::choose(const Sequence &context,
                                 unsigned int pos,
                                 unsigned int phase) const {
   return choose();

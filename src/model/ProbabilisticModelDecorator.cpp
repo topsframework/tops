@@ -37,10 +37,10 @@ double ProbabilisticModelDecorator::evaluate(const Sequence &s,
   return _model->evaluate(s, pos);
 }
 
-Symbol ProbabilisticModelDecorator::choose(const Sequence &s,
+Symbol ProbabilisticModelDecorator::choose(const Sequence &context,
                                            unsigned int pos,
                                            unsigned int phase) const {
-  return _model->choose(s, pos);
+  return _model->choose(context, pos);
 }
 
 Sequence ProbabilisticModelDecorator::choose(unsigned int size,

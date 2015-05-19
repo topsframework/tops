@@ -127,7 +127,7 @@ double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
   return -HUGE;
 }
 
-Symbol SimilarityBasedSequenceWeighting::choose(const Sequence &s,
+Symbol SimilarityBasedSequenceWeighting::choose(const Sequence &context,
                                                 unsigned int pos,
                                                 unsigned int phase) const {
   // TODO(igorbonadio)

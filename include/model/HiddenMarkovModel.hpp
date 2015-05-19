@@ -89,7 +89,7 @@ class HiddenMarkovModel : public DecodableModel {
                           const Sequence &ys,
                           unsigned int i) const;
 
-  virtual Symbol choose(const Sequence &xs,
+  virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
   virtual void chooseSequences(Sequence &xs,

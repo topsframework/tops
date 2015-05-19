@@ -284,7 +284,7 @@ void MaximalDependenceDecomposition::_chooseAux(
   }
 }
 
-Symbol MaximalDependenceDecomposition::choose(const Sequence &s,
+Symbol MaximalDependenceDecomposition::choose(const Sequence &context,
                                               unsigned int pos,
                                               unsigned int phase) const {
   // TODO(igorbonadio)

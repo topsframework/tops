@@ -162,7 +162,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param i a position
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choose(const Sequence &s,
+  virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
 
