@@ -143,9 +143,9 @@ class HiddenMarkovModel : public DecodableModel {
       unsigned int observation_alphabet_size);
 
   std::vector<HiddenMarkovModelStatePtr> _states;
-    DiscreteIIDModelPtr _initial_probabilities;
-    unsigned int _state_alphabet_size;
-    unsigned int _observation_alphabet_size;
+  DiscreteIIDModelPtr _initial_probabilities;
+  unsigned int _state_alphabet_size;
+  unsigned int _observation_alphabet_size;
 
  private:
   // Virtual methods
