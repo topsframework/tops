@@ -26,7 +26,6 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 
-
 namespace tops {
 namespace model {
 
