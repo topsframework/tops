@@ -56,9 +56,9 @@ class DecodableModel : public ProbabilisticModel {
                           const Sequence &ys,
                           unsigned int i) const = 0;
 
-  virtual void chooseSequences(Sequence &xs,
-                               Sequence &ys,
-                               unsigned int size) const = 0;
+  virtual void chooseLabeling(Sequence &xs,
+                              Sequence &ys,
+                              unsigned int size) const = 0;
   virtual void chooseSequencesPosition(Sequence &xs,
                                        Sequence &ys,
                                        unsigned int i) const = 0;

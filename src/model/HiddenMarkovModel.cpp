@@ -494,9 +494,9 @@ Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       std::move(path));
 }
 
-void HiddenMarkovModel::chooseSequences(Sequence &xs,
-                                        Sequence &ys,
-                                        unsigned int size) const {
+void HiddenMarkovModel::chooseLabeling(Sequence &xs,
+                                       Sequence &ys,
+                                       unsigned int size) const {
   xs.resize(size);
   ys.resize(size);
   for (unsigned int i = 0; i < size; i++)
