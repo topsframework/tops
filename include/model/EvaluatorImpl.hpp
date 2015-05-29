@@ -21,7 +21,11 @@
 #define TOPS_MODEL_EVALUATOR_IMPL_
 
 // ToPS headers
-#include "Labeling.hpp"
+#include "model/Sequence.hpp"
+
+// ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 
 namespace tops {
 namespace model {
@@ -48,7 +52,8 @@ class EvaluatorImpl : public std::enable_shared_from_this<EvaluatorImpl> {
                                unsigned int begin,
                                unsigned int end) = 0;
 
-  virtual Labeling labeling(Labeling::Method method) = 0;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(Labeling<Sequence>::Method method) = 0;
 
   // Virtual getters
   virtual Sequence& sequence() = 0;

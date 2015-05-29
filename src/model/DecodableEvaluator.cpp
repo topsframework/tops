@@ -33,7 +33,8 @@ inline double DecodableEvaluator::probabilityOf(const Sequence &s,
   return _impl->probabilityOf(s, begin, end);
 }
 
-inline Labeling DecodableEvaluator::labeling(Labeling::Method method) const {
+inline Estimation<Labeling<Sequence>>
+DecodableEvaluator::labeling(Labeling<Sequence>::Method method) const {
   return _impl->labeling(method);
 }
 

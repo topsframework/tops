@@ -71,11 +71,12 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   };
   for(auto test : test_set) {
     auto evaluator = hmm->decodableEvaluator(test[0]);
-    auto labeling = evaluator->labeling(Labeling::Method::bestPath);
+    auto estimation = evaluator->labeling(Labeling<Sequence>::Method::bestPath);
+    auto labeling = estimation.estimated();
 
-    ASSERT_THAT(labeling.probability(),
+    ASSERT_THAT(estimation.probability(),
                 DoubleEq(evaluator->probabilityOf(test[1], 0, test[1].size())));
-    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
   }
 }
 
@@ -119,11 +120,12 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
 
   for(auto test : test_set) {
     auto evaluator = hmm->decodableEvaluator(test[0]);
-    auto labeling = evaluator->labeling(Labeling::Method::posteriorDecoding);
+    auto estimation = evaluator->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+    auto labeling = estimation.estimated();
 
-    ASSERT_THAT(labeling.probability(),
+    ASSERT_THAT(estimation.probability(),
                 DoubleEq(evaluator->probabilityOf(test[1], 0, test[1].size())));
-    ASSERT_THAT(labeling.sequence(), Eq(test[1]));
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
   }
 }
 

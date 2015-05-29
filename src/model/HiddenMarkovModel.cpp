@@ -244,24 +244,26 @@ DecodableEvaluatorPtr HiddenMarkovModel::decodableEvaluator(const Sequence &s,
       std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()), s));
 }
 
-Labeling HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
-                                           Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
+                                  Labeling<Sequence>::Method method) {
   Matrix matrix;
   return labeling(evaluator->sequence(), matrix, method);
 }
 
-Labeling HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
-                                           Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
+                                  Labeling<Sequence>::Method method) {
   switch (method) {
-    case Labeling::Method::bestPath:
+    case Labeling<Sequence>::Method::bestPath:
       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
-    case Labeling::Method::posteriorDecoding:
+    case Labeling<Sequence>::Method::posteriorDecoding:
       return labeling(evaluator->sequence(),
                       evaluator->cache().posterior_decoding,
                       method);
   }
-  // TODO(igorbonadio): Throw exception!
-  return Labeling();
+  // TODO(renatocf): throw exception
+  return Estimation<Labeling<Sequence>>();
 }
 
 double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
@@ -340,20 +342,21 @@ double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
   return prob;
 }
 
-Labeling HiddenMarkovModel::labeling(const Sequence &xs,
-                                     Matrix &probabilities,
-                                     Labeling::Method method) const {
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::labeling(const Sequence &xs,
+                            Matrix &probabilities,
+                            Labeling<Sequence>::Method method) const {
   switch (method) {
-    case Labeling::Method::bestPath:
+    case Labeling<Sequence>::Method::bestPath:
       return viterbi(xs, probabilities);
-    case Labeling::Method::posteriorDecoding:
+    case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(xs, probabilities);
   }
-  return Labeling();
+  return Estimation<Labeling<Sequence>>();
 }
 
-Labeling HiddenMarkovModel::viterbi(const Sequence &xs,
-                                    Matrix &gamma) const {
+Estimation<Labeling<Sequence>> HiddenMarkovModel::viterbi(const Sequence &xs,
+                                                          Matrix &gamma) const {
   gamma = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
@@ -392,7 +395,8 @@ Labeling HiddenMarkovModel::viterbi(const Sequence &xs,
     ys[i-1] = psi[ys[i]][i];
   }
 
-  return Labeling(max, std::move(ys));
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(ys)), max);
 }
 
 double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
@@ -472,8 +476,9 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence & xs,
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 
-Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                              Matrix &probabilities) const {
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
+                                     Matrix &probabilities) const {
   posteriorProbabilities(xs, probabilities);
 
   Sequence path(xs.size());
@@ -488,10 +493,10 @@ Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       }
     }
   }
-  return Labeling(
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(path)),
       const_cast<HiddenMarkovModel*>(this)->decodableEvaluator(xs)->probabilityOf(
-          path, 0, xs.size()),
-      std::move(path));
+          path, 0, xs.size()));
 }
 
 void HiddenMarkovModel::chooseLabeling(Sequence &xs,

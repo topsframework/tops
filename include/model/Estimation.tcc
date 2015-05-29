@@ -92,7 +92,7 @@ Estimation<Target, Probability>::Estimation(Target &&estimated,
 /*----------------------------------------------------------------------------*/
 
 template<typename Target, typename Probability>
-Target& Estimation<Target, Probability>::estimated() const {
+const Target& Estimation<Target, Probability>::estimated() const {
   return _estimated;
 }
 
@@ -103,13 +103,13 @@ Target& Estimation<Target, Probability>::estimated() {
 }
 
 template<typename Target, typename Probability>
-Target& Estimation<Target, Probability>::probability() const {
+const Probability& Estimation<Target, Probability>::probability() const {
   return _probability;
 }
 
 template<typename Target, typename Probability>
-Target& Estimation<Target, Probability>::probability() {
-  return const_cast<Target &>(
+Probability& Estimation<Target, Probability>::probability() {
+  return const_cast<Probability &>(
     static_cast<const Estimation *>(this)->probability());
 }
 

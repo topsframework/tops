@@ -20,13 +20,18 @@
 #ifndef TOPS_MODEL_DECODABLE_MODEL_
 #define TOPS_MODEL_DECODABLE_MODEL_
 
+// Standard headers
 #include <memory>
+#include <vector>
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 #include "model/Matrix.hpp"
-#include "model/Labeling.hpp"
 #include "model/DecodableEvaluator.hpp"
+
+// ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 
 namespace tops {
 namespace model {
@@ -70,16 +75,18 @@ class DecodableModel : public ProbabilisticModel {
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
-  virtual Labeling labeling(const Sequence &xs,
-                            Matrix &probabilities,
-                            Labeling::Method method) const = 0;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const = 0;
 
  private:
   // Virtual methods
-  virtual Labeling viterbi(const Sequence &xs,
-                           Matrix &gamma) const = 0;
-  virtual Labeling posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const = 0;
+  virtual Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };
 
 /**

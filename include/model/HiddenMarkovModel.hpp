@@ -28,10 +28,11 @@
 #include "model/DecodableModel.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/Matrix.hpp"
-#include "model/Labeling.hpp"
 #include "model/DecodableEvaluator.hpp"
 
 // ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 #include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
@@ -106,8 +107,10 @@ class HiddenMarkovModel : public DecodableModel {
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const;
 
-  virtual Labeling labeling(const Sequence &xs, Matrix &probabilities,
-                            Labeling::Method method) const override;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -127,8 +130,11 @@ class HiddenMarkovModel : public DecodableModel {
                              unsigned int begin,
                              unsigned int end) const;
 
-  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
-  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
+  Estimation<Labeling<Sequence>>
+  simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
+
+  Estimation<Labeling<Sequence>>
+  cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
 
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
@@ -149,10 +155,11 @@ class HiddenMarkovModel : public DecodableModel {
 
  private:
   // Virtual methods
-  virtual Labeling viterbi(const Sequence &xs,
-                           Matrix &gamma) const override;
-  virtual Labeling posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const override;
+  virtual Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const override;
+
+  virtual Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 };
 
 }  // namespace model

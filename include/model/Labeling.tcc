@@ -93,7 +93,7 @@ Labeling<Target>::Labeling(Target &&observation, Target &&label)
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-Target& Labeling<Target>::observation() const {
+const Target& Labeling<Target>::observation() const {
   return _observation;
 }
 
@@ -104,7 +104,7 @@ Target& Labeling<Target>::observation() {
 }
 
 template<typename Target>
-Target& Labeling<Target>::label() const {
+const Target& Labeling<Target>::label() const {
   return _label;
 }
 
