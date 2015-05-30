@@ -19,18 +19,21 @@
 
 // ToPS headers
 #include "model/Generator.hpp"
-#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
 
-Generator::Generator(ProbabilisticModelPtr &&model)
-    : _model(std::move(model)) {
+template<>
+Sequence Generator<Sequence>::choose(unsigned int size,
+                                     unsigned int phase) const {
+  return _impl->chooseSequence(size, phase);
 }
 
-inline Sequence Generator::choose(unsigned int size,
-                                  unsigned int phase) const {
-  return _model->choose(size, phase);
+template<>
+Labeling<Sequence>
+Generator<Labeling<Sequence>>::choose(unsigned int size,
+                                      unsigned int phase) const {
+  return _impl->chooseLabeling(size, phase);
 }
 
 }  // namespace model
