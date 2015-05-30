@@ -105,5 +105,5 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   tops::model::resetRandom();
-  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 0, 0, 0, 0}));
+  ASSERT_THAT(imc->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 0, 0, 0}));
 }

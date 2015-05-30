@@ -109,7 +109,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
   tops::model::resetRandom();
-  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(imc->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {

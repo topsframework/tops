@@ -175,5 +175,5 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
 TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): implement method
   tops::model::resetRandom();
-  ASSERT_THAT(hmm->generator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THAT(hmm->sequenceGenerator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
