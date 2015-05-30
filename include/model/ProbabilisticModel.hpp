@@ -31,6 +31,7 @@
 // ToPS templates
 #include "model/SimpleEvaluatorImpl.tcc"
 #include "model/CachedEvaluatorImpl.tcc"
+#include "model/SimpleGeneratorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -62,7 +63,7 @@ class ProbabilisticModel
   virtual Sequence choose(unsigned int size,
                           unsigned int phase = 0) const;
 
-  virtual GeneratorPtr generator();
+  virtual GeneratorPtr<Sequence> sequenceGenerator();
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 

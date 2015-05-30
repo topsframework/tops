@@ -35,8 +35,9 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-GeneratorPtr ProbabilisticModel::generator() {
-  return Generator::make(shared_from_this());
+GeneratorPtr<Sequence> ProbabilisticModel::sequenceGenerator() {
+  return Generator<Sequence>::make(
+    SimpleGeneratorImpl<ProbabilisticModel>::make(shared_from_this()));
 }
 
 EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
