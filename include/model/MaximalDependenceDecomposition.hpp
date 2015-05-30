@@ -65,8 +65,8 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
       unsigned int minimum_subset);
 
   virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Sequence choose(unsigned int size,
-                          unsigned int phase = 0) const override;
+  virtual Sequence chooseSequence(unsigned int size,
+                                  unsigned int phase = 0) const override;
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;

@@ -172,8 +172,8 @@ SimpleGeneratorImpl<Model>::chooseSequenceImpl(unsigned int size,
                                                unsigned int phase,
                                                has_chooseSequence<M>* dummy) {
   return this->_model->chooseSequence(
-    std::static_pointer_cast<SimpleGeneratorImpl<M>>(
-      this->shared_from_this()),
+    // std::static_pointer_cast<SimpleGeneratorImpl<M>>(
+    //   this->shared_from_this()),
       size, phase);
 }
 
@@ -193,8 +193,8 @@ SimpleGeneratorImpl<Model>::chooseLabelingImpl(unsigned int size,
                                                unsigned int phase,
                                                has_chooseLabeling<M>* dummy) {
   return this->_model->chooseLabeling(
-    std::static_pointer_cast<SimpleGeneratorImpl<M>>(
-      this->shared_from_this()),
+    // std::static_pointer_cast<SimpleGeneratorImpl<M>>(
+    //   this->shared_from_this()),
       size, phase);
 }
 
