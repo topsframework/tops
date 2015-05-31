@@ -25,10 +25,10 @@
 #include <vector>
 
 // ToPS headers
-#include "model/DecodableModel.hpp"
-#include "model/HiddenMarkovModelState.hpp"
 #include "model/Matrix.hpp"
+#include "model/DecodableModel.hpp"
 #include "model/DecodableEvaluator.hpp"
+#include "model/HiddenMarkovModelState.hpp"
 
 // ToPS templates
 #include "model/Labeling.tcc"
@@ -79,13 +79,13 @@ class HiddenMarkovModel : public DecodableModel {
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false);
+                                 bool cached = false) override;
   virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
                                                    bool cached = false);
 
   virtual double evaluate(const Sequence &xs,
                           unsigned int pos,
-                          unsigned int phase = 0) const;
+                          unsigned int phase = 0) const override;
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const;
@@ -141,17 +141,17 @@ class HiddenMarkovModel : public DecodableModel {
   HiddenMarkovModelStatePtr state(unsigned int i) const;
 
  protected:
-  // Constructors
-  HiddenMarkovModel(
-      std::vector<HiddenMarkovModelStatePtr> states,
-      DiscreteIIDModelPtr initial_probability,
-      unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size);
-
+  // Instance variables
   std::vector<HiddenMarkovModelStatePtr> _states;
   DiscreteIIDModelPtr _initial_probabilities;
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
+
+  // Constructors
+  HiddenMarkovModel(std::vector<HiddenMarkovModelStatePtr> states,
+                    DiscreteIIDModelPtr initial_probability,
+                    unsigned int state_alphabet_size,
+                    unsigned int observation_alphabet_size);
 
  private:
   // Virtual methods

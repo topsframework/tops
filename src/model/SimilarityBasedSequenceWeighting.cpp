@@ -20,16 +20,37 @@
 // Standard headers
 #include <map>
 #include <cmath>
-#include <vector>
 #include <string>
+#include <vector>
 #include <sstream>
 
 // ToPS headers
-#include "SimilarityBasedSequenceWeighting.hpp"
-#include "Util.hpp"
+#include "model/SimilarityBasedSequenceWeighting.hpp"
+#include "model/Util.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
+    std::map<Sequence, double> counter,
+    double normalizer,
+    int skip_offset,
+    int skip_length,
+    Sequence skip_sequence)
+      : _counter(counter),
+        _skip_offset(skip_offset),
+        _skip_length(skip_length),
+        _skip_sequence(skip_sequence),
+        _normalizer(normalizer) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
     std::map<Sequence, double> counter,
@@ -43,19 +64,6 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
                                          skip_offset,
                                          skip_length,
                                          skip_sequence));
-}
-
-SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
-    std::map<Sequence, double> counter,
-    double normalizer,
-    int skip_offset,
-    int skip_length,
-    Sequence skip_sequence)
-      : _counter(counter),
-        _skip_offset(skip_offset),
-        _skip_length(skip_length),
-        _skip_sequence(skip_sequence),
-        _normalizer(normalizer) {
 }
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
@@ -120,6 +128,10 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
   return sum;
 }
 
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
                                                   unsigned int pos,
                                                   unsigned int phase) const {
@@ -135,7 +147,7 @@ Symbol SimilarityBasedSequenceWeighting::choose(const Sequence &context,
 }
 
 EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
-                                                        bool cached) {
+                                                         bool cached) {
   // if (cached)
   //   return Evaluator::make(
   //     CachedEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
@@ -145,6 +157,19 @@ EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
     SimpleEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
       std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
       s));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
+    CEPtr evaluator,
+    unsigned int phase) {
+  auto &prefix_sum_array = evaluator->cache();
+  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
+    prefix_sum_array[i] = simpleProbabilityOf(evaluator, i, evaluator->sequence().size());
+  }
 }
 
 double SimilarityBasedSequenceWeighting::simpleProbabilityOf(
@@ -192,15 +217,6 @@ double SimilarityBasedSequenceWeighting::simpleProbabilityOf(
     return -HUGE;
 
   return log(sum/(_normalizer));
-}
-
-void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache();
-  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
-    prefix_sum_array[i] = simpleProbabilityOf(evaluator, i, evaluator->sequence().size());
-  }
 }
 
 double SimilarityBasedSequenceWeighting::cachedProbabilityOf(

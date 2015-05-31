@@ -60,7 +60,6 @@ class DecodableEvaluator : public Evaluator {
                                unsigned int begin,
                                unsigned int end);
 
-  // Virtual methods
   virtual Estimation<Labeling<Sequence>>
   labeling(Labeling<Sequence>::Method method) const;
 

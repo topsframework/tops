@@ -27,16 +27,28 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+InhomogeneousMarkovChain::InhomogeneousMarkovChain(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs)
+    : _vlmcs(vlmcs) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
     std::vector<VariableLengthMarkovChainPtr> vlmcs) {
   return InhomogeneousMarkovChainPtr(
     new InhomogeneousMarkovChain(vlmcs));
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double InhomogeneousMarkovChain::evaluate(const Sequence &s,
                                           unsigned int pos,

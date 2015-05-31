@@ -22,16 +22,21 @@
 
 // Standard headers
 #include <memory>
+#include <exception>
 
 // ToPS headers
-#include "model/Sequence.hpp"
 #include "model/GeneratorImpl.hpp"
 
 namespace tops {
 namespace model {
 
-class ProbabilisticModel;
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
 
 template<typename Target>
 class Generator;
@@ -52,22 +57,47 @@ class Generator : public std::enable_shared_from_this<Generator<Target>> {
  public:
   // Static methods
   template<typename... Ts>
-  static GeneratorPtr<Target> make(Ts... args) {
-    return GeneratorPtr<Target>(
-      new Generator<Target>(std::forward<Ts>(args)...));
-  }
+  static GeneratorPtr<Target> make(Ts... args);
 
   // Virtual methods
   virtual Target choose(unsigned int size,
                         unsigned int phase = 0) const;
 
  protected:
-  Generator(GeneratorImplPtr &&impl)
-      : _impl(std::move(impl)) {
-  }
-
+  // Instance variables
   GeneratorImplPtr _impl;
+
+  // Constructors
+  Generator(GeneratorImplPtr &&impl);
 };
+
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                IMPLEMENTATION
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Target>
+Generator<Target>::Generator(GeneratorImplPtr &&impl)
+    : _impl(std::move(impl)) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+template<typename Target>
+template<typename... Ts>
+GeneratorPtr<Target> Generator<Target>::make(Ts... args) {
+  return GeneratorPtr<Target>(
+    new Generator<Target>(std::forward<Ts>(args)...));
+}
 
 }  // namespace model
 }  // namespace tops

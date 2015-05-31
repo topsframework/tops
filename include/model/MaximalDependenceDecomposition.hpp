@@ -22,14 +22,14 @@
 
 // Standard headers
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 // ToPS headers
-#include "ProbabilisticModel.hpp"
-#include "MaximalDependenceDecompositionNode.hpp"
-#include "Consensus.hpp"
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/Consensus.hpp"
+#include "model/ProbabilisticModel.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
+#include "model/MaximalDependenceDecompositionNode.hpp"
 
 namespace tops {
 namespace model {

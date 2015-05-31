@@ -38,7 +38,7 @@ class CachedEvaluatorImpl;
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                     CLASS
+                                    CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
@@ -102,13 +102,24 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                  IMPLEMENTATION
+                                IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             Static methods                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
+                                                const Sequence &s,
+                                                Cache&& cache)
+    : SimpleEvaluatorImpl<Model>(m, s), _cache(std::forward<Cache>(cache)) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -120,7 +131,7 @@ CachedEvaluatorImplPtr<Model> CachedEvaluatorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             Virtual methods                                */
+/*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -145,7 +156,7 @@ CachedEvaluatorImpl<Model>::labeling(Labeling<Sequence>::Method method) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -165,17 +176,6 @@ CachedEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
     std::static_pointer_cast<CachedEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
-/*----------------------------------------------------------------------------*/
-
-template<typename Model>
-CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
-                                                const Sequence &s,
-                                                Cache&& cache)
-    : SimpleEvaluatorImpl<Model>(m, s), _cache(std::forward<Cache>(cache)) {
 }
 
 }  // namespace model

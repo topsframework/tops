@@ -23,6 +23,16 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+template<typename Target>
+Target Generator<Target>::choose(unsigned int size,
+                                 unsigned int phase) const {
+  throw std::logic_error("Unavaiable implementation for Target");
+}
+
 template<>
 Sequence Generator<Sequence>::choose(unsigned int size,
                                      unsigned int phase) const {

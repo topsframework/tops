@@ -23,13 +23,21 @@
 #include <algorithm>
 
 // ToPS headers
-#include "Consensus.hpp"
+#include "model/Consensus.hpp"
 
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
 Consensus::Consensus(const Sequence& symbols)
   : _symbols{symbols} {}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 bool Consensus::is(unsigned int symbol) const {
   return std::find(

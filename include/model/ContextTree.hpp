@@ -21,15 +21,15 @@
 #define TOPS_MODEL_CONTEXT_TREE_
 
 // Standard headers
-#include <memory>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <memory>
 #include <string>
+#include <vector>
 
 // ToPS headers
-#include "model/ContextTreeNode.hpp"
 #include "model/Sequence.hpp"
+#include "model/ContextTreeNode.hpp"
 
 namespace tops {
 namespace model {

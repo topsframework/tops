@@ -18,23 +18,36 @@
 /***********************************************************************/
 
 // Standard headers
-#include <cmath>
-#include <cstdlib>
-#include <vector>
 #include <set>
+#include <cmath>
+#include <vector>
+#include <cstdlib>
 
 // ToPS headers
-#include "ContextTree.hpp"
+#include "model/ContextTree.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                              CONSTRUCTORS                                  */
+/*----------------------------------------------------------------------------*/
+
+ContextTree::ContextTree(int alphabet_size)
+    : _alphabet_size(alphabet_size) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 ContextTreePtr ContextTree::make(int alphabet_size) {
   return ContextTreePtr(new ContextTree(alphabet_size));
 }
 
-ContextTree::ContextTree(int alphabet_size): _alphabet_size(alphabet_size) {
-}
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 std::vector<ContextTreeNodePtr> & ContextTree::all_context() {
   return _all_context;
@@ -43,7 +56,6 @@ std::vector<ContextTreeNodePtr> & ContextTree::all_context() {
 ContextTreeNodePtr ContextTree::getRoot() const {
     return _all_context[0];
   }
-
 
 ContextTreeNodePtr ContextTree::createContext() {
   ContextTreeNodePtr n = ContextTreeNode::make(_alphabet_size);
@@ -57,7 +69,6 @@ ContextTreeNodePtr ContextTree::createContext() {
 ContextTreeNodePtr ContextTree::getContext(int id) {
   return _all_context[id];
 }
-
 
 //! get the context for the sequence s[i-1], s[i-2], s[i-3]...
 ContextTreeNodePtr ContextTree::getContext(const Sequence & s, int i) {
@@ -77,7 +88,7 @@ ContextTreeNodePtr ContextTree::getContext(const Sequence & s, int i) {
   return c;
 }
 
-std::set <int> ContextTree::getLevelOneNodes() {
+std::set<int> ContextTree::getLevelOneNodes() {
   std::set<int> result;
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     if (_all_context[i]->isLeaf()) {
@@ -96,7 +107,6 @@ std::set <int> ContextTree::getLevelOneNodes() {
   }
   return result;
 }
-
 
 void ContextTree::removeContextNotUsed() {
   std::vector <ContextTreeNodePtr> newAllVector;
@@ -168,57 +178,56 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
   }
 }
 
-
 void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
                                   int order,
                                   const std::vector<double> &weights) {
-initializeCounter(sequences, order, 0, weights);
+  initializeCounter(sequences, order, 0, weights);
 }
 
 void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
-                                  int order,
-                                  double pseudocounts,
-                                  const std::vector<double> &weights) {
-if (order < 0)
-  order = 0;
+                                    int order,
+                                    double pseudocounts,
+                                    const std::vector<double> &weights) {
+  if (order < 0)
+    order = 0;
 
-ContextTreeNodePtr root = createContext();
-if (pseudocounts > 0) {
-  for (int sym = 0; sym < root->alphabet_size(); sym++) {
-    root->setCount(sym, pseudocounts);
-  }
-}
-
-for (int l = 0; l < static_cast<int>(sequences.size()); l ++) {
-  double weight = weights[l];
-  for (int i = order; i < static_cast<int>(sequences[l].size()); i++) {
-    int currentSymbol = sequences[l][i];
-    int j = i - 1;
-
-    ContextTreeNodePtr w = getRoot();
-
-    w->addCount(currentSymbol, weight);
-
-    while ((j >= 0) &&  ((i - j) <= order)) {
-      int symbol = sequences[l][j];
-      if ((w->getChild(symbol) == NULL) || w->isLeaf()) {
-        ContextTreeNodePtr c2 = createContext();
-        w->setChild(c2, symbol);
-      }
-      w = w->getChild(symbol);
-
-      if (pseudocounts > 0) {
-        for (int sym = 0; sym < root->alphabet_size(); sym++) {
-          if (w->getCounter()[sym] <= 0.0)
-            w->setCount(sym, pseudocounts);
-        }
-      }
-
-      w->addCount(currentSymbol, weight);
-      j--;
+  ContextTreeNodePtr root = createContext();
+  if (pseudocounts > 0) {
+    for (int sym = 0; sym < root->alphabet_size(); sym++) {
+      root->setCount(sym, pseudocounts);
     }
   }
-}
+
+  for (int l = 0; l < static_cast<int>(sequences.size()); l ++) {
+    double weight = weights[l];
+    for (int i = order; i < static_cast<int>(sequences[l].size()); i++) {
+      int currentSymbol = sequences[l][i];
+      int j = i - 1;
+
+      ContextTreeNodePtr w = getRoot();
+
+      w->addCount(currentSymbol, weight);
+
+      while ((j >= 0) &&  ((i - j) <= order)) {
+        int symbol = sequences[l][j];
+        if ((w->getChild(symbol) == NULL) || w->isLeaf()) {
+          ContextTreeNodePtr c2 = createContext();
+          w->setChild(c2, symbol);
+        }
+        w = w->getChild(symbol);
+
+        if (pseudocounts > 0) {
+          for (int sym = 0; sym < root->alphabet_size(); sym++) {
+            if (w->getCounter()[sym] <= 0.0)
+              w->setCount(sym, pseudocounts);
+          }
+        }
+
+        w->addCount(currentSymbol, weight);
+        j--;
+      }
+    }
+  }
 }
 
 void ContextTree::pruneTreeSmallSampleSize(int small_) {
@@ -265,8 +274,6 @@ void ContextTree::pruneTreeSmallSampleSize(int small_) {
     }
   }
 }
-
-
 
 void ContextTree::pruneTree(double delta) {
   double sample_size = 0.0;
@@ -324,7 +331,6 @@ void ContextTree::pruneTree(double delta) {
     }
   }
 }
-
 
 void ContextTree::initializeContextTreeRissanen(
     const std::vector<Sequence> & sequences) {
@@ -390,7 +396,6 @@ int ContextTree::getNumberOfNodes() const {
 int ContextTree::alphabetSize() const {
   return _alphabet_size;
 }
-
 
 }  // namespace model
 }  // namespace tops

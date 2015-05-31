@@ -32,7 +32,20 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                             STATIC METHODS                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+MaximalDependenceDecomposition::MaximalDependenceDecomposition(
+    ConsensusSequence consensus_sequence,
+    ProbabilisticModelPtr consensus_model,
+    MaximalDependenceDecompositionNodePtr tree)
+      : _mdd_tree(tree),
+        _consensus_sequence(consensus_sequence),
+        _consensus_model(consensus_model) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
@@ -390,19 +403,6 @@ void MaximalDependenceDecomposition::_chooseAux(
       }
     }
   }
-}
-
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
-
-MaximalDependenceDecomposition::MaximalDependenceDecomposition(
-    ConsensusSequence consensus_sequence,
-    ProbabilisticModelPtr consensus_model,
-    MaximalDependenceDecompositionNodePtr tree)
-      : _mdd_tree(tree),
-        _consensus_sequence(consensus_sequence),
-        _consensus_model(consensus_model) {
 }
 
 }  // namespace model

@@ -22,19 +22,27 @@
 #include <vector>
 
 // ToPS headers
-#include "VariableLengthMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+VariableLengthMarkovChain::VariableLengthMarkovChain(
+    ContextTreePtr context_tree) : _context_tree(context_tree) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
     ContextTreePtr context_tree) {
   return VariableLengthMarkovChainPtr(
     new VariableLengthMarkovChain(context_tree));
-}
-
-VariableLengthMarkovChain::VariableLengthMarkovChain(
-    ContextTreePtr context_tree) : _context_tree(context_tree) {
 }
 
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
@@ -95,6 +103,10 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 
   return VariableLengthMarkovChain::make(tree);
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double VariableLengthMarkovChain::evaluate(const Sequence &s,
                                            unsigned int pos,

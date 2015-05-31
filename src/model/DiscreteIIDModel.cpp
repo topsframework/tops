@@ -18,11 +18,11 @@
 /***********************************************************************/
 
 // Standard headers
-#include <algorithm>
-#include <cmath>
 #include <map>
+#include <cmath>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
@@ -31,25 +31,20 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
     : _probabilities(probabilities) {
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
-}
-
-std::vector<double> DiscreteIIDModel::normalize(
-    std::vector<double> probabilities) {
-  double sum = 0;
-  for (auto p : probabilities)
-    sum += p;
-
-  std::vector<double> log_probabilities;
-  for (auto p : probabilities)
-    log_probabilities.push_back(log(p/sum));
-
-  return log_probabilities;
 }
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
@@ -238,6 +233,19 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
   return DiscreteIIDModel::make(normalize(prob));
 }
 
+std::vector<double> DiscreteIIDModel::normalize(
+    std::vector<double> probabilities) {
+  double sum = 0;
+  for (auto p : probabilities)
+    sum += p;
+
+  std::vector<double> log_probabilities;
+  for (auto p : probabilities)
+    log_probabilities.push_back(log(p/sum));
+
+  return log_probabilities;
+}
+
 double DiscreteIIDModel::kernel_normal(double x, double h) {
   double y = (x/h) * (x/h);
   double f = 1.0/(sqrt(2*M_PI));
@@ -255,7 +263,7 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
   }
 }
 
-#define abs9(a) (a > 0 ? a:-a)
+#define abs9(a) ((a) > 0 ? (a) : (-a))
 
 void DiscreteIIDModel::band_den_bin(int n,
                                     int nb,
@@ -402,20 +410,20 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
   return pow((c1/sdh), 1.0/5.0);
 }
 
-int DiscreteIIDModel::alphabetSize() const {
-  return _probabilities.size();
-}
-
-double DiscreteIIDModel::probabilityOf(Symbol s) const {
-  if (s > _probabilities.size())
-    return -HUGE;
-  return _probabilities[s];
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::evaluate(const Sequence &s,
                                   unsigned int pos,
                                   unsigned int phase) const {
   return probabilityOf(s[pos]);
+}
+
+Symbol DiscreteIIDModel::choose(const Sequence &context,
+                                unsigned int pos,
+                                unsigned int phase) const {
+  return choose();
 }
 
 Symbol DiscreteIIDModel::choose() const {
@@ -428,16 +436,23 @@ Symbol DiscreteIIDModel::choose() const {
   return _probabilities.size()-1;
 }
 
-Symbol DiscreteIIDModel::choose(const Sequence &context,
-                                unsigned int pos,
-                                unsigned int phase) const {
-  return choose();
+double DiscreteIIDModel::probabilityOf(Symbol s) const {
+  if (s > _probabilities.size())
+    return -HUGE;
+  return _probabilities[s];
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 std::vector<double> DiscreteIIDModel::probabilities() {
   return _probabilities;
 }
 
+int DiscreteIIDModel::alphabetSize() const {
+  return _probabilities.size();
+}
 
 }  // namespace model
 }  // namespace tops

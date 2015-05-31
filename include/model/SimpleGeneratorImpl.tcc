@@ -122,7 +122,16 @@ class SimpleGeneratorImpl : public GeneratorImpl {
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             Static methods                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+SimpleGeneratorImpl<Model>::SimpleGeneratorImpl(ModelPtr m)
+    : _model(m) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -135,7 +144,7 @@ SimpleGeneratorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             Virtual methods                                */
+/*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -153,7 +162,7 @@ SimpleGeneratorImpl<Model>::chooseLabeling(unsigned int size,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -196,15 +205,6 @@ SimpleGeneratorImpl<Model>::chooseLabelingImpl(unsigned int size,
     // std::static_pointer_cast<SimpleGeneratorImpl<M>>(
     //   this->shared_from_this()),
       size, phase);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
-/*----------------------------------------------------------------------------*/
-
-template<typename Model>
-SimpleGeneratorImpl<Model>::SimpleGeneratorImpl(ModelPtr m)
-    : _model(m) {
 }
 
 }  // namespace model

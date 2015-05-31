@@ -22,10 +22,23 @@
 #include <vector>
 
 // ToPS headers
-#include "PhasedInhomogeneousMarkovChain.hpp"
+#include "model/PhasedInhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs)
+    : InhomogeneousMarkovChain(vlmcs) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
     std::vector<VariableLengthMarkovChainPtr> vlmcs) {
@@ -33,13 +46,8 @@ PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
     new PhasedInhomogeneousMarkovChain(vlmcs));
 }
 
-PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : InhomogeneousMarkovChain(vlmcs) {
-}
-
 PhasedInhomogeneousMarkovChainPtr
-  PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
+PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size,
     unsigned int order,
@@ -47,7 +55,6 @@ PhasedInhomogeneousMarkovChainPtr
     double pseudo_counts,
     std::vector<double> weights,
     ProbabilisticModelPtr apriori) {
-
   unsigned int length = nphases;
   std::vector<VariableLengthMarkovChainPtr> vlmcs(length);
 
@@ -94,6 +101,10 @@ PhasedInhomogeneousMarkovChainPtr
   return PhasedInhomogeneousMarkovChain::make(vlmcs);
 }
 
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 double PhasedInhomogeneousMarkovChain::evaluate(
     const Sequence &s,
     unsigned int pos,
@@ -121,16 +132,9 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
       s));
 }
 
-double PhasedInhomogeneousMarkovChain::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  double prob = 0;
-  for (unsigned int i = begin; i < end; i++)
-    prob += evaluate(evaluator->sequence(), i);
-  return prob;
-}
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
     CEPtr evaluator,
@@ -142,6 +146,17 @@ void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
       prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluate(evaluator->sequence(), i, t);
     }
   }
+}
+
+double PhasedInhomogeneousMarkovChain::simpleProbabilityOf(
+    SEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluate(evaluator->sequence(), i);
+  return prob;
 }
 
 double PhasedInhomogeneousMarkovChain::cachedProbabilityOf(

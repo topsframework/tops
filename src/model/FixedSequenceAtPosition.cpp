@@ -27,7 +27,7 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                             STATIC METHODS                                 */
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(

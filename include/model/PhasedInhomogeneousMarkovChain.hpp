@@ -25,9 +25,9 @@
 #include <vector>
 
 // ToPS headers
+#include "model/Matrix.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/Matrix.hpp"
 
 namespace tops {
 namespace model {
@@ -59,6 +59,7 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   // Static methods
   static PhasedInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
+
   static PhasedInhomogeneousMarkovChainPtr trainInterpolatedPhasedMarkovChain(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -69,13 +70,15 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
-
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,

@@ -25,9 +25,9 @@
 #include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
 #include "model/Matrix.hpp"
 #include "model/DecodableEvaluator.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 // ToPS templates
 #include "model/Labeling.tcc"
@@ -48,7 +48,7 @@ class DecodableModel : public ProbabilisticModel {
     Matrix alpha, beta, gamma, posterior_decoding;
   };
 
-  // Virtual methods
+  // Purely virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) = 0;
   virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,

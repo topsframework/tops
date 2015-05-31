@@ -25,8 +25,8 @@
 #include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
 #include "model/ContextTree.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -71,7 +71,9 @@ class VariableLengthMarkovChain : public ProbabilisticModel {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;

@@ -28,13 +28,9 @@
 namespace tops {
 namespace model {
 
-MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::make(
-    std::string node_name,
-    ProbabilisticModelPtr model,
-    int index) {
-  return MaximalDependenceDecompositionNodePtr(
-    new MaximalDependenceDecompositionNode(node_name, model, index));
-}
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
 
 MaximalDependenceDecompositionNode::MaximalDependenceDecompositionNode(
     std::string node_name,
@@ -45,12 +41,38 @@ MaximalDependenceDecompositionNode::MaximalDependenceDecompositionNode(
         _node_name(node_name) {
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+MaximalDependenceDecompositionNodePtr MaximalDependenceDecompositionNode::make(
+    std::string node_name,
+    ProbabilisticModelPtr model,
+    int index) {
+  return MaximalDependenceDecompositionNodePtr(
+    new MaximalDependenceDecompositionNode(node_name, model, index));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
 int MaximalDependenceDecompositionNode::getIndex() {
   return _index;
 }
 
 ProbabilisticModelPtr MaximalDependenceDecompositionNode::getModel() {
   return _model;
+}
+
+MaximalDependenceDecompositionNodePtr
+MaximalDependenceDecompositionNode::getLeft() {
+  return _left;
+}
+
+MaximalDependenceDecompositionNodePtr
+MaximalDependenceDecompositionNode::getRight() {
+  return _right;
 }
 
 void MaximalDependenceDecompositionNode::setChildern(
@@ -63,16 +85,6 @@ void MaximalDependenceDecompositionNode::setChildern(
 void MaximalDependenceDecompositionNode::setChild(
     MaximalDependenceDecompositionNodePtr child) {
   _left = child;
-}
-
-MaximalDependenceDecompositionNodePtr
-MaximalDependenceDecompositionNode::getLeft() {
-  return _left;
-}
-
-MaximalDependenceDecompositionNodePtr
-MaximalDependenceDecompositionNode::getRight() {
-  return _right;
 }
 
 }  // namespace model

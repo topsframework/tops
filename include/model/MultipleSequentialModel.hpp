@@ -56,12 +56,15 @@ class MultipleSequentialModel : public ProbabilisticModel {
       std::vector<int> max_length);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,

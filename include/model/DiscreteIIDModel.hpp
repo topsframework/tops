@@ -154,7 +154,9 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param pos position of a sequence's symbol
    * @return \f$Pr(s[i])\f$
    */
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
 
   /**
    * Draws a new symbol in the ith position.
@@ -185,6 +187,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
   std::vector<double> probabilities();
+
   int alphabetSize() const;
 
  protected:

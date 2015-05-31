@@ -24,23 +24,19 @@
 
 // ToPS headers
 #include "MultipleSequentialModel.hpp"
-
 #include "Util.hpp"
 
 namespace tops {
 namespace model {
 
-MultipleSequentialModelPtr MultipleSequentialModel::make(
-      std::vector<ProbabilisticModelPtr> models,
-      std::vector<int> max_length) {
-  return MultipleSequentialModelPtr(
-    new MultipleSequentialModel(models, max_length));
-}
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
 
 MultipleSequentialModel::MultipleSequentialModel(
-    std::vector<ProbabilisticModelPtr> models,
-    std::vector<int> max_length) : _models(models),
-                                            _max_length(max_length) {
+std::vector<ProbabilisticModelPtr> models,
+  std::vector<int> max_length)
+    : _models(models), _max_length(max_length) {
   _idx_not_limited = _models.size() - 1;
   int count = 0;
   for (unsigned int i = 0; i < _models.size(); i++) {
@@ -50,12 +46,25 @@ MultipleSequentialModel::MultipleSequentialModel(
     }
   }
   if (count > 1) {
-    // std::cerr << "ERROR: Only one model can has unlimited length\n"
-    // << std::endl;
-    // TODO(igorbonadio)
+    // TODO(igorbonadio): ERROR: Only one model can has unlimited length
     exit(-1);
   }
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+MultipleSequentialModelPtr MultipleSequentialModel::make(
+      std::vector<ProbabilisticModelPtr> models,
+      std::vector<int> max_length) {
+  return MultipleSequentialModelPtr(
+    new MultipleSequentialModel(models, max_length));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double MultipleSequentialModel::evaluate(const Sequence &s,
                                          unsigned int pos,
@@ -89,11 +98,21 @@ EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
       s));
 }
 
-double MultipleSequentialModel::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+void MultipleSequentialModel::initializeCachedEvaluator(CEPtr evaluator,
+                                                        unsigned int phase) {
+  auto &evaluators = evaluator->cache();
+  for (unsigned int i = 0; i < _models.size(); i++)
+    evaluators[i] = _models[i]->evaluator(evaluator->sequence(), true);
+}
+
+double MultipleSequentialModel::simpleProbabilityOf(SEPtr evaluator,
+                                                    unsigned int begin,
+                                                    unsigned int end,
+                                                    unsigned int phase) const {
   if (begin > end)
     return -HUGE;
 
@@ -135,19 +154,10 @@ double MultipleSequentialModel::simpleProbabilityOf(
   return sum;
 }
 
-void MultipleSequentialModel::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &evaluators = evaluator->cache();
-  for (unsigned int i = 0; i < _models.size(); i++)
-    evaluators[i] = _models[i]->evaluator(evaluator->sequence(), true);
-}
-
-double MultipleSequentialModel::cachedProbabilityOf(
-    CEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+double MultipleSequentialModel::cachedProbabilityOf(CEPtr evaluator,
+                                                    unsigned int begin,
+                                                    unsigned int end,
+                                                    unsigned int phase) const {
   auto &evaluators = evaluator->cache();
   double sum = 0;
   int b = begin;

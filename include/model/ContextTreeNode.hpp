@@ -20,10 +20,12 @@
 #ifndef TOPS_MODEL_CONTEXT_TREE_NODE_
 #define TOPS_MODEL_CONTEXT_TREE_NODE_
 
-#include <memory>
+// Standard headers
 #include <map>
+#include <memory>
 #include <vector>
 
+// ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 
 namespace tops {

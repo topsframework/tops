@@ -17,19 +17,32 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "ProbabilisticModelDecorator.hpp"
+// ToPS headers
+#include "model/ProbabilisticModelDecorator.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+ProbabilisticModelDecorator::ProbabilisticModelDecorator(
+    ProbabilisticModelPtr model) : _model(model) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 ProbabilisticModelDecoratorPtr ProbabilisticModelDecorator::make(
     ProbabilisticModelPtr model) {
   return ProbabilisticModelDecoratorPtr(new ProbabilisticModelDecorator(model));
 }
 
-ProbabilisticModelDecorator::ProbabilisticModelDecorator(
-    ProbabilisticModelPtr model) : _model(model) {
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double ProbabilisticModelDecorator::evaluate(const Sequence &s,
                                              unsigned int pos,

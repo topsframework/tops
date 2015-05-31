@@ -39,6 +39,12 @@ class Consensus;
 using ConsensusPtr = std::shared_ptr<Consensus>;
 
 /**
+ * @typedef ConsensusSequence
+ * @brief Alias of sequence of Consensus
+ */
+using ConsensusSequence = std::vector<Consensus>;
+
+/**
  * @class Consensus
  * @brief TODO
  */
@@ -52,10 +58,9 @@ class Consensus {
   const Sequence symbols() const;
 
  private:
+  // Instance variables
   Sequence _symbols;
 };
-
-typedef std::vector<Consensus> ConsensusSequence;
 
 }  // namespace model
 }  // namespace tops

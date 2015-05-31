@@ -48,7 +48,9 @@ class TargetModel : public DiscreteIIDModel {
   static TargetModelPtr make(int alphabet_size);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
 
   // Concrete methods
   DiscreteIIDModelPtr sequenceDistribution(const Sequence &s) const;

@@ -131,13 +131,23 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                               IMPLEMENTATION
+                                IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             Static methods                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m,
+                                                const Sequence &s)
+    : _model(m), _sequence(s) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -150,7 +160,7 @@ SimpleEvaluatorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             Virtual methods                                */
+/*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -179,7 +189,7 @@ SimpleEvaluatorImpl<Model>::labeling(Labeling<Sequence>::Method method) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -220,16 +230,6 @@ SimpleEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
     std::static_pointer_cast<SimpleEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
-/*----------------------------------------------------------------------------*/
-
-template<typename Model>
-SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m,
-                                                const Sequence &s)
-    : _model(m), _sequence(s) {
 }
 
 }  // namespace model
