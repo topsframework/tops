@@ -26,66 +26,24 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                             STATIC METHODS                                 */
+/*----------------------------------------------------------------------------*/
+
 FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(
     ProbabilisticModelPtr model,
     int position,
     Sequence sequence,
     DiscreteIIDModelPtr distr) {
-  return FixedSequenceAtPositionPtr(new FixedSequenceAtPosition(model,
-                                                                position,
-                                                                sequence,
-                                                                distr));
+  return FixedSequenceAtPositionPtr(
+    new FixedSequenceAtPosition(model, position, sequence, distr));
 }
 
-FixedSequenceAtPosition::FixedSequenceAtPosition(
-    ProbabilisticModelPtr model,
-    int position,
-    Sequence sequence,
-    DiscreteIIDModelPtr distr)
-      : ProbabilisticModelDecorator(model),
-        _position(position),
-        _sequence(sequence),
-        _probabilities(distr) {
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
-// double FixedSequenceAtPosition::evaluateSequence(const Sequence &s,
-//                                                  unsigned int begin,
-//                                                  unsigned int end,
-//                                                  unsigned int phase) const {
-//   double result = ProbabilisticModelDecorator::evaluateSequence(s, begin, end);
-//   int j;
-//   for (j = 0;
-//        (j < static_cast<int>(_sequence.size()))
-//        && ((_position  + j) < static_cast<int>(s.size()));
-//        j++) {
-//     if (_sequence[j] != s[_position + j] )
-//       break;
-//   }
-//   if (j != static_cast<int>(_sequence.size()))
-//     result += _probabilities->probabilityOf(1);
-//   else
-//     result += _probabilities->probabilityOf(0);
-//   return result;
-// }
-
-void FixedSequenceAtPosition::addSequence(Sequence &h) const {
-  if (_probabilities->choose() == 1)
-    return;
-  for (int i = _position;
-       ((i-_position) < static_cast<int>(_sequence.size()))
-       && (i < static_cast<int>(h.size()));
-       i++) {
-    h[i] = _sequence[i-_position];
-  }
-}
-
-Sequence FixedSequenceAtPosition::chooseSequence(unsigned int size,
-                                                 unsigned int phase) const {
-  Sequence s;
-  s = ProbabilisticModelDecorator::chooseSequence(size, phase);
-  addSequence(s);
-  return s;
-}
+/*==============================  EVALUATOR  =================================*/
 
 EvaluatorPtr FixedSequenceAtPosition::evaluator(
     const Sequence &s,
@@ -95,6 +53,20 @@ EvaluatorPtr FixedSequenceAtPosition::evaluator(
       std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
       s));
 }
+
+/*==============================  GENERATOR  =================================*/
+
+GeneratorPtr<Sequence> FixedSequenceAtPosition::sequenceGenerator() {
+  return Generator<Sequence>::make(
+    SimpleGeneratorImpl<FixedSequenceAtPosition>::make(
+      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this())));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+/*==============================  EVALUATOR  =================================*/
 
 double FixedSequenceAtPosition::simpleProbabilityOf(
     SEPtr evaluator,
@@ -115,6 +87,43 @@ double FixedSequenceAtPosition::simpleProbabilityOf(
   else
     result += _probabilities->probabilityOf(0);
   return result;
+}
+
+/*==============================  GENERATOR  =================================*/
+
+Sequence FixedSequenceAtPosition::simpleChooseSequence(SGPtr generator,
+                                                       unsigned int size,
+                                                       unsigned int phase) const {
+  Sequence s = _model->sequenceGenerator()->choose(size, phase);
+  addSequence(s);
+  return s;
+}
+
+/*================================  OTHERS  ==================================*/
+
+void FixedSequenceAtPosition::addSequence(Sequence &h) const {
+  if (_probabilities->choose() == 1)
+    return;
+  for (int i = _position;
+       ((i-_position) < static_cast<int>(_sequence.size()))
+       && (i < static_cast<int>(h.size()));
+       i++) {
+    h[i] = _sequence[i-_position];
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
+                                                 int position,
+                                                 Sequence sequence,
+                                                 DiscreteIIDModelPtr distr)
+      : ProbabilisticModelDecorator(model),
+        _position(position),
+        _sequence(sequence),
+        _probabilities(distr) {
 }
 
 }  // namespace model

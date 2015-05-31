@@ -50,6 +50,7 @@ class ProbabilisticModel
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
+  using SGPtr = SimpleGeneratorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
   virtual double evaluate(const Sequence &s,
@@ -60,14 +61,11 @@ class ProbabilisticModel
                         unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual Sequence chooseSequence(unsigned int size,
-                                  unsigned int phase = 0) const;
-
-  virtual GeneratorPtr<Sequence> sequenceGenerator();
+  virtual InhomogeneousMarkovChain* inhomogeneous();
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
-  virtual InhomogeneousMarkovChain* inhomogeneous();
+  virtual GeneratorPtr<Sequence> sequenceGenerator();
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -81,6 +79,10 @@ class ProbabilisticModel
                              unsigned int begin,
                              unsigned int end,
                              unsigned int phase = 0) const;
+
+  Sequence simpleChooseSequence(SGPtr generator,
+                                unsigned int size,
+                                unsigned int phase = 0) const;
 };
 
 /**

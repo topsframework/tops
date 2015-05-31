@@ -48,13 +48,16 @@ class ProbabilisticModelDecorator : public ProbabilisticModel {
  public:
   // Static methods
   static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
+
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const;
+
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
-  virtual Sequence chooseSequence(unsigned int size,
-                                  unsigned int phase = 0) const override;
+
  protected:
   // Instance variables
   ProbabilisticModelPtr _model;

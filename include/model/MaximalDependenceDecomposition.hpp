@@ -52,11 +52,14 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
   using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
+  using SGPtr = SimpleGeneratorImplPtr<MaximalDependenceDecomposition>;
 
+  // Static methods
   static MaximalDependenceDecompositionPtr make(
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model,
       MaximalDependenceDecompositionNodePtr tree);
+
   static MaximalDependenceDecompositionPtr train(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -64,14 +67,18 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
       ProbabilisticModelPtr consensus_model,
       unsigned int minimum_subset);
 
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Sequence chooseSequence(unsigned int size,
-                                  unsigned int phase = 0) const override;
+  // Virtual methods
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
+
+  virtual GeneratorPtr<Sequence> sequenceGenerator() override;
+
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
-
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -86,16 +93,30 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
                              unsigned int end,
                              unsigned int phase = 0) const;
 
+  Sequence simpleChooseSequence(SGPtr generator,
+                                unsigned int size,
+                                unsigned int phase = 0) const;
+
  private:
-  MaximalDependenceDecomposition(ConsensusSequence consensus_sequence, ProbabilisticModelPtr consensus_model, MaximalDependenceDecompositionNodePtr tree);
-  double _probabilityOf(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
-  void _chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
+  // Instance variables
+  MaximalDependenceDecompositionNodePtr _mdd_tree;
+  ConsensusSequence _consensus_sequence;
+  ProbabilisticModelPtr _consensus_model;
+  std::vector<double> _prefix_sum_array;
+
+  // Constructors
+  MaximalDependenceDecomposition(ConsensusSequence consensus_sequence,
+                                 ProbabilisticModelPtr consensus_model,
+                                 MaximalDependenceDecompositionNodePtr tree);
+
+  // Static methods
   static MaximalDependenceDecompositionNodePtr trainTree(
       std::vector<Sequence> training_set,
       int divmin,
       unsigned int alphabet_size,
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model);
+
   static MaximalDependenceDecompositionNodePtr newNode(
       std::string node_name,
       std::vector<Sequence> & sequences,
@@ -104,26 +125,27 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
       unsigned int alphabet_size,
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model);
+
   static InhomogeneousMarkovChainPtr trainInhomogeneousMarkovChain(
       std::vector<Sequence> & sequences,
       unsigned int alphabet_size);
+
   static int getMaximalDependenceIndex(
       InhomogeneousMarkovChainPtr model,
       Sequence selected,
       ConsensusSequence consensus_sequence,
       unsigned int alphabet_size,
       ProbabilisticModelPtr consensus_model);
+
   static void subset(int index,
                      std::vector<Sequence> & sequences,
                      std::vector<Sequence> & consensus,
                      std::vector<Sequence> & nonconsensus,
                      ConsensusSequence consensus_sequence);
 
-
-  MaximalDependenceDecompositionNodePtr _mdd_tree;
-  ConsensusSequence _consensus_sequence;
-  ProbabilisticModelPtr _consensus_model;
-  std::vector<double> _prefix_sum_array;
+  // Concrete methods
+  double _probabilityOf(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
+  void _chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
 };
 
 }  // namespace model

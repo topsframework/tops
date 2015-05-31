@@ -31,6 +31,10 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                             STATIC METHODS                                 */
+/*----------------------------------------------------------------------------*/
+
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model,
@@ -39,15 +43,6 @@ MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
     new MaximalDependenceDecomposition(consensus_sequence,
                                        consensus_model,
                                        tree));
-}
-
-MaximalDependenceDecomposition::MaximalDependenceDecomposition(
-    ConsensusSequence consensus_sequence,
-    ProbabilisticModelPtr consensus_model,
-    MaximalDependenceDecompositionNodePtr tree)
-      : _mdd_tree(tree),
-        _consensus_sequence(consensus_sequence),
-        _consensus_model(consensus_model) {
 }
 
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(
@@ -167,21 +162,6 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
   return mdd_node;
 }
 
-void MaximalDependenceDecomposition::subset(
-    int index,
-    std::vector<Sequence> & sequences,
-    std::vector<Sequence> & consensus,
-    std::vector<Sequence> & nonconsensus,
-    ConsensusSequence consensus_sequence) {
-  for (unsigned int i = 0; i < sequences.size(); i++) {
-    if (consensus_sequence[index].is(sequences[i][index])) {
-      consensus.push_back(sequences[i]);
-    } else {
-      nonconsensus.push_back(sequences[i]);
-    }
-  }
-}
-
 InhomogeneousMarkovChainPtr
 MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
     std::vector<Sequence> & sequences,
@@ -249,47 +229,26 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   return maximal_i;
 }
 
-double MaximalDependenceDecomposition::evaluate(
-    const Sequence &s,
-     unsigned int pos,
-     unsigned int phase) const {
-  // TODO(igorbonadio)
-  return -HUGE;
-}
-
-Sequence MaximalDependenceDecomposition::chooseSequence(
-    unsigned int size,
-    unsigned int phase) const {
-  // _chooseAux(s, _mdd_tree);
-  return Sequence(size, INVALID_SYMBOL);
-}
-
-void MaximalDependenceDecomposition::_chooseAux(
-    Sequence & s,
-    MaximalDependenceDecompositionNodePtr node) const {
-  if (node->getLeft()) {
-    s[node->getIndex()] = node->getModel()->choose(s,
-                                                   node->getIndex());
-    if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
-      _chooseAux(s, node->getLeft());
+void MaximalDependenceDecomposition::subset(
+    int index,
+    std::vector<Sequence> & sequences,
+    std::vector<Sequence> & consensus,
+    std::vector<Sequence> & nonconsensus,
+    ConsensusSequence consensus_sequence) {
+  for (unsigned int i = 0; i < sequences.size(); i++) {
+    if (consensus_sequence[index].is(sequences[i][index])) {
+      consensus.push_back(sequences[i]);
     } else {
-      _chooseAux(s, node->getRight());
-    }
-  } else {  // leaf
-    for (unsigned int i = 0; i < s.size(); i++) {
-      if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->choose(s, i);
-      }
+      nonconsensus.push_back(sequences[i]);
     }
   }
 }
 
-Symbol MaximalDependenceDecomposition::choose(const Sequence &context,
-                                              unsigned int pos,
-                                              unsigned int phase) const {
-  // TODO(igorbonadio)
-  return 0;
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+/*==============================  EVALUATOR  =================================*/
 
 EvaluatorPtr MaximalDependenceDecomposition::evaluator(
     const Sequence &s,
@@ -305,6 +264,49 @@ EvaluatorPtr MaximalDependenceDecomposition::evaluator(
       s));
 }
 
+/*==============================  GENERATOR  =================================*/
+
+GeneratorPtr<Sequence> MaximalDependenceDecomposition::sequenceGenerator() {
+  return Generator<Sequence>::make(
+    SimpleGeneratorImpl<MaximalDependenceDecomposition>::make(
+      std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this())));
+}
+
+/*================================  OTHERS  ==================================*/
+
+double MaximalDependenceDecomposition::evaluate(
+    const Sequence &s,
+     unsigned int pos,
+     unsigned int phase) const {
+  // TODO(igorbonadio)
+  return -HUGE;
+}
+
+Symbol MaximalDependenceDecomposition::choose(const Sequence &context,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
+  // TODO(igorbonadio)
+  return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+/*==============================  EVALUATOR  =================================*/
+
+void MaximalDependenceDecomposition::initializeCachedEvaluator(
+    CEPtr evaluator,
+    unsigned int phase) {
+  auto &prefix_sum_array = evaluator->cache();
+  prefix_sum_array.clear();
+  int len = evaluator->sequence().size();
+  int clen = _consensus_sequence.size();
+  for (int i = 0; i <= (len - clen); i++) {
+    prefix_sum_array.push_back(simpleProbabilityOf(evaluator, i, i + clen));
+  }
+}
+
 double MaximalDependenceDecomposition::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
@@ -318,6 +320,29 @@ double MaximalDependenceDecomposition::simpleProbabilityOf(
   std::vector<int> indexes;
   return _probabilityOf(subseq, _mdd_tree, indexes);
 }
+
+double MaximalDependenceDecomposition::cachedProbabilityOf(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->cache();
+  if ((end - begin) != _consensus_sequence.size())
+    return -HUGE;
+  return prefix_sum_array[begin];
+}
+
+/*==============================  GENERATOR  =================================*/
+
+Sequence MaximalDependenceDecomposition::simpleChooseSequence(
+    SGPtr generator,
+    unsigned int size,
+    unsigned int phase) const {
+  // _chooseAux(s, _mdd_tree);
+  return Sequence(size, INVALID_SYMBOL);
+}
+
+/*================================  OTHERS  ==================================*/
 
 double MaximalDependenceDecomposition::_probabilityOf(
     const Sequence & s,
@@ -347,27 +372,37 @@ double MaximalDependenceDecomposition::_probabilityOf(
   return p;
 }
 
-void MaximalDependenceDecomposition::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache();
-  prefix_sum_array.clear();
-  int len = evaluator->sequence().size();
-  int clen = _consensus_sequence.size();
-  for (int i = 0; i <= (len - clen); i++) {
-    prefix_sum_array.push_back(simpleProbabilityOf(evaluator, i, i + clen));
+void MaximalDependenceDecomposition::_chooseAux(
+    Sequence & s,
+    MaximalDependenceDecompositionNodePtr node) const {
+  if (node->getLeft()) {
+    s[node->getIndex()] = node->getModel()->choose(s,
+                                                   node->getIndex());
+    if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
+      _chooseAux(s, node->getLeft());
+    } else {
+      _chooseAux(s, node->getRight());
+    }
+  } else {  // leaf
+    for (unsigned int i = 0; i < s.size(); i++) {
+      if (s[i] == INVALID_SYMBOL) {
+        s[i] = node->getModel()->choose(s, i);
+      }
+    }
   }
 }
 
-double MaximalDependenceDecomposition::cachedProbabilityOf(
-    CEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->cache();
-  if ((end - begin) != _consensus_sequence.size())
-    return -HUGE;
-  return prefix_sum_array[begin];
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+MaximalDependenceDecomposition::MaximalDependenceDecomposition(
+    ConsensusSequence consensus_sequence,
+    ProbabilisticModelPtr consensus_model,
+    MaximalDependenceDecompositionNodePtr tree)
+      : _mdd_tree(tree),
+        _consensus_sequence(consensus_sequence),
+        _consensus_model(consensus_model) {
 }
 
 }  // namespace model

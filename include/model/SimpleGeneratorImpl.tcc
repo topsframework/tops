@@ -52,7 +52,7 @@ template<typename Model>
 class SimpleGeneratorImpl;
 
 // Auxiliar tests
-GENERATE_HAS_MEMBER(chooseSequence)
+GENERATE_HAS_MEMBER(simpleChooseSequence)
 GENERATE_HAS_MEMBER(chooseLabeling)
 
 /**
@@ -95,12 +95,12 @@ class SimpleGeneratorImpl : public GeneratorImpl {
   template<typename M = Model>
   Identity<Sequence> chooseSequenceImpl(unsigned int size,
                                         unsigned int phase,
-                                        no_chooseSequence<M>* dummy = nullptr);
+                                        no_simpleChooseSequence<M>* dummy = nullptr);
 
   template<typename M = Model>
   Identity<Sequence> chooseSequenceImpl(unsigned int size,
                                         unsigned int phase,
-                                        has_chooseSequence<M>* dummy = nullptr);
+                                        has_simpleChooseSequence<M>* dummy = nullptr);
 
   template<typename M = Model>
   Labeling<Sequence> chooseLabelingImpl(unsigned int size,
@@ -161,7 +161,7 @@ template<typename M>
 Identity<Sequence>
 SimpleGeneratorImpl<Model>::chooseSequenceImpl(unsigned int size,
                                                unsigned int phase,
-                                               no_chooseSequence<M>* dummy) {
+                                               no_simpleChooseSequence<M>* dummy) {
   throw std::logic_error("Model does not have method chooseSequence");
 }
 
@@ -170,10 +170,10 @@ template<typename M>
 Identity<Sequence>
 SimpleGeneratorImpl<Model>::chooseSequenceImpl(unsigned int size,
                                                unsigned int phase,
-                                               has_chooseSequence<M>* dummy) {
-  return this->_model->chooseSequence(
-    // std::static_pointer_cast<SimpleGeneratorImpl<M>>(
-    //   this->shared_from_this()),
+                                               has_simpleChooseSequence<M>* dummy) {
+  return this->_model->simpleChooseSequence(
+    std::static_pointer_cast<SimpleGeneratorImpl<M>>(
+      this->shared_from_this()),
       size, phase);
 }
 

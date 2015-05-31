@@ -47,21 +47,27 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
  public:
   // Alias
   using SEPtr = SimpleEvaluatorImplPtr<FixedSequenceAtPosition>;
+  using SGPtr = SimpleGeneratorImplPtr<FixedSequenceAtPosition>;
 
   // Static methods
   static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
 
   // Virtual methods
-  virtual Sequence chooseSequence(unsigned int size,
-                                  unsigned int phase = 0) const override;
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual GeneratorPtr<Sequence> sequenceGenerator() override;
 
   // Concrete methods
   double simpleProbabilityOf(SEPtr evaluator,
                              unsigned int begin,
                              unsigned int end,
                              unsigned int phase = 0) const;
+
+  Sequence simpleChooseSequence(SGPtr generator,
+                                unsigned int size,
+                                unsigned int phase = 0) const;
+
  private:
   // Instance variables
   int _position;
