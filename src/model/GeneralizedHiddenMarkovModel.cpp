@@ -25,6 +25,7 @@
 // ToPS headers
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 #include "model/Util.hpp"
+#include "model/Segment.hpp"
 
 namespace tops {
 namespace model {
@@ -50,6 +51,23 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
       _initial_probabilities(initial_probabilities),
       _state_alphabet_size(state_alphabet_size),
       _observation_alphabet_size(observation_alphabet_size) {
+}
+
+double GeneralizedHiddenMarkovModel::evaluate(
+    const Sequence &xs,
+    const Sequence &ys) const {
+  double prob = 0;
+  auto segments = Segment::readSequence(ys);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    if (i == 0) {
+      prob += _initial_probabilities->probabilityOf(segments[i].symbol());
+    } else {
+      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(segments[i].symbol());
+    }
+    prob += _states[segments[i].symbol()]->durationProbability(segments[i].end() - segments[i].begin());
+    prob += _states[segments[i].symbol()]->observation()->evaluator(xs)->probabilityOf(segments[i].begin(), segments[i].end());
+  }
+  return prob;
 }
 
 }  // namespace model

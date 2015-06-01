@@ -54,6 +54,9 @@ class GeneralizedHiddenMarkovModel {
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size);
 
+  virtual double evaluate(const Sequence &xs,
+                          const Sequence &ys) const;
+
  protected:
   // Constructors
   GeneralizedHiddenMarkovModel(

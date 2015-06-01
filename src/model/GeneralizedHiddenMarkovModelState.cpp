@@ -73,9 +73,7 @@ std::vector<int>& GeneralizedHiddenMarkovModelState::successors() {
 }
 
 double GeneralizedHiddenMarkovModelState::durationProbability(int l) const {
-  if (l == 1)
-    return 0.0;
-  return -HUGE;
+  return 0.0;
 }
 
 bool GeneralizedHiddenMarkovModelState::isGeometricDuration() const {
