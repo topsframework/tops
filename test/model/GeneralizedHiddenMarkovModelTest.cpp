@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 #include "model/Sequence.hpp"
+#include "model/Matrix.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
@@ -47,6 +48,7 @@ using tops::model::GeneralizedHiddenMarkovModelSignalStatePtr;
 using tops::model::GeneralizedHiddenMarkovModelExplicitDurationState;
 using tops::model::GeneralizedHiddenMarkovModelExplicitDurationStatePtr;
 using tops::model::Sequence;
+using tops::model::Matrix;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
@@ -97,4 +99,12 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
     ghmm->evaluate({0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
                    {0, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0}),
     DoubleNear(-34.5796, 1e-4));
+}
+
+TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
+  Matrix gamma;
+  Sequence path;
+  Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+  auto p = ghmm->viterbi(sequence, gamma, path);
+  ASSERT_THAT(p, DoubleNear(ghmm->evaluate(sequence, path), 1e-4));
 }

@@ -57,6 +57,10 @@ class GeneralizedHiddenMarkovModel {
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys) const;
 
+  virtual double viterbi(const Sequence &xs,
+                         Matrix &gamma,
+                         Sequence &path);
+
  protected:
   // Constructors
   GeneralizedHiddenMarkovModel(
@@ -69,6 +73,7 @@ class GeneralizedHiddenMarkovModel {
   DiscreteIIDModelPtr _initial_probabilities;
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
+  unsigned int _max_backtracking = 10; // TODO(igorbonadio)
 };
 
 }  // namespace model
