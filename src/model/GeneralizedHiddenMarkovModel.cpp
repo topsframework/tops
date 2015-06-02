@@ -34,23 +34,27 @@ GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
     std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probability,
     unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size) {
+    unsigned int observation_alphabet_size,
+    unsigned int max_backtracking) {
   return GeneralizedHiddenMarkovModelPtr(new GeneralizedHiddenMarkovModel(
     states,
     initial_probability,
     state_alphabet_size,
-    observation_alphabet_size));
+    observation_alphabet_size,
+    max_backtracking));
 }
 
 GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
     unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size)
+    unsigned int observation_alphabet_size,
+    unsigned int max_backtracking)
     : _states(states),
       _initial_probabilities(initial_probabilities),
       _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+      _observation_alphabet_size(observation_alphabet_size),
+      _max_backtracking(max_backtracking) {
 }
 
 double GeneralizedHiddenMarkovModel::evaluate(
@@ -76,19 +80,19 @@ double GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
   gamma = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));  // todo(igorbonadio): it should be an uint
+  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
   Matrix psilen(_state_alphabet_size, std::vector<double>(xs.size()));
 
   for (unsigned int i = 0; i < xs.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       gamma[k][i] = -HUGE;
       unsigned int max_d;
-      if (i < _max_backtracking) { // TODO(igorbonadio)
+      if (i < _max_backtracking) {
         max_d = i + 1;
       } else {
         max_d = _max_backtracking;
       }
-      for (unsigned int d = max_d; d > 0; d--) {
+      for (unsigned int d = max_d; d > 0; d--) { // TODO(igorbonadio)
         unsigned int pmax = 0;
         double gmax;
         if (d > i) {

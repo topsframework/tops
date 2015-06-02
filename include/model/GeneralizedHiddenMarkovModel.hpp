@@ -52,7 +52,8 @@ class GeneralizedHiddenMarkovModel {
       std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probabilities,
       unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size);
+      unsigned int observation_alphabet_size,
+      unsigned int max_backtracking = 100);
 
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys) const;
@@ -67,13 +68,14 @@ class GeneralizedHiddenMarkovModel {
       std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
       DiscreteIIDModelPtr initial_probability,
       unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size);
+      unsigned int observation_alphabet_size,
+      unsigned int max_backtracking);
 
   std::vector<GeneralizedHiddenMarkovModelStatePtr> _states;
   DiscreteIIDModelPtr _initial_probabilities;
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
-  unsigned int _max_backtracking = 10; // TODO(igorbonadio)
+  unsigned int _max_backtracking;
 };
 
 }  // namespace model
