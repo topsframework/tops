@@ -117,15 +117,6 @@ double GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
     }
   }
 
-  // std::cout << "---------------------------" << std::endl;
-  // for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-  //   for (unsigned int i = 0; i < xs.size(); i++) {
-  //     std::cout << gamma[k][i] << "\t";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << "---------------------------" << std::endl;
-
   unsigned int L = xs.size() - 1;
   Symbol state = 0;
   double max = gamma[0][L];
