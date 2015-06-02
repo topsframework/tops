@@ -99,7 +99,7 @@ double GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
           gmax = _initial_probabilities->probabilityOf(k);
         } else {
           gmax = -HUGE;
-          for (unsigned int p = 0; p < _state_alphabet_size; p++) { // TODO(igorbonadio)
+          for (auto p : _states[k]->predecessors()) {
             double g = gamma[p][i-d] + _states[p]->transition()->probabilityOf(k);
             if (gmax < g) {
               gmax = g;
