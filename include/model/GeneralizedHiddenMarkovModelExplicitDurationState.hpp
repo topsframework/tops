@@ -54,6 +54,7 @@ class GeneralizedHiddenMarkovModelExplicitDurationState : public GeneralizedHidd
   virtual double durationProbability(int l) const;
   virtual bool isGeometricDuration() const;
   virtual int maximumDurationSize() const;
+  virtual RangePtr durations() const;
 
  private:
   GeneralizedHiddenMarkovModelExplicitDurationState(Symbol symbol,
@@ -62,6 +63,7 @@ class GeneralizedHiddenMarkovModelExplicitDurationState : public GeneralizedHidd
                                                     DiscreteIIDModelPtr duration);
 
   DiscreteIIDModelPtr _duration;
+  unsigned int _max_duration = 100;
 };
 
 }  // namespace model

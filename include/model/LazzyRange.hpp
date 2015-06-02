@@ -17,53 +17,44 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
+#ifndef TOPS_MODEL_LAZZY_RANGE_
+#define TOPS_MODEL_LAZZY_RANGE_
 
 // Standard headers
 #include <memory>
-#include <vector>
 
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelState.hpp"
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
+#include "Range.hpp"
 
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelSignalState;
+class LazzyRange;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelSignalStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelSignalState.
+ * @typedef LazzyRangePtr
+ * @brief Alias of pointer to LazzyRange.
  */
-using GeneralizedHiddenMarkovModelSignalStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
+using LazzyRangePtr = std::shared_ptr<LazzyRange>;
 
 /**
- * @class GeneralizedHiddenMarkovModelSignalState
+ * @class LazzyRange
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelSignalState : public GeneralizedHiddenMarkovModelState {
+class LazzyRange : public Range {
  public:
-  static GeneralizedHiddenMarkovModelSignalStatePtr make(Symbol symbol,
-                                                         ProbabilisticModelPtr observation,
-                                                         DiscreteIIDModelPtr transition,
-                                                         int duration_size);
-
-  virtual double durationProbability(int l) const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
+  LazzyRange(unsigned int begin, unsigned int end);
+  virtual unsigned int begin();
+  virtual unsigned int next();
+  virtual bool end();
 
  private:
-  GeneralizedHiddenMarkovModelSignalState(Symbol symbol,
-                                          ProbabilisticModelPtr observation,
-                                          DiscreteIIDModelPtr transition,
-                                          int duration_size);
-  int _duration_size;
+  unsigned int _begin;
+  unsigned int _end;
+  unsigned int _current;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_LAZZY_RANGE_

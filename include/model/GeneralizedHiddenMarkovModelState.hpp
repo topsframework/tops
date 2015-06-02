@@ -27,6 +27,7 @@
 // ToPS headers
 #include "ProbabilisticModel.hpp"
 #include "DiscreteIIDModel.hpp"
+#include "Range.hpp"
 
 namespace tops {
 namespace model {
@@ -52,6 +53,7 @@ class GeneralizedHiddenMarkovModelState {
   virtual double durationProbability(int l) const;
   virtual bool isGeometricDuration() const;
   virtual int maximumDurationSize() const;
+  virtual RangePtr durations() const;
 
   Symbol symbol();
   ProbabilisticModelPtr observation();

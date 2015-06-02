@@ -17,53 +17,43 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
+#ifndef TOPS_MODEL_SINGLE_VALUE_RANGE_
+#define TOPS_MODEL_SINGLE_VALUE_RANGE_
 
 // Standard headers
 #include <memory>
-#include <vector>
 
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelState.hpp"
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
+#include "Range.hpp"
 
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelSignalState;
+class SingleValueRange;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelSignalStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelSignalState.
+ * @typedef SingleValueRangePtr
+ * @brief Alias of pointer to SingleValueRange.
  */
-using GeneralizedHiddenMarkovModelSignalStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
+using SingleValueRangePtr = std::shared_ptr<SingleValueRange>;
 
 /**
- * @class GeneralizedHiddenMarkovModelSignalState
+ * @class SingleValueRange
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelSignalState : public GeneralizedHiddenMarkovModelState {
+class SingleValueRange : public Range {
  public:
-  static GeneralizedHiddenMarkovModelSignalStatePtr make(Symbol symbol,
-                                                         ProbabilisticModelPtr observation,
-                                                         DiscreteIIDModelPtr transition,
-                                                         int duration_size);
-
-  virtual double durationProbability(int l) const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
+  SingleValueRange(unsigned int value);
+  virtual unsigned int begin();
+  virtual unsigned int next();
+  virtual bool end();
 
  private:
-  GeneralizedHiddenMarkovModelSignalState(Symbol symbol,
-                                          ProbabilisticModelPtr observation,
-                                          DiscreteIIDModelPtr transition,
-                                          int duration_size);
-  int _duration_size;
+  int _value;
+  bool _end;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_SINGLE_VALUE_RANGE_

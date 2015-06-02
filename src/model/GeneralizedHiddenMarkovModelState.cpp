@@ -22,6 +22,7 @@
 
 // ToPS headers
 #include "GeneralizedHiddenMarkovModelState.hpp"
+#include "SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
@@ -84,6 +85,10 @@ bool GeneralizedHiddenMarkovModelState::isGeometricDuration() const {
 
 int GeneralizedHiddenMarkovModelState::maximumDurationSize() const {
   return 1;
+}
+
+RangePtr GeneralizedHiddenMarkovModelState::durations() const {
+  return std::make_shared<SingleValueRange>(1);
 }
 
 }

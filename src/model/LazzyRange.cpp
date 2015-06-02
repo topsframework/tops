@@ -17,49 +17,29 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
-#include "LazzyRange.hpp"
+#include "model/LazzyRange.hpp"
 
 namespace tops {
 namespace model {
 
-GeneralizedHiddenMarkovModelExplicitDurationState::GeneralizedHiddenMarkovModelExplicitDurationState(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration(duration) {
+LazzyRange::LazzyRange(unsigned int begin, unsigned int end): _begin(begin), _end(end),_current(begin) {
 }
 
-GeneralizedHiddenMarkovModelExplicitDurationStatePtr GeneralizedHiddenMarkovModelExplicitDurationState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration) {
-  return GeneralizedHiddenMarkovModelExplicitDurationStatePtr(
-    new GeneralizedHiddenMarkovModelExplicitDurationState(
-      symbol, observation, transition, duration));
+unsigned int LazzyRange::begin() {
+  return _begin;
 }
 
-double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
-  return _duration->probabilityOf(l);
+unsigned int LazzyRange::next() {
+  _current++;
+  return _current;
 }
 
-bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
+bool LazzyRange::end() {
+  if (_current > _end)
+    return true;
   return false;
 }
 
-int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
-  return -1;
-}
-
-RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
-  return std::make_shared<LazzyRange>(1, _max_duration);
-}
-
-}
-}
+}  // namespace model
+}  // namespace tops

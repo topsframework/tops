@@ -86,13 +86,8 @@ double GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
   for (unsigned int i = 0; i < xs.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       gamma[k][i] = -HUGE;
-      unsigned int max_d;
-      if (i < _max_backtracking) {
-        max_d = i + 1;
-      } else {
-        max_d = _max_backtracking;
-      }
-      for (unsigned int d = max_d; d > 0; d--) { // TODO(igorbonadio)
+      auto durations = _states[k]->durations();
+      for (unsigned int d = durations->begin(); !durations->end() && d <= (i + 1); d = durations->next()) {
         unsigned int pmax = 0;
         double gmax;
         if (d > i) {

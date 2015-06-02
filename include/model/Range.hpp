@@ -17,47 +17,35 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
+#ifndef TOPS_MODEL_RANGE_
+#define TOPS_MODEL_RANGE_
 
-// ToPS headers
-#include "GeneralizedHiddenMarkovModelSignalState.hpp"
-#include "SingleValueRange.hpp"
+// Standard headers
+#include <memory>
 
 namespace tops {
 namespace model {
 
-GeneralizedHiddenMarkovModelSignalState::GeneralizedHiddenMarkovModelSignalState(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    int duration_size)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration_size(duration_size) {
-}
+class Range;
 
-GeneralizedHiddenMarkovModelSignalStatePtr GeneralizedHiddenMarkovModelSignalState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    int duration_size) {
-  return GeneralizedHiddenMarkovModelSignalStatePtr(
-    new GeneralizedHiddenMarkovModelSignalState(
-      symbol, observation, transition, duration_size));
-}
+/**
+ * @typedef RangePtr
+ * @brief Alias of pointer to Range.
+ */
+using RangePtr = std::shared_ptr<Range>;
 
-double GeneralizedHiddenMarkovModelSignalState::durationProbability(int l) const {
-  if (l == _duration_size)
-    return 0.0;
-  return -HUGE;
-}
+/**
+ * @class Range
+ * @brief TODO
+ */
+ class Range {
+ public:
+  virtual unsigned int begin() = 0;
+  virtual unsigned int next() = 0;
+  virtual bool end() = 0;
+};
 
-int GeneralizedHiddenMarkovModelSignalState::maximumDurationSize() const {
-  return _duration_size;
-}
+}  // namespace model
+}  // namespace tops
 
-RangePtr GeneralizedHiddenMarkovModelSignalState::durations() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
-}
-
-}
-}
+#endif  // TOPS_MODEL_RANGE_

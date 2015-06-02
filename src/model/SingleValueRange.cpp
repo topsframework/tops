@@ -17,49 +17,27 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
-#include "LazzyRange.hpp"
+#include "model/SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
 
-GeneralizedHiddenMarkovModelExplicitDurationState::GeneralizedHiddenMarkovModelExplicitDurationState(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration(duration) {
+SingleValueRange::SingleValueRange(unsigned int value): _value(value), _end(false) {
 }
 
-GeneralizedHiddenMarkovModelExplicitDurationStatePtr GeneralizedHiddenMarkovModelExplicitDurationState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration) {
-  return GeneralizedHiddenMarkovModelExplicitDurationStatePtr(
-    new GeneralizedHiddenMarkovModelExplicitDurationState(
-      symbol, observation, transition, duration));
+unsigned int SingleValueRange::begin() {
+  return _value;
 }
 
-double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
-  return _duration->probabilityOf(l);
+unsigned int SingleValueRange::next() {
+  _end = true;
+  return _value;
 }
 
-bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
-  return false;
+bool SingleValueRange::end() {
+  return _end;
 }
 
-int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
-  return -1;
-}
-
-RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
-  return std::make_shared<LazzyRange>(1, _max_duration);
-}
-
-}
-}
+}  // namespace model
+}  // namespace tops
