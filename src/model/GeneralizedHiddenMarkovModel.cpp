@@ -170,7 +170,37 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
 
 double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
                                               Matrix &beta) const {
-  return -1;
+  beta = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
+
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    beta[k][xs.size()-1] = 0.0;
+  }
+
+  for (int i = xs.size()-2; i >= 0; i--) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      beta[k][i] = -HUGE;
+      for (auto p : _states[k]->successors()) {
+        double sum = -HUGE;
+        auto durations = _states[p]->durations();
+        for (unsigned int d = durations->begin(); !durations->end() && d < (xs.size() - i); d = durations->next()) {
+          sum = log_sum(sum, _states[p]->durationProbability(d) + _states[p]->observation()->evaluator(xs)->probabilityOf(i+1, i+d+1) + beta[p][i+d]);
+        }
+        beta[k][i] = log_sum(beta[k][i], _states[k]->transition()->probabilityOf(p) + sum);
+      }
+    }
+  }
+
+  double px = -HUGE;
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    double sum = -HUGE;
+    auto durations = _states[k]->durations();
+    for (unsigned int d = durations->begin(); !durations->end() && d <= (xs.size()); d = durations->next()) {
+      sum = log_sum(sum, _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(0, d) + beta[k][d-1]);
+    }
+    px = log_sum(px, _initial_probabilities->probabilityOf(k) + sum);
+  }
+
+  return px;
 }
 
 }  // namespace model
