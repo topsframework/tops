@@ -138,5 +138,40 @@ double GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
   return max;
 }
 
+double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
+                                             Matrix &alpha) const {
+  alpha = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      alpha[k][i] = -HUGE;
+      auto durations = _states[k]->durations();
+      for (unsigned int d = durations->begin(); !durations->end() && d <= (i + 1); d = durations->next()) {
+        if (d > i) {
+          alpha[k][i] = log_sum(alpha[k][i], _initial_probabilities->probabilityOf(k) + _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1, i+1));
+        } else {
+          double sum = -HUGE;
+          for (auto p : _states[k]->predecessors()) {
+            sum = log_sum(sum, alpha[p][i-d] + _states[p]->transition()->probabilityOf(k));
+          }
+          alpha[k][i] = log_sum(alpha[k][i], sum + _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1, i+1));
+        }
+      }
+    }
+  }
+
+  double px = -HUGE;
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    px = log_sum(px, alpha[k][xs.size()-1]);
+  }
+
+  return px;
+}
+
+double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
+                                              Matrix &beta) const {
+  return -1;
+}
+
 }  // namespace model
 }  // namespace tops

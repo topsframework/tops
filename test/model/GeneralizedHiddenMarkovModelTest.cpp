@@ -108,3 +108,10 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
   auto p = ghmm->viterbi(sequence, gamma, path);
   ASSERT_THAT(p, DoubleNear(ghmm->evaluate(sequence, path), 1e-4));
 }
+
+TEST_F(AGHMM, ShouldEvaluateTheProbabilityOfX) {
+  Matrix alpha;
+  Matrix beta;
+  Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+  ASSERT_THAT(ghmm->forward(sequence, alpha), DoubleNear(ghmm->backward(sequence, beta), 1e-4));
+}

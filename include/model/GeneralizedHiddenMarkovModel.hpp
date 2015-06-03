@@ -62,6 +62,11 @@ class GeneralizedHiddenMarkovModel {
                          Matrix &gamma,
                          Sequence &path);
 
+  virtual double backward(const Sequence &xs,
+                          Matrix &beta) const;
+  virtual double forward(const Sequence &xs,
+                         Matrix &alpha) const;
+
  protected:
   // Constructors
   GeneralizedHiddenMarkovModel(
