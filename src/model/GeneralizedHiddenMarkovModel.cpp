@@ -122,6 +122,23 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
   return px;
 }
 
+double GeneralizedHiddenMarkovModel::evaluate(
+    const Sequence &xs,
+    const Sequence &ys) const {
+  double prob = 0;
+  auto segments = Segment::readSequence(ys);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    if (i == 0) {
+      prob += _initial_probabilities->probabilityOf(segments[i].symbol());
+    } else {
+      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(segments[i].symbol());
+    }
+    prob += _states[segments[i].symbol()]->durationProbability(segments[i].end() - segments[i].begin());
+    prob += _states[segments[i].symbol()]->observation()->evaluator(xs)->probabilityOf(segments[i].begin(), segments[i].end());
+  }
+  return prob;
+}
+
 double GeneralizedHiddenMarkovModel::evaluate(const Sequence &s,
                         unsigned int pos,
                         unsigned int phase) const {
@@ -307,20 +324,20 @@ double GeneralizedHiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
                            unsigned int begin,
                            unsigned int end,
                            unsigned int phase) const {
-  // TODO(igorbonadio)
+  return -HUGE; // TODO(igorbonadio)
 }
 double GeneralizedHiddenMarkovModel::cachedProbabilityOf(CEPtr evaluator,
                            unsigned int begin,
                            unsigned int end,
                            unsigned int phase) const {
-  // TODO(igorbonadio)
+  return -HUGE; // TODO(igorbonadio)
 }
 
 double GeneralizedHiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
                            const Sequence& s,
                            unsigned int begin,
                            unsigned int end) const {
-  // TODO(igorbonadio)
+  return -HUGE; // TODO(igorbonadio)
 }
 
 }  // namespace model

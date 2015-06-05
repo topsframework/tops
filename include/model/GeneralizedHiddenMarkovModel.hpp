@@ -93,6 +93,8 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const;
+  virtual double evaluate(const Sequence &xs,
+                          const Sequence &ys) const;
 
   virtual void chooseSequences(Sequence &xs,
                                Sequence &ys,

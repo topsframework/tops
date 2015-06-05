@@ -99,6 +99,13 @@ class AGHMM : public testing::Test {
   }
 };
 
+TEST_F(AGHMM, ShouldEvaluateSequence) {
+  ASSERT_THAT(
+    ghmm->evaluate({0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                   {0, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0}),
+    DoubleNear(-35.4276, 1e-4));
+}
+
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
   Matrix gamma;
   Sequence path;
