@@ -41,7 +41,8 @@ class GeneralizedHiddenMarkovModel;
  * @typedef GeneralizedHiddenMarkovModelPtr
  * @brief Alias of pointer to GeneralizedHiddenMarkovModel.
  */
-using GeneralizedHiddenMarkovModelPtr = std::shared_ptr<GeneralizedHiddenMarkovModel>;
+using GeneralizedHiddenMarkovModelPtr
+  = std::shared_ptr<GeneralizedHiddenMarkovModel>;
 
 /**
  * @class GeneralizedHiddenMarkovModel
@@ -61,25 +62,6 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size,
       unsigned int max_backtracking = 100);
-
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             const Sequence& s,
-                             unsigned int begin,
-                             unsigned int end) const;
-  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
-  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
@@ -116,6 +98,26 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
   virtual Labeling labeling(const Sequence &xs,
                             Matrix &probabilities,
                             Labeling::Method method) const;
+
+  // Concrete methods
+  void initializeCachedEvaluator(CEPtr evaluator,
+                                 unsigned int phase = 0);
+
+  double simpleProbabilityOf(SEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
+  double cachedProbabilityOf(CEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
+
+  double simpleProbabilityOf(SEPtr evaluator,
+                             const Sequence& s,
+                             unsigned int begin,
+                             unsigned int end) const;
+  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
+  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
 
  protected:
   // Constructors

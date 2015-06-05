@@ -30,19 +30,9 @@
 namespace tops {
 namespace model {
 
-GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
-    std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
-    DiscreteIIDModelPtr initial_probability,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size,
-    unsigned int max_backtracking) {
-  return GeneralizedHiddenMarkovModelPtr(new GeneralizedHiddenMarkovModel(
-    states,
-    initial_probability,
-    state_alphabet_size,
-    observation_alphabet_size,
-    max_backtracking));
-}
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
 
 GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
@@ -57,23 +47,56 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
       _max_backtracking(max_backtracking) {
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
+    std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
+    DiscreteIIDModelPtr initial_probability,
+    unsigned int state_alphabet_size,
+    unsigned int observation_alphabet_size,
+    unsigned int max_backtracking) {
+  return GeneralizedHiddenMarkovModelPtr(new GeneralizedHiddenMarkovModel(
+    states,
+    initial_probability,
+    state_alphabet_size,
+    observation_alphabet_size,
+    max_backtracking));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
                                              Matrix &alpha) const {
-  alpha = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
+  alpha = std::vector<std::vector<double>>(
+    _state_alphabet_size, std::vector<double>(xs.size()));
 
   for (unsigned int i = 0; i < xs.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       alpha[k][i] = -HUGE;
       auto durations = _states[k]->durations();
-      for (unsigned int d = durations->begin(); !durations->end() && d <= (i + 1); d = durations->next()) {
+      for (unsigned int d = durations->begin();
+           !durations->end() && d <= (i + 1);
+           d = durations->next()) {
         if (d > i) {
-          alpha[k][i] = log_sum(alpha[k][i], _initial_probabilities->probabilityOf(k) + _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1, i+1));
+          alpha[k][i] = log_sum(alpha[k][i],
+            _initial_probabilities->probabilityOf(k)
+              + _states[k]->durationProbability(d)
+              + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1,
+                                                                        i+1));
         } else {
           double sum = -HUGE;
           for (auto p : _states[k]->predecessors()) {
-            sum = log_sum(sum, alpha[p][i-d] + _states[p]->transition()->probabilityOf(k));
+            sum = log_sum(sum, alpha[p][i-d]
+              + _states[p]->transition()->probabilityOf(k));
           }
-          alpha[k][i] = log_sum(alpha[k][i], sum + _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1, i+1));
+          alpha[k][i] = log_sum(alpha[k][i],
+            sum + _states[k]->durationProbability(d)
+              + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1,
+                                                                        i+1));
         }
       }
     }
@@ -89,7 +112,8 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
 
 double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
                                               Matrix &beta) const {
-  beta = std::vector<std::vector<double>>(_state_alphabet_size, std::vector<double>(xs.size()));
+  beta = std::vector<std::vector<double>>(
+    _state_alphabet_size, std::vector<double>(xs.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     beta[k][xs.size()-1] = 0.0;
@@ -101,10 +125,17 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
       for (auto p : _states[k]->successors()) {
         double sum = -HUGE;
         auto durations = _states[p]->durations();
-        for (unsigned int d = durations->begin(); !durations->end() && d < (xs.size() - i); d = durations->next()) {
-          sum = log_sum(sum, _states[p]->durationProbability(d) + _states[p]->observation()->evaluator(xs)->probabilityOf(i+1, i+d+1) + beta[p][i+d]);
+        for (unsigned int d = durations->begin();
+             !durations->end() && d < (xs.size() - i);
+             d = durations->next()) {
+          sum = log_sum(sum,
+            _states[p]->durationProbability(d)
+              + _states[p]->observation()->evaluator(xs)->probabilityOf(i+1,
+                                                                        i+d+1)
+              + beta[p][i+d]);
         }
-        beta[k][i] = log_sum(beta[k][i], _states[k]->transition()->probabilityOf(p) + sum);
+        beta[k][i] = log_sum(beta[k][i],
+                             _states[k]->transition()->probabilityOf(p) + sum);
       }
     }
   }
@@ -113,8 +144,13 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     double sum = -HUGE;
     auto durations = _states[k]->durations();
-    for (unsigned int d = durations->begin(); !durations->end() && d <= (xs.size()); d = durations->next()) {
-      sum = log_sum(sum, _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(0, d) + beta[k][d-1]);
+    for (unsigned int d = durations->begin();
+         !durations->end() && d <= (xs.size());
+         d = durations->next()) {
+      sum = log_sum(sum,
+        _states[k]->durationProbability(d)
+          + _states[k]->observation()->evaluator(xs)->probabilityOf(0, d)
+          + beta[k][d-1]);
     }
     px = log_sum(px, _initial_probabilities->probabilityOf(k) + sum);
   }
@@ -131,10 +167,13 @@ double GeneralizedHiddenMarkovModel::evaluate(
     if (i == 0) {
       prob += _initial_probabilities->probabilityOf(segments[i].symbol());
     } else {
-      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(segments[i].symbol());
+      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(
+        segments[i].symbol());
     }
-    prob += _states[segments[i].symbol()]->durationProbability(segments[i].end() - segments[i].begin());
-    prob += _states[segments[i].symbol()]->observation()->evaluator(xs)->probabilityOf(segments[i].begin(), segments[i].end());
+    prob += _states[segments[i].symbol()]->durationProbability(
+      segments[i].end() - segments[i].begin());
+    prob += _states[segments[i].symbol()]->observation()->evaluator(
+      xs)->probabilityOf(segments[i].begin(), segments[i].end());
   }
   return prob;
 }
@@ -182,7 +221,9 @@ Labeling GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       gamma[k][i] = -HUGE;
       auto durations = _states[k]->durations();
-      for (unsigned int d = durations->begin(); !durations->end() && d <= (i + 1); d = durations->next()) {
+      for (unsigned int d = durations->begin();
+           !durations->end() && d <= (i + 1);
+           d = durations->next()) {
         unsigned int pmax = 0;
         double gmax;
         if (d > i) {
@@ -190,14 +231,17 @@ Labeling GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
         } else {
           gmax = -HUGE;
           for (auto p : _states[k]->predecessors()) {
-            double g = gamma[p][i-d] + _states[p]->transition()->probabilityOf(k);
+            double g = gamma[p][i-d]
+              + _states[p]->transition()->probabilityOf(k);
             if (gmax < g) {
               gmax = g;
               pmax = p;
             }
           }
         }
-        gmax = gmax + _states[k]->durationProbability(d) + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1, i+1);
+        gmax = gmax + _states[k]->durationProbability(d)
+          + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1,
+                                                                    i+1);
         if (gamma[k][i] < gmax) {
           gamma[k][i] = gmax;
           psi[k][i] = pmax;
@@ -233,7 +277,9 @@ Labeling GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
   return Labeling(max, std::move(path));
 }
 
-Labeling GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs, Matrix &probabilities) const {
+Labeling GeneralizedHiddenMarkovModel::posteriorDecoding(
+    const Sequence &xs,
+    Matrix &probabilities) const {
   posteriorProbabilities(xs, probabilities);
 
   Sequence path(xs.size());
@@ -251,8 +297,9 @@ Labeling GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs, Mat
   return Labeling(-HUGE, std::move(path)); // TODO(igorbonadio)
 }
 
-void GeneralizedHiddenMarkovModel::posteriorProbabilities(const Sequence &xs,
-                                    Matrix &probabilities) const {
+void GeneralizedHiddenMarkovModel::posteriorProbabilities(
+    const Sequence &xs,
+    Matrix &probabilities) const {
   probabilities = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
@@ -268,9 +315,10 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(const Sequence &xs,
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 
-Labeling GeneralizedHiddenMarkovModel::labeling(const Sequence &xs,
-                          Matrix &probabilities,
-                          Labeling::Method method) const {
+Labeling GeneralizedHiddenMarkovModel::labeling(
+    const Sequence &xs,
+    Matrix &probabilities,
+    Labeling::Method method) const {
   switch (method) {
     case Labeling::Method::bestPath:
       return viterbi(xs, probabilities);
@@ -280,34 +328,46 @@ Labeling GeneralizedHiddenMarkovModel::labeling(const Sequence &xs,
   return Labeling();
 }
 
-EvaluatorPtr GeneralizedHiddenMarkovModel::evaluator(const Sequence &s,
-                                 bool cached) {
+EvaluatorPtr GeneralizedHiddenMarkovModel::evaluator(
+    const Sequence &s,
+    bool cached) {
   return decodableEvaluator(s, cached);
 }
 
-DecodableEvaluatorPtr GeneralizedHiddenMarkovModel::decodableEvaluator(const Sequence &s,
-                                                 bool cached) {
+DecodableEvaluatorPtr GeneralizedHiddenMarkovModel::decodableEvaluator(
+    const Sequence &s,
+    bool cached) {
   if (cached)
     return DecodableEvaluator::make(
       CachedEvaluatorImpl<GeneralizedHiddenMarkovModel>::make(
-        std::static_pointer_cast<GeneralizedHiddenMarkovModel>(shared_from_this()),
+        std::static_pointer_cast<GeneralizedHiddenMarkovModel>(
+          shared_from_this()),
         s, Cache()));
   return DecodableEvaluator::make(
     SimpleEvaluatorImpl<GeneralizedHiddenMarkovModel>::make(
-      std::static_pointer_cast<GeneralizedHiddenMarkovModel>(shared_from_this()), s));
+      std::static_pointer_cast<GeneralizedHiddenMarkovModel>(
+        shared_from_this()), s));
 }
 
-void GeneralizedHiddenMarkovModel::initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase) {
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+/*==============================  EVALUATOR  =================================*/
+
+void GeneralizedHiddenMarkovModel::initializeCachedEvaluator(
+    CEPtr evaluator, unsigned int phase) {
   // TODO(igorbonadio)
 }
 
-Labeling GeneralizedHiddenMarkovModel::simpleLabeling(SEPtr evaluator, Labeling::Method method) {
+Labeling GeneralizedHiddenMarkovModel::simpleLabeling(
+    SEPtr evaluator, Labeling::Method method) {
   Matrix matrix;
   return labeling(evaluator->sequence(), matrix, method);
 }
 
-Labeling GeneralizedHiddenMarkovModel::cachedLabeling(CEPtr evaluator, Labeling::Method method) {
+Labeling GeneralizedHiddenMarkovModel::cachedLabeling(
+    CEPtr evaluator, Labeling::Method method) {
   switch (method) {
     case Labeling::Method::bestPath:
       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
@@ -320,23 +380,26 @@ Labeling GeneralizedHiddenMarkovModel::cachedLabeling(CEPtr evaluator, Labeling:
   return Labeling();
 }
 
-double GeneralizedHiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
-                           unsigned int begin,
-                           unsigned int end,
-                           unsigned int phase) const {
+double GeneralizedHiddenMarkovModel::simpleProbabilityOf(
+    SEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
   return -HUGE; // TODO(igorbonadio)
 }
-double GeneralizedHiddenMarkovModel::cachedProbabilityOf(CEPtr evaluator,
-                           unsigned int begin,
-                           unsigned int end,
-                           unsigned int phase) const {
+double GeneralizedHiddenMarkovModel::cachedProbabilityOf(
+    CEPtr evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
-double GeneralizedHiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
-                           const Sequence& s,
-                           unsigned int begin,
-                           unsigned int end) const {
+double GeneralizedHiddenMarkovModel::simpleProbabilityOf(
+    SEPtr evaluator,
+    const Sequence& s,
+    unsigned int begin,
+    unsigned int end) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
