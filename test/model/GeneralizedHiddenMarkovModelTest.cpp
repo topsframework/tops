@@ -28,9 +28,11 @@
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 #include "model/Sequence.hpp"
 #include "model/Matrix.hpp"
+#include "model/Util.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
+#include "helper/Sequence.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -49,10 +51,13 @@ using tops::model::GeneralizedHiddenMarkovModelExplicitDurationState;
 using tops::model::GeneralizedHiddenMarkovModelExplicitDurationStatePtr;
 using tops::model::Sequence;
 using tops::model::Matrix;
+using tops::model::log_sum;
+using tops::model::Labeling;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
 using tops::helper::createFairCoinIIDModel;
+using tops::helper::generateAllCombinationsOfSymbols;
 
 class AGHMM : public testing::Test {
  protected:
@@ -94,22 +99,29 @@ class AGHMM : public testing::Test {
   }
 };
 
-TEST_F(AGHMM, ShouldEvaluateSequence) {
-  ASSERT_THAT(
-    ghmm->evaluate({0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                   {0, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0}),
-    DoubleNear(-35.4276, 1e-4));
-}
-
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
   Matrix gamma;
   Sequence path;
   Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-  auto p = ghmm->viterbi(sequence, gamma, path);
-  ASSERT_THAT(p, DoubleNear(ghmm->evaluate(sequence, path), 1e-4));
+  auto labeling = ghmm->decodableEvaluator(sequence)->labeling(Labeling::Method::bestPath);
+  ASSERT_THAT(labeling.sequence(), ContainerEq(Sequence{0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2}));
+
+  labeling = ghmm->decodableEvaluator(sequence, true)->labeling(Labeling::Method::bestPath);
+  ASSERT_THAT(labeling.sequence(), ContainerEq(Sequence{0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2}));
 }
 
-TEST_F(AGHMM, ShouldEvaluateTheProbabilityOfX) {
+TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecoding) {
+  Matrix gamma;
+  Sequence path;
+  Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+  auto labeling = ghmm->decodableEvaluator(sequence)->labeling(Labeling::Method::posteriorDecoding);
+  ASSERT_THAT(labeling.sequence(), ContainerEq(Sequence{0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1, 0, 2, 0, 2, 2, 2}));
+
+  labeling = ghmm->decodableEvaluator(sequence, true)->labeling(Labeling::Method::posteriorDecoding);
+  ASSERT_THAT(labeling.sequence(), ContainerEq(Sequence{0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1, 0, 2, 0, 2, 2, 2}));
+}
+
+TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
   Matrix alpha;
   Matrix beta;
   Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
