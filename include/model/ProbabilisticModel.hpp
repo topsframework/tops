@@ -26,12 +26,11 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
-#include "model/Generator.hpp"
 
 // ToPS templates
+#include "model/Generator.tcc"
 #include "model/SimpleEvaluatorImpl.tcc"
 #include "model/CachedEvaluatorImpl.tcc"
-#include "model/SimpleGeneratorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -39,20 +38,32 @@ namespace model {
 class InhomogeneousMarkovChain;
 using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 
+// Forward declaration
+class ProbabilisticModel;
+
+/**
+ * @typedef ProbabilisticModelPtr
+ * @brief Alias of pointer to ProbabilisticModel.
+ */
+using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
+
 /**
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
 class ProbabilisticModel
-    : public std::enable_shared_from_this<ProbabilisticModel>{
+    : public std::enable_shared_from_this<ProbabilisticModel> {
  public:
   // Alias
+  using Base = void;
+
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
-  using SGPtr = SimpleGeneratorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
+  virtual GeneratorPtr<Sequence> sequenceGenerator() = 0;
+
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const = 0;
@@ -64,8 +75,6 @@ class ProbabilisticModel
   virtual InhomogeneousMarkovChain* inhomogeneous();
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
-
-  virtual GeneratorPtr<Sequence> sequenceGenerator();
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -79,17 +88,7 @@ class ProbabilisticModel
                              unsigned int begin,
                              unsigned int end,
                              unsigned int phase = 0) const;
-
-  Sequence simpleChooseSequence(SGPtr generator,
-                                unsigned int size,
-                                unsigned int phase = 0) const;
 };
-
-/**
- * @typedef ProbabilisticModelPtr
- * @brief Alias of pointer to ProbabilisticModel.
- */
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
 
 }  // namespace model
 }  // namespace tops
