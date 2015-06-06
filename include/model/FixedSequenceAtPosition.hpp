@@ -25,8 +25,10 @@
 #include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/DiscreteIIDModel.hpp"
+
+// ToPS templates
+#include "model/ProbabilisticModelDecorator.tcc"
 
 namespace tops {
 namespace model {
@@ -43,13 +45,11 @@ using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
  * @class FixedSequenceAtPosition
  * @brief TODO
  */
-class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
+class FixedSequenceAtPosition
+    : public ProbabilisticModelDecorator<FixedSequenceAtPosition> {
  public:
   // Alias
   using SEPtr = SimpleEvaluatorImplPtr<FixedSequenceAtPosition>;
-
-  template<typename Target>
-  using SGPtr = SimpleGeneratorPtr<Target, FixedSequenceAtPosition>;
 
   // Static methods
   static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
@@ -68,7 +68,7 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
 
   Sequence simpleChoose(SGPtr<Sequence> generator,
                         unsigned int size,
-                        unsigned int phase = 0) const;
+                        unsigned int phase = 0) const override;
 
  private:
   // Instance variables
