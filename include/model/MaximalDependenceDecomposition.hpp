@@ -56,9 +56,6 @@ class MaximalDependenceDecomposition
   using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
   using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
 
-  template<typename Target>
-  using SGPtr = SimpleGeneratorPtr<Target, MaximalDependenceDecomposition>;
-
   // Static methods
   static MaximalDependenceDecompositionPtr make(
       ConsensusSequence consensus_sequence,

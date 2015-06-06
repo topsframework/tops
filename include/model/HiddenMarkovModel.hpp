@@ -61,9 +61,6 @@ class HiddenMarkovModel
   using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
 
-  // template<typename Target>
-  // using SGPtr = SimpleGeneratorPtr<Target, HiddenMarkovModel>;
-
   // Static methods
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
@@ -85,10 +82,9 @@ class HiddenMarkovModel
       double diff_threshold);
 
   // Overriden methods
-  Labeling<Sequence>
-  simpleChoose(SGPtr<Labeling<Sequence>> generator,
-               unsigned int size,
-               unsigned int phase = 0) const override;
+  Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
+                                  unsigned int size,
+                                  unsigned int phase = 0) const override;
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
