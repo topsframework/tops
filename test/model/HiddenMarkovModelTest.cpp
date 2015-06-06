@@ -175,5 +175,15 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
 TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): implement method
   tops::model::resetRandom();
-  ASSERT_THAT(hmm->sequenceGenerator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THAT(hmm->sequenceGenerator()->choose(5),
+              ContainerEq(Sequence(5, INVALID_SYMBOL)));
+}
+
+TEST_F(AHiddenMarkovModel, ShouldChooseLabelingWithSeed42) {
+  tops::model::resetRandom();
+  auto labeling = hmm->labelingGenerator()->choose(5);
+  ASSERT_THAT(labeling.observation(),
+              ContainerEq(Sequence{0, 1, 0, 0, 1}));
+  ASSERT_THAT(labeling.label(),
+              ContainerEq(Sequence{0, 1, 0, 0, 0}));
 }
