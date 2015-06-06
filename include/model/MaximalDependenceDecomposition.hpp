@@ -46,13 +46,18 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
  * @class MaximalDependenceDecomposition
  * @brief TODO
  */
-class MaximalDependenceDecomposition : public ProbabilisticModel {
+class MaximalDependenceDecomposition
+    : public ProbabilisticModelCrtp<MaximalDependenceDecomposition> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<InhomogeneousMarkovChain>;
+
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
   using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
-  using SGPtr = SimpleGeneratorImplPtr<MaximalDependenceDecomposition>;
+
+  template<typename Target>
+  using SGPtr = SimpleGeneratorPtr<Target, MaximalDependenceDecomposition>;
 
   // Static methods
   static MaximalDependenceDecompositionPtr make(
@@ -93,9 +98,9 @@ class MaximalDependenceDecomposition : public ProbabilisticModel {
                              unsigned int end,
                              unsigned int phase = 0) const;
 
-  Sequence simpleChooseSequence(SGPtr generator,
-                                unsigned int size,
-                                unsigned int phase = 0) const;
+  Sequence simpleChoose(SGPtr<Sequence> generator,
+                        unsigned int size,
+                        unsigned int phase = 0) const;
 
  private:
   // Instance variables

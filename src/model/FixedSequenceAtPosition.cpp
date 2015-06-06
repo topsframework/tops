@@ -57,9 +57,8 @@ EvaluatorPtr FixedSequenceAtPosition::evaluator(
 /*==============================  GENERATOR  =================================*/
 
 GeneratorPtr<Sequence> FixedSequenceAtPosition::sequenceGenerator() {
-  return Generator<Sequence>::make(
-    SimpleGeneratorImpl<FixedSequenceAtPosition>::make(
-      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this())));
+  return SimpleGenerator<Sequence, FixedSequenceAtPosition>::make(
+      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -91,9 +90,9 @@ double FixedSequenceAtPosition::simpleProbabilityOf(
 
 /*==============================  GENERATOR  =================================*/
 
-Sequence FixedSequenceAtPosition::simpleChooseSequence(SGPtr generator,
-                                                       unsigned int size,
-                                                       unsigned int phase) const {
+Sequence FixedSequenceAtPosition::simpleChoose(SGPtr<Sequence> generator,
+                                               unsigned int size,
+                                               unsigned int phase) const {
   Sequence s = _model->sequenceGenerator()->choose(size, phase);
   addSequence(s);
   return s;

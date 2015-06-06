@@ -24,8 +24,8 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -71,8 +71,11 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  * [Aaron Clauset]: http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf
  *
  */
-class DiscreteIIDModel : public ProbabilisticModel {
+class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<DiscreteIIDModel>;
+
   // Static methods
 
   /**

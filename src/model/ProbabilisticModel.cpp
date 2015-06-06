@@ -46,11 +46,6 @@ EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
 
 /*==============================  GENERATOR  =================================*/
 
-GeneratorPtr<Sequence> ProbabilisticModel::sequenceGenerator() {
-  return Generator<Sequence>::make(
-    SimpleGeneratorImpl<ProbabilisticModel>::make(shared_from_this()));
-}
-
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
@@ -85,15 +80,6 @@ double ProbabilisticModel::cachedProbabilityOf(CEPtr evaluator,
 }
 
 /*==============================  GENERATOR  =================================*/
-
-Sequence ProbabilisticModel::simpleChooseSequence(SGPtr generator,
-                                                  unsigned int size,
-                                                  unsigned int phase) const {
-  Sequence s;
-  for (unsigned int k = 0; k < size; k++)
-      s.push_back(choose(s, k));
-  return s;
-}
 
 }  // namespace model
 }  // namespace tops

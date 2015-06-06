@@ -28,6 +28,9 @@
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
+
 namespace tops {
 namespace model {
 
@@ -44,9 +47,12 @@ using SimilarityBasedSequenceWeightingPtr
  * @class SimilarityBasedSequenceWeighting
  * @brief TODO
  */
-class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
+class SimilarityBasedSequenceWeighting
+    : public ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
+
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
   using CEPtr = CachedEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;

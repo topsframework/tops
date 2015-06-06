@@ -26,6 +26,9 @@
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
+
 namespace tops {
 namespace model {
 
@@ -44,8 +47,12 @@ using ProbabilisticModelDecoratorPtr
  *
  * It is the easiest way to change the behaviour of a probabilistic model.
  */
-class ProbabilisticModelDecorator : public ProbabilisticModel {
+class ProbabilisticModelDecorator
+    : public ProbabilisticModelCrtp<ProbabilisticModelDecorator> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<ProbabilisticModelDecorator>;
+
   // Static methods
   static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
 

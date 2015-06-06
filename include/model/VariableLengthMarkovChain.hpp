@@ -47,8 +47,12 @@ using VariableLengthMarkovChainPtr
  * An variable length Markov chain is a Markov chain that can have different
  * size contexts.
  */
-class VariableLengthMarkovChain : public ProbabilisticModel {
+class VariableLengthMarkovChain
+    : public ProbabilisticModelCrtp<VariableLengthMarkovChain> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<VariableLengthMarkovChain>;
+
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
   static VariableLengthMarkovChainPtr trainContextAlgorithm(

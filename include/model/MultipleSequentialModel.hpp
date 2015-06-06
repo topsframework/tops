@@ -27,6 +27,9 @@
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
+
 namespace tops {
 namespace model {
 
@@ -43,9 +46,12 @@ using MultipleSequentialModelPtr
  * @class MultipleSequentialModel
  * @brief TODO
  */
-class MultipleSequentialModel : public ProbabilisticModel {
+class MultipleSequentialModel
+    : public ProbabilisticModelCrtp<MultipleSequentialModel> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<MultipleSequentialModel>;
+
   using Cache = std::vector<EvaluatorPtr>;
   using SEPtr = SimpleEvaluatorImplPtr<MultipleSequentialModel>;
   using CEPtr = CachedEvaluatorImplPtr<MultipleSequentialModel>;

@@ -47,7 +47,9 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
  public:
   // Alias
   using SEPtr = SimpleEvaluatorImplPtr<FixedSequenceAtPosition>;
-  using SGPtr = SimpleGeneratorImplPtr<FixedSequenceAtPosition>;
+
+  template<typename Target>
+  using SGPtr = SimpleGeneratorPtr<Target, FixedSequenceAtPosition>;
 
   // Static methods
   static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
@@ -64,9 +66,9 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
                              unsigned int end,
                              unsigned int phase = 0) const;
 
-  Sequence simpleChooseSequence(SGPtr generator,
-                                unsigned int size,
-                                unsigned int phase = 0) const;
+  Sequence simpleChoose(SGPtr<Sequence> generator,
+                        unsigned int size,
+                        unsigned int phase = 0) const;
 
  private:
   // Instance variables

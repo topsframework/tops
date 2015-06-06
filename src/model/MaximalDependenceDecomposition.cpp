@@ -280,9 +280,8 @@ EvaluatorPtr MaximalDependenceDecomposition::evaluator(
 /*==============================  GENERATOR  =================================*/
 
 GeneratorPtr<Sequence> MaximalDependenceDecomposition::sequenceGenerator() {
-  return Generator<Sequence>::make(
-    SimpleGeneratorImpl<MaximalDependenceDecomposition>::make(
-      std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this())));
+  return SimpleGenerator<Sequence, MaximalDependenceDecomposition>::make(
+    std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()));
 }
 
 /*================================  OTHERS  ==================================*/
@@ -347,10 +346,9 @@ double MaximalDependenceDecomposition::cachedProbabilityOf(
 
 /*==============================  GENERATOR  =================================*/
 
-Sequence MaximalDependenceDecomposition::simpleChooseSequence(
-    SGPtr generator,
-    unsigned int size,
-    unsigned int phase) const {
+Sequence MaximalDependenceDecomposition::simpleChoose(SGPtr<Sequence> generator,
+                                                      unsigned int size,
+                                                      unsigned int phase) const {
   // _chooseAux(s, _mdd_tree);
   return Sequence(size, INVALID_SYMBOL);
 }
