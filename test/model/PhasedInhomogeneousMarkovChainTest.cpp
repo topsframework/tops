@@ -27,12 +27,14 @@
 // ToPS headers
 #include "model/PhasedInhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
 #include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+
+// ToPS templates
+#include "model/ProbabilisticModelDecorator.tcc"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

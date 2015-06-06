@@ -26,12 +26,14 @@
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
-#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
 #include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
+
+// ToPS templates
+#include "model/ProbabilisticModelDecorator.tcc"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
