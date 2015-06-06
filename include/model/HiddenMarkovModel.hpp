@@ -33,6 +33,7 @@
 // ToPS templates
 #include "model/Labeling.tcc"
 #include "model/Estimation.tcc"
+#include "model/DecodableModelCrtp.tcc"
 #include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
@@ -50,12 +51,18 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
  * @class HiddenMarkovModel
  * @brief TODO
  */
-class HiddenMarkovModel : public DecodableModel {
+class HiddenMarkovModel
+    : public DecodableModelCrtp<HiddenMarkovModel> {
  public:
   // Alias
+  using Base = DecodableModelCrtp<HiddenMarkovModel>;
+
   using Cache = DecodableModel::Cache;
   using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
+
+  // template<typename Target>
+  // using SGPtr = SimpleGeneratorPtr<Target, HiddenMarkovModel>;
 
   // Static methods
   static HiddenMarkovModelPtr make(
@@ -77,6 +84,12 @@ class HiddenMarkovModel : public DecodableModel {
       unsigned int maxiterations,
       double diff_threshold);
 
+  // Overriden methods
+  Labeling<Sequence>
+  simpleChoose(SGPtr<Labeling<Sequence>> generator,
+               unsigned int size,
+               unsigned int phase = 0) const override;
+
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) override;
@@ -93,9 +106,6 @@ class HiddenMarkovModel : public DecodableModel {
   virtual Symbol choose(const Sequence &context,
                         unsigned int pos,
                         unsigned int phase = 0) const override;
-  virtual void chooseLabeling(Sequence &xs,
-                              Sequence &ys,
-                              unsigned int size) const;
   virtual void chooseSequencesPosition(Sequence &xs,
                                        Sequence &ys,
                                        unsigned int i) const;

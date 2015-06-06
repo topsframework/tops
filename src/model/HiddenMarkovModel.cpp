@@ -225,6 +225,22 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 }
 
 /*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  GENERATOR  ================================*/
+
+Labeling<Sequence>
+HiddenMarkovModel::simpleChoose(SGPtr<Labeling<Sequence>> generator,
+                                unsigned int size,
+                                unsigned int phase) const {
+  Sequence x(size), y(size);
+  for (unsigned int i = 0; i < size; i++)
+    chooseSequencesPosition(x, y, i);
+  return Labeling<Sequence>(x, y);
+}
+
+/*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
@@ -271,15 +287,6 @@ Symbol HiddenMarkovModel::choose(const Sequence &context,
                                  unsigned int phase) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;
-}
-
-void HiddenMarkovModel::chooseLabeling(Sequence &xs,
-                                       Sequence &ys,
-                                       unsigned int size) const {
-  xs.resize(size);
-  ys.resize(size);
-  for (unsigned int i = 0; i < size; i++)
-    chooseSequencesPosition(xs, ys, i);
 }
 
 void HiddenMarkovModel::chooseSequencesPosition(Sequence &xs,
