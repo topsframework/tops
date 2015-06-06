@@ -17,34 +17,46 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// ToPS headers
-#include "model/Generator.hpp"
+#ifndef TOPS_MODEL_GENERATOR_
+#define TOPS_MODEL_GENERATOR_
+
+// Standard headers
+#include <memory>
+#include <exception>
 
 namespace tops {
 namespace model {
 
-/*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
 
 template<typename Target>
-Target Generator<Target>::choose(unsigned int size,
-                                 unsigned int phase) const {
-  throw std::logic_error("Unavaiable implementation for Target");
-}
+class Generator;
 
-template<>
-Sequence Generator<Sequence>::choose(unsigned int size,
-                                     unsigned int phase) const {
-  return _impl->chooseSequence(size, phase);
-}
+/**
+ * @typedef GeneratorPtr
+ * @brief Alias of pointer to Generator.
+ */
+template<typename Target>
+using GeneratorPtr = std::shared_ptr<Generator<Target>>;
 
-template<>
-Labeling<Sequence>
-Generator<Labeling<Sequence>>::choose(unsigned int size,
-                                      unsigned int phase) const {
-  return _impl->chooseLabeling(size, phase);
-}
+/**
+ * @class Generator
+ * @brief TODO
+ */
+template<typename Target>
+class Generator : public std::enable_shared_from_this<Generator<Target>> {
+ public:
+  // Purely virtual methods
+  virtual Target choose(unsigned int size, unsigned int phase = 0) = 0;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif
