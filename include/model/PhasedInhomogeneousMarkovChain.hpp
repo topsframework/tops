@@ -49,9 +49,12 @@ using PhasedInhomogeneousMarkovChainPtr
  * Markov chains per position. Each Markov chain repeats itsealf per
  * phase.
  */
-class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
+class PhasedInhomogeneousMarkovChain
+    : public ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
+
   using Cache = Matrix;
   using SEPtr = SimpleEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
   using CEPtr = CachedEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
@@ -94,6 +97,9 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
                              unsigned int phase = 0) const;
 
  private:
+  // Instance variables
+  std::vector<VariableLengthMarkovChainPtr> _vlmcs;
+
   // Constructors
   PhasedInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);

@@ -33,7 +33,7 @@ namespace model {
 
 PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
     std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : InhomogeneousMarkovChain(vlmcs) {
+    : _vlmcs(vlmcs) {
 }
 
 /*----------------------------------------------------------------------------*/
