@@ -23,40 +23,82 @@
 namespace tops {
 namespace model {
 
-#define GENERATE_HAS_MEMBER(member)                                     \
-                                                                        \
-template < class T >                                                    \
-class HasMember_##member                                                \
-{                                                                       \
-private:                                                                \
-    using Yes = char[2];                                                \
-    using  No = char[1];                                                \
-                                                                        \
-    struct Fallback { int member; };                                    \
-    struct Derived : T, Fallback { };                                   \
-                                                                        \
-    template < class U >                                                \
-    static No& test ( decltype(U::member)* );                           \
-    template < typename U >                                             \
-    static Yes& test ( U* );                                            \
-                                                                        \
-public:                                                                 \
-    static constexpr bool RESULT                                        \
-      = sizeof(test<Derived>(nullptr)) == sizeof(Yes);                  \
-};                                                                      \
-                                                                        \
-template < class T >                                                    \
-struct has_member_##member                                              \
-: public std::integral_constant<bool, HasMember_##member<T>::RESULT>    \
-{ };                                                                    \
-                                                                        \
-template<typename Model>                                                \
-using has_##member = typename                                           \
-  std::enable_if<has_member_##member<Model>::value, bool>::type;        \
-                                                                        \
-template<typename Model>                                                \
-using no_##member = typename                                            \
-  std::enable_if<!has_member_##member<Model>::value, bool>::type;
+#define GENERATE_HAS_MEMBER(member)                                            \
+                                                                               \
+template<typename T, typename Dummy>                                           \
+class HasMember_##member;                                                      \
+                                                                               \
+/** NON-CONST MEMBER ********************************************************/ \
+                                                                               \
+template<typename Result, typename... Params>                                  \
+class HasMember_##member<void, Result(Params...)> {                            \
+ public:                                                                       \
+  static constexpr bool value = false;                                         \
+};                                                                             \
+                                                                               \
+template<typename T, typename Result, typename... Params>                      \
+class HasMember_##member<T, Result(Params...)>                                 \
+{                                                                              \
+ private:                                                                      \
+  template<typename U, U> class Check;                                         \
+                                                                               \
+  template<typename U>                                                         \
+  static std::true_type test(Check<Result(U::*)(Params...), &U::member>*);     \
+                                                                               \
+  template<typename U>                                                         \
+  static std::false_type test(...);                                            \
+                                                                               \
+ public:                                                                       \
+  static constexpr bool value = decltype(test<T>(nullptr))::value              \
+    || HasMember_##member<typename T::Base, Result(Params...)>::value;         \
+};                                                                             \
+                                                                               \
+/** CONST MEMBER ************************************************************/ \
+                                                                               \
+template<typename Result, typename... Params>                                  \
+class HasMember_##member<void, const Result(Params...)> {                      \
+ public:                                                                       \
+  static constexpr bool value = false;                                         \
+};                                                                             \
+                                                                               \
+template<typename T, typename Result, typename... Params>                      \
+class HasMember_##member<T, const Result(Params...)>                           \
+{                                                                              \
+ private:                                                                      \
+  template<typename U, U> class Check;                                         \
+                                                                               \
+  template<typename U>                                                         \
+  static std::true_type test(                                                  \
+    Check<Result(U::*)(Params...) const, &U::member>*);                        \
+                                                                               \
+  template<typename U>                                                         \
+  static std::false_type test(...);                                            \
+                                                                               \
+ public:                                                                       \
+  static constexpr bool value = decltype(test<T>(nullptr))::value              \
+    || HasMember_##member<typename T::Base, const Result(Params...)>::value;   \
+};                                                                             \
+                                                                               \
+/** TAGS ********************************************************************/ \
+                                                                               \
+struct no_##member##_tag {};                                                   \
+struct has_##member##_tag {};                                                  \
+                                                                               \
+/** TYPE TRAIT **************************************************************/ \
+                                                                               \
+template<typename T, typename Dummy>                                           \
+struct has_member_##member;                                                    \
+                                                                               \
+template<typename T, typename Result, typename... Params>                      \
+struct has_member_##member<T, Result(Params...)>                               \
+    : public std::integral_constant<                                           \
+               bool, HasMember_##member<T, Result(Params...)>::value> {        \
+                                                                               \
+  using tag = typename std::conditional<                                       \
+                has_member_##member<T, Result(Params...)>::value,              \
+                has_##member##_tag, no_##member##_tag                          \
+              >::type;                                                         \
+};
 
 }  // namespace model
 }  // namespace tops
