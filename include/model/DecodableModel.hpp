@@ -32,6 +32,7 @@
 // ToPS templates
 #include "model/Labeling.tcc"
 #include "model/Estimation.tcc"
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -40,15 +41,21 @@ namespace model {
  * @class DecodableModel
  * @brief TODO
  */
-class DecodableModel : public ProbabilisticModel {
+class DecodableModel
+    : public ProbabilisticModelCrtp<DecodableModel> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<DecodableModel>;
+
+  // Inner classes
   struct Cache {
     std::vector<double> prefix_sum_array;
     Matrix alpha, beta, gamma, posterior_decoding;
   };
 
   // Purely virtual methods
+  virtual GeneratorPtr<Labeling<Sequence>> labelingGenerator() = 0;
+
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) = 0;
   virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
@@ -61,9 +68,6 @@ class DecodableModel : public ProbabilisticModel {
                           const Sequence &ys,
                           unsigned int i) const = 0;
 
-  virtual void chooseLabeling(Sequence &xs,
-                              Sequence &ys,
-                              unsigned int size) const = 0;
   virtual void chooseSequencesPosition(Sequence &xs,
                                        Sequence &ys,
                                        unsigned int i) const = 0;
