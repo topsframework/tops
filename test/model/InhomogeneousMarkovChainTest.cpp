@@ -88,7 +88,7 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
 }
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc = ProbabilisticModelDecorator::make(imc);
+  auto decorated_imc = ProbabilisticModelDecorator<InhomogeneousMarkovChain>::make(imc);
   ASSERT_THAT(decorated_imc->evaluator({0})->probabilityOf(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->evaluator({1})->probabilityOf(0, 1),
