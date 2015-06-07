@@ -26,7 +26,7 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/ProbabilisticModel.hpp"
+#include "model/DecodableModel.hpp"
 
 // ToPS templates
 #include "model/Labeling.tcc"
