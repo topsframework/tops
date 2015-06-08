@@ -63,6 +63,9 @@ using DecodableModelCrtpPtr
 template<typename Derived>
 class DecodableModelCrtp : public DecodableModel {
  public:
+  // Hidden name method inheritance
+  using DecodableModel::simpleChoose;
+
   // Alias
   using Base = DecodableModel;
   using DerivedPtr = std::shared_ptr<Derived>;
