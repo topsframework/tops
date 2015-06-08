@@ -48,7 +48,7 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
@@ -66,7 +66,128 @@ GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  GENERATOR  ================================*/
+
+Labeling<Sequence>
+GeneralizedHiddenMarkovModel::simpleChoose(SGPtr<Labeling<Sequence>> generator,
+                                           unsigned int size,
+                                           unsigned int phase) const {
+  // TODO(igorbonadio)
+  return Labeling<Sequence>(Sequence(INVALID_SYMBOL, size),
+                            Sequence(INVALID_SYMBOL, size));
+}
+
+/*=================================  OTHERS  =================================*/
+
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::labeling(const Sequence &xs,
+                                       Matrix &probabilities,
+                                       Labeling<Sequence>::Method method) const {
+  switch (method) {
+    case Labeling<Sequence>::Method::bestPath:
+      return viterbi(xs, probabilities);
+    case Labeling<Sequence>::Method::posteriorDecoding:
+      return posteriorDecoding(xs, probabilities);
+  }
+  return Estimation<Labeling<Sequence>>();
+}
+
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
+                                      Matrix &gamma) const {
+  gamma = std::vector<std::vector<double>>(
+      _state_alphabet_size,
+      std::vector<double>(xs.size()));
+  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
+  Matrix psilen(_state_alphabet_size, std::vector<double>(xs.size()));
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      gamma[k][i] = -HUGE;
+      auto durations = _states[k]->durations();
+      for (unsigned int d = durations->begin();
+           !durations->end() && d <= (i + 1);
+           d = durations->next()) {
+        unsigned int pmax = 0;
+        double gmax;
+        if (d > i) {
+          gmax = _initial_probabilities->probabilityOf(k);
+        } else {
+          gmax = -HUGE;
+          for (auto p : _states[k]->predecessors()) {
+            double g = gamma[p][i-d]
+              + _states[p]->transition()->probabilityOf(k);
+            if (gmax < g) {
+              gmax = g;
+              pmax = p;
+            }
+          }
+        }
+        gmax = gmax + _states[k]->durationProbability(d)
+          + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1,
+                                                                    i+1);
+        if (gamma[k][i] < gmax) {
+          gamma[k][i] = gmax;
+          psi[k][i] = pmax;
+          psilen[k][i] = d;
+        }
+      }
+    }
+  }
+
+  unsigned int L = xs.size() - 1;
+  Symbol state = 0;
+  double max = gamma[0][L];
+  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+    if (max < gamma[k][L]) {
+      max = gamma[k][L];
+      state = k;
+    }
+  }
+
+  Sequence path = Sequence(xs.size());
+
+  unsigned int i = 0;
+  while (i <= L) {
+    unsigned int d = psilen[state][L-i];
+    unsigned int p = psi[state][L-i];
+    for (unsigned int j = 0; j < d; j++) {
+      path[L-i] = state;
+      i++;
+    }
+    state = p;
+  }
+
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(path)), max);
+}
+
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
+                                                Matrix &probabilities) const {
+  posteriorProbabilities(xs, probabilities);
+
+  Sequence path(xs.size());
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    double max = probabilities[0][i];
+    path[i] = 0;
+    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+      if (probabilities[k][i] > max) {
+        max = probabilities[k][i];
+        path[i] = k;
+      }
+    }
+  }
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(path)), -HUGE); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
@@ -158,26 +279,6 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
   return px;
 }
 
-double GeneralizedHiddenMarkovModel::evaluate(
-    const Sequence &xs,
-    const Sequence &ys) const {
-  double prob = 0;
-  auto segments = Segment::readSequence(ys);
-  for (unsigned int i = 0; i < segments.size(); i++) {
-    if (i == 0) {
-      prob += _initial_probabilities->probabilityOf(segments[i].symbol());
-    } else {
-      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(
-        segments[i].symbol());
-    }
-    prob += _states[segments[i].symbol()]->durationProbability(
-      segments[i].end() - segments[i].begin());
-    prob += _states[segments[i].symbol()]->observation()->evaluator(
-      xs)->probabilityOf(segments[i].begin(), segments[i].end());
-  }
-  return prob;
-}
-
 double GeneralizedHiddenMarkovModel::evaluate(const Sequence &s,
                         unsigned int pos,
                         unsigned int phase) const {
@@ -191,141 +292,16 @@ double GeneralizedHiddenMarkovModel::evaluate(
   return -HUGE; // TODO(igorbonadio)
 }
 
-void GeneralizedHiddenMarkovModel::chooseSequences(Sequence &xs,
-                             Sequence &ys,
-                             unsigned int size) const {
-  // TODO(igorbonadio)
+Symbol GeneralizedHiddenMarkovModel::choose(const Sequence &xs,
+                                            unsigned int i,
+                                            unsigned int phase) const {
+  return INVALID_SYMBOL; // TODO(igorbonadio)
 }
 
 void GeneralizedHiddenMarkovModel::chooseSequencesPosition(Sequence &xs,
                                      Sequence &ys,
                                      unsigned int i) const {
   // TODO(igorbonadio)
-}
-
-Symbol GeneralizedHiddenMarkovModel::choosePosition(const Sequence &xs,
-                              unsigned int i,
-                              unsigned int phase) const {
-  return INVALID_SYMBOL; // TODO(igorbonadio)
-}
-
-Labeling GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
-                           Matrix &gamma) const {
-  gamma = std::vector<std::vector<double>>(
-      _state_alphabet_size,
-      std::vector<double>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
-  Matrix psilen(_state_alphabet_size, std::vector<double>(xs.size()));
-
-  for (unsigned int i = 0; i < xs.size(); i++) {
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      gamma[k][i] = -HUGE;
-      auto durations = _states[k]->durations();
-      for (unsigned int d = durations->begin();
-           !durations->end() && d <= (i + 1);
-           d = durations->next()) {
-        unsigned int pmax = 0;
-        double gmax;
-        if (d > i) {
-          gmax = _initial_probabilities->probabilityOf(k);
-        } else {
-          gmax = -HUGE;
-          for (auto p : _states[k]->predecessors()) {
-            double g = gamma[p][i-d]
-              + _states[p]->transition()->probabilityOf(k);
-            if (gmax < g) {
-              gmax = g;
-              pmax = p;
-            }
-          }
-        }
-        gmax = gmax + _states[k]->durationProbability(d)
-          + _states[k]->observation()->evaluator(xs)->probabilityOf(i-d+1,
-                                                                    i+1);
-        if (gamma[k][i] < gmax) {
-          gamma[k][i] = gmax;
-          psi[k][i] = pmax;
-          psilen[k][i] = d;
-        }
-      }
-    }
-  }
-
-  unsigned int L = xs.size() - 1;
-  Symbol state = 0;
-  double max = gamma[0][L];
-  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-    if (max < gamma[k][L]) {
-      max = gamma[k][L];
-      state = k;
-    }
-  }
-
-  Sequence path = Sequence(xs.size());
-
-  unsigned int i = 0;
-  while (i <= L) {
-    unsigned int d = psilen[state][L-i];
-    unsigned int p = psi[state][L-i];
-    for (unsigned int j = 0; j < d; j++) {
-      path[L-i] = state;
-      i++;
-    }
-    state = p;
-  }
-
-  return Labeling(max, std::move(path));
-}
-
-Labeling GeneralizedHiddenMarkovModel::posteriorDecoding(
-    const Sequence &xs,
-    Matrix &probabilities) const {
-  posteriorProbabilities(xs, probabilities);
-
-  Sequence path(xs.size());
-
-  for (unsigned int i = 0; i < xs.size(); i++) {
-    double max = probabilities[0][i];
-    path[i] = 0;
-    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-      if (probabilities[k][i] > max) {
-        max = probabilities[k][i];
-        path[i] = k;
-      }
-    }
-  }
-  return Labeling(-HUGE, std::move(path)); // TODO(igorbonadio)
-}
-
-void GeneralizedHiddenMarkovModel::posteriorProbabilities(
-    const Sequence &xs,
-    Matrix &probabilities) const {
-  probabilities = std::vector<std::vector<double>>(
-      _state_alphabet_size,
-      std::vector<double>(xs.size()));
-
-  Matrix alpha;  // forward
-  Matrix beta;   // backward
-
-  double full = forward(xs, alpha);
-  backward(xs, beta);
-
-  for (unsigned int k = 0; k < _state_alphabet_size; k++)
-    for (unsigned int i = 0; i < xs.size(); i++)
-      probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
-}
-
-Labeling GeneralizedHiddenMarkovModel::labeling(
-    const Sequence &xs,
-    Matrix &probabilities,
-    Labeling::Method method) const {
-  switch (method) {
-    case Labeling::Method::bestPath:
-      return viterbi(xs, probabilities);
-    case Labeling::Method::posteriorDecoding:
-      return posteriorDecoding(xs, probabilities);
-  }
-  return Labeling();
 }
 
 EvaluatorPtr GeneralizedHiddenMarkovModel::evaluator(
@@ -349,35 +325,55 @@ DecodableEvaluatorPtr GeneralizedHiddenMarkovModel::decodableEvaluator(
         shared_from_this()), s));
 }
 
+void GeneralizedHiddenMarkovModel::posteriorProbabilities(
+    const Sequence &xs,
+    Matrix &probabilities) const {
+  probabilities = std::vector<std::vector<double>>(
+      _state_alphabet_size,
+      std::vector<double>(xs.size()));
+
+  Matrix alpha;  // forward
+  Matrix beta;   // backward
+
+  double full = forward(xs, alpha);
+  backward(xs, beta);
+
+  for (unsigned int k = 0; k < _state_alphabet_size; k++)
+    for (unsigned int i = 0; i < xs.size(); i++)
+      probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
+}
+
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-/*==============================  EVALUATOR  =================================*/
+/*===============================  EVALUATOR  ================================*/
 
 void GeneralizedHiddenMarkovModel::initializeCachedEvaluator(
     CEPtr evaluator, unsigned int phase) {
   // TODO(igorbonadio)
 }
 
-Labeling GeneralizedHiddenMarkovModel::simpleLabeling(
-    SEPtr evaluator, Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::simpleLabeling(
+    SEPtr evaluator, Labeling<Sequence>::Method method) {
   Matrix matrix;
   return labeling(evaluator->sequence(), matrix, method);
 }
 
-Labeling GeneralizedHiddenMarkovModel::cachedLabeling(
-    CEPtr evaluator, Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::cachedLabeling(
+    CEPtr evaluator, Labeling<Sequence>::Method method) {
   switch (method) {
-    case Labeling::Method::bestPath:
+    case Labeling<Sequence>::Method::bestPath:
       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
-    case Labeling::Method::posteriorDecoding:
+    case Labeling<Sequence>::Method::posteriorDecoding:
       return labeling(evaluator->sequence(),
                       evaluator->cache().posterior_decoding,
                       method);
   }
   // TODO(igorbonadio): Throw exception!
-  return Labeling();
+  return Estimation<Labeling<Sequence>>();
 }
 
 double GeneralizedHiddenMarkovModel::simpleProbabilityOf(
@@ -400,7 +396,22 @@ double GeneralizedHiddenMarkovModel::simpleProbabilityOf(
     const Sequence& s,
     unsigned int begin,
     unsigned int end) const {
-  return -HUGE; // TODO(igorbonadio)
+  double prob = 0;
+  auto segments = Segment::readSequence(s);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    if (i == 0) {
+      prob += _initial_probabilities->probabilityOf(segments[i].symbol());
+    } else {
+      prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(
+        segments[i].symbol());
+    }
+    prob += _states[segments[i].symbol()]->durationProbability(
+      segments[i].end() - segments[i].begin());
+    prob += _states[segments[i].symbol()]->observation()->evaluator(
+      evaluator->sequence())->probabilityOf(
+        segments[i].begin(), segments[i].end());
+  }
+  return prob;
 }
 
 }  // namespace model

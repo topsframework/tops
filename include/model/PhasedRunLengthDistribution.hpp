@@ -51,6 +51,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
                                              int input_phase,
                                              int output_phase,
                                              int nphase);
+
   static PhasedRunLengthDistributionPtr makeFromDiscreteIIDModel(
       DiscreteIIDModelPtr model,
       int delta,
@@ -59,8 +60,8 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
       int nphase);
 
   // Virtual methods
-  virtual double probabilityOf(Symbol s) const;
-  virtual Symbol choose() const;
+  virtual Symbol choose() const override;
+  virtual double probabilityOf(Symbol s) const override;
 
  private:
   // Instance variables
@@ -78,7 +79,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
                               int output_phase,
                               int nphase);
 
-  // Instance methods
+  // Concrete methods
   int mod(int D, int d) const;
 };
 

@@ -25,8 +25,8 @@
 #include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
 #include "model/ContextTree.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -47,8 +47,12 @@ using VariableLengthMarkovChainPtr
  * An variable length Markov chain is a Markov chain that can have different
  * size contexts.
  */
-class VariableLengthMarkovChain : public ProbabilisticModel {
+class VariableLengthMarkovChain
+    : public ProbabilisticModelCrtp<VariableLengthMarkovChain> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<VariableLengthMarkovChain>;
+
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
   static VariableLengthMarkovChainPtr trainContextAlgorithm(
@@ -71,8 +75,12 @@ class VariableLengthMarkovChain : public ProbabilisticModel {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
  private:
   // Instance variables

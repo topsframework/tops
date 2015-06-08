@@ -26,9 +26,9 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
-#include "model/Generator.hpp"
 
 // ToPS templates
+#include "model/Generator.tcc"
 #include "model/SimpleEvaluatorImpl.tcc"
 #include "model/CachedEvaluatorImpl.tcc"
 
@@ -38,34 +38,43 @@ namespace model {
 class InhomogeneousMarkovChain;
 using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 
+// Forward declaration
+class ProbabilisticModel;
+
+/**
+ * @typedef ProbabilisticModelPtr
+ * @brief Alias of pointer to ProbabilisticModel.
+ */
+using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
+
 /**
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
 class ProbabilisticModel
-    : public std::enable_shared_from_this<ProbabilisticModel>{
+    : public std::enable_shared_from_this<ProbabilisticModel> {
  public:
   // Alias
+  using Base = void;
+
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
+  virtual GeneratorPtr<Sequence> sequenceGenerator() = 0;
+
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const = 0;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i,
-                                unsigned int phase = 0) const = 0;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const = 0;
 
   // Virtual methods
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size,
-                                  unsigned int phase = 0) const;
-
-  virtual GeneratorPtr generator();
+  virtual InhomogeneousMarkovChain* inhomogeneous();
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
-
-  virtual InhomogeneousMarkovChain* inhomogeneous();
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -80,12 +89,6 @@ class ProbabilisticModel
                              unsigned int end,
                              unsigned int phase = 0) const;
 };
-
-/**
- * @typedef ProbabilisticModelPtr
- * @brief Alias of pointer to ProbabilisticModel.
- */
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
 
 }  // namespace model
 }  // namespace tops

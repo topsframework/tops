@@ -23,20 +23,22 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
 
+template<typename Derived>
 class ProbabilisticModelDecorator;
 
 /**
  * @typedef ProbabilisticModelDecoratorPtr
  * @brief Alias of pointer to ProbabilisticModelDecorator.
  */
+template<typename Derived>
 using ProbabilisticModelDecoratorPtr
-    = std::shared_ptr<ProbabilisticModelDecorator>;
+    = std::shared_ptr<ProbabilisticModelDecorator<Derived>>;
 
 /**
  * @class ProbabilisticModelDecorator
@@ -44,20 +46,43 @@ using ProbabilisticModelDecoratorPtr
  *
  * It is the easiest way to change the behaviour of a probabilistic model.
  */
-class ProbabilisticModelDecorator : public ProbabilisticModel {
+template<typename Derived>
+class ProbabilisticModelDecorator
+    : public ProbabilisticModelCrtp<Derived> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<ProbabilisticModelDecorator>;
+
+  using Self = ProbabilisticModelDecorator<Derived>;
+  using SelfPtr = std::shared_ptr<Self>;
+
   // Static methods
-  static ProbabilisticModelDecoratorPtr make(ProbabilisticModelPtr model);
-  // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-  virtual Sequence chooseSequence(Sequence &s, unsigned int size, unsigned int phase = 0) const;
+  template<typename... Ts>
+  static SelfPtr make(Ts... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
+  }
+
+  // Overriden methods
+  double evaluate(const Sequence &s,
+                  unsigned int pos,
+                  unsigned int phase = 0) const override {
+    return _model->evaluate(s, pos, phase);
+  }
+
+  Symbol choose(const Sequence &context,
+                unsigned int pos,
+                unsigned int phase = 0) const override {
+    return _model->choose(context, pos, phase);
+  }
+
  protected:
   // Instance variables
   ProbabilisticModelPtr _model;
 
   // Constructors
-  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model);
+  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model)
+    : _model(model) {
+  }
 };
 
 }  // namespace model

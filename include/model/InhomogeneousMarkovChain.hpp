@@ -46,15 +46,23 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
  * An inhomogeneous Markov chain is a model which suports different Markov
  * chains per position.
  */
-class InhomogeneousMarkovChain : public ProbabilisticModel {
+class InhomogeneousMarkovChain
+    : public ProbabilisticModelCrtp<InhomogeneousMarkovChain> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<InhomogeneousMarkovChain>;
+
   // Static methods
   static InhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
   virtual unsigned int maximumTimeValue();
@@ -64,8 +72,7 @@ class InhomogeneousMarkovChain : public ProbabilisticModel {
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
 
   // Constructors
-  InhomogeneousMarkovChain(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+  InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs);
 };
 
 }  // namespace model

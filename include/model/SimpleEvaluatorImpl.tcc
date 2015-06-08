@@ -26,7 +26,10 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/Labeling.hpp"
+
+// ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 
 namespace tops {
 namespace model {
@@ -85,7 +88,8 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
                                unsigned int begin,
                                unsigned int end) override;
 
-  virtual Labeling labeling(Labeling::Method method) override;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(Labeling<Sequence>::Method method) override;
 
   // Virtual getters
   virtual Sequence& sequence() override { return _sequence; }
@@ -114,24 +118,36 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
                            is_decodable<M>* dummy = nullptr);
 
   template<typename M = Model>
-  Labeling labelingImpl(Labeling::Method method,
-                        not_decodable<M>* dummy = nullptr);
+  Estimation<Labeling<Sequence>>
+  labelingImpl(Labeling<Sequence>::Method method,
+               not_decodable<M>* dummy = nullptr);
 
   template<typename M = Model>
-  Labeling labelingImpl(Labeling::Method method,
-                        is_decodable<M>* dummy = nullptr);
+  Estimation<Labeling<Sequence>>
+  labelingImpl(Labeling<Sequence>::Method method,
+               is_decodable<M>* dummy = nullptr);
 };
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                               IMPLEMENTATION
+                                IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             Static methods                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m,
+                                                const Sequence &s)
+    : _model(m), _sequence(s) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -144,7 +160,7 @@ SimpleEvaluatorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             Virtual methods                                */
+/*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -167,12 +183,13 @@ double SimpleEvaluatorImpl<Model>::probabilityOf(
 }
 
 template<typename Model>
-Labeling SimpleEvaluatorImpl<Model>::labeling(Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+SimpleEvaluatorImpl<Model>::labeling(Labeling<Sequence>::Method method) {
   return labelingImpl(method);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -198,29 +215,21 @@ double SimpleEvaluatorImpl<Model>::probabilityOfImpl(const Sequence &s,
 
 template<typename Model>
 template<typename M>
-Labeling SimpleEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
-                                                  not_decodable<M>* dummy) {
-  return Labeling();  // TODO(renatocf): throw exception
+Estimation<Labeling<Sequence>>
+SimpleEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
+                                         not_decodable<M>* dummy) {
+  return Estimation<Labeling<Sequence>>();  // TODO(renatocf): throw exception
 }
 
 template<typename Model>
 template<typename M>
-Labeling SimpleEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
-                                                  is_decodable<M>* dummy) {
+Estimation<Labeling<Sequence>>
+SimpleEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
+                                         is_decodable<M>* dummy) {
   return this->_model->simpleLabeling(
     std::static_pointer_cast<SimpleEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
-/*----------------------------------------------------------------------------*/
-
-template<typename Model>
-SimpleEvaluatorImpl<Model>::SimpleEvaluatorImpl(ModelPtr m,
-                                                const Sequence &s)
-    : _model(m), _sequence(s) {
 }
 
 }  // namespace model

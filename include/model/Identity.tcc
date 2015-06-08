@@ -17,35 +17,20 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Libraries
-#include "Labeling.hpp"
+#ifndef TOPS_MODEL_IDENTITY_
+#define TOPS_MODEL_IDENTITY_
 
 namespace tops {
 namespace model {
 
-Labeling::Labeling()
-    : _probability(), _sequence() {
-}
-
-Labeling::Labeling(double probability, const Sequence& sequence)
-    : _probability(probability), _sequence(sequence) {
-}
-
-Labeling::Labeling(double probability, Sequence&& sequence)
-    : _probability(probability), _sequence(std::move(sequence)) {
-}
-
-double Labeling::probability() const {
-  return _probability;
-}
-
-Sequence& Labeling::sequence() {
-  return _sequence;
-}
-
-const Sequence& Labeling::sequence() const {
-  return _sequence;
-}
+/**
+ * @class Identity
+ * @brief TODO
+ */
+template<typename Target>
+using Identity = Target;
 
 }  // namespace model
 }  // namespace tops
+
+#endif

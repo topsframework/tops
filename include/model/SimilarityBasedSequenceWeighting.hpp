@@ -28,6 +28,9 @@
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
+
 namespace tops {
 namespace model {
 
@@ -44,9 +47,12 @@ using SimilarityBasedSequenceWeightingPtr
  * @class SimilarityBasedSequenceWeighting
  * @brief TODO
  */
-class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
+class SimilarityBasedSequenceWeighting
+    : public ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
+
   using Cache = std::vector<double>;
   using SEPtr = SimpleEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
   using CEPtr = CachedEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
@@ -66,10 +72,15 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
       Sequence skip_sequence);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -94,10 +105,18 @@ class SimilarityBasedSequenceWeighting : public ProbabilisticModel {
   double _normalizer;
 
   // Constructors
-  SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter, double normalizer, int skip_offset, int skip_length, Sequence skip_sequence);
+  SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter,
+                                   double normalizer,
+                                   int skip_offset,
+                                   int skip_length,
+                                   Sequence skip_sequence);
 
   // Static methods
-  static double calculate_normalizer(int skip_length, int skip_offset, int max_length, std::map<Sequence, double> & counter, int alphabet_size);
+  static double calculate_normalizer(int skip_length,
+                                     int skip_offset,
+                                     int max_length,
+                                     std::map<Sequence, double> &counter,
+                                     int alphabet_size);
 };
 
 }  // namespace model

@@ -18,14 +18,22 @@
 /***********************************************************************/
 
 // ToPS headers
-#include "DecodableEvaluator.hpp"
+#include "model/DecodableEvaluator.hpp"
 
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
 DecodableEvaluator::DecodableEvaluator(EvaluatorImplPtr &&impl)
     : Evaluator(std::move(impl)) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 inline double DecodableEvaluator::probabilityOf(const Sequence &s,
                                                 unsigned int begin,
@@ -33,7 +41,8 @@ inline double DecodableEvaluator::probabilityOf(const Sequence &s,
   return _impl->probabilityOf(s, begin, end);
 }
 
-inline Labeling DecodableEvaluator::labeling(Labeling::Method method) const {
+inline Estimation<Labeling<Sequence>>
+DecodableEvaluator::labeling(Labeling<Sequence>::Method method) const {
   return _impl->labeling(method);
 }
 

@@ -22,45 +22,38 @@
 
 // Standard headers
 #include <memory>
-
-// ToPS headers
-#include "model/Sequence.hpp"
-
+#include <exception>
 
 namespace tops {
 namespace model {
 
-class ProbabilisticModel;
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
 
+template<typename Target>
 class Generator;
 
 /**
  * @typedef GeneratorPtr
  * @brief Alias of pointer to Generator.
  */
-using GeneratorPtr = std::shared_ptr<Generator>;
+template<typename Target>
+using GeneratorPtr = std::shared_ptr<Generator<Target>>;
 
 /**
  * @class Generator
  * @brief TODO
  */
-class Generator : public std::enable_shared_from_this<Generator> {
+template<typename Target>
+class Generator : public std::enable_shared_from_this<Generator<Target>> {
  public:
-  // Static methods
-  template<typename... Ts>
-  static GeneratorPtr make(Ts... args) {
-    return GeneratorPtr(new Generator(std::forward<Ts>(args)...));
-  }
-
-  // Virtual methods
-  virtual Sequence choose(unsigned int size,
-                          unsigned int phase = 0) const;
-
- protected:
-  Generator(ProbabilisticModelPtr &&model);
-
-  ProbabilisticModelPtr _model;
+  // Purely virtual methods
+  virtual Target choose(unsigned int size, unsigned int phase = 0) = 0;
 };
 
 }  // namespace model

@@ -24,8 +24,8 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
-#include "model/ProbabilisticModel.hpp"
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -71,8 +71,11 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  * [Aaron Clauset]: http://tuvalu.santafe.edu/~aaronc/courses/7000/csci7000-001_2011_L0.pdf
  *
  */
-class DiscreteIIDModel : public ProbabilisticModel {
+class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
  public:
+  // Alias
+  using Base = ProbabilisticModelCrtp<DiscreteIIDModel>;
+
   // Static methods
 
   /**
@@ -154,7 +157,9 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param pos position of a sequence's symbol
    * @return \f$Pr(s[i])\f$
    */
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
 
   /**
    * Draws a new symbol in the ith position.
@@ -162,7 +167,9 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @param i a position
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
   /**
    * Draws a new symbol.
@@ -183,6 +190,7 @@ class DiscreteIIDModel : public ProbabilisticModel {
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
   std::vector<double> probabilities();
+
   int alphabetSize() const;
 
  protected:
