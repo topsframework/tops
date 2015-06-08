@@ -96,7 +96,7 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
   tops::model::resetRandom();
-  ASSERT_THAT(iid->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(iid->sequenceGenerator()->chooseSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {

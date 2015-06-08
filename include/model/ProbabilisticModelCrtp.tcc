@@ -65,16 +65,17 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   using Base = ProbabilisticModel;
   using DerivedPtr = std::shared_ptr<Derived>;
 
-  template<typename Target>
-  using SGPtr = SimpleGeneratorPtr<Target, Derived>;
+  template<template<class Target> typename Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Overriden methods
-  GeneratorPtr<Sequence> sequenceGenerator() override;
+  GeneratorPtr<Standard> sequenceGenerator() override;
 
   // Virtual methods
-  virtual Sequence simpleChoose(SGPtr<Sequence> generator,
-                                unsigned int size,
-                                unsigned int phase = 0) const;
+  virtual Standard<Sequence>
+  simpleChooseSequence(SGPtr<Standard> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const;
 };
 
 /*
@@ -90,8 +91,8 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-GeneratorPtr<Sequence> ProbabilisticModelCrtp<Derived>::sequenceGenerator() {
-  return SimpleGenerator<Sequence, Derived>::make(
+GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::sequenceGenerator() {
+  return SimpleGenerator<Standard, Derived>::make(
     std::static_pointer_cast<Derived>(
       static_cast<Derived *>(this)->shared_from_this()));
 }
@@ -101,8 +102,8 @@ GeneratorPtr<Sequence> ProbabilisticModelCrtp<Derived>::sequenceGenerator() {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Sequence ProbabilisticModelCrtp<Derived>::simpleChoose(
-    SGPtr<Sequence> generator,
+Standard<Sequence> ProbabilisticModelCrtp<Derived>::simpleChooseSequence(
+    SGPtr<Standard> generator,
     unsigned int size,
     unsigned int phase) const {
   Sequence s;

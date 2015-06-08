@@ -72,9 +72,10 @@ class GeneralizedHiddenMarkovModel
       unsigned int max_backtracking = 100);
 
   // Overriden methods
-  Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
-                                  unsigned int size,
-                                  unsigned int phase = 0) const override;
+  Labeling<Sequence>
+  simpleChooseSequence(SGPtr<Labeling> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const override;
 
   Estimation<Labeling<Sequence>>
   labeling(const Sequence &xs,

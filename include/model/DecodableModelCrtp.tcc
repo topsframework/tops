@@ -64,22 +64,23 @@ template<typename Derived>
 class DecodableModelCrtp : public DecodableModel {
  public:
   // Hidden name method inheritance
-  using DecodableModel::simpleChoose;
+  using DecodableModel::simpleChooseSequence;
 
   // Alias
   using Base = DecodableModel;
   using DerivedPtr = std::shared_ptr<Derived>;
 
-  template<typename Target>
-  using SGPtr = SimpleGeneratorPtr<Target, Derived>;
+  template<template<class Target> typename Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Overriden methods
-  GeneratorPtr<Labeling<Sequence>> labelingGenerator() override;
+  GeneratorPtr<Labeling> labelingGenerator() override;
 
   // Virtual methods
-  virtual Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
-                                          unsigned int size,
-                                          unsigned int phase = 0) const = 0;
+  virtual Labeling<Sequence>
+  simpleChooseSequence(SGPtr<Labeling> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const = 0;
 };
 
 /*
@@ -95,10 +96,8 @@ class DecodableModelCrtp : public DecodableModel {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-GeneratorPtr<Labeling<Sequence>>
-DecodableModelCrtp<Derived>::labelingGenerator() {
-
-  return SimpleGenerator<Labeling<Sequence>, Derived>::make(
+GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator() {
+  return SimpleGenerator<Labeling, Derived>::make(
     std::static_pointer_cast<Derived>(
       static_cast<Derived *>(this)->shared_from_this()));
 }

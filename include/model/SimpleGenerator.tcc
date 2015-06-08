@@ -43,45 +43,51 @@ namespace model {
 */
 
 // Auxiliar tests
-GENERATE_HAS_MEMBER(simpleChoose)
+GENERATE_HAS_MEMBER(simpleChooseSequence)
 
-template<typename Target, typename Model, bool is_base>
+template<template<class Target> typename Decorator,
+         typename Model, bool is_base>
 class SimpleGenerator;
 
 /**
  * @typedef SimpleGeneratorPtr
  * @brief Alias of pointer to SimpleGenerator.
  */
-template<typename Target, typename Model, bool is_base = false>
+template<template<class Target> typename Decorator,
+         typename Model, bool is_base = false>
 using SimpleGeneratorPtr
-    = std::shared_ptr<SimpleGenerator<Target, Model, is_base>>;
+    = std::shared_ptr<SimpleGenerator<Decorator, Model, is_base>>;
 
 /**
  * @class SimpleGenerator
  * @brief TODO
  */
-template<typename Target, typename Model, bool is_base = false>
+template<template<class Target> typename Decorator,
+         typename Model, bool is_base = false>
 class SimpleGenerator
     : public std::conditional<!std::is_void<typename Model::Base>::value,
-               SimpleGenerator<Target, typename Model::Base, true>,
-               Generator<Target>>::type {
+               SimpleGenerator<Decorator, typename Model::Base, true>,
+               Generator<Decorator>>::type {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
 
-  using Self = SimpleGenerator<Target, Model>;
+  using Self = SimpleGenerator<Decorator, Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
   template<typename... Ts>
-  static SimpleGeneratorPtr<Target, Model> make(Ts... args) {
+  static SimpleGeneratorPtr<Decorator, Model> make(Ts... args) {
     return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
   }
 
   // Overriden methods
-  Target choose(unsigned int size, unsigned int phase) override {
-    return choose(size, phase, typename has_member_simpleChoose<
-      Model, const Target(SelfPtr, unsigned int, unsigned int)>::tag());
+  Decorator<Sequence> chooseSequence(unsigned int size,
+                                     unsigned int phase) override {
+    return chooseSequence(size, phase,
+      typename has_member_simpleChooseSequence<
+        Model, const Decorator<Sequence>(SelfPtr, unsigned int, unsigned int)
+      >::tag());
   }
 
  protected:
@@ -95,16 +101,22 @@ class SimpleGenerator
 
  private:
   // Concrete methods
-  Target choose(unsigned int size, unsigned int phase, no_simpleChoose_tag) {
-    static_assert(is_base, "Model does not have method simpleChoose");
-    throw std::logic_error("Calling from base with no method simpleChoose");
+  Decorator<Sequence> chooseSequence(unsigned int size,
+                                     unsigned int phase,
+                                     no_simpleChooseSequence_tag) {
+    static_assert(is_base,
+      "Model does not have method simpleChooseSequence");
+    throw std::logic_error(
+      "Calling from base with no method simpleChooseSequence");
   }
 
-  Target choose(unsigned int size, unsigned int phase, has_simpleChoose_tag) {
-    return _model->simpleChoose(make_shared(), size, phase);
+  Decorator<Sequence> chooseSequence(unsigned int size,
+                                     unsigned int phase,
+                                     has_simpleChooseSequence_tag) {
+    return _model->simpleChooseSequence(make_shared(), size, phase);
   }
 
-  SimpleGeneratorPtr<Target, Model> make_shared() {
+  SimpleGeneratorPtr<Decorator, Model> make_shared() {
     return std::static_pointer_cast<Self>(this->shared_from_this());
   }
 };

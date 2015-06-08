@@ -231,9 +231,9 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 /*===============================  GENERATOR  ================================*/
 
 Labeling<Sequence>
-HiddenMarkovModel::simpleChoose(SGPtr<Labeling<Sequence>> generator,
-                                unsigned int size,
-                                unsigned int phase) const {
+HiddenMarkovModel::simpleChooseSequence(SGPtr<Labeling> generator,
+                                        unsigned int size,
+                                        unsigned int phase) const {
   Sequence x(size), y(size);
   for (unsigned int i = 0; i < size; i++)
     chooseSequencesPosition(x, y, i);

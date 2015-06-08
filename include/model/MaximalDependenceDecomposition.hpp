@@ -69,11 +69,15 @@ class MaximalDependenceDecomposition
       ProbabilisticModelPtr consensus_model,
       unsigned int minimum_subset);
 
+  // Overriden methods
+  Standard<Sequence>
+  simpleChooseSequence(SGPtr<Standard> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const override;
+
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) override;
-
-  virtual GeneratorPtr<Sequence> sequenceGenerator() override;
 
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
@@ -94,10 +98,6 @@ class MaximalDependenceDecomposition
                              unsigned int begin,
                              unsigned int end,
                              unsigned int phase = 0) const;
-
-  Sequence simpleChoose(SGPtr<Sequence> generator,
-                        unsigned int size,
-                        unsigned int phase = 0) const;
 
  private:
   // Instance variables

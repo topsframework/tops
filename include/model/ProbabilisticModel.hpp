@@ -28,6 +28,7 @@
 #include "model/Evaluator.hpp"
 
 // ToPS templates
+#include "model/Standard.tcc"
 #include "model/Generator.tcc"
 #include "model/SimpleEvaluatorImpl.tcc"
 #include "model/CachedEvaluatorImpl.tcc"
@@ -62,7 +63,7 @@ class ProbabilisticModel
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
-  virtual GeneratorPtr<Sequence> sequenceGenerator() = 0;
+  virtual GeneratorPtr<Standard> sequenceGenerator() = 0;
 
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,

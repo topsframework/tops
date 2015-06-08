@@ -58,17 +58,16 @@ class FixedSequenceAtPosition
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) override;
 
-  virtual GeneratorPtr<Sequence> sequenceGenerator() override;
-
   // Concrete methods
   double simpleProbabilityOf(SEPtr evaluator,
                              unsigned int begin,
                              unsigned int end,
                              unsigned int phase = 0) const;
 
-  Sequence simpleChoose(SGPtr<Sequence> generator,
-                        unsigned int size,
-                        unsigned int phase = 0) const override;
+  Standard<Sequence>
+  simpleChooseSequence(SGPtr<Standard> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const override;
 
  private:
   // Instance variables

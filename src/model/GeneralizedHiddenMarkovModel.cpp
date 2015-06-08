@@ -72,9 +72,9 @@ GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
 /*===============================  GENERATOR  ================================*/
 
 Labeling<Sequence>
-GeneralizedHiddenMarkovModel::simpleChoose(SGPtr<Labeling<Sequence>> generator,
-                                           unsigned int size,
-                                           unsigned int phase) const {
+GeneralizedHiddenMarkovModel::simpleChooseSequence(SGPtr<Labeling> generator,
+                                                   unsigned int size,
+                                                   unsigned int phase) const {
   // TODO(igorbonadio)
   return Labeling<Sequence>(Sequence(INVALID_SYMBOL, size),
                             Sequence(INVALID_SYMBOL, size));

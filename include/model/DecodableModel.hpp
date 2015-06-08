@@ -54,7 +54,7 @@ class DecodableModel
   };
 
   // Purely virtual methods
-  virtual GeneratorPtr<Labeling<Sequence>> labelingGenerator() = 0;
+  virtual GeneratorPtr<Labeling> labelingGenerator() = 0;
 
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) = 0;

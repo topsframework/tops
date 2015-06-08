@@ -81,9 +81,10 @@ class HiddenMarkovModel
       double diff_threshold);
 
   // Overriden methods
-  Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
-                                  unsigned int size,
-                                  unsigned int phase = 0) const override;
+  Labeling<Sequence>
+  simpleChooseSequence(SGPtr<Labeling> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const override;
 
   Estimation<Labeling<Sequence>>
   labeling(const Sequence &xs,
