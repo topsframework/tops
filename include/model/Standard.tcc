@@ -17,18 +17,18 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_IDENTITY_
-#define TOPS_MODEL_IDENTITY_
+#ifndef TOPS_MODEL_STANDARD_
+#define TOPS_MODEL_STANDARD_
 
 namespace tops {
 namespace model {
 
 /**
- * @class Identity
+ * @class Standard
  * @brief TODO
  */
 template<typename Target>
-using Identity = Target;
+using Standard = Target;
 
 }  // namespace model
 }  // namespace tops
