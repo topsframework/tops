@@ -45,7 +45,7 @@ using DecodableEvaluatorPtr = std::shared_ptr<DecodableEvaluator>;
  */
 class DecodableEvaluator : public Evaluator {
  public:
-  // Hidden name method inhiterance
+  // Hidden name method inheritance
   using Evaluator::probabilityOf;
 
   // Static methods
