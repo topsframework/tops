@@ -25,7 +25,7 @@
 #include <vector>
 
 // ToPS headers
-#include "DiscreteIIDModel.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
@@ -39,25 +39,41 @@ class HiddenMarkovModelState;
 using HiddenMarkovModelStatePtr = std::shared_ptr<HiddenMarkovModelState>;
 
 /**
+ * @typedef HiddenMarkovModelStateSequence
+ * @brief Alias of sequence of HiddenMarkovModelState.
+ */
+using HiddenMarkovModelStateSequence = std::vector<HiddenMarkovModelState>;
+
+/**
  * @class HiddenMarkovModelState
  * @brief TODO
  */
 class HiddenMarkovModelState {
  public:
-  static HiddenMarkovModelStatePtr make(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
-  DiscreteIIDModelPtr & emissions();
-  DiscreteIIDModelPtr & transitions();
-  bool isSilent();
-  int symbol();
- private:
-  HiddenMarkovModelState(Symbol symbol, DiscreteIIDModelPtr emissions, DiscreteIIDModelPtr transitions);
+  // Static methods
+  static HiddenMarkovModelStatePtr make(Symbol symbol,
+                                        DiscreteIIDModelPtr emissions,
+                                        DiscreteIIDModelPtr transitions);
 
+  // Concrete methods
+  bool isSilent();
+
+  // Concrete Getters
+  Symbol symbol();
+  DiscreteIIDModelPtr &emissions();
+  DiscreteIIDModelPtr &transitions();
+
+ private:
+  // Instance Variables
   Symbol _symbol;
   DiscreteIIDModelPtr _emissions;
   DiscreteIIDModelPtr _transitions;
-};
 
-typedef std::vector<HiddenMarkovModelState> HiddenMarkovModelStateSequence;
+  // Constructors
+  HiddenMarkovModelState(Symbol symbol,
+                         DiscreteIIDModelPtr emissions,
+                         DiscreteIIDModelPtr transitions);
+};
 
 }  // namespace model
 }  // namespace tops

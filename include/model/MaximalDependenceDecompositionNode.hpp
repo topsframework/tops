@@ -26,7 +26,7 @@
 #include <string>
 
 // ToPS headers
-#include "ProbabilisticModel.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
@@ -45,24 +45,30 @@ using MaximalDependenceDecompositionNodePtr = std::shared_ptr<MaximalDependenceD
  */
 class MaximalDependenceDecompositionNode {
  public:
+  // Static methods
   static MaximalDependenceDecompositionNodePtr make(std::string node_name, ProbabilisticModelPtr model, int index);
 
+  // Concrete getters
   int getIndex();
   ProbabilisticModelPtr getModel();
-
-  void setChildern(MaximalDependenceDecompositionNodePtr left, MaximalDependenceDecompositionNodePtr right);
-  void setChild(MaximalDependenceDecompositionNodePtr child);
   MaximalDependenceDecompositionNodePtr getLeft();
   MaximalDependenceDecompositionNodePtr getRight();
 
+  // Concrete setters
+  void setChildern(MaximalDependenceDecompositionNodePtr left, MaximalDependenceDecompositionNodePtr right);
+  void setChild(MaximalDependenceDecompositionNodePtr child);
+
  private:
-  MaximalDependenceDecompositionNode(std::string node_name, ProbabilisticModelPtr model, int index);
+  // Instance Variables
   std::vector<int> _otherIndexes;
   ProbabilisticModelPtr _model;
   int _index;
   std::string _node_name;
   MaximalDependenceDecompositionNodePtr _left;
   MaximalDependenceDecompositionNodePtr _right;
+
+  // Constructors
+  MaximalDependenceDecompositionNode(std::string node_name, ProbabilisticModelPtr model, int index);
 };
 
 }  // namespace model

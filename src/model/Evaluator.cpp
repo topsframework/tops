@@ -18,14 +18,22 @@
 /***********************************************************************/
 
 // ToPS headers
-#include "Evaluator.hpp"
+#include "model/Evaluator.hpp"
 
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
 Evaluator::Evaluator(EvaluatorImplPtr &&impl)
     : _impl(std::move(impl)) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 inline double Evaluator::probabilityOf(unsigned int begin,
                                        unsigned int end,

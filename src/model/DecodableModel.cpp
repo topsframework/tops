@@ -17,7 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include "DecodableModel.hpp"
+// ToPS headers
+#include "model/DecodableModel.hpp"
 
 namespace tops {
 namespace model {

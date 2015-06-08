@@ -27,16 +27,28 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+InhomogeneousMarkovChain::InhomogeneousMarkovChain(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs)
+    : _vlmcs(vlmcs) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
     std::vector<VariableLengthMarkovChainPtr> vlmcs) {
   return InhomogeneousMarkovChainPtr(
     new InhomogeneousMarkovChain(vlmcs));
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double InhomogeneousMarkovChain::evaluate(const Sequence &s,
                                           unsigned int pos,
@@ -47,11 +59,11 @@ double InhomogeneousMarkovChain::evaluate(const Sequence &s,
     return -HUGE;
 }
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
+Symbol InhomogeneousMarkovChain::choose(const Sequence &context,
+                                        unsigned int pos,
+                                        unsigned int phase) const {
+  if (pos + phase < _vlmcs.size())
+    return _vlmcs[pos + phase]->choose(context, pos);
   else
     return 0;  // TODO(igorbonadio): ERROR!
 }

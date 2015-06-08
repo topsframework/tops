@@ -27,14 +27,26 @@
 namespace tops {
 namespace model {
 
-TargetModelPtr TargetModel::make(int alphabet_size) {
-  return TargetModelPtr(new TargetModel(alphabet_size));
-}
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
 
 TargetModel::TargetModel(int alphabet_size)
     : DiscreteIIDModel(
       std::vector<double>(alphabet_size, log(1.0/alphabet_size))) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+TargetModelPtr TargetModel::make(int alphabet_size) {
+  return TargetModelPtr(new TargetModel(alphabet_size));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 double TargetModel::evaluate(const Sequence &s,
                              unsigned int pos,

@@ -38,7 +38,7 @@ class CachedEvaluatorImpl;
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                     CLASS
+                                    CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
@@ -70,7 +70,8 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
                                unsigned int end,
                                unsigned int phase = 0) override;
 
-  virtual Labeling labeling(Labeling::Method method) override;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(Labeling<Sequence>::Method method) override;
 
   Cache& cache() {
     return _cache;
@@ -88,24 +89,37 @@ class CachedEvaluatorImpl : public SimpleEvaluatorImpl<Model> {
  private:
   // Concrete methods
   template<typename M = Model>
-  Labeling labelingImpl(Labeling::Method method,
-                        not_decodable<M>* dummy = nullptr);
+  Estimation<Labeling<Sequence>>
+  labelingImpl(Labeling<Sequence>::Method method,
+               not_decodable<M>* dummy = nullptr);
 
   template<typename M = Model>
-  Labeling labelingImpl(Labeling::Method method,
-                        is_decodable<M>* dummy = nullptr);
+  Estimation<Labeling<Sequence>>
+  labelingImpl(Labeling<Sequence>::Method method,
+               is_decodable<M>* dummy = nullptr);
 };
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                  IMPLEMENTATION
+                                IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             Static methods                                 */
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+template<typename Model>
+CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
+                                                const Sequence &s,
+                                                Cache&& cache)
+    : SimpleEvaluatorImpl<Model>(m, s), _cache(std::forward<Cache>(cache)) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -117,7 +131,7 @@ CachedEvaluatorImplPtr<Model> CachedEvaluatorImpl<Model>::make(Ts... args) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             Virtual methods                                */
+/*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
@@ -136,40 +150,32 @@ double CachedEvaluatorImpl<Model>::probabilityOf(unsigned int begin,
 }
 
 template<typename Model>
-Labeling CachedEvaluatorImpl<Model>::labeling(Labeling::Method method) {
+Estimation<Labeling<Sequence>>
+CachedEvaluatorImpl<Model>::labeling(Labeling<Sequence>::Method method) {
   return labelingImpl(method);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                            Concrete methods                                */
+/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 template<typename Model>
 template<typename M>
-Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
-                                                  not_decodable<M>* dummy) {
-  return Labeling();
+Estimation<Labeling<Sequence>>
+CachedEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
+                                         not_decodable<M>* dummy) {
+  return Estimation<Labeling<Sequence>>(); // TODO(renatocf): throw exception
 }
 
 template<typename Model>
 template<typename M>
-Labeling CachedEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
-                                                  is_decodable<M>* dummy) {
+Estimation<Labeling<Sequence>>
+CachedEvaluatorImpl<Model>::labelingImpl(Labeling<Sequence>::Method method,
+                                         is_decodable<M>* dummy) {
   return this->_model->cachedLabeling(
     std::static_pointer_cast<CachedEvaluatorImpl<M>>(
       this->shared_from_this()),
       method);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
-/*----------------------------------------------------------------------------*/
-
-template<typename Model>
-CachedEvaluatorImpl<Model>::CachedEvaluatorImpl(ModelPtr m,
-                                                const Sequence &s,
-                                                Cache&& cache)
-    : SimpleEvaluatorImpl<Model>(m, s), _cache(std::forward<Cache>(cache)) {
 }
 
 }  // namespace model

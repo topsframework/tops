@@ -23,18 +23,14 @@
 #include <algorithm>
 
 // ToPS headers
-#include "HiddenMarkovModelState.hpp"
+#include "model/HiddenMarkovModelState.hpp"
 
 namespace tops {
 namespace model {
 
-HiddenMarkovModelStatePtr HiddenMarkovModelState::make(
-    Symbol symbol,
-    DiscreteIIDModelPtr emissions,
-    DiscreteIIDModelPtr transitions) {
-  return HiddenMarkovModelStatePtr(new HiddenMarkovModelState(
-      symbol, emissions, transitions));
-}
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
 
 HiddenMarkovModelState::HiddenMarkovModelState(
     Symbol symbol,
@@ -45,20 +41,36 @@ HiddenMarkovModelState::HiddenMarkovModelState(
       _transitions(transitions) {
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+HiddenMarkovModelStatePtr HiddenMarkovModelState::make(
+    Symbol symbol,
+    DiscreteIIDModelPtr emissions,
+    DiscreteIIDModelPtr transitions) {
+  return HiddenMarkovModelStatePtr(new HiddenMarkovModelState(
+      symbol, emissions, transitions));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+bool HiddenMarkovModelState::isSilent() {
+  return _emissions == nullptr;
+}
+
+Symbol HiddenMarkovModelState::symbol() {
+  return _symbol;
+}
+
 DiscreteIIDModelPtr & HiddenMarkovModelState::emissions() {
   return _emissions;
 }
 
 DiscreteIIDModelPtr & HiddenMarkovModelState::transitions() {
   return _transitions;
-}
-
-bool HiddenMarkovModelState::isSilent() {
-  return (_emissions == NULL);
-}
-
-int HiddenMarkovModelState::symbol() {
-  return _symbol;
 }
 
 

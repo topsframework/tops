@@ -26,13 +26,15 @@
 
 // ToPS headers
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/Sequence.hpp"
 #include "model/DiscreteIIDModel.hpp"
-#include "model/ProbabilisticModelDecorator.hpp"
+#include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
-#include "model/Random.hpp"
+
+// ToPS templates
+#include "model/ProbabilisticModelDecorator.tcc"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -97,7 +99,7 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
 TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
   tops::model::resetRandom();
-  ASSERT_THAT(vlmc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(vlmc->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {

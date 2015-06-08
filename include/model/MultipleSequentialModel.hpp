@@ -27,6 +27,9 @@
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
 
+// ToPS templates
+#include "model/ProbabilisticModelCrtp.tcc"
+
 namespace tops {
 namespace model {
 
@@ -43,9 +46,12 @@ using MultipleSequentialModelPtr
  * @class MultipleSequentialModel
  * @brief TODO
  */
-class MultipleSequentialModel : public ProbabilisticModel {
+class MultipleSequentialModel
+    : public ProbabilisticModelCrtp<MultipleSequentialModel> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<MultipleSequentialModel>;
+
   using Cache = std::vector<EvaluatorPtr>;
   using SEPtr = SimpleEvaluatorImplPtr<MultipleSequentialModel>;
   using CEPtr = CachedEvaluatorImplPtr<MultipleSequentialModel>;
@@ -56,10 +62,15 @@ class MultipleSequentialModel : public ProbabilisticModel {
       std::vector<int> max_length);
 
   // Virtual methods
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,

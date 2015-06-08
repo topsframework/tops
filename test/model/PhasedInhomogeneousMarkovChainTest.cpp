@@ -27,12 +27,14 @@
 // ToPS headers
 #include "model/PhasedInhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
 #include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+
+// ToPS templates
+#include "model/ProbabilisticModelDecorator.tcc"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -89,7 +91,7 @@ TEST_F(APhasedInhomogeneousMarkovChain,
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc = ProbabilisticModelDecorator::make(imc);
+  auto decorated_imc = ProbabilisticModelDecorator<PhasedInhomogeneousMarkovChain>::make(imc);
   ASSERT_THAT(decorated_imc->evaluator({0})->probabilityOf(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->evaluator({1})->probabilityOf(0, 1),
@@ -109,7 +111,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
   tops::model::resetRandom();
-  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(imc->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {

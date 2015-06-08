@@ -25,12 +25,17 @@
 #include <vector>
 
 // ToPS headers
-#include "model/DecodableModel.hpp"
+#include "model/Matrix.hpp"
+#include "model/DecodableEvaluator.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelSignalState.hpp"
 #include "model/GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
-#include "model/Matrix.hpp"
-#include "model/DecodableEvaluator.hpp"
+
+// ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
+#include "model/DecodableModelCrtp.tcc"
+#include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -48,9 +53,12 @@ using GeneralizedHiddenMarkovModelPtr
  * @class GeneralizedHiddenMarkovModel
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModel : public DecodableModel {
+class GeneralizedHiddenMarkovModel
+    : public DecodableModelCrtp<GeneralizedHiddenMarkovModel> {
  public:
   // Alias
+  using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
+
   using Cache = DecodableModel::Cache;
   using SEPtr = SimpleEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
@@ -62,6 +70,16 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size,
       unsigned int max_backtracking = 100);
+
+  // Overriden methods
+  Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
+                                  unsigned int size,
+                                  unsigned int phase = 0) const override;
+
+  Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const override;
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
@@ -75,18 +93,13 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const;
-  virtual double evaluate(const Sequence &xs,
-                          const Sequence &ys) const;
 
-  virtual void chooseSequences(Sequence &xs,
-                               Sequence &ys,
-                               unsigned int size) const;
+  virtual Symbol choose(const Sequence &xs,
+                        unsigned int i,
+                        unsigned int phase = 0) const;
   virtual void chooseSequencesPosition(Sequence &xs,
                                        Sequence &ys,
                                        unsigned int i) const;
-  virtual Symbol choosePosition(const Sequence &xs,
-                                unsigned int i,
-                                unsigned int phase = 0) const;
 
   virtual double backward(const Sequence &s,
                           Matrix &beta) const;
@@ -94,10 +107,6 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
                          Matrix &alpha) const;
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const;
-
-  virtual Labeling labeling(const Sequence &xs,
-                            Matrix &probabilities,
-                            Labeling::Method method) const;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -116,10 +125,21 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
                              const Sequence& s,
                              unsigned int begin,
                              unsigned int end) const;
-  Labeling simpleLabeling(SEPtr evaluator, Labeling::Method method);
-  Labeling cachedLabeling(CEPtr evaluator, Labeling::Method method);
+
+  Estimation<Labeling<Sequence>>
+  simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
+
+  Estimation<Labeling<Sequence>>
+  cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
 
  protected:
+  // Instance variables
+  std::vector<GeneralizedHiddenMarkovModelStatePtr> _states;
+  DiscreteIIDModelPtr _initial_probabilities;
+  unsigned int _state_alphabet_size;
+  unsigned int _observation_alphabet_size;
+  unsigned int _max_backtracking;
+
   // Constructors
   GeneralizedHiddenMarkovModel(
       std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
@@ -129,17 +149,12 @@ class GeneralizedHiddenMarkovModel : public DecodableModel {
       unsigned int max_backtracking);
 
  private:
-  // Virtual methods
-  virtual Labeling viterbi(const Sequence &xs,
-                           Matrix &gamma) const;
-  virtual Labeling posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const;
+  // Overriden methods
+  Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const override;
 
-  std::vector<GeneralizedHiddenMarkovModelStatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
-  unsigned int _max_backtracking;
+  Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 };
 
 }  // namespace model

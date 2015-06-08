@@ -24,6 +24,7 @@
 #include <memory>
 
 // ToPS headers
+#include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
 #include "model/EvaluatorImpl.hpp"
 
@@ -59,8 +60,8 @@ class DecodableEvaluator : public Evaluator {
                                unsigned int begin,
                                unsigned int end);
 
-  // Virtual methods
-  virtual Labeling labeling(Labeling::Method method) const;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(Labeling<Sequence>::Method method) const;
 
  protected:
   // Constructors

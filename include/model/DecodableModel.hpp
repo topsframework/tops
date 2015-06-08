@@ -20,13 +20,19 @@
 #ifndef TOPS_MODEL_DECODABLE_MODEL_
 #define TOPS_MODEL_DECODABLE_MODEL_
 
+// Standard headers
 #include <memory>
+#include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModel.hpp"
 #include "model/Matrix.hpp"
-#include "model/Labeling.hpp"
 #include "model/DecodableEvaluator.hpp"
+#include "model/ProbabilisticModel.hpp"
+
+// ToPS templates
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -35,30 +41,33 @@ namespace model {
  * @class DecodableModel
  * @brief TODO
  */
-class DecodableModel : public ProbabilisticModel {
+class DecodableModel
+    : public ProbabilisticModelCrtp<DecodableModel> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<DecodableModel>;
+
+  // Inner classes
   struct Cache {
     std::vector<double> prefix_sum_array;
     Matrix alpha, beta, gamma, posterior_decoding;
   };
 
-  // Virtual methods
+  // Purely virtual methods
+  virtual GeneratorPtr<Labeling<Sequence>> labelingGenerator() = 0;
+
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) = 0;
   virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
                                                    bool cached = false) = 0;
 
-  virtual double evaluate(const Sequence &s,
+  virtual double evaluate(const Sequence &context,
                           unsigned int pos,
                           unsigned int phase = 0) const = 0;
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const = 0;
 
-  virtual void chooseSequences(Sequence &xs,
-                               Sequence &ys,
-                               unsigned int size) const = 0;
   virtual void chooseSequencesPosition(Sequence &xs,
                                        Sequence &ys,
                                        unsigned int i) const = 0;
@@ -70,16 +79,18 @@ class DecodableModel : public ProbabilisticModel {
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
-  virtual Labeling labeling(const Sequence &xs,
-                            Matrix &probabilities,
-                            Labeling::Method method) const = 0;
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const = 0;
 
  private:
   // Virtual methods
-  virtual Labeling viterbi(const Sequence &xs,
-                           Matrix &gamma) const = 0;
-  virtual Labeling posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const = 0;
+  virtual Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };
 
 /**

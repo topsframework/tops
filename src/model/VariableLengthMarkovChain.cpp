@@ -22,19 +22,27 @@
 #include <vector>
 
 // ToPS headers
-#include "VariableLengthMarkovChain.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                               CONSTRUCTORS                                 */
+/*----------------------------------------------------------------------------*/
+
+VariableLengthMarkovChain::VariableLengthMarkovChain(
+    ContextTreePtr context_tree) : _context_tree(context_tree) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
     ContextTreePtr context_tree) {
   return VariableLengthMarkovChainPtr(
     new VariableLengthMarkovChain(context_tree));
-}
-
-VariableLengthMarkovChain::VariableLengthMarkovChain(
-    ContextTreePtr context_tree) : _context_tree(context_tree) {
 }
 
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
@@ -96,6 +104,10 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
   return VariableLengthMarkovChain::make(tree);
 }
 
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
+
 double VariableLengthMarkovChain::evaluate(const Sequence &s,
                                            unsigned int pos,
                                            unsigned int phase) const {
@@ -106,15 +118,15 @@ double VariableLengthMarkovChain::evaluate(const Sequence &s,
     return c->getDistribution()->evaluate(s, pos);
 }
 
-Symbol VariableLengthMarkovChain::choosePosition(const Sequence &s,
-                                                 unsigned int i,
-                                                 unsigned int phase) const {
-  ContextTreeNodePtr c = _context_tree->getContext(s, i);
+Symbol VariableLengthMarkovChain::choose(const Sequence &context,
+                                         unsigned int pos,
+                                         unsigned int phase) const {
+  ContextTreeNodePtr c = _context_tree->getContext(context, pos);
   if (c == NULL)
     // TODO(igorbonadio): ERROR!
     return 0;
   else
-    return c->getDistribution()->choosePosition(s, i);
+    return c->getDistribution()->choose(context, pos);
 }
 
 

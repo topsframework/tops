@@ -17,17 +17,19 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <cstdlib>
+// Standard headers
 #include <vector>
+#include <cstdlib>
 
-#include "ContextTreeNode.hpp"
+// ToPS headers
+#include "model/ContextTreeNode.hpp"
 
 namespace tops {
 namespace model {
 
-ContextTreeNodePtr ContextTreeNode::make(int alphabet_size) {
-  return ContextTreeNodePtr(new ContextTreeNode(alphabet_size));
-}
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
 
 ContextTreeNode::ContextTreeNode(int alphabet_size) {
   _alphabet_size = alphabet_size;
@@ -39,6 +41,18 @@ ContextTreeNode::ContextTreeNode(int alphabet_size) {
   _leaf = true;
   _id = 0;
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              STATIC METHODS                                */
+/*----------------------------------------------------------------------------*/
+
+ContextTreeNodePtr ContextTreeNode::make(int alphabet_size) {
+  return ContextTreeNodePtr(new ContextTreeNode(alphabet_size));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 int ContextTreeNode::alphabet_size() const {
   return _alphabet_size;

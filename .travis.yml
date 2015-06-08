@@ -49,7 +49,7 @@ script:
 
 after_success:
 - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
-    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info
+    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info;
   fi
 
 env:

@@ -25,9 +25,9 @@
 #include <vector>
 
 // ToPS headers
+#include "model/Matrix.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/Matrix.hpp"
 
 namespace tops {
 namespace model {
@@ -49,9 +49,12 @@ using PhasedInhomogeneousMarkovChainPtr
  * Markov chains per position. Each Markov chain repeats itsealf per
  * phase.
  */
-class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
+class PhasedInhomogeneousMarkovChain
+    : public ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain> {
  public:
   // Alias
+  using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
+
   using Cache = Matrix;
   using SEPtr = SimpleEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
   using CEPtr = CachedEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
@@ -59,6 +62,7 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
   // Static methods
   static PhasedInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
+
   static PhasedInhomogeneousMarkovChainPtr trainInterpolatedPhasedMarkovChain(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -69,11 +73,15 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const override;
+  virtual Symbol choose(const Sequence &context,
+                        unsigned int pos,
+                        unsigned int phase = 0) const override;
 
-  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
-  virtual Symbol choosePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
-
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -89,6 +97,9 @@ class PhasedInhomogeneousMarkovChain : public InhomogeneousMarkovChain {
                              unsigned int phase = 0) const;
 
  private:
+  // Instance variables
+  std::vector<VariableLengthMarkovChainPtr> _vlmcs;
+
   // Constructors
   PhasedInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
