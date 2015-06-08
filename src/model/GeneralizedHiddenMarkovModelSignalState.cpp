@@ -19,50 +19,45 @@
 
 // Standard headers
 #include <cmath>
-#include <vector>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "GeneralizedHiddenMarkovModelSignalState.hpp"
+#include "SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
+GeneralizedHiddenMarkovModelSignalState::GeneralizedHiddenMarkovModelSignalState(
+    Symbol symbol,
+    ProbabilisticModelPtr observation,
+    DiscreteIIDModelPtr transition,
+    int duration_size)
+      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration_size(duration_size) {
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+GeneralizedHiddenMarkovModelSignalStatePtr GeneralizedHiddenMarkovModelSignalState::make(
+    Symbol symbol,
+    ProbabilisticModelPtr observation,
+    DiscreteIIDModelPtr transition,
+    int duration_size) {
+  return GeneralizedHiddenMarkovModelSignalStatePtr(
+    new GeneralizedHiddenMarkovModelSignalState(
+      symbol, observation, transition, duration_size));
 }
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
+double GeneralizedHiddenMarkovModelSignalState::durationProbability(int l) const {
+  if (l == _duration_size)
+    return 0.0;
+  return -HUGE;
 }
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
+int GeneralizedHiddenMarkovModelSignalState::maximumDurationSize() const {
+  return _duration_size;
 }
 
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
+RangePtr GeneralizedHiddenMarkovModelSignalState::durations() const {
+  return std::make_shared<SingleValueRange>(_duration_size);
 }
 
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
 }
-
-}  // namespace model
-}  // namespace tops
+}

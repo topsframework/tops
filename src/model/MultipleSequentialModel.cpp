@@ -57,9 +57,9 @@ MultipleSequentialModel::MultipleSequentialModel(
   }
 }
 
-double MultipleSequentialModel::evaluatePosition(const Sequence &s,
-                                                 unsigned int i,
-                                                 unsigned int phase) const {
+double MultipleSequentialModel::evaluate(const Sequence &s,
+                                         unsigned int pos,
+                                         unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
@@ -89,7 +89,7 @@ EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
       s));
 }
 
-double MultipleSequentialModel::probabilityOf(
+double MultipleSequentialModel::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,

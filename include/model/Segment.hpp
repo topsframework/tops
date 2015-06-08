@@ -17,52 +17,34 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_SEGMENT_
+#define TOPS_MODEL_SEGMENT_
+
 // Standard headers
-#include <cmath>
 #include <vector>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "Symbol.hpp"
+#include "Sequence.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
-}
+class Segment {
+public:
+  Segment(Symbol symbol, int begin, int end);
+  Symbol symbol();
+  int begin();
+  int end();
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
-
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
-}
-
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
-}
-
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
+  static std::vector<Segment> readSequence(const Sequence &s);
+private:
+  Symbol _symbol;
+  int _begin;
+  int _end;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_SEGMENT_

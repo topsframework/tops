@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/MultipleSequentialModel.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
@@ -34,6 +35,7 @@
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::MultipleSequentialModel;
 using tops::model::MultipleSequentialModelPtr;
@@ -67,4 +69,10 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
   ASSERT_THAT(mm->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->probabilityOf(0, 13),
               DoubleNear(mm->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
+}
+
+TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  tops::model::resetRandom();
+  ASSERT_THAT(mm->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }

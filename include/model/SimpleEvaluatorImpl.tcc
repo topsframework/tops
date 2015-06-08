@@ -81,6 +81,10 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
                                unsigned int end,
                                unsigned int phase = 0) override;
 
+  virtual double probabilityOf(const Sequence &s,
+                               unsigned int begin,
+                               unsigned int end) override;
+
   virtual Labeling labeling(Labeling::Method method) override;
 
   // Virtual getters
@@ -97,6 +101,18 @@ class SimpleEvaluatorImpl : public EvaluatorImpl {
 
  private:
   // Concrete methods
+  template<typename M = Model>
+  double probabilityOfImpl(const Sequence &s,
+                           unsigned int begin,
+                           unsigned int end,
+                           not_decodable<M>* dummy = nullptr);
+
+  template<typename M = Model>
+  double probabilityOfImpl(const Sequence &s,
+                           unsigned int begin,
+                           unsigned int end,
+                           is_decodable<M>* dummy = nullptr);
+
   template<typename M = Model>
   Labeling labelingImpl(Labeling::Method method,
                         not_decodable<M>* dummy = nullptr);
@@ -136,12 +152,18 @@ double SimpleEvaluatorImpl<Model>::probabilityOf(
     unsigned int begin,
     unsigned int end,
     unsigned int phase) {
-  return this->_model->probabilityOf(
+  return this->_model->simpleProbabilityOf(
     std::static_pointer_cast<SimpleEvaluatorImpl<Model>>(
       this->shared_from_this()),
-      begin,
-      end,
-      phase);
+      begin, end, phase);
+}
+
+template<typename Model>
+double SimpleEvaluatorImpl<Model>::probabilityOf(
+    const Sequence &s,
+    unsigned int begin,
+    unsigned int end) {
+  return probabilityOfImpl(s, begin, end);
 }
 
 template<typename Model>
@@ -155,9 +177,30 @@ Labeling SimpleEvaluatorImpl<Model>::labeling(Labeling::Method method) {
 
 template<typename Model>
 template<typename M>
+double SimpleEvaluatorImpl<Model>::probabilityOfImpl(const Sequence &s,
+                                                     unsigned int begin,
+                                                     unsigned int end,
+                                                     not_decodable<M>* dummy) {
+  return 0.0;  // TODO(renatocf): throw exception
+}
+
+template<typename Model>
+template<typename M>
+double SimpleEvaluatorImpl<Model>::probabilityOfImpl(const Sequence &s,
+                                                     unsigned int begin,
+                                                     unsigned int end,
+                                                     is_decodable<M>* dummy) {
+  return this->_model->simpleProbabilityOf(
+    std::static_pointer_cast<SimpleEvaluatorImpl<M>>(
+      this->shared_from_this()),
+      s, begin, end);
+}
+
+template<typename Model>
+template<typename M>
 Labeling SimpleEvaluatorImpl<Model>::labelingImpl(Labeling::Method method,
                                                   not_decodable<M>* dummy) {
-  return Labeling();
+  return Labeling();  // TODO(renatocf): throw exception
 }
 
 template<typename Model>

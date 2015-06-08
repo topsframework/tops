@@ -26,6 +26,7 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
+#include "model/Generator.hpp"
 
 // ToPS templates
 #include "model/SimpleEvaluatorImpl.tcc"
@@ -50,8 +51,9 @@ class ProbabilisticModel
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
-  virtual double evaluatePosition(const Sequence &s, unsigned int i,
-                                  unsigned int phase = 0) const = 0;
+  virtual double evaluate(const Sequence &s,
+                          unsigned int pos,
+                          unsigned int phase = 0) const = 0;
   virtual Symbol choosePosition(const Sequence &s, unsigned int i,
                                 unsigned int phase = 0) const = 0;
 
@@ -59,22 +61,24 @@ class ProbabilisticModel
   virtual Sequence chooseSequence(Sequence &s, unsigned int size,
                                   unsigned int phase = 0) const;
 
+  virtual GeneratorPtr generator();
+
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
   virtual InhomogeneousMarkovChain* inhomogeneous();
 
   // Concrete methods
-  double probabilityOf(SEPtr evaluator,
-                       unsigned int begin,
-                       unsigned int end,
-                       unsigned int phase = 0) const;
-
   void initializeCachedEvaluator(CEPtr evaluator,
-                                unsigned int phase = 0);
+                                 unsigned int phase = 0);
+
+  double simpleProbabilityOf(SEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
   double cachedProbabilityOf(CEPtr evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int phase = 0) const;
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
 };
 
 /**

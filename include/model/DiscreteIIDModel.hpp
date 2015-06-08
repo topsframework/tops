@@ -150,11 +150,11 @@ class DiscreteIIDModel : public ProbabilisticModel {
   // Virtual methods
   /**
    * Evaluates the given position of a sequence.
-   * @param s a sequence
-   * @param i position of a sequence's symbol
+   * @param s   a sequence
+   * @param pos position of a sequence's symbol
    * @return \f$Pr(s[i])\f$
    */
-  virtual double evaluatePosition(const Sequence &s, unsigned int i, unsigned int phase = 0) const;
+  virtual double evaluate(const Sequence &s, unsigned int pos, unsigned int phase = 0) const;
 
   /**
    * Draws a new symbol in the ith position.

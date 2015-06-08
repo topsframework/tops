@@ -27,7 +27,13 @@ DecodableEvaluator::DecodableEvaluator(EvaluatorImplPtr &&impl)
     : Evaluator(std::move(impl)) {
 }
 
-Labeling DecodableEvaluator::labeling(Labeling::Method method) const {
+inline double DecodableEvaluator::probabilityOf(const Sequence &s,
+                                                unsigned int begin,
+                                                unsigned int end) {
+  return _impl->probabilityOf(s, begin, end);
+}
+
+inline Labeling DecodableEvaluator::labeling(Labeling::Method method) const {
   return _impl->labeling(method);
 }
 

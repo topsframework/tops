@@ -1,5 +1,4 @@
 [Refactoring]
-  [ ] Rename probabilitOf to simpleProbabilityOf
   [ ] Fix code style
   [ ] Remove inhomogeneous() method
   [ ] Implement bayes-classifier app
@@ -19,6 +18,7 @@
   [ ] Declare overriding function 'override'
   [ ] Use unique_ptr as default pointer type
   [ ] Fix HMM's Baum-Welch algorithm
+  [X] Rename probabilitOf to simpleProbabilityOf
   [x] Add phased version of evaluate of IMC, PhasedIMC and MultipleSequentialModel
   [x] Prefix sum array can't be parallelized. Should we use a decorator?
   [x] Refactor evaluate methods

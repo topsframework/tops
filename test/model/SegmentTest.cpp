@@ -25,43 +25,48 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/PhasedRunLengthDistribution.hpp"
-#include "model/Sequence.hpp"
-#include "model/Random.hpp"
-
-#include "helper/PhasedRunLengthDistribution.hpp"
-#include "helper/Sequence.hpp"
+#include "model/Segment.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::PhasedRunLengthDistribution;
-using tops::model::PhasedRunLengthDistributionPtr;
 using tops::model::Sequence;
+using tops::model::Segment;
 
-using tops::helper::generateRandomSequence;
-using tops::helper::sequenceOfLengths;
-using tops::helper::createLengthDistribution;
+TEST(ASegment, ShouldBeGeneratedBySequences) {
+  std::vector<Segment> segments;
+  segments.push_back(Segment(0, 0, 2));
+  segments.push_back(Segment(1, 2, 4));
+  segments.push_back(Segment(0, 4, 6));
+  Sequence s = {0, 0, 1, 1, 0, 0};
+  auto x = Segment::readSequence(s);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
+    ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
+    ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
+  }
 
-class APhasedRunLengthDistribution : public testing::Test {
- protected:
-  PhasedRunLengthDistributionPtr distribution = createLengthDistribution();
-};
+  segments.clear();
+  segments.push_back(Segment(0, 0, 2));
+  segments.push_back(Segment(1, 2, 4));
+  segments.push_back(Segment(0, 4, 5));
+  s = {0, 0, 1, 1, 0};
+  x = Segment::readSequence(s);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
+    ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
+    ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
+  }
 
-TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(distribution->alphabetSize(), Eq(15000));
-}
-
-TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
-  ASSERT_THAT(distribution->probabilityOf(125), DoubleNear(-4.79025, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-10.2697, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(4188), DoubleEq(-HUGE));
-}
-
-TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
-  // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
-  ASSERT_THAT(distribution->generator()->choose(5), ContainerEq(Sequence{1169, 14, 905, 119, 65}));
+  segments.clear();
+  segments.push_back(Segment(0, 0, 2));
+  s = {0, 0};
+  x = Segment::readSequence(s);
+  for (unsigned int i = 0; i < segments.size(); i++) {
+    ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
+    ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
+    ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
+  }
 }

@@ -17,51 +17,21 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-#include <vector>
-
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/Generator.hpp"
+#include "model/ProbabilisticModel.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
+Generator::Generator(ProbabilisticModelPtr &&model)
+    : _model(std::move(model)) {
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
-
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
-}
-
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
-}
-
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
+inline Sequence Generator::choose(unsigned int size,
+                                  unsigned int phase) const {
+  Sequence sequence{};
+  return _model->chooseSequence(sequence, size, phase);
 }
 
 }  // namespace model

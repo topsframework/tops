@@ -17,51 +17,41 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-#include <vector>
-
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/Segment.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
+Segment::Segment(Symbol symbol, int begin, int end)
+    :_symbol(symbol), _begin(begin), _end(end) {
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+Symbol Segment::symbol() {
+  return _symbol;
 }
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
+int Segment::begin() {
+  return _begin;
 }
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
+int Segment::end() {
+  return _end;
 }
 
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
+std::vector<Segment> Segment::readSequence(const Sequence &s) {
+  std::vector<Segment> segments;
+  Symbol symbol = s[0];
+  int begin = 0;
+  for (unsigned int i = 1; i < s.size(); i++) {
+    if (s[i] != symbol) {
+      segments.push_back(Segment(symbol, begin, i));
+      symbol = s[i];
+      begin = i;
+    }
+  }
+  segments.push_back(Segment(symbol, begin, s.size()));
+  return segments;
 }
 
 }  // namespace model

@@ -19,50 +19,47 @@
 
 // Standard headers
 #include <cmath>
-#include <vector>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
+#include "LazzyRange.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
+GeneralizedHiddenMarkovModelExplicitDurationState::GeneralizedHiddenMarkovModelExplicitDurationState(
+    Symbol symbol,
+    ProbabilisticModelPtr observation,
+    DiscreteIIDModelPtr transition,
+    DiscreteIIDModelPtr duration)
+      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration(duration) {
 }
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+GeneralizedHiddenMarkovModelExplicitDurationStatePtr GeneralizedHiddenMarkovModelExplicitDurationState::make(
+    Symbol symbol,
+    ProbabilisticModelPtr observation,
+    DiscreteIIDModelPtr transition,
+    DiscreteIIDModelPtr duration) {
+  return GeneralizedHiddenMarkovModelExplicitDurationStatePtr(
+    new GeneralizedHiddenMarkovModelExplicitDurationState(
+      symbol, observation, transition, duration));
 }
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
+double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
+  return _duration->probabilityOf(l);
 }
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
+bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
+  return false;
 }
 
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
+int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
+  return -1;
 }
 
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
+RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
+  return std::make_shared<LazzyRange>(1, _max_duration);
 }
 
-}  // namespace model
-}  // namespace tops
+}
+}

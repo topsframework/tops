@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_SIGNAL_STATE_
+#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
+#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
 
 // Standard headers
 #include <memory>
@@ -32,35 +32,38 @@
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelSignalState;
+class GeneralizedHiddenMarkovModelExplicitDurationState;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelSignalStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelSignalState.
+ * @typedef GeneralizedHiddenMarkovModelExplicitDurationStatePtr
+ * @brief Alias of pointer to GeneralizedHiddenMarkovModelExplicitDurationState.
  */
-using GeneralizedHiddenMarkovModelSignalStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
+using GeneralizedHiddenMarkovModelExplicitDurationStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelExplicitDurationState>;
 
 /**
- * @class GeneralizedHiddenMarkovModelSignalState
+ * @class GeneralizedHiddenMarkovModelExplicitDurationState
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelSignalState : public GeneralizedHiddenMarkovModelState {
+class GeneralizedHiddenMarkovModelExplicitDurationState : public GeneralizedHiddenMarkovModelState {
  public:
-  static GeneralizedHiddenMarkovModelSignalStatePtr make(Symbol symbol,
-                                                         ProbabilisticModelPtr observation,
-                                                         DiscreteIIDModelPtr transition,
-                                                         int duration_size);
+  static GeneralizedHiddenMarkovModelExplicitDurationStatePtr make(Symbol symbol,
+                                                                   ProbabilisticModelPtr observation,
+                                                                   DiscreteIIDModelPtr transition,
+                                                                   DiscreteIIDModelPtr duration);
 
   virtual double durationProbability(int l) const;
+  virtual bool isGeometricDuration() const;
   virtual int maximumDurationSize() const;
   virtual RangePtr durations() const;
 
  private:
-  GeneralizedHiddenMarkovModelSignalState(Symbol symbol,
-                                          ProbabilisticModelPtr observation,
-                                          DiscreteIIDModelPtr transition,
-                                          int duration_size);
-  int _duration_size;
+  GeneralizedHiddenMarkovModelExplicitDurationState(Symbol symbol,
+                                                    ProbabilisticModelPtr observation,
+                                                    DiscreteIIDModelPtr transition,
+                                                    DiscreteIIDModelPtr duration);
+
+  DiscreteIIDModelPtr _duration;
+  unsigned int _max_duration = 100;
 };
 
 }  // namespace model

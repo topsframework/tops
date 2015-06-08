@@ -27,10 +27,12 @@
 // ToPS headers
 #include "model/TargetModel.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::TargetModel;
 using tops::model::TargetModelPtr;
@@ -67,4 +69,10 @@ TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
               DoubleEq(target->evaluator({0, 1, 1}, true)->probabilityOf(0, 3)));
   ASSERT_THAT(target->evaluator({0, 1, 1, 1}, true)->probabilityOf(0, 4),
               DoubleEq(target->evaluator({0, 1, 1, 1})->probabilityOf(0, 4)));
+}
+
+TEST_F(ATargetModel, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  tops::model::resetRandom();
+  ASSERT_THAT(target->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
 }

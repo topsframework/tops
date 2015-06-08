@@ -94,11 +94,11 @@ PhasedInhomogeneousMarkovChainPtr
   return PhasedInhomogeneousMarkovChain::make(vlmcs);
 }
 
-double PhasedInhomogeneousMarkovChain::evaluatePosition(
+double PhasedInhomogeneousMarkovChain::evaluate(
     const Sequence &s,
-    unsigned int i,
+    unsigned int pos,
     unsigned int phase) const {
-  return _vlmcs[(i + phase) % _vlmcs.size()]->evaluatePosition(s, i);
+  return _vlmcs[(pos + phase) % _vlmcs.size()]->evaluate(s, pos);
 }
 
 Symbol PhasedInhomogeneousMarkovChain::choosePosition(
@@ -121,14 +121,14 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
       s));
 }
 
-double PhasedInhomogeneousMarkovChain::probabilityOf(
+double PhasedInhomogeneousMarkovChain::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(evaluator->sequence(), i);
+    prob += evaluate(evaluator->sequence(), i);
   return prob;
 }
 
@@ -139,7 +139,7 @@ void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
     prefix_sum_matrix[t][0] = 0;
     for (unsigned int i = 0; i < evaluator->sequence().size() ; i++) {
-      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluatePosition(evaluator->sequence(), i, t);
+      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluate(evaluator->sequence(), i, t);
     }
   }
 }

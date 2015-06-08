@@ -39,8 +39,12 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
+GeneratorPtr ProbabilisticModel::generator() {
+  return Generator::make(shared_from_this());
+}
+
 EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
-                                          bool cached) {
+                                           bool cached) {
   if (cached)
     return Evaluator::make(
       CachedEvaluatorImpl<ProbabilisticModel>::make(
@@ -50,13 +54,13 @@ EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
       shared_from_this(), s));
 }
 
-double ProbabilisticModel::probabilityOf(SEPtr evaluator,
-                                         unsigned int begin,
-                                         unsigned int end,
-                                         unsigned int phase) const {
+double ProbabilisticModel::simpleProbabilityOf(SEPtr evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluatePosition(evaluator->sequence(), i);
+    prob += evaluate(evaluator->sequence(), i);
   return prob;
 }
 
@@ -67,7 +71,7 @@ void ProbabilisticModel::initializeCachedEvaluator(
   prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < evaluator->sequence().size() ; i++)
     prefix_sum_array[i+1] = prefix_sum_array[i]
-        + evaluatePosition(evaluator->sequence(), i);
+        + evaluate(evaluator->sequence(), i);
 }
 
 double ProbabilisticModel::cachedProbabilityOf(

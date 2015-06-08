@@ -32,10 +32,12 @@
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+#include "model/Random.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::ContainerEq;
 
 using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
@@ -90,6 +92,12 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
     ASSERT_THAT(vlmc->evaluator(data, true)->probabilityOf(0, data.size()),
                 DoubleEq(vlmc->evaluator(data)->probabilityOf(0, data.size())));
   }
+}
+
+TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  tops::model::resetRandom();
+  ASSERT_THAT(vlmc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {

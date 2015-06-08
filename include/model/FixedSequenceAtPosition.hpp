@@ -56,10 +56,11 @@ class FixedSequenceAtPosition : public ProbabilisticModelDecorator {
 
   virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
 
-  double probabilityOf(SEPtr evaluator,
-                       unsigned int begin,
-                       unsigned int end,
-                       unsigned int phase = 0) const;
+  // Concrete methods
+  double simpleProbabilityOf(SEPtr evaluator,
+                             unsigned int begin,
+                             unsigned int end,
+                             unsigned int phase = 0) const;
  private:
   // Instance variables
   int _position;

@@ -120,10 +120,9 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
   return sum;
 }
 
-double SimilarityBasedSequenceWeighting::evaluatePosition(const Sequence &s,
-                                                          unsigned int i,
-                                                          unsigned int phase)
-                                                          const {
+double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
+                                                  unsigned int pos,
+                                                  unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
@@ -149,7 +148,7 @@ EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
       s));
 }
 
-double SimilarityBasedSequenceWeighting::probabilityOf(
+double SimilarityBasedSequenceWeighting::simpleProbabilityOf(
     SEPtr evaluator,
     unsigned int begin,
     unsigned int end,
@@ -201,7 +200,7 @@ void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
     unsigned int phase) {
   auto &prefix_sum_array = evaluator->cache();
   for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
-    prefix_sum_array[i] = probabilityOf(evaluator, i, evaluator->sequence().size());
+    prefix_sum_array[i] = simpleProbabilityOf(evaluator, i, evaluator->sequence().size());
   }
 }
 

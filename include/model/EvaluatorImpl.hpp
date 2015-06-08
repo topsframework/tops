@@ -44,6 +44,9 @@ class EvaluatorImpl : public std::enable_shared_from_this<EvaluatorImpl> {
   virtual double probabilityOf(unsigned int begin,
                                unsigned int end,
                                unsigned int phase = 0) = 0;
+  virtual double probabilityOf(const Sequence &s,
+                               unsigned int begin,
+                               unsigned int end) = 0;
 
   virtual Labeling labeling(Labeling::Method method) = 0;
 

@@ -29,6 +29,7 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/ProbabilisticModelDecorator.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
@@ -36,6 +37,7 @@
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
+using ::testing::ContainerEq;
 
 using tops::model::Sequence;
 using tops::model::VariableLengthMarkovChain;
@@ -102,6 +104,12 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(decorated_imc->evaluator({1, 0, 1})->probabilityOf(0, 3),
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
+}
+
+TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): check bigger sequence
+  tops::model::resetRandom();
+  ASSERT_THAT(imc->generator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {

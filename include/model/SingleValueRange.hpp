@@ -17,52 +17,43 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_SINGLE_VALUE_RANGE_
+#define TOPS_MODEL_SINGLE_VALUE_RANGE_
+
 // Standard headers
-#include <cmath>
-#include <vector>
+#include <memory>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "Range.hpp"
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
-}
+class SingleValueRange;
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
+/**
+ * @typedef SingleValueRangePtr
+ * @brief Alias of pointer to SingleValueRange.
+ */
+using SingleValueRangePtr = std::shared_ptr<SingleValueRange>;
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
-}
+/**
+ * @class SingleValueRange
+ * @brief TODO
+ */
+class SingleValueRange : public Range {
+ public:
+  SingleValueRange(unsigned int value);
+  virtual unsigned int begin();
+  virtual unsigned int next();
+  virtual bool end();
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
-}
-
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
+ private:
+  int _value;
+  bool _end;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_SINGLE_VALUE_RANGE_

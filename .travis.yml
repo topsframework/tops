@@ -1,23 +1,43 @@
+sudo: required
+
 language: cpp
 
+os:
+  - linux
+  - osx
+
 compiler:
-  - gcc
-  - clang
+  - clang++
+  - g++
 
 before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo apt-get -qq update
+  - if [ $TRAVIS_OS_NAME = linux ]; then
+      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
+      sudo apt-get -qq update;
+    else
+      brew update;
+    fi
 
 install:
-  - sudo apt-get -qq install gcc-4.9 g++-4.9
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
-  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
-  - wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
-  - tar xf lcov_1.11.orig.tar.gz
-  - sudo make -C lcov-1.11/ install
-  - gem install coveralls-lcov
-  - lcov --version
-  - g++ --version
+  - if [ $TRAVIS_OS_NAME = linux ]; then
+      sudo apt-get -qq install gcc-4.9 g++-4.9;
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90;
+      sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90;
+      wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz;
+      tar xf lcov_1.11.orig.tar.gz;
+      sudo make -C lcov-1.11/ install;
+    else
+      brew tap homebrew/versions;
+      brew install llvm --with-clang --with-asan;
+      brew install gcc49;
+      alias gcc=/usr/bin/g++-4.9;
+      alias gcov=/usr/bin/gcov-4.9;
+      brew install lcov;
+    fi
+  - gem install coveralls-lcov;
+  - g++ --version;
+  - clang++ --version;
+  - lcov --version;
 
 before_script:
   - git submodule update --init --recursive

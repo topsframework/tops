@@ -17,52 +17,53 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_GENERATOR_
+#define TOPS_MODEL_GENERATOR_
+
 // Standard headers
-#include <cmath>
-#include <vector>
+#include <memory>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/Sequence.hpp"
+
 
 namespace tops {
 namespace model {
 
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
-}
+class ProbabilisticModel;
+using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
+class Generator;
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
-}
+/**
+ * @typedef GeneratorPtr
+ * @brief Alias of pointer to Generator.
+ */
+using GeneratorPtr = std::shared_ptr<Generator>;
 
-Symbol InhomogeneousMarkovChain::choosePosition(const Sequence &s,
-                                                unsigned int i,
-                                                unsigned int phase) const {
-  if (i + phase < _vlmcs.size())
-    return _vlmcs[i + phase]->choosePosition(s, i);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
-}
+/**
+ * @class Generator
+ * @brief TODO
+ */
+class Generator : public std::enable_shared_from_this<Generator> {
+ public:
+  // Static methods
+  template<typename... Ts>
+  static GeneratorPtr make(Ts... args) {
+    return GeneratorPtr(new Generator(std::forward<Ts>(args)...));
+  }
 
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
+  // Virtual methods
+  virtual Sequence choose(unsigned int size,
+                          unsigned int phase = 0) const;
 
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
+ protected:
+  Generator(ProbabilisticModelPtr &&model);
+
+  ProbabilisticModelPtr _model;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif

@@ -228,24 +228,6 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
 
-// double HiddenMarkovModel::evaluateSequence(const Sequence &xs,
-//                                            unsigned int begin,
-//                                            unsigned int end,
-//                                            unsigned int phase) const {
-//   Matrix alpha;
-//   forward(xs, alpha);
-//   double sum_end = -HUGE;
-//   double sum_begin = -HUGE;
-//   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-//     sum_end = log_sum(sum_end, alpha[k][end-1]);
-//     if (begin != 0)
-//       sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
-//     else
-//       sum_begin = 0;
-//   }
-//   return sum_end - sum_begin;
-// }
-
 EvaluatorPtr HiddenMarkovModel::evaluator(const Sequence &s, bool cached) {
   return decodableEvaluator(s, cached);
 }
@@ -282,10 +264,10 @@ Labeling HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
   return Labeling();
 }
 
-double HiddenMarkovModel::probabilityOf(SEPtr evaluator,
-                                     unsigned int begin,
-                                     unsigned int end,
-                                     unsigned int phase) const {
+double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
+                                              unsigned int begin,
+                                              unsigned int end,
+                                              unsigned int phase) const {
   Matrix alpha;
   forward(evaluator->sequence(), alpha);
   double sum_end = -HUGE;
@@ -323,9 +305,9 @@ double HiddenMarkovModel::cachedProbabilityOf(CEPtr evaluator,
          - evaluator->cache().prefix_sum_array[begin];
 }
 
-double HiddenMarkovModel::evaluatePosition(
+double HiddenMarkovModel::evaluate(
     const Sequence &xs,
-    unsigned int i,
+    unsigned int pos,
     unsigned int phase) const {
   return -HUGE;
 }
@@ -337,9 +319,9 @@ Symbol HiddenMarkovModel::choosePosition(const Sequence &xs,
   return INVALID_SYMBOL;
 }
 
-double HiddenMarkovModel::evaluateSequencesPosition(const Sequence &xs,
-                                                    const Sequence &ys,
-                                                    unsigned int i) const {
+double HiddenMarkovModel::evaluate(const Sequence &xs,
+                                   const Sequence &ys,
+                                   unsigned int i) const {
   double transition;
   if (i == 0)
     transition = _initial_probabilities->probabilityOf(ys[0]);
@@ -348,13 +330,13 @@ double HiddenMarkovModel::evaluateSequencesPosition(const Sequence &xs,
   return transition + _states[ys[i]]->emissions()->probabilityOf(xs[i]);
 }
 
-double HiddenMarkovModel::evaluateSequences(const Sequence &xs,
-                                            const Sequence &ys,
-                                            unsigned int begin,
-                                            unsigned int end) const {
+double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
+                                              const Sequence &s,
+                                              unsigned int begin,
+                                              unsigned int end) const {
   double prob = 0;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluateSequencesPosition(xs, ys, i);
+    prob += evaluate(evaluator->sequence(), s, i);
   return prob;
 }
 
@@ -506,7 +488,10 @@ Labeling HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       }
     }
   }
-  return Labeling(evaluateSequences(xs, path, 0, xs.size()), std::move(path));
+  return Labeling(
+      const_cast<HiddenMarkovModel*>(this)->decodableEvaluator(xs)->probabilityOf(
+          path, 0, xs.size()),
+      std::move(path));
 }
 
 void HiddenMarkovModel::chooseSequences(Sequence &xs,

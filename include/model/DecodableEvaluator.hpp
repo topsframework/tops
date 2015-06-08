@@ -44,12 +44,20 @@ using DecodableEvaluatorPtr = std::shared_ptr<DecodableEvaluator>;
  */
 class DecodableEvaluator : public Evaluator {
  public:
+  // Hidden name method inhiterance
+  using Evaluator::probabilityOf;
+
   // Static methods
   template<typename... Ts>
   static DecodableEvaluatorPtr make(Ts... args) {
     return DecodableEvaluatorPtr(
         new DecodableEvaluator(std::forward<Ts>(args)...));
   }
+
+  // Virtual methods
+  virtual double probabilityOf(const Sequence &s,
+                               unsigned int begin,
+                               unsigned int end);
 
   // Virtual methods
   virtual Labeling labeling(Labeling::Method method) const;

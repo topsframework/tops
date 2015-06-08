@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/MaximalDependenceDecomposition.hpp"
 #include "model/Sequence.hpp"
+#include "model/Random.hpp"
 
 #include "helper/MaximalDependenceDecomposition.hpp"
 #include "helper/DiscreteIIDModel.hpp"
@@ -34,10 +35,12 @@
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
+using ::testing::ContainerEq;
 
 using tops::model::MaximalDependenceDecomposition;
 using tops::model::MaximalDependenceDecompositionPtr;
 using tops::model::Sequence;
+using tops::model::INVALID_SYMBOL;
 
 using tops::helper::createMDD;
 using tops::helper::createDNAModel;
@@ -49,14 +52,14 @@ class AMDD : public testing::Test {
 };
 
 TEST_F(AMDD, ShouldEvaluateAPosition) {
-  ASSERT_THAT(mdd->evaluatePosition({0}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1}, 0), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({0, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({0, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 1}, 1), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0, 1}, 2), DoubleEq(-HUGE));
-  ASSERT_THAT(mdd->evaluatePosition({1, 0, 1, 0}, 3), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0}, 0), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1}, 0), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0, 1}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({0, 0}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 1}, 1), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0, 1}, 2), DoubleEq(-HUGE));
+  ASSERT_THAT(mdd->evaluate({1, 0, 1, 0}, 3), DoubleEq(-HUGE));
 }
 
 TEST_F(AMDD, ShouldEvaluateASequence) {
@@ -79,6 +82,12 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
               DoubleEq(mdd->evaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})->probabilityOf(0, 9)));
   ASSERT_THAT(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2}, true)->probabilityOf(0, 9),
               DoubleEq(mdd->evaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})->probabilityOf(0, 9)));
+}
+
+TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
+  // TODO(igorbonadio): implement method
+  tops::model::resetRandom();
+  ASSERT_THAT(mdd->generator()->choose(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 TEST(MDD, ShouldBeTrained) {
