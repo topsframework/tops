@@ -26,7 +26,6 @@
 
 // ToPS headers
 #include "model/Matrix.hpp"
-#include "model/DecodableModel.hpp"
 #include "model/DecodableEvaluator.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 
@@ -86,6 +85,11 @@ class HiddenMarkovModel
                                   unsigned int size,
                                   unsigned int phase = 0) const override;
 
+  Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const override;
+
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) override;
@@ -112,11 +116,6 @@ class HiddenMarkovModel
                          Matrix &alpha) const;
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const;
-
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const Sequence &xs,
-           Matrix &probabilities,
-           Labeling<Sequence>::Method method) const override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
@@ -160,11 +159,11 @@ class HiddenMarkovModel
                     unsigned int observation_alphabet_size);
 
  private:
-  // Virtual methods
-  virtual Estimation<Labeling<Sequence>>
+  // Overriden methods
+  Estimation<Labeling<Sequence>>
   viterbi(const Sequence &xs, Matrix &gamma) const override;
 
-  virtual Estimation<Labeling<Sequence>>
+  Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 };
 
