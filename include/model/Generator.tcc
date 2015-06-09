@@ -39,21 +39,21 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<class Target> class Decorator>
+template<template<class> class Decorator>
 class Generator;
 
 /**
  * @typedef GeneratorPtr
  * @brief Alias of pointer to Generator.
  */
-template<template<class Target> class Decorator>
+template<template<class> class Decorator>
 using GeneratorPtr = std::shared_ptr<Generator<Decorator>>;
 
 /**
  * @class Generator
  * @brief TODO
  */
-template<template<class Target> class Decorator>
+template<template<class> class Decorator>
 class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
  public:
   // Purely virtual methods
