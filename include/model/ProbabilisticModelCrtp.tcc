@@ -65,7 +65,7 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   using Base = ProbabilisticModel;
   using DerivedPtr = std::shared_ptr<Derived>;
 
-  template<template<class Target> typename Decorator>
+  template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Overriden methods
