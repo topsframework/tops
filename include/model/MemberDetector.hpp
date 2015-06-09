@@ -23,21 +23,21 @@
 namespace tops {
 namespace model {
 
-#define GENERATE_HAS_MEMBER(member)                                            \
+#define GENERATE_HAS_MEMBER_METHOD(member)                                     \
                                                                                \
 template<typename T, typename Dummy>                                           \
-class HasMember_##member;                                                      \
+class HasMethod_##member;                                                      \
                                                                                \
 /** NON-CONST MEMBER ********************************************************/ \
                                                                                \
 template<typename Result, typename... Params>                                  \
-class HasMember_##member<void, Result(Params...)> {                            \
+class HasMethod_##member<void, Result(Params...)> {                            \
  public:                                                                       \
   static constexpr bool value = false;                                         \
 };                                                                             \
                                                                                \
 template<typename T, typename Result, typename... Params>                      \
-class HasMember_##member<T, Result(Params...)>                                 \
+class HasMethod_##member<T, Result(Params...)>                                 \
 {                                                                              \
  private:                                                                      \
   template<typename U, U> class Check;                                         \
@@ -50,19 +50,19 @@ class HasMember_##member<T, Result(Params...)>                                 \
                                                                                \
  public:                                                                       \
   static constexpr bool value = decltype(test<T>(nullptr))::value              \
-    || HasMember_##member<typename T::Base, Result(Params...)>::value;         \
+    || HasMethod_##member<typename T::Base, Result(Params...)>::value;         \
 };                                                                             \
                                                                                \
 /** CONST MEMBER ************************************************************/ \
                                                                                \
 template<typename Result, typename... Params>                                  \
-class HasMember_##member<void, const Result(Params...)> {                      \
+class HasMethod_##member<void, const Result(Params...)> {                      \
  public:                                                                       \
   static constexpr bool value = false;                                         \
 };                                                                             \
                                                                                \
 template<typename T, typename Result, typename... Params>                      \
-class HasMember_##member<T, const Result(Params...)>                           \
+class HasMethod_##member<T, const Result(Params...)>                           \
 {                                                                              \
  private:                                                                      \
   template<typename U, U> class Check;                                         \
@@ -76,7 +76,7 @@ class HasMember_##member<T, const Result(Params...)>                           \
                                                                                \
  public:                                                                       \
   static constexpr bool value = decltype(test<T>(nullptr))::value              \
-    || HasMember_##member<typename T::Base, const Result(Params...)>::value;   \
+    || HasMethod_##member<typename T::Base, const Result(Params...)>::value;   \
 };                                                                             \
                                                                                \
 /** TAGS ********************************************************************/ \
@@ -92,7 +92,7 @@ struct has_member_##member;                                                    \
 template<typename T, typename Result, typename... Params>                      \
 struct has_member_##member<T, Result(Params...)>                               \
     : public std::integral_constant<                                           \
-               bool, HasMember_##member<T, Result(Params...)>::value> {        \
+               bool, HasMethod_##member<T, Result(Params...)>::value> {        \
                                                                                \
   using tag = typename std::conditional<                                       \
                 has_member_##member<T, Result(Params...)>::value,              \

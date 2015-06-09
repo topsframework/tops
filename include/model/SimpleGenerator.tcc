@@ -43,7 +43,7 @@ namespace model {
 */
 
 // Auxiliar tests
-GENERATE_HAS_MEMBER(simpleChooseSequence)
+GENERATE_HAS_MEMBER_METHOD(simpleChooseSequence)
 
 template<template<typename Target> class Decorator,
          typename Model, bool is_base>
