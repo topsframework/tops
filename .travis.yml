@@ -20,18 +20,18 @@ before_install:
 
 install:
   - if [ $TRAVIS_OS_NAME = linux ]; then
-      sudo apt-get -qq install gcc-4.9 g++-4.9;
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90;
-      sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90;
+      sudo apt-get -qq install gcc-5 g++-5;
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90;
+      sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90;
       wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz;
       tar xf lcov_1.11.orig.tar.gz;
       sudo make -C lcov-1.11/ install;
     else
       brew tap homebrew/versions;
       brew install llvm --with-clang --with-asan;
-      brew install gcc49;
-      alias gcc=/usr/bin/g++-4.9;
-      alias gcov=/usr/bin/gcov-4.9;
+      brew install gcc5;
+      alias gcc=/usr/bin/g++-5;
+      alias gcov=/usr/bin/gcov-5;
       brew install lcov;
     fi
   - gem install coveralls-lcov;
@@ -55,7 +55,6 @@ after_success:
 env:
   global:
     - secure: JaaaKGDY+6k1AutLv0S8UVrzJUjaFz8Ly25mLzjLHBeqmApFBzwp0mgkgAakQAYbprp8VKiJ/SxTEvYS+ScjYamnSzymmwBjWb5bmJSL5JgY1HkWZ9o1kt8Fpv5S237hEVN4rDl3m37n8dqe7gpTCVSaFtZNQ8/WUWp+RwddonY=
-
 
 addons:
   coverity_scan:
