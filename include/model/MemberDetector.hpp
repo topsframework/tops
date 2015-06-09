@@ -23,6 +23,24 @@
 namespace tops {
 namespace model {
 
+#define GENERATE_HAS_MEMBER_TYPE(member)                                       \
+                                                                               \
+template<typename T, typename Type>                                            \
+class HasType_##member                                                         \
+{                                                                              \
+ private:                                                                      \
+  template<typename U>                                                         \
+  static std::true_type test(typename U::Type*);                               \
+                                                                               \
+  template<typename U>                                                         \
+  static std::false_type test(...);                                            \
+                                                                               \
+ public:                                                                       \
+  static constexpr bool value = decltype(test<T>(nullptr))::value              \
+    || HasType_##member<typename T::Base, Result(Params...)>::value;           \
+};
+
+
 #define GENERATE_HAS_MEMBER_METHOD(member)                                     \
                                                                                \
 template<typename T, typename Dummy>                                           \
