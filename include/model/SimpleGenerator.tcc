@@ -45,7 +45,7 @@ namespace model {
 // Auxiliar tests
 GENERATE_HAS_MEMBER(simpleChooseSequence)
 
-template<template<class Target> typename Decorator,
+template<template<class Target> class Decorator,
          typename Model, bool is_base>
 class SimpleGenerator;
 
@@ -53,7 +53,7 @@ class SimpleGenerator;
  * @typedef SimpleGeneratorPtr
  * @brief Alias of pointer to SimpleGenerator.
  */
-template<template<class Target> typename Decorator,
+template<template<class Target> class Decorator,
          typename Model, bool is_base = false>
 using SimpleGeneratorPtr
     = std::shared_ptr<SimpleGenerator<Decorator, Model, is_base>>;
@@ -62,7 +62,7 @@ using SimpleGeneratorPtr
  * @class SimpleGenerator
  * @brief TODO
  */
-template<template<class Target> typename Decorator,
+template<template<class Target> class Decorator,
          typename Model, bool is_base = false>
 class SimpleGenerator
     : public std::conditional<!std::is_void<typename Model::Base>::value,
