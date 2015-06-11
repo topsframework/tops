@@ -44,8 +44,6 @@ EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
       shared_from_this(), s));
 }
 
-/*==============================  GENERATOR  =================================*/
-
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
@@ -78,8 +76,6 @@ double ProbabilisticModel::cachedProbabilityOf(CEPtr evaluator,
   auto &prefix_sum_array = evaluator->cache();
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }
-
-/*==============================  GENERATOR  =================================*/
 
 }  // namespace model
 }  // namespace tops

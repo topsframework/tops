@@ -71,6 +71,22 @@ GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
 
 /*===============================  GENERATOR  ================================*/
 
+Standard<Symbol>
+GeneralizedHiddenMarkovModel::simpleChooseSymbol(SGPtr<Standard> generator,
+                                                 unsigned int pos,
+                                                 const Sequence &context,
+                                                 unsigned int phase) const {
+  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+}
+
+Labeling<Symbol>
+GeneralizedHiddenMarkovModel::simpleChooseSymbol(SGPtr<Labeling> generator,
+                                                 unsigned int pos,
+                                                 const Sequence &context,
+                                                 unsigned int phase) const {
+  return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL); // TODO(igorbonadio)
+}
+
 Labeling<Sequence>
 GeneralizedHiddenMarkovModel::simpleChooseSequence(SGPtr<Labeling> generator,
                                                    unsigned int size,
@@ -290,18 +306,6 @@ double GeneralizedHiddenMarkovModel::evaluate(
     const Sequence &ys,
     unsigned int i) const {
   return -HUGE; // TODO(igorbonadio)
-}
-
-Symbol GeneralizedHiddenMarkovModel::choose(const Sequence &xs,
-                                            unsigned int i,
-                                            unsigned int phase) const {
-  return INVALID_SYMBOL; // TODO(igorbonadio)
-}
-
-void GeneralizedHiddenMarkovModel::chooseSequencesPosition(Sequence &xs,
-                                     Sequence &ys,
-                                     unsigned int i) const {
-  // TODO(igorbonadio)
 }
 
 EvaluatorPtr GeneralizedHiddenMarkovModel::evaluator(

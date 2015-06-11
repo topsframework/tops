@@ -28,7 +28,7 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
@@ -37,7 +37,7 @@ PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
@@ -102,7 +102,20 @@ PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+PhasedInhomogeneousMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
+                                                   unsigned int pos,
+                                                   const Sequence &context,
+                                                   unsigned int phase) const {
+  auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
+  return vlmc->sequenceGenerator()->chooseSymbol(pos, context, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 double PhasedInhomogeneousMarkovChain::evaluate(
@@ -110,13 +123,6 @@ double PhasedInhomogeneousMarkovChain::evaluate(
     unsigned int pos,
     unsigned int phase) const {
   return _vlmcs[(pos + phase) % _vlmcs.size()]->evaluate(s, pos);
-}
-
-Symbol PhasedInhomogeneousMarkovChain::choose(
-    const Sequence &context,
-    unsigned int pos,
-    unsigned int phase) const {
-  return _vlmcs[(pos + phase) % _vlmcs.size()]->choose(context, pos);
 }
 
 EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
@@ -133,7 +139,7 @@ EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(

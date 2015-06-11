@@ -36,6 +36,7 @@ using ::testing::ContainerEq;
 
 using tops::model::SimilarityBasedSequenceWeighting;
 using tops::model::SimilarityBasedSequenceWeightingPtr;
+using tops::model::INVALID_SYMBOL;
 using tops::model::Sequence;
 
 class ASBSW : public testing::Test {
@@ -91,7 +92,7 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
 TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
   tops::model::resetRandom();
-  ASSERT_THAT(sbsw->sequenceGenerator()->chooseSequence(5), ContainerEq(Sequence{0, 0, 0, 0, 0}));
+  ASSERT_THAT(sbsw->sequenceGenerator()->chooseSequence(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 TEST(SBSW, ShouldBeTrained) {

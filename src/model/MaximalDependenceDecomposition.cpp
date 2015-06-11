@@ -287,13 +287,6 @@ double MaximalDependenceDecomposition::evaluate(
   return -HUGE;
 }
 
-Symbol MaximalDependenceDecomposition::choose(const Sequence &context,
-                                              unsigned int pos,
-                                              unsigned int phase) const {
-  // TODO(igorbonadio)
-  return 0;
-}
-
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
@@ -339,6 +332,14 @@ double MaximalDependenceDecomposition::cachedProbabilityOf(
 
 /*==============================  GENERATOR  =================================*/
 
+Standard<Symbol>
+MaximalDependenceDecomposition::simpleChooseSymbol(SGPtr<Standard> generator,
+                                                   unsigned int pos,
+                                                   const Sequence &context,
+                                                   unsigned int phase) const {
+  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+}
+
 Standard<Sequence>
 MaximalDependenceDecomposition::simpleChooseSequence(
     SGPtr<Standard> generator,
@@ -379,11 +380,11 @@ double MaximalDependenceDecomposition::_probabilityOf(
 }
 
 void MaximalDependenceDecomposition::_chooseAux(
-    Sequence & s,
+    Sequence &s,
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
-    s[node->getIndex()] = node->getModel()->choose(s,
-                                                   node->getIndex());
+    s[node->getIndex()]
+      = node->getModel()->sequenceGenerator()->chooseSymbol(node->getIndex(), s);
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _chooseAux(s, node->getLeft());
     } else {
@@ -392,7 +393,7 @@ void MaximalDependenceDecomposition::_chooseAux(
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->choose(s, i);
+        s[i] = node->getModel()->sequenceGenerator()->chooseSymbol(i, s);
       }
     }
   }

@@ -52,7 +52,16 @@ class FixedSequenceAtPosition
   using SEPtr = SimpleEvaluatorImplPtr<FixedSequenceAtPosition>;
 
   // Static methods
-  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model,
+                                         int position,
+                                         Sequence sequence,
+                                         DiscreteIIDModelPtr distr);
+
+  // Overriden methods
+  Standard<Sequence>
+  simpleChooseSequence(SGPtr<Standard> generator,
+                       unsigned int size,
+                       unsigned int phase = 0) const override;
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
@@ -64,11 +73,6 @@ class FixedSequenceAtPosition
                              unsigned int end,
                              unsigned int phase = 0) const;
 
-  Standard<Sequence>
-  simpleChooseSequence(SGPtr<Standard> generator,
-                       unsigned int size,
-                       unsigned int phase = 0) const override;
-
  private:
   // Instance variables
   int _position;
@@ -76,7 +80,10 @@ class FixedSequenceAtPosition
   DiscreteIIDModelPtr _probabilities;
 
   // Constructors
-  FixedSequenceAtPosition(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+  FixedSequenceAtPosition(ProbabilisticModelPtr model,
+                          int position,
+                          Sequence sequence,
+                          DiscreteIIDModelPtr distr);
 
   // Concrete methods
   void addSequence(Sequence & h) const;

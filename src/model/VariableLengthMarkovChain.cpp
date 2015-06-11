@@ -105,7 +105,25 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+VariableLengthMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
+                                              unsigned int pos,
+                                              const Sequence &context,
+                                              unsigned int phase) const {
+  auto c = _context_tree->getContext(context, pos);
+
+  // TODO(igorbonadio): ERROR!
+  if (c == nullptr) return Standard<Symbol>(INVALID_SYMBOL);
+
+  return c->getDistribution()->sequenceGenerator()->chooseSymbol(
+    pos, context, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 double VariableLengthMarkovChain::evaluate(const Sequence &s,
@@ -117,18 +135,6 @@ double VariableLengthMarkovChain::evaluate(const Sequence &s,
   else
     return c->getDistribution()->evaluate(s, pos);
 }
-
-Symbol VariableLengthMarkovChain::choose(const Sequence &context,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
-  ContextTreeNodePtr c = _context_tree->getContext(context, pos);
-  if (c == NULL)
-    // TODO(igorbonadio): ERROR!
-    return 0;
-  else
-    return c->getDistribution()->choose(context, pos);
-}
-
 
 }  // namespace model
 }  // namespace tops

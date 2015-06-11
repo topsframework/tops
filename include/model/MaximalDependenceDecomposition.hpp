@@ -70,6 +70,12 @@ class MaximalDependenceDecomposition
       unsigned int minimum_subset);
 
   // Overriden methods
+  Standard<Symbol>
+  simpleChooseSymbol(SGPtr<Standard> generator,
+                     unsigned int pos,
+                     const Sequence &context,
+                     unsigned int phase) const override;
+
   Standard<Sequence>
   simpleChooseSequence(SGPtr<Standard> generator,
                        unsigned int size,
@@ -82,9 +88,6 @@ class MaximalDependenceDecomposition
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const override;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
 
   // Concrete methods
   void initializeCachedEvaluator(CEPtr evaluator,
