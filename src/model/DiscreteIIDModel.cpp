@@ -411,6 +411,18 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
 }
 
 /*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+DiscreteIIDModel::simpleChooseSymbol(SGPtr<Standard> generator,
+                                     unsigned int pos,
+                                     const Sequence &context,
+                                     unsigned int phase) const {
+  return choose();
+}
+
+/*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
@@ -418,12 +430,6 @@ double DiscreteIIDModel::evaluate(const Sequence &s,
                                   unsigned int pos,
                                   unsigned int phase) const {
   return probabilityOf(s[pos]);
-}
-
-Symbol DiscreteIIDModel::choose(const Sequence &context,
-                                unsigned int pos,
-                                unsigned int phase) const {
-  return choose();
 }
 
 Symbol DiscreteIIDModel::choose() const {

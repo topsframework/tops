@@ -26,6 +26,7 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
+#include "model/MemberDetector.hpp"
 
 // ToPS templates
 #include "model/Standard.tcc"
@@ -68,9 +69,6 @@ class ProbabilisticModel
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const = 0;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const = 0;
 
   // Virtual methods
   virtual InhomogeneousMarkovChain* inhomogeneous();

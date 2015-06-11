@@ -150,6 +150,18 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
 
   static std::vector<double> normalize(std::vector<double> probabilities);
 
+  // Overriden methods
+  /**
+   * Draws a new symbol in the ith position.
+   * @param s a sequence
+   * @param i a position
+   * @return \f$x,\ x \in X\f$
+   */
+  Standard<Symbol> simpleChooseSymbol(SGPtr<Standard> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const override;
+
   // Virtual methods
   /**
    * Evaluates the given position of a sequence.
@@ -160,16 +172,6 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const override;
-
-  /**
-   * Draws a new symbol in the ith position.
-   * @param s a sequence
-   * @param i a position
-   * @return \f$x,\ x \in X\f$
-   */
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
 
   /**
    * Draws a new symbol.

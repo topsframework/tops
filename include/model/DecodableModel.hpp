@@ -37,6 +37,10 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
+template<typename Derived>
+class DecodableModelCrtp;
+
 /**
  * @class DecodableModel
  * @brief TODO
@@ -67,10 +71,6 @@ class DecodableModel
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const = 0;
-
-  virtual void chooseSequencesPosition(Sequence &xs,
-                                       Sequence &ys,
-                                       unsigned int i) const = 0;
 
   virtual double backward(const Sequence &s,
                           Matrix &beta) const = 0;

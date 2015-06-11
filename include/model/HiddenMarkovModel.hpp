@@ -60,6 +60,9 @@ class HiddenMarkovModel
   using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
 
+  // Hidden name method inheritance
+  using Base::simpleChooseSequence;
+
   // Static methods
   static HiddenMarkovModelPtr make(
       std::vector<HiddenMarkovModelStatePtr> states,
@@ -81,6 +84,18 @@ class HiddenMarkovModel
       double diff_threshold);
 
   // Overriden methods
+  Standard<Symbol>
+  simpleChooseSymbol(SGPtr<Standard> generator,
+                     unsigned int pos,
+                     const Sequence &context,
+                     unsigned int phase) const override;
+
+  Labeling<Symbol>
+  simpleChooseSymbol(SGPtr<Labeling> generator,
+                     unsigned int pos,
+                     const Sequence &context,
+                     unsigned int phase) const override;
+
   Labeling<Sequence>
   simpleChooseSequence(SGPtr<Labeling> generator,
                        unsigned int size,
@@ -103,13 +118,6 @@ class HiddenMarkovModel
   virtual double evaluate(const Sequence &xs,
                           const Sequence &ys,
                           unsigned int i) const;
-
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
-  virtual void chooseSequencesPosition(Sequence &xs,
-                                       Sequence &ys,
-                                       unsigned int i) const;
 
   virtual double backward(const Sequence &s,
                           Matrix &beta) const;

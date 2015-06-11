@@ -73,12 +73,16 @@ class PhasedInhomogeneousMarkovChain
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
+  Standard<Symbol>
+  simpleChooseSymbol(SGPtr<Standard> generator,
+                     unsigned int pos,
+                     const Sequence &context,
+                     unsigned int phase) const override;
+
+  // Virtual methods
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,
                           unsigned int phase = 0) const override;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
 
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) override;

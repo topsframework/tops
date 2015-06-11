@@ -61,26 +61,70 @@ using DecodableModelCrtpPtr
  * @brief TODO
  */
 template<typename Derived>
-class DecodableModelCrtp : public DecodableModel {
+class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
  public:
-  // Hidden name method inheritance
-  using DecodableModel::simpleChooseSequence;
+  // Inner classes
+  struct Cache {
+    std::vector<double> prefix_sum_array;
+    Matrix alpha, beta, gamma, posterior_decoding;
+  };
 
   // Alias
-  using Base = DecodableModel;
+  using Base = ProbabilisticModelCrtp<Derived>;
   using DerivedPtr = std::shared_ptr<Derived>;
 
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
-  // Overriden methods
-  GeneratorPtr<Labeling> labelingGenerator() override;
+  // Hidden name method inheritance
+  using Base::simpleChooseSequence;
 
-  // Virtual methods
+  // Purely virtual methods
+  virtual Labeling<Symbol>
+  simpleChooseSymbol(SGPtr<Labeling> generator,
+                    unsigned int pos,
+                    const Sequence &context = {},
+                    unsigned int phase = 0) const = 0;
+
   virtual Labeling<Sequence>
   simpleChooseSequence(SGPtr<Labeling> generator,
                        unsigned int size,
                        unsigned int phase = 0) const = 0;
+
+  virtual EvaluatorPtr evaluator(const Sequence &s,
+                                 bool cached = false) = 0;
+  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
+                                                   bool cached = false) = 0;
+
+  virtual double evaluate(const Sequence &context,
+                          unsigned int pos,
+                          unsigned int phase = 0) const = 0;
+  virtual double evaluate(const Sequence &xs,
+                          const Sequence &ys,
+                          unsigned int i) const = 0;
+
+  virtual double backward(const Sequence &s,
+                          Matrix &beta) const = 0;
+  virtual double forward(const Sequence &s,
+                         Matrix &alpha) const = 0;
+  virtual void posteriorProbabilities(const Sequence &xs,
+                                      Matrix &probabilities) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const = 0;
+
+  // Concrete methods
+  GeneratorPtr<Labeling> labelingGenerator();
+
+ private:
+  // Virtual methods
+  virtual Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 };
 
 /*
@@ -92,7 +136,7 @@ class DecodableModelCrtp : public DecodableModel {
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>

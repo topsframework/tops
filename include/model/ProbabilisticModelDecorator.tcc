@@ -44,17 +44,20 @@ using ProbabilisticModelDecoratorPtr
  * @class ProbabilisticModelDecorator
  * @brief Base class that defines probabilistic models' decorators.
  *
- * It is the easiest way to change the behaviour of a probabilistic model.
+ * It is the easiest way to change the behavior of a probabilistic model.
  */
 template<typename Derived>
 class ProbabilisticModelDecorator
     : public ProbabilisticModelCrtp<Derived> {
  public:
   // Alias
-  using Base = ProbabilisticModelCrtp<ProbabilisticModelDecorator>;
+  using Base = ProbabilisticModelCrtp<Derived>;
 
   using Self = ProbabilisticModelDecorator<Derived>;
   using SelfPtr = std::shared_ptr<Self>;
+
+  template<template<class Target> typename Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Static methods
   template<typename... Ts>
@@ -63,16 +66,17 @@ class ProbabilisticModelDecorator
   }
 
   // Overriden methods
+  Standard<Symbol> simpleChooseSymbol(SGPtr<Standard> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const override {
+    return _model->sequenceGenerator()->chooseSymbol(pos, context, phase);
+  }
+
   double evaluate(const Sequence &s,
                   unsigned int pos,
                   unsigned int phase = 0) const override {
     return _model->evaluate(s, pos, phase);
-  }
-
-  Symbol choose(const Sequence &context,
-                unsigned int pos,
-                unsigned int phase = 0) const override {
-    return _model->choose(context, pos, phase);
   }
 
  protected:

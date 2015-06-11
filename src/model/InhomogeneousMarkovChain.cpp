@@ -22,13 +22,13 @@
 #include <vector>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 InhomogeneousMarkovChain::InhomogeneousMarkovChain(
@@ -37,13 +37,31 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
     std::vector<VariableLengthMarkovChainPtr> vlmcs) {
   return InhomogeneousMarkovChainPtr(
     new InhomogeneousMarkovChain(vlmcs));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+InhomogeneousMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
+                                             unsigned int pos,
+                                             const Sequence &context,
+                                             unsigned int phase) const {
+  if (pos + phase < _vlmcs.size()) {
+    auto vlmc = _vlmcs[pos + phase];
+    return vlmc->sequenceGenerator()->chooseSymbol(pos, context, phase);
+  }
+
+  // TODO(igorbonadio): Throw exception!
+  return Standard<Symbol>(INVALID_SYMBOL);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -57,15 +75,6 @@ double InhomogeneousMarkovChain::evaluate(const Sequence &s,
     return _vlmcs[pos + phase]->evaluate(s, pos);
   else
     return -HUGE;
-}
-
-Symbol InhomogeneousMarkovChain::choose(const Sequence &context,
-                                        unsigned int pos,
-                                        unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->choose(context, pos);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
 }
 
 InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {

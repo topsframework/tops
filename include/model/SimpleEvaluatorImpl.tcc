@@ -35,7 +35,8 @@ namespace tops {
 namespace model {
 
 // Forward declaration
-class DecodableModel;
+template<typename Derived>
+class DecodableModelCrtp;
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -50,12 +51,14 @@ class SimpleEvaluatorImpl;
 
 // Auxiliar tests
 template<typename Model>
-using is_decodable = typename
-  std::enable_if<std::is_base_of<DecodableModel, Model>::value, bool>::type;
+using is_decodable = typename std::enable_if<
+  std::is_base_of<DecodableModelCrtp<Model>, Model>::value, bool
+>::type;
 
 template<typename Model>
-using not_decodable = typename
-  std::enable_if<!std::is_base_of<DecodableModel, Model>::value, bool>::type;
+using not_decodable = typename std::enable_if<
+  !std::is_base_of<DecodableModelCrtp<Model>, Model>::value, bool
+>::type;
 
 /**
  * @typedef SimpleEvaluatorImplPtr

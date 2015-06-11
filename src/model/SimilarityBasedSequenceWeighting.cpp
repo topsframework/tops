@@ -32,7 +32,7 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
@@ -49,7 +49,7 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
@@ -129,7 +129,21 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  GENERATOR  ================================*/
+
+Standard<Symbol>
+SimilarityBasedSequenceWeighting::simpleChooseSymbol(SGPtr<Standard> generator,
+                                                     unsigned int pos,
+                                                     const Sequence &context,
+                                                     unsigned int phase) const {
+  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
@@ -137,13 +151,6 @@ double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
                                                   unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
-}
-
-Symbol SimilarityBasedSequenceWeighting::choose(const Sequence &context,
-                                                unsigned int pos,
-                                                unsigned int phase) const {
-  // TODO(igorbonadio)
-  return 0;
 }
 
 EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
@@ -160,7 +167,7 @@ EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(

@@ -71,11 +71,18 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   // Overriden methods
   GeneratorPtr<Standard> sequenceGenerator() override;
 
+  // Purely virtual methods
+  virtual Standard<Symbol>
+  simpleChooseSymbol(SGPtr<Standard> generator,
+                     unsigned int pos,
+                     const Sequence &context,
+                     unsigned int phase) const = 0;
+
   // Virtual methods
   virtual Standard<Sequence>
   simpleChooseSequence(SGPtr<Standard> generator,
                        unsigned int size,
-                       unsigned int phase = 0) const;
+                       unsigned int phase) const;
 };
 
 /*
@@ -108,7 +115,7 @@ Standard<Sequence> ProbabilisticModelCrtp<Derived>::simpleChooseSequence(
     unsigned int phase) const {
   Sequence s;
   for (unsigned int k = 0; k < size; k++)
-      s.push_back(choose(s, k));
+      s.push_back(generator->chooseSymbol(k, s, phase));
   return s;
 }
 

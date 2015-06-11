@@ -230,13 +230,37 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 
 /*===============================  GENERATOR  ================================*/
 
+Standard<Symbol>
+HiddenMarkovModel::simpleChooseSymbol(SGPtr<Standard> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const {
+  // TODO(igorbonadio)
+  return INVALID_SYMBOL;
+}
+
+Labeling<Symbol>
+HiddenMarkovModel::simpleChooseSymbol(SGPtr<Labeling> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const {
+  Symbol y = (pos == 0) ? _initial_probabilities->choose()
+                        : _states[context[pos-1]]->transitions()->choose();
+  Symbol x = _states[y]->emissions()->choose();
+
+  return Labeling<Symbol>(x, y);
+}
+
 Labeling<Sequence>
 HiddenMarkovModel::simpleChooseSequence(SGPtr<Labeling> generator,
                                         unsigned int size,
                                         unsigned int phase) const {
-  Sequence x(size), y(size);
-  for (unsigned int i = 0; i < size; i++)
-    chooseSequencesPosition(x, y, i);
+  Sequence x, y;
+  for (unsigned int i = 0; i < size; i++) {
+    auto symbol_labeling = simpleChooseSymbol(generator, i, y, phase);
+    x.push_back(symbol_labeling.observation());
+    y.push_back(symbol_labeling.label());
+  }
   return Labeling<Sequence>(x, y);
 }
 
@@ -363,23 +387,6 @@ double HiddenMarkovModel::evaluate(const Sequence &xs,
   else
     transition = _states[ys[i-1]]->transitions()->probabilityOf(ys[i]);
   return transition + _states[ys[i]]->emissions()->probabilityOf(xs[i]);
-}
-
-Symbol HiddenMarkovModel::choose(const Sequence &context,
-                                 unsigned int pos,
-                                 unsigned int phase) const {
-  // TODO(igorbonadio)
-  return INVALID_SYMBOL;
-}
-
-void HiddenMarkovModel::chooseSequencesPosition(Sequence &xs,
-                                                Sequence &ys,
-                                                unsigned int i) const {
-  if (i == 0)
-    ys[i] = _initial_probabilities->choose();
-  else
-    ys[i] = _states[ys[i-1]]->transitions()->choose();
-  xs[i] = _states[ys[i]]->emissions()->choose();
 }
 
 double HiddenMarkovModel::forward(const Sequence & xs, Matrix &alpha) const {

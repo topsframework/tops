@@ -43,6 +43,7 @@ namespace model {
 */
 
 // Auxiliar tests
+GENERATE_HAS_MEMBER_METHOD(simpleChooseSymbol)
 GENERATE_HAS_MEMBER_METHOD(simpleChooseSequence)
 
 template<template<typename Target> class Decorator,
@@ -82,6 +83,16 @@ class SimpleGenerator
   }
 
   // Overriden methods
+  Decorator<Symbol> chooseSymbol(unsigned int pos,
+                                 const Sequence &context,
+                                 unsigned int phase) override {
+    return chooseSymbol(pos, context, phase,
+      typename has_member_simpleChooseSymbol<
+        Model, const Decorator<Symbol>(
+          SelfPtr, unsigned int, const Sequence &, unsigned int)
+      >::tag());
+  }
+
   Decorator<Sequence> chooseSequence(unsigned int size,
                                      unsigned int phase) override {
     return chooseSequence(size, phase,
@@ -101,6 +112,23 @@ class SimpleGenerator
 
  private:
   // Concrete methods
+  Decorator<Symbol> chooseSymbol(unsigned int size,
+                                 const Sequence &context,
+                                 unsigned int phase,
+                                 no_simpleChooseSymbol_tag) {
+    static_assert(is_base,
+      "Model does not have method simpleChooseSymbol");
+    throw std::logic_error(
+      "Calling from base with no method simpleChooseSymbol");
+  }
+
+  Decorator<Symbol> chooseSymbol(unsigned int pos,
+                                 const Sequence &context,
+                                 unsigned int phase,
+                                 has_simpleChooseSymbol_tag) {
+    return _model->simpleChooseSymbol(make_shared(), pos, context, phase);
+  }
+
   Decorator<Sequence> chooseSequence(unsigned int size,
                                      unsigned int phase,
                                      no_simpleChooseSequence_tag) {

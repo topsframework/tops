@@ -30,7 +30,7 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 MultipleSequentialModel::MultipleSequentialModel(
@@ -52,7 +52,7 @@ std::vector<ProbabilisticModelPtr> models,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 MultipleSequentialModelPtr MultipleSequentialModel::make(
@@ -63,7 +63,25 @@ MultipleSequentialModelPtr MultipleSequentialModel::make(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+MultipleSequentialModel::simpleChooseSymbol(SGPtr<Standard> generator,
+                                            unsigned int pos,
+                                            const Sequence &context,
+                                            unsigned int phase) const {
+  int index = pos;
+  for (unsigned int j = 0; j < _models.size(); j++) {
+    index -= _max_length[j];
+    if (index < 0)
+      return _models[j]->sequenceGenerator()->chooseSymbol(pos, context, phase);
+  }
+  return _models.back()->sequenceGenerator()->chooseSymbol(pos, context, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 double MultipleSequentialModel::evaluate(const Sequence &s,
@@ -71,18 +89,6 @@ double MultipleSequentialModel::evaluate(const Sequence &s,
                                          unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
-}
-
-Symbol MultipleSequentialModel::choose(const Sequence &context,
-                                       unsigned int pos,
-                                       unsigned int phase) const {
-  int index = pos;
-  for (unsigned int j = 0; j < _models.size(); j++) {
-    index -= _max_length[j];
-    if (index < 0)
-      return _models[j]->choose(context, pos);
-  }
-  return _models.back()->choose(context, pos);
 }
 
 EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
@@ -99,7 +105,7 @@ EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 void MultipleSequentialModel::initializeCachedEvaluator(CEPtr evaluator,
