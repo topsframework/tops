@@ -70,7 +70,7 @@ class ProbabilisticModelDecorator
                                       unsigned int pos,
                                       const Sequence &context,
                                       unsigned int phase) const override {
-    return _model->sequenceGenerator()->chooseSymbol(pos, context, phase);
+    return _model->standardGenerator()->chooseSymbol(pos, context, phase);
   }
 
   double evaluate(const Sequence &s,

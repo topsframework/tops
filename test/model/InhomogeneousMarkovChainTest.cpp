@@ -108,5 +108,5 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   tops::model::resetRandom();
-  ASSERT_THAT(imc->sequenceGenerator()->chooseSequence(5), ContainerEq(Sequence{1, 0, INVALID_SYMBOL, INVALID_SYMBOL, INVALID_SYMBOL}));
+  ASSERT_THAT(imc->standardGenerator()->chooseSequence(5), ContainerEq(Sequence{1, 0, INVALID_SYMBOL, INVALID_SYMBOL, INVALID_SYMBOL}));
 }

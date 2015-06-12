@@ -118,7 +118,7 @@ VariableLengthMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
   // TODO(igorbonadio): ERROR!
   if (c == nullptr) return Standard<Symbol>(INVALID_SYMBOL);
 
-  return c->getDistribution()->sequenceGenerator()->chooseSymbol(
+  return c->getDistribution()->standardGenerator()->chooseSymbol(
     pos, context, phase);
 }
 

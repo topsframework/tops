@@ -75,9 +75,9 @@ MultipleSequentialModel::simpleChooseSymbol(SGPtr<Standard> generator,
   for (unsigned int j = 0; j < _models.size(); j++) {
     index -= _max_length[j];
     if (index < 0)
-      return _models[j]->sequenceGenerator()->chooseSymbol(pos, context, phase);
+      return _models[j]->standardGenerator()->chooseSymbol(pos, context, phase);
   }
-  return _models.back()->sequenceGenerator()->chooseSymbol(pos, context, phase);
+  return _models.back()->standardGenerator()->chooseSymbol(pos, context, phase);
 }
 
 /*----------------------------------------------------------------------------*/

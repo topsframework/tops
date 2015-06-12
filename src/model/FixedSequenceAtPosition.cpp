@@ -87,7 +87,7 @@ Standard<Sequence>
 FixedSequenceAtPosition::simpleChooseSequence(SGPtr<Standard> generator,
                                               unsigned int size,
                                               unsigned int phase) const {
-  Sequence s = _model->sequenceGenerator()->chooseSequence(size, phase);
+  Sequence s = _model->standardGenerator()->chooseSequence(size, phase);
   addSequence(s);
   return s;
 }

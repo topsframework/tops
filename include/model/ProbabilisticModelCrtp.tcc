@@ -69,7 +69,7 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Overriden methods
-  GeneratorPtr<Standard> sequenceGenerator() override;
+  GeneratorPtr<Standard> standardGenerator() override;
 
   // Purely virtual methods
   virtual Standard<Symbol>
@@ -98,7 +98,7 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::sequenceGenerator() {
+GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator() {
   return SimpleGenerator<Standard, Derived>::make(
     std::static_pointer_cast<Derived>(
       static_cast<Derived *>(this)->shared_from_this()));

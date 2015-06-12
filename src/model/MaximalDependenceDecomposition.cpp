@@ -384,7 +384,7 @@ void MaximalDependenceDecomposition::_chooseAux(
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]
-      = node->getModel()->sequenceGenerator()->chooseSymbol(node->getIndex(), s);
+      = node->getModel()->standardGenerator()->chooseSymbol(node->getIndex(), s);
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _chooseAux(s, node->getLeft());
     } else {
@@ -393,7 +393,7 @@ void MaximalDependenceDecomposition::_chooseAux(
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->sequenceGenerator()->chooseSymbol(i, s);
+        s[i] = node->getModel()->standardGenerator()->chooseSymbol(i, s);
       }
     }
   }

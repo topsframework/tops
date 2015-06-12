@@ -64,7 +64,7 @@ class ProbabilisticModel
   using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
 
   // Purely virtual methods
-  virtual GeneratorPtr<Standard> sequenceGenerator() = 0;
+  virtual GeneratorPtr<Standard> standardGenerator() = 0;
 
   virtual double evaluate(const Sequence &s,
                           unsigned int pos,

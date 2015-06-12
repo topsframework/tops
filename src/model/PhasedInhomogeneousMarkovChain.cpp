@@ -111,7 +111,7 @@ PhasedInhomogeneousMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
                                                    const Sequence &context,
                                                    unsigned int phase) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
-  return vlmc->sequenceGenerator()->chooseSymbol(pos, context, phase);
+  return vlmc->standardGenerator()->chooseSymbol(pos, context, phase);
 }
 
 /*----------------------------------------------------------------------------*/

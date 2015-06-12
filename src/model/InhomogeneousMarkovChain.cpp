@@ -57,7 +57,7 @@ InhomogeneousMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
                                              unsigned int phase) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
-    return vlmc->sequenceGenerator()->chooseSymbol(pos, context, phase);
+    return vlmc->standardGenerator()->chooseSymbol(pos, context, phase);
   }
 
   // TODO(igorbonadio): Throw exception!
