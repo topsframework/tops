@@ -59,7 +59,7 @@ class GeneralizedHiddenMarkovModel
   // Alias
   using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
 
-  using Cache = DecodableModel::Cache;
+  using Cache = Base::Cache;
   using SEPtr = SimpleEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
 

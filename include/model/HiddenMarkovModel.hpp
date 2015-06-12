@@ -56,7 +56,7 @@ class HiddenMarkovModel
   // Alias
   using Base = DecodableModelCrtp<HiddenMarkovModel>;
 
-  using Cache = DecodableModel::Cache;
+  using Cache = Base::Cache;
   using SEPtr = SimpleEvaluatorImplPtr<HiddenMarkovModel>;
   using CEPtr = CachedEvaluatorImplPtr<HiddenMarkovModel>;
 
