@@ -26,12 +26,12 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/DecodableModel.hpp"
 
 // ToPS templates
 #include "model/Labeling.tcc"
 #include "model/Generator.tcc"
 #include "model/SimpleGenerator.tcc"
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
