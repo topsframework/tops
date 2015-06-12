@@ -56,7 +56,7 @@ class ProbabilisticModelDecorator
   using Self = ProbabilisticModelDecorator<Derived>;
   using SelfPtr = std::shared_ptr<Self>;
 
-  template<template<class Target> typename Decorator>
+  template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Static methods
