@@ -43,8 +43,8 @@ namespace model {
 */
 
 // Auxiliar tests
-GENERATE_HAS_MEMBER_METHOD(simpleChooseSymbol)
-GENERATE_HAS_MEMBER_METHOD(simpleChooseSequence)
+GENERATE_HAS_MEMBER_METHOD(simpleChooseSymbol);
+GENERATE_HAS_MEMBER_METHOD(simpleChooseSequence);
 
 template<template<typename Target> class Decorator,
          typename Model, bool is_base>
@@ -87,7 +87,7 @@ class SimpleGenerator
                                  const Sequence &context,
                                  unsigned int phase) override {
     return chooseSymbol(pos, context, phase,
-      typename has_member_simpleChooseSymbol<
+      typename has_method_simpleChooseSymbol<
         Model, const Decorator<Symbol>(
           SelfPtr, unsigned int, const Sequence &, unsigned int)
       >::tag());
@@ -96,7 +96,7 @@ class SimpleGenerator
   Decorator<Sequence> chooseSequence(unsigned int size,
                                      unsigned int phase) override {
     return chooseSequence(size, phase,
-      typename has_member_simpleChooseSequence<
+      typename has_method_simpleChooseSequence<
         Model, const Decorator<Sequence>(SelfPtr, unsigned int, unsigned int)
       >::tag());
   }
