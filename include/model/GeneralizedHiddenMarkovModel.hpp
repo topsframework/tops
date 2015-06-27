@@ -64,7 +64,7 @@ class GeneralizedHiddenMarkovModel
   using CEPtr = CachedEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
 
   // Hidden name method inheritance
-  using Base::simpleChooseSequence;
+  using Base::drawSequence;
 
   // Static methods
   static GeneralizedHiddenMarkovModelPtr make(
@@ -75,22 +75,19 @@ class GeneralizedHiddenMarkovModel
       unsigned int max_backtracking = 100);
 
   // Overriden methods
-  Standard<Symbol>
-  simpleChooseSymbol(SGPtr<Standard> generator,
-                     unsigned int pos,
-                     const Sequence &context,
-                     unsigned int phase) const override;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const override;
 
-  Labeling<Symbol>
-  simpleChooseSymbol(SGPtr<Labeling> generator,
-                     unsigned int pos,
-                     const Sequence &context,
-                     unsigned int phase) const override;
+  Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const override;
 
-  Labeling<Sequence>
-  simpleChooseSequence(SGPtr<Labeling> generator,
-                       unsigned int size,
-                       unsigned int phase) const override;
+  Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
 
   Estimation<Labeling<Sequence>>
   labeling(const Sequence &xs,

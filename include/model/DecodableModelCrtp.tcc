@@ -77,19 +77,17 @@ class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Hidden name method inheritance
-  using Base::simpleChooseSequence;
+  using Base::drawSequence;
 
   // Purely virtual methods
-  virtual Labeling<Symbol>
-  simpleChooseSymbol(SGPtr<Labeling> generator,
-                    unsigned int pos,
-                    const Sequence &context = {},
-                    unsigned int phase = 0) const = 0;
+  virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const = 0;
 
-  virtual Labeling<Sequence>
-  simpleChooseSequence(SGPtr<Labeling> generator,
-                       unsigned int size,
-                       unsigned int phase = 0) const = 0;
+  virtual Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
+                                          unsigned int size,
+                                          unsigned int phase) const = 0;
 
   virtual EvaluatorPtr evaluator(const Sequence &s,
                                  bool cached = false) = 0;

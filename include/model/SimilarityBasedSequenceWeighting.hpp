@@ -73,11 +73,10 @@ class SimilarityBasedSequenceWeighting
       Sequence skip_sequence);
 
   // Overriden methods
-  Standard<Symbol>
-  simpleChooseSymbol(SGPtr<Standard> generator,
-                     unsigned int pos,
-                     const Sequence &context,
-                     unsigned int phase) const override;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const override;
 
   // Virtual methods
   virtual double evaluate(const Sequence &s,

@@ -27,6 +27,20 @@ namespace tops {
 namespace model {
 
 /*============================================================================*/
+/*                              CLASS OF POINTER                              */
+/*============================================================================*/
+
+template<typename T> struct class_of;
+
+template<typename T> struct class_of<T*> {
+  using type = typename std::remove_cv<
+    typename std::remove_pointer<T*>::type>::type;
+};
+
+template<typename T>
+using class_of_t = typename class_of<T>::type;
+
+/*============================================================================*/
 /*                          FIRST PARAMETER INJECTION                         */
 /*============================================================================*/
 
@@ -46,54 +60,74 @@ struct inject_first_parameter<Ptr, Result(Klass::*)(Args...) const> {
 /*                         MEMBER DELEGATOR GENERATION                        */
 /*============================================================================*/
 
-#define GENERATE_METHOD_DELEGATOR(interface, implementation, delegatedObject)  \
+#define GENERATE_METHOD_DELEGATOR(method, delegatedObject)                     \
                                                                                \
-GENERATE_HAS_MEMBER_METHOD(implementation);                                    \
+GENERATE_HAS_MEMBER_METHOD(method);                                            \
                                                                                \
 template<typename... Args>                                                     \
-inline auto interface##Impl(Args... args) const                                \
-    -> decltype(this->interface(args...)) {                                    \
+inline auto method##Impl(Args... args) const                                   \
+    -> decltype(this->method(args...)) {                                       \
                                                                                \
-  using Klass = typename std::remove_cv<                                       \
-    typename std::remove_pointer<decltype(this)>::type>::type;                 \
   using MethodType = typename inject_first_parameter<                          \
-    std::shared_ptr<Klass>, decltype(&Klass::interface)>::type;                \
+    std::shared_ptr<class_of_t<decltype(this)>>,                               \
+    decltype(&class_of_t<decltype(this)>::method)                              \
+  >::type;                                                                     \
                                                                                \
   using DelegatedType = typename std::remove_cv<                               \
-    typename std::remove_pointer<decltype(delegatedObject)>::type>::type;      \
+    typename std::remove_pointer<decltype(delegatedObject)>::type              \
+  >::type::element_type;                                                       \
                                                                                \
-  return interface##Impl(                                                      \
-    typename has_method_##implementation<                                      \
-      typename DelegatedType::element_type, MethodType>::tag(),                \
+  return method##Impl(                                                         \
+    typename has_method_##method<DelegatedType, MethodType>::tag(),            \
     std::forward<Args>(args)...);                                              \
 }                                                                              \
                                                                                \
 template<typename... Args>                                                     \
-inline auto interface##Impl(no_##implementation##_tag, Args... args) const     \
-    -> decltype(this->interface(args...)) {                                    \
-  static_assert(is_base, "Class don't have method 'implementation'!");         \
-  throw std::logic_error("Calling from base class with no 'implementation'");  \
+inline auto method##Impl(Args... args)                                         \
+    -> decltype(this->method(args...)) {                                       \
+  return const_cast<decltype(this->method(args...))>(                          \
+    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
+      std::forward<Args>(args)...));                                           \
 }                                                                              \
                                                                                \
 template<typename... Args>                                                     \
-inline auto interface##Impl(has_##implementation##_tag, Args... args) const    \
-    -> decltype(this->interface(args...)) {                                    \
+inline auto method##Impl(no_##method##_tag, Args... args) const                \
+    -> decltype(this->method(args...)) {                                       \
+  static_assert(is_base, "Class don't have method 'method'!");                 \
+  throw std::logic_error("Calling from base class with no 'method'");          \
+}                                                                              \
                                                                                \
-  using Klass = typename std::remove_cv<                                       \
-    typename std::remove_pointer<decltype(this)>::type>::type;                 \
+template<typename... Args>                                                     \
+inline auto method##Impl(no_##method##_tag, Args... args)                      \
+    -> decltype(this->method(args...)) {                                       \
+  return const_cast<decltype(this->method(args...))>(                          \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
+      no_##method##_tag(), std::forward<Args>(args)...));                      \
+}                                                                              \
                                                                                \
-  return (delegatedObject)->implementation(                                    \
-    std::static_pointer_cast<Klass>(                                           \
-      const_cast<Klass*>(this)->shared_from_this()),                           \
+template<typename... Args>                                                     \
+inline auto method##Impl(has_##method##_tag, Args... args) const               \
+    -> decltype(this->method(args...)) {                                       \
+  return (delegatedObject)->method(                                            \
+    std::static_pointer_cast<class_of_t<decltype(this)>>(                      \
+      const_cast<class_of_t<decltype(this)>*>(this)->shared_from_this()),      \
     std::forward<Args>(args)...);                                              \
+}                                                                              \
+                                                                               \
+template<typename... Args>                                                     \
+inline auto method##Impl(has_##method##_tag, Args... args)                     \
+    -> decltype(this->method(args...)) {                                       \
+  return const_cast<decltype(this->method(args...))>(                          \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
+      has_##method##_tag(), std::forward<Args>(args)...));                     \
 }
 
 /*============================================================================*/
 /*                           MEMBER DELEGATOR CALL                            */
 /*============================================================================*/
 
-#define CALL_METHOD_DELEGATOR(interface, implementation, delegatedObject, ...) \
-do { return interface##Impl(__VA_ARGS__); } while (false)
+#define CALL_METHOD_DELEGATOR(method, delegatedObject, ...)                    \
+do { return method##Impl(__VA_ARGS__); } while (false)
 
 }  // namespace model
 }  // namespace tops

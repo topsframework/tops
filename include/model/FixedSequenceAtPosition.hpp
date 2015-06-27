@@ -58,10 +58,9 @@ class FixedSequenceAtPosition
                                          DiscreteIIDModelPtr distr);
 
   // Overriden methods
-  Standard<Sequence>
-  simpleChooseSequence(SGPtr<Standard> generator,
-                       unsigned int size,
-                       unsigned int phase = 0) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase = 0) const override;
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,

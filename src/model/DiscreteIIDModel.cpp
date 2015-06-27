@@ -414,12 +414,11 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-DiscreteIIDModel::simpleChooseSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     const Sequence &context,
-                                     unsigned int phase) const {
-  return choose();
+Standard<Symbol> DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
+                                              unsigned int pos,
+                                              const Sequence &context,
+                                              unsigned int phase) const {
+  return draw();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -432,7 +431,7 @@ double DiscreteIIDModel::evaluate(const Sequence &s,
   return probabilityOf(s[pos]);
 }
 
-Symbol DiscreteIIDModel::choose() const {
+Symbol DiscreteIIDModel::draw() const {
   double random = generateRandomDouble();
   for (unsigned int symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= exp(_probabilities[symbol]);

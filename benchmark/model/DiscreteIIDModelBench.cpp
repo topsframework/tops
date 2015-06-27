@@ -39,7 +39,7 @@ static void BM_DiscreteIIDModelChoose(benchmark::State& state) {
   auto model = generateRandomIIDModel(state.range_x());
   state.ResumeTiming();
   while (state.KeepRunning())
-    model->choose();
+    model->draw();
 }
 BENCHMARK(BM_DiscreteIIDModelChoose)->Range(2, 16);
 

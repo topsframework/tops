@@ -68,5 +68,5 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldChooseSequenceWithSeed42) {
   tops::model::resetRandom();
-  ASSERT_THAT(iid->standardGenerator()->chooseSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
 }

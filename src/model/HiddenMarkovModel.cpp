@@ -231,33 +231,33 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-HiddenMarkovModel::simpleChooseSymbol(SGPtr<Standard> generator,
-                                      unsigned int pos,
-                                      const Sequence &context,
-                                      unsigned int phase) const {
+HiddenMarkovModel::drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;
 }
 
 Labeling<Symbol>
-HiddenMarkovModel::simpleChooseSymbol(SGPtr<Labeling> generator,
-                                      unsigned int pos,
-                                      const Sequence &context,
-                                      unsigned int phase) const {
-  Symbol y = (pos == 0) ? _initial_probabilities->choose()
-                        : _states[context[pos-1]]->transitions()->choose();
-  Symbol x = _states[y]->emissions()->choose();
+HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const {
+  Symbol y = (pos == 0) ? _initial_probabilities->draw()
+                        : _states[context[pos-1]]->transitions()->draw();
+  Symbol x = _states[y]->emissions()->draw();
 
   return Labeling<Symbol>(x, y);
 }
 
 Labeling<Sequence>
-HiddenMarkovModel::simpleChooseSequence(SGPtr<Labeling> generator,
-                                        unsigned int size,
-                                        unsigned int phase) const {
+HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+                                unsigned int size,
+                                unsigned int phase) const {
   Sequence x, y;
   for (unsigned int i = 0; i < size; i++) {
-    auto symbol_labeling = simpleChooseSymbol(generator, i, y, phase);
+    auto symbol_labeling = drawSymbol(generator, i, y, phase);
     x.push_back(symbol_labeling.observation());
     y.push_back(symbol_labeling.label());
   }

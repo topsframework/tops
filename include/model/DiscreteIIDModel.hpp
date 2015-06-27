@@ -44,7 +44,7 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  *        distributed (IID) model.
  *
  * According to [Aaron Clauset], IID means that if we are given a set of data
- * \f$\{x_i\}\f$, each of these \f$x_i\f$ observations is an independent draw
+ * \f$\{x_i\}\f$, each of these \f$x_i\f$ observations is an independent choose
  * from a fixed probabilistic model. Independence means that
  *
  * \f[
@@ -157,10 +157,10 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @param i a position
    * @return \f$x,\ x \in X\f$
    */
-  Standard<Symbol> simpleChooseSymbol(SGPtr<Standard> generator,
-                                      unsigned int pos,
-                                      const Sequence &context,
-                                      unsigned int phase) const override;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const override;
 
   // Virtual methods
   /**
@@ -177,7 +177,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Draws a new symbol.
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choose() const;
+  virtual Symbol draw() const;
 
   /**
    * Gets the probability of this model draws the given symbol.

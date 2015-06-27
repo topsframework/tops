@@ -77,17 +77,15 @@ class SimpleGenerator
   }
 
   // Overriden methods
-  Decorator<Symbol> chooseSymbol(unsigned int pos,
-                                 const Sequence &context,
-                                 unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(chooseSymbol, simpleChooseSymbol, _model,
-                          pos, context, phase);
+  Decorator<Symbol> drawSymbol(unsigned int pos,
+                               const Sequence &context,
+                               unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(drawSymbol, _model, pos, context, phase);
   }
 
-  Decorator<Sequence> chooseSequence(unsigned int size,
-                                     unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(chooseSequence, simpleChooseSequence, _model,
-                          size, phase);
+  Decorator<Sequence> drawSequence(unsigned int size,
+                                   unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(drawSequence, _model, size, phase);
   }
 
  protected:
@@ -100,8 +98,8 @@ class SimpleGenerator
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(chooseSymbol, simpleChooseSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(chooseSequence, simpleChooseSequence, _model)
+  GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
+  GENERATE_METHOD_DELEGATOR(drawSequence, _model)
 
   SimpleGeneratorPtr<Decorator, Model> make_shared() {
     return std::static_pointer_cast<Self>(this->shared_from_this());

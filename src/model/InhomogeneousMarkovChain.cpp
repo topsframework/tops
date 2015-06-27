@@ -51,13 +51,13 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-InhomogeneousMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
-                                             unsigned int pos,
-                                             const Sequence &context,
-                                             unsigned int phase) const {
+InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
+                                     unsigned int pos,
+                                     const Sequence &context,
+                                     unsigned int phase) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator()->chooseSymbol(pos, context, phase);
+    return vlmc->standardGenerator()->drawSymbol(pos, context, phase);
   }
 
   // TODO(igorbonadio): Throw exception!

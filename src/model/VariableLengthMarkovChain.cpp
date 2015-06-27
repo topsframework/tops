@@ -109,16 +109,16 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-VariableLengthMarkovChain::simpleChooseSymbol(SGPtr<Standard> generator,
-                                              unsigned int pos,
-                                              const Sequence &context,
-                                              unsigned int phase) const {
+VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
+                                      unsigned int pos,
+                                      const Sequence &context,
+                                      unsigned int phase) const {
   auto c = _context_tree->getContext(context, pos);
 
   // TODO(igorbonadio): ERROR!
   if (c == nullptr) return Standard<Symbol>(INVALID_SYMBOL);
 
-  return c->getDistribution()->standardGenerator()->chooseSymbol(
+  return c->getDistribution()->standardGenerator()->drawSymbol(
     pos, context, phase);
 }
 

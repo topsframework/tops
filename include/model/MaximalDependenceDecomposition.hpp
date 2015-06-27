@@ -70,16 +70,14 @@ class MaximalDependenceDecomposition
       unsigned int minimum_subset);
 
   // Overriden methods
-  Standard<Symbol>
-  simpleChooseSymbol(SGPtr<Standard> generator,
-                     unsigned int pos,
-                     const Sequence &context,
-                     unsigned int phase) const override;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              const Sequence &context,
+                              unsigned int phase) const override;
 
-  Standard<Sequence>
-  simpleChooseSequence(SGPtr<Standard> generator,
-                       unsigned int size,
-                       unsigned int phase = 0) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
 
   // Virtual methods
   virtual EvaluatorPtr evaluator(const Sequence &s,
@@ -150,7 +148,7 @@ class MaximalDependenceDecomposition
 
   // Concrete methods
   double _probabilityOf(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
-  void _chooseAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
+  void _drawAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
 };
 
 }  // namespace model

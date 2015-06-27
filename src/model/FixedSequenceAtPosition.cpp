@@ -84,10 +84,10 @@ double FixedSequenceAtPosition::simpleProbabilityOf(
 /*==============================  GENERATOR  =================================*/
 
 Standard<Sequence>
-FixedSequenceAtPosition::simpleChooseSequence(SGPtr<Standard> generator,
-                                              unsigned int size,
-                                              unsigned int phase) const {
-  Sequence s = _model->standardGenerator()->chooseSequence(size, phase);
+FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
+                                      unsigned int size,
+                                      unsigned int phase) const {
+  Sequence s = _model->standardGenerator()->drawSequence(size, phase);
   addSequence(s);
   return s;
 }
@@ -95,7 +95,7 @@ FixedSequenceAtPosition::simpleChooseSequence(SGPtr<Standard> generator,
 /*================================  OTHERS  ==================================*/
 
 void FixedSequenceAtPosition::addSequence(Sequence &h) const {
-  if (_probabilities->choose() == 1)
+  if (_probabilities->draw() == 1)
     return;
   for (int i = _position;
        ((i-_position) < static_cast<int>(_sequence.size()))

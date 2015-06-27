@@ -60,7 +60,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
       int nphase);
 
   // Virtual methods
-  virtual Symbol choose() const override;
+  virtual Symbol draw() const override;
   virtual double probabilityOf(Symbol s) const override;
 
  private:

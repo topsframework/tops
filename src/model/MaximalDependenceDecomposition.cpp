@@ -333,19 +333,19 @@ double MaximalDependenceDecomposition::cachedProbabilityOf(
 /*==============================  GENERATOR  =================================*/
 
 Standard<Symbol>
-MaximalDependenceDecomposition::simpleChooseSymbol(SGPtr<Standard> generator,
-                                                   unsigned int pos,
-                                                   const Sequence &context,
+MaximalDependenceDecomposition::drawSymbol(SGPtr<Standard> generator,
+                                           unsigned int pos,
+                                           const Sequence &context,
                                                    unsigned int phase) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 
 Standard<Sequence>
-MaximalDependenceDecomposition::simpleChooseSequence(
+MaximalDependenceDecomposition::drawSequence(
     SGPtr<Standard> generator,
     unsigned int size,
     unsigned int phase) const {
-  // _chooseAux(s, _mdd_tree);
+  // _drawAux(s, _mdd_tree);
   return Sequence(size, INVALID_SYMBOL);
 }
 
@@ -379,21 +379,21 @@ double MaximalDependenceDecomposition::_probabilityOf(
   return p;
 }
 
-void MaximalDependenceDecomposition::_chooseAux(
+void MaximalDependenceDecomposition::_drawAux(
     Sequence &s,
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]
-      = node->getModel()->standardGenerator()->chooseSymbol(node->getIndex(), s);
+      = node->getModel()->standardGenerator()->drawSymbol(node->getIndex(), s);
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
-      _chooseAux(s, node->getLeft());
+      _drawAux(s, node->getLeft());
     } else {
-      _chooseAux(s, node->getRight());
+      _drawAux(s, node->getRight());
     }
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->standardGenerator()->chooseSymbol(i, s);
+        s[i] = node->getModel()->standardGenerator()->drawSymbol(i, s);
       }
     }
   }
