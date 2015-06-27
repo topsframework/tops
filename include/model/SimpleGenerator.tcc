@@ -25,11 +25,9 @@
 #include <typeinfo>
 #include <exception>
 
-// ToPS headers
-#include "model/MemberDetector.hpp"
-
 // ToPS templates
 #include "model/Generator.tcc"
+#include "model/MemberDetector.tcc"
 
 namespace tops {
 namespace model {

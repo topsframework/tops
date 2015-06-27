@@ -26,7 +26,6 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/Evaluator.hpp"
-#include "model/MemberDetector.hpp"
 
 // ToPS templates
 #include "model/Standard.tcc"
