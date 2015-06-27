@@ -75,8 +75,8 @@ class SimilarityBasedSequenceWeighting
   // Overriden methods
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
-                              const Sequence &context,
-                              unsigned int phase) const override;
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
   // Virtual methods
   virtual double evaluate(const Sequence &s,

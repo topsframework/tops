@@ -108,10 +108,10 @@ PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
 Standard<Symbol>
 PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                                    unsigned int pos,
-                                                   const Sequence &context,
-                                                   unsigned int phase) const {
+                                                   unsigned int phase,
+                                                   const Sequence &context) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
-  return vlmc->standardGenerator()->drawSymbol(pos, context, phase);
+  return vlmc->standardGenerator()->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/

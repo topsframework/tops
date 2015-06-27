@@ -77,13 +77,13 @@ class GeneralizedHiddenMarkovModel
   // Overriden methods
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
-                              const Sequence &context,
-                              unsigned int phase) const override;
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               unsigned int pos,
-                              const Sequence &context,
-                              unsigned int phase) const override;
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,

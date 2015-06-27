@@ -58,8 +58,8 @@ class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
  public:
   // Purely virtual methods
   virtual Decorator<Symbol> drawSymbol(unsigned int pos,
-                                       const Sequence &context = {},
-                                       unsigned int phase = 0) const = 0;
+                                       unsigned int phase = 0,
+                                       const Sequence &context = {}) const = 0;
 
   virtual Decorator<Sequence> drawSequence(unsigned int size,
                                            unsigned int phase = 0) const = 0;

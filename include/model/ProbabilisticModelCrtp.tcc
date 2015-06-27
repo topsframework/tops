@@ -74,8 +74,8 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   // Purely virtual methods
   virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
-                                      const Sequence &context,
-                                      unsigned int phase) const = 0;
+                                      unsigned int phase,
+                                      const Sequence &context) const = 0;
 
   // Virtual methods
   virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
@@ -113,7 +113,7 @@ Standard<Sequence> ProbabilisticModelCrtp<Derived>::drawSequence(
     unsigned int phase) const {
   Sequence s;
   for (unsigned int k = 0; k < size; k++)
-      s.push_back(generator->drawSymbol(k, s, phase));
+      s.push_back(generator->drawSymbol(k, phase, s));
   return s;
 }
 

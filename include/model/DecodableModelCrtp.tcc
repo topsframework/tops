@@ -82,8 +82,8 @@ class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
   // Purely virtual methods
   virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                                       unsigned int pos,
-                                      const Sequence &context,
-                                      unsigned int phase) const = 0;
+                                      unsigned int phase,
+                                      const Sequence &context) const = 0;
 
   virtual Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                           unsigned int size,

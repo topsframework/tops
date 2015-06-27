@@ -159,8 +159,8 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
-                              const Sequence &context,
-                              unsigned int phase) const override;
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
   // Virtual methods
   /**

@@ -335,8 +335,8 @@ double MaximalDependenceDecomposition::cachedProbabilityOf(
 Standard<Symbol>
 MaximalDependenceDecomposition::drawSymbol(SGPtr<Standard> generator,
                                            unsigned int pos,
-                                           const Sequence &context,
-                                                   unsigned int phase) const {
+                                           unsigned int phase,
+                                           const Sequence &context) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 
@@ -384,7 +384,7 @@ void MaximalDependenceDecomposition::_drawAux(
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]
-      = node->getModel()->standardGenerator()->drawSymbol(node->getIndex(), s);
+      = node->getModel()->standardGenerator()->drawSymbol(node->getIndex(), 0, s);
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _drawAux(s, node->getLeft());
     } else {
@@ -393,7 +393,7 @@ void MaximalDependenceDecomposition::_drawAux(
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->standardGenerator()->drawSymbol(i, s);
+        s[i] = node->getModel()->standardGenerator()->drawSymbol(i, 0, s);
       }
     }
   }

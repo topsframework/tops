@@ -416,8 +416,8 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
 
 Standard<Symbol> DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
                                               unsigned int pos,
-                                              const Sequence &context,
-                                              unsigned int phase) const {
+                                              unsigned int phase,
+                                              const Sequence &context) const {
   return draw();
 }
 

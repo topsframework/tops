@@ -137,8 +137,8 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 Standard<Symbol>
 SimilarityBasedSequenceWeighting::drawSymbol(SGPtr<Standard> generator,
                                              unsigned int pos,
-                                             const Sequence &context,
-                                             unsigned int phase) const {
+                                             unsigned int phase,
+                                             const Sequence &context) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 

@@ -68,9 +68,9 @@ class ProbabilisticModelDecorator
   // Overriden methods
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
-                              const Sequence &context,
-                              unsigned int phase) const override {
-    return _model->standardGenerator()->drawSymbol(pos, context, phase);
+                              unsigned int phase,
+                              const Sequence &context) const override {
+    return _model->standardGenerator()->drawSymbol(pos, phase, context);
   }
 
   double evaluate(const Sequence &s,

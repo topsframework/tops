@@ -69,15 +69,15 @@ MultipleSequentialModelPtr MultipleSequentialModel::make(
 Standard<Symbol>
 MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
                                             unsigned int pos,
-                                            const Sequence &context,
-                                            unsigned int phase) const {
+                                            unsigned int phase,
+                                            const Sequence &context) const {
   int index = pos;
   for (unsigned int j = 0; j < _models.size(); j++) {
     index -= _max_length[j];
     if (index < 0)
-      return _models[j]->standardGenerator()->drawSymbol(pos, context, phase);
+      return _models[j]->standardGenerator()->drawSymbol(pos, phase, context);
   }
-  return _models.back()->standardGenerator()->drawSymbol(pos, context, phase);
+  return _models.back()->standardGenerator()->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/
