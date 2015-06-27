@@ -27,7 +27,7 @@
 
 // ToPS templates
 #include "model/Generator.tcc"
-#include "model/MemberDetector.tcc"
+#include "model/MemberDelegator.tcc"
 
 namespace tops {
 namespace model {
@@ -39,10 +39,6 @@ namespace model {
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
-
-// Auxiliar tests
-GENERATE_HAS_MEMBER_METHOD(simpleChooseSymbol);
-GENERATE_HAS_MEMBER_METHOD(simpleChooseSequence);
 
 template<template<typename Target> class Decorator,
          typename Model, bool is_base>
@@ -83,20 +79,15 @@ class SimpleGenerator
   // Overriden methods
   Decorator<Symbol> chooseSymbol(unsigned int pos,
                                  const Sequence &context,
-                                 unsigned int phase) override {
-    return chooseSymbol(pos, context, phase,
-      typename has_method_simpleChooseSymbol<
-        Model, const Decorator<Symbol>(
-          SelfPtr, unsigned int, const Sequence &, unsigned int)
-      >::tag());
+                                 unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(chooseSymbol, simpleChooseSymbol, _model,
+                          pos, context, phase);
   }
 
   Decorator<Sequence> chooseSequence(unsigned int size,
-                                     unsigned int phase) override {
-    return chooseSequence(size, phase,
-      typename has_method_simpleChooseSequence<
-        Model, const Decorator<Sequence>(SelfPtr, unsigned int, unsigned int)
-      >::tag());
+                                     unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(chooseSequence, simpleChooseSequence, _model,
+                          size, phase);
   }
 
  protected:
@@ -109,38 +100,8 @@ class SimpleGenerator
   }
 
  private:
-  // Concrete methods
-  Decorator<Symbol> chooseSymbol(unsigned int size,
-                                 const Sequence &context,
-                                 unsigned int phase,
-                                 no_simpleChooseSymbol_tag) {
-    static_assert(is_base,
-      "Model does not have method simpleChooseSymbol");
-    throw std::logic_error(
-      "Calling from base with no method simpleChooseSymbol");
-  }
-
-  Decorator<Symbol> chooseSymbol(unsigned int pos,
-                                 const Sequence &context,
-                                 unsigned int phase,
-                                 has_simpleChooseSymbol_tag) {
-    return _model->simpleChooseSymbol(make_shared(), pos, context, phase);
-  }
-
-  Decorator<Sequence> chooseSequence(unsigned int size,
-                                     unsigned int phase,
-                                     no_simpleChooseSequence_tag) {
-    static_assert(is_base,
-      "Model does not have method simpleChooseSequence");
-    throw std::logic_error(
-      "Calling from base with no method simpleChooseSequence");
-  }
-
-  Decorator<Sequence> chooseSequence(unsigned int size,
-                                     unsigned int phase,
-                                     has_simpleChooseSequence_tag) {
-    return _model->simpleChooseSequence(make_shared(), size, phase);
-  }
+  GENERATE_METHOD_DELEGATOR(chooseSymbol, simpleChooseSymbol, _model)
+  GENERATE_METHOD_DELEGATOR(chooseSequence, simpleChooseSequence, _model)
 
   SimpleGeneratorPtr<Decorator, Model> make_shared() {
     return std::static_pointer_cast<Self>(this->shared_from_this());
