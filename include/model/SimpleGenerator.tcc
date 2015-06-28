@@ -100,10 +100,6 @@ class SimpleGenerator
  private:
   GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
   GENERATE_METHOD_DELEGATOR(drawSequence, _model)
-
-  SimpleGeneratorPtr<Decorator, Model> make_shared() {
-    return std::static_pointer_cast<Self>(this->shared_from_this());
-  }
 };
 
 }  // namespace model
