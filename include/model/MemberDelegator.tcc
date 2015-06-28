@@ -27,6 +27,16 @@ namespace tops {
 namespace model {
 
 /*============================================================================*/
+/*                           LATE EVALUATED BOOLEANS                          */
+/*============================================================================*/
+
+template<typename T>
+struct always_true : public std::integral_constant<bool, true> {};
+
+template<typename T>
+struct always_false : public std::integral_constant<bool, false> {};
+
+/*============================================================================*/
 /*                              CLASS OF POINTER                              */
 /*============================================================================*/
 
@@ -93,7 +103,8 @@ inline auto method##Impl(Args... args)                                         \
 template<typename... Args>                                                     \
 inline auto method##Impl(no_##method##_tag, Args... args) const                \
     -> decltype(this->method(args...)) {                                       \
-  static_assert(is_base, "Class don't have method 'method'!");                 \
+  static_assert(always_false<decltype(this)>::value,                           \
+                "Missing implementation of member function '" #method "'!");   \
   throw std::logic_error("Calling from base class with no 'method'");          \
 }                                                                              \
                                                                                \
@@ -126,7 +137,7 @@ inline auto method##Impl(has_##method##_tag, Args... args)                     \
 /*                           MEMBER DELEGATOR CALL                            */
 /*============================================================================*/
 
-#define CALL_METHOD_DELEGATOR(method, delegatedObject, ...)                    \
+#define CALL_METHOD_DELEGATOR(method, ...)                                     \
 do { return method##Impl(__VA_ARGS__); } while (false)
 
 }  // namespace model
