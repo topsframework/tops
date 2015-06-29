@@ -40,29 +40,22 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<typename Target> class Decorator,
-         typename Model, bool is_base>
+template<template<typename Target> class Decorator, typename Model>
 class SimpleGenerator;
 
 /**
  * @typedef SimpleGeneratorPtr
  * @brief Alias of pointer to SimpleGenerator.
  */
-template<template<typename Target> class Decorator,
-         typename Model, bool is_base = false>
-using SimpleGeneratorPtr
-    = std::shared_ptr<SimpleGenerator<Decorator, Model, is_base>>;
+template<template<typename Target> class Decorator, typename Model>
+using SimpleGeneratorPtr = std::shared_ptr<SimpleGenerator<Decorator, Model>>;
 
 /**
  * @class SimpleGenerator
  * @brief TODO
  */
-template<template<typename Target> class Decorator,
-         typename Model, bool is_base = false>
-class SimpleGenerator
-    : public std::conditional<!std::is_void<typename Model::Base>::value,
-               SimpleGenerator<Decorator, typename Model::Base, true>,
-               Generator<Decorator>>::type {
+template<template<typename Target> class Decorator, typename Model>
+class SimpleGenerator : public Generator<Decorator> {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
@@ -80,12 +73,12 @@ class SimpleGenerator
   Decorator<Symbol> drawSymbol(unsigned int pos,
                                unsigned int phase,
                                const Sequence &context) const override {
-    CALL_METHOD_DELEGATOR(drawSymbol, _model, pos, phase, context);
+    CALL_METHOD_DELEGATOR(drawSymbol, pos, phase, context);
   }
 
   Decorator<Sequence> drawSequence(unsigned int size,
                                    unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(drawSequence, _model, size, phase);
+    CALL_METHOD_DELEGATOR(drawSequence, size, phase);
   }
 
  protected:
@@ -93,7 +86,7 @@ class SimpleGenerator
   ModelPtr _model;
 
   // Constructors
-  SimpleGenerator(ModelPtr m = ModelPtr())
+  SimpleGenerator(ModelPtr m)
       : _model(std::move(m)) {
   }
 
