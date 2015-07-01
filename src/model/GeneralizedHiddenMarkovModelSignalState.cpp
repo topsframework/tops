@@ -27,15 +27,25 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
 GeneralizedHiddenMarkovModelSignalState::GeneralizedHiddenMarkovModelSignalState(
     Symbol symbol,
     ProbabilisticModelPtr observation,
     DiscreteIIDModelPtr transition,
     int duration_size)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration_size(duration_size) {
+      : GeneralizedHiddenMarkovModelState(symbol, observation, transition),
+        _duration_size(duration_size) {
 }
 
-GeneralizedHiddenMarkovModelSignalStatePtr GeneralizedHiddenMarkovModelSignalState::make(
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+GeneralizedHiddenMarkovModelSignalStatePtr
+GeneralizedHiddenMarkovModelSignalState::make(
     Symbol symbol,
     ProbabilisticModelPtr observation,
     DiscreteIIDModelPtr transition,
@@ -45,19 +55,29 @@ GeneralizedHiddenMarkovModelSignalStatePtr GeneralizedHiddenMarkovModelSignalSta
       symbol, observation, transition, duration_size));
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
+/*----------------------------------------------------------------------------*/
+
 double GeneralizedHiddenMarkovModelSignalState::durationProbability(int l) const {
   if (l == _duration_size)
     return 0.0;
   return -HUGE;
 }
 
+/*----------------------------------------------------------------------------*/
+
 int GeneralizedHiddenMarkovModelSignalState::maximumDurationSize() const {
   return _duration_size;
 }
 
+/*----------------------------------------------------------------------------*/
+
 RangePtr GeneralizedHiddenMarkovModelSignalState::durations() const {
   return std::make_shared<SingleValueRange>(_duration_size);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }
 }

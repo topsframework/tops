@@ -53,10 +53,6 @@ class SimilarityBasedSequenceWeighting
   // Alias
   using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
 
-  using Cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
-  using CEPtr = CachedEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
-
   // Static methods
   static SimilarityBasedSequenceWeightingPtr make(
       std::map<Sequence, double> counter,
@@ -73,31 +69,26 @@ class SimilarityBasedSequenceWeighting
       Sequence skip_sequence);
 
   // Overriden methods
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence &context) const override;
-
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false) override;
-
-  // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
 
  private:
   // Instance variables

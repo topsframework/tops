@@ -152,9 +152,21 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
 
   // Overriden methods
   /**
+   * Evaluates the given position of a sequence.
+   * @param standardEvaluator standardEvaluator of sequences
+   * @param pos position within standardEvaluator's sequence to be evaluated
+   * @return \f$Pr(s[i])\f$
+   */
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+
+  /**
    * Draws a new symbol in the ith position.
-   * @param s a sequence
-   * @param i a position
+   * @param generator Generator of sequences
+   * @param pos position of a symbol to be generated
+   * @param phase phase of a symbol to be generated
+   * @param context context to be considered in symbol generation
    * @return \f$x,\ x \in X\f$
    */
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
@@ -163,16 +175,6 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
                               const Sequence &context) const override;
 
   // Virtual methods
-  /**
-   * Evaluates the given position of a sequence.
-   * @param s   a sequence
-   * @param pos position of a sequence's symbol
-   * @return \f$Pr(s[i])\f$
-   */
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-
   /**
    * Draws a new symbol.
    * @return \f$x,\ x \in X\f$

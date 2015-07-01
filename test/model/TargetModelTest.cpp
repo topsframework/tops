@@ -54,21 +54,21 @@ TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
 }
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
-  ASSERT_THAT(target->evaluator({0, 1, 0})->probabilityOf(0, 3),
+  ASSERT_THAT(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3),
               DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluator({0, 1, 1})->probabilityOf(0, 3),
+  ASSERT_THAT(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
               DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->evaluator({0, 1, 1, 1})->probabilityOf(0, 4),
+  ASSERT_THAT(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4),
               DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
 }
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(target->evaluator({0, 1, 0}, true)->probabilityOf(0, 3),
-              DoubleEq(target->evaluator({0, 1, 0})->probabilityOf(0, 3)));
-  ASSERT_THAT(target->evaluator({0, 1, 1})->probabilityOf(0, 3),
-              DoubleEq(target->evaluator({0, 1, 1}, true)->probabilityOf(0, 3)));
-  ASSERT_THAT(target->evaluator({0, 1, 1, 1}, true)->probabilityOf(0, 4),
-              DoubleEq(target->evaluator({0, 1, 1, 1})->probabilityOf(0, 4)));
+  ASSERT_THAT(target->standardEvaluator({0, 1, 0}, true)->evaluateSequence(0, 3),
+              DoubleEq(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)));
+  ASSERT_THAT(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
+              DoubleEq(target->standardEvaluator({0, 1, 1}, true)->evaluateSequence(0, 3)));
+  ASSERT_THAT(target->standardEvaluator({0, 1, 1, 1}, true)->evaluateSequence(0, 4),
+              DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
 }
 
 TEST_F(ATargetModel, ShouldChooseSequenceWithSeed42) {

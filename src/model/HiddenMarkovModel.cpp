@@ -60,6 +60,8 @@ HiddenMarkovModelPtr HiddenMarkovModel::make(
     observation_alphabet_size));
 }
 
+/*----------------------------------------------------------------------------*/
+
 HiddenMarkovModelPtr HiddenMarkovModel::trainML(
     std::vector<Sequence> observation_training_set,
     std::vector<Sequence> state_training_set,
@@ -100,6 +102,8 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainML(
               state_alphabet_size,
               observation_alphabet_size);
 }
+
+/*----------------------------------------------------------------------------*/
 
 HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
     std::vector<Sequence> observation_training_set,
@@ -228,22 +232,133 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  EVALUATOR  ================================*/
+
+void HiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
+                                        unsigned int phase) {
+  initializeCache(evaluator->sequence(), evaluator->cache());
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
+  return -HUGE; // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
+                                                unsigned int begin,
+                                                unsigned int end,
+                                                unsigned int phase) const {
+  Matrix alpha;
+  forward(evaluator->sequence(), alpha);
+  double sum_end = -HUGE;
+  double sum_begin = -HUGE;
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    sum_end = log_sum(sum_end, alpha[k][end-1]);
+    if (begin != 0)
+      sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
+    else
+      sum_begin = 0;
+  }
+  return sum_end - sum_begin;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> evaluator,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
+  return -HUGE; // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
+                                                unsigned int begin,
+                                                unsigned int end,
+                                                unsigned int phase) const {
+  return evaluator->cache().prefix_sum_array[end]
+         - evaluator->cache().prefix_sum_array[begin];
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                        unsigned int phase) {
+  initializeCache(evaluator->sequence().observation(), evaluator->cache());
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
+  Probability transition;
+  const Sequence &observation = evaluator->sequence().observation();
+  const Sequence &label = evaluator->sequence().label();
+
+  if (pos == 0)
+    transition = _initial_probabilities
+      ->standardEvaluator(label)->evaluateSymbol(0);
+  else
+    transition = _states[label[pos-1]]->transitions()
+      ->standardEvaluator(label)->evaluateSymbol(pos);
+
+  return transition
+    + _states[label[pos]]->emissions()
+      ->standardEvaluator(observation)->evaluateSymbol(pos);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
+                                                unsigned int begin,
+                                                unsigned int end,
+                                                unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluateSymbol(evaluator, i, phase);
+  return prob;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                              unsigned int pos,
+                                              unsigned int phase) const {
+  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                                unsigned int begin,
+                                                unsigned int end,
+                                                unsigned int phase) const {
+  return evaluateSequence(
+    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
+}
+
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-HiddenMarkovModel::drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
-                              const Sequence &context) const {
+Standard<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Standard> generator,
+                                               unsigned int pos,
+                                               unsigned int phase,
+                                               const Sequence &context) const {
   // TODO(igorbonadio)
   return INVALID_SYMBOL;
 }
 
-Labeling<Symbol>
-HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
-                              unsigned int pos,
-                              unsigned int phase,
-                              const Sequence &context) const {
+/*----------------------------------------------------------------------------*/
+
+Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
+                                               unsigned int pos,
+                                               unsigned int phase,
+                                               const Sequence &context) const {
   Symbol y = (pos == 0) ? _initial_probabilities->draw()
                         : _states[context[pos-1]]->transitions()->draw();
   Symbol x = _states[y]->emissions()->draw();
@@ -251,10 +366,11 @@ HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
   return Labeling<Symbol>(x, y);
 }
 
-Labeling<Sequence>
-HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
-                                unsigned int size,
-                                unsigned int phase) const {
+/*----------------------------------------------------------------------------*/
+
+Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+                                                   unsigned int size,
+                                                   unsigned int phase) const {
   Sequence x, y;
   for (unsigned int i = 0; i < size; i++) {
     auto symbol_labeling = drawSymbol(generator, i, phase, y);
@@ -278,6 +394,8 @@ HiddenMarkovModel::labeling(const Sequence &xs,
   }
   return Estimation<Labeling<Sequence>>();
 }
+
+/*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::viterbi(const Sequence &xs,
@@ -324,11 +442,12 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
       Labeling<Sequence>(xs, std::move(ys)), max);
 }
 
+/*----------------------------------------------------------------------------*/
+
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
                                      Matrix &probabilities) const {
   posteriorProbabilities(xs, probabilities);
-
   Sequence path(xs.size());
 
   for (unsigned int i = 0; i < xs.size(); i++) {
@@ -341,53 +460,17 @@ HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
       }
     }
   }
-  return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)),
-      const_cast<HiddenMarkovModel*>(this)->decodableEvaluator(xs)->probabilityOf(
-          path, 0, xs.size()));
+
+  auto labeling = Labeling<Sequence>(xs, std::move(path));
+  auto probability
+    = const_cast<HiddenMarkovModel *>(this)->labelingEvaluator(labeling)->evaluateSequence(0, xs.size());
+
+  return Estimation<Labeling<Sequence>>(labeling, probability);
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
-
-/*==============================  EVALUATOR  =================================*/
-
-EvaluatorPtr HiddenMarkovModel::evaluator(const Sequence &s, bool cached) {
-  return decodableEvaluator(s, cached);
-}
-
-DecodableEvaluatorPtr HiddenMarkovModel::decodableEvaluator(const Sequence &s,
-                                                            bool cached) {
-  if (cached)
-    return DecodableEvaluator::make(
-      CachedEvaluatorImpl<HiddenMarkovModel>::make(
-        std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()),
-        s, Cache()));
-  return DecodableEvaluator::make(
-    SimpleEvaluatorImpl<HiddenMarkovModel>::make(
-      std::static_pointer_cast<HiddenMarkovModel>(shared_from_this()), s));
-}
-
-/*================================  OTHERS  ==================================*/
-
-double HiddenMarkovModel::evaluate(
-    const Sequence &xs,
-    unsigned int pos,
-    unsigned int phase) const {
-  return -HUGE;
-}
-
-double HiddenMarkovModel::evaluate(const Sequence &xs,
-                                   const Sequence &ys,
-                                   unsigned int i) const {
-  double transition;
-  if (i == 0)
-    transition = _initial_probabilities->probabilityOf(ys[0]);
-  else
-    transition = _states[ys[i-1]]->transitions()->probabilityOf(ys[i]);
-  return transition + _states[ys[i]]->emissions()->probabilityOf(xs[i]);
-}
 
 double HiddenMarkovModel::forward(const Sequence & xs, Matrix &alpha) const {
   alpha = std::vector<std::vector<double>>(
@@ -416,6 +499,8 @@ double HiddenMarkovModel::forward(const Sequence & xs, Matrix &alpha) const {
   }
   return sum;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
   beta = std::vector<std::vector<double>>(
@@ -449,6 +534,8 @@ double HiddenMarkovModel::backward(const Sequence & xs, Matrix &beta) const {
   return sum;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void HiddenMarkovModel::posteriorProbabilities(const Sequence & xs,
                                                Matrix & probabilities) const {
   probabilities = std::vector<std::vector<double>>(
@@ -470,94 +557,67 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence & xs,
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-/*==============================  EVALUATOR  =================================*/
-
-void HiddenMarkovModel::initializeCachedEvaluator(CEPtr evaluator,
-                                               unsigned int phase) {
-  evaluator->cache().prefix_sum_array.resize(evaluator->sequence().size()+1);
-  forward(evaluator->sequence(), evaluator->cache().alpha);
-  evaluator->cache().prefix_sum_array[0] = 0;
-  for (unsigned int i = 0; i < evaluator->sequence().size(); i++) {
-    evaluator->cache().prefix_sum_array[i] = -HUGE;
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      evaluator->cache().prefix_sum_array[i+1]
-        = log_sum(evaluator->cache().prefix_sum_array[i+1],
-                  evaluator->cache().alpha[k][i]);
-    }
-  }
-}
-
-double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
-                                              unsigned int begin,
-                                              unsigned int end,
-                                              unsigned int phase) const {
-  Matrix alpha;
-  forward(evaluator->sequence(), alpha);
-  double sum_end = -HUGE;
-  double sum_begin = -HUGE;
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    sum_end = log_sum(sum_end, alpha[k][end-1]);
-    if (begin != 0)
-      sum_begin = log_sum(sum_begin, alpha[k][begin-1]);
-    else
-      sum_begin = 0;
-  }
-  return sum_end - sum_begin;
-}
-
-double HiddenMarkovModel::cachedProbabilityOf(CEPtr evaluator,
-                                              unsigned int begin,
-                                              unsigned int end,
-                                           unsigned int phase) const {
-  return evaluator->cache().prefix_sum_array[end]
-         - evaluator->cache().prefix_sum_array[begin];
-}
-
-double HiddenMarkovModel::simpleProbabilityOf(SEPtr evaluator,
-                                              const Sequence &s,
-                                              unsigned int begin,
-                                              unsigned int end) const {
-  double prob = 0;
-  for (unsigned int i = begin; i < end; i++)
-    prob += evaluate(evaluator->sequence(), s, i);
-  return prob;
-}
-
-Estimation<Labeling<Sequence>>
-HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
-                                  Labeling<Sequence>::Method method) {
-  Matrix matrix;
-  return labeling(evaluator->sequence(), matrix, method);
-}
-
-Estimation<Labeling<Sequence>>
-HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
-                                  Labeling<Sequence>::Method method) {
-  switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
-      return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
-    case Labeling<Sequence>::Method::posteriorDecoding:
-      return labeling(evaluator->sequence(),
-                      evaluator->cache().posterior_decoding,
-                      method);
-  }
-  // TODO(renatocf): throw exception
-  return Estimation<Labeling<Sequence>>();
-}
-
 /*================================  OTHERS  ==================================*/
+
+// Estimation<Labeling<Sequence>>
+// HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
+//                                   Labeling<Sequence>::Method method) {
+//   Matrix matrix;
+//   return labeling(evaluator->sequence(), matrix, method);
+// }
+
+/*----------------------------------------------------------------------------*/
+
+// Estimation<Labeling<Sequence>>
+// HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
+//                                   Labeling<Sequence>::Method method) {
+//   switch (method) {
+//     case Labeling<Sequence>::Method::bestPath:
+//       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
+//     case Labeling<Sequence>::Method::posteriorDecoding:
+//       return labeling(evaluator->sequence(),
+//                       evaluator->cache().posterior_decoding,
+//                       method);
+//   }
+//   // TODO(renatocf): throw exception
+//   return Estimation<Labeling<Sequence>>();
+// }
+
+/*----------------------------------------------------------------------------*/
 
 HiddenMarkovModelStatePtr HiddenMarkovModel::state(unsigned int i) const {
   return _states[i];
 }
 
+/*----------------------------------------------------------------------------*/
+
 unsigned int HiddenMarkovModel::stateAlphabetSize() const {
   return _state_alphabet_size;
 }
 
+/*----------------------------------------------------------------------------*/
+
 unsigned int HiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(const Sequence &sequence,
+                                        Cache &cache) {
+  cache.prefix_sum_array.resize(sequence.size()+1);
+  forward(sequence, cache.alpha);
+  cache.prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < sequence.size(); i++) {
+    cache.prefix_sum_array[i] = -HUGE;
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      cache.prefix_sum_array[i+1]
+        = log_sum(cache.prefix_sum_array[i+1], cache.alpha[k][i]);
+    }
+  }
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

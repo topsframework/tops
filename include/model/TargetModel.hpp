@@ -47,10 +47,10 @@ class TargetModel : public DiscreteIIDModel {
   // Static methods
   static TargetModelPtr make(int alphabet_size);
 
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
+  // Overriden methods
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
 
   // Concrete methods
   DiscreteIIDModelPtr sequenceDistribution(const Sequence &s) const;

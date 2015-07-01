@@ -66,59 +66,34 @@ MultipleSequentialModelPtr MultipleSequentialModel::make(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
-                                            unsigned int pos,
-                                            unsigned int phase,
-                                            const Sequence &context) const {
-  int index = pos;
-  for (unsigned int j = 0; j < _models.size(); j++) {
-    index -= _max_length[j];
-    if (index < 0)
-      return _models[j]->standardGenerator()->drawSymbol(pos, phase, context);
-  }
-  return _models.back()->standardGenerator()->drawSymbol(pos, phase, context);
+/*===============================  EVALUATOR  ================================*/
+
+void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
+                                              unsigned int phase) {
+  evaluator->cache().evaluators.resize(_models.size());
+
+  for (unsigned int i = 0; i < _models.size(); i++)
+    evaluator->cache().evaluators[i]
+      = _models[i]->standardEvaluator(evaluator->sequence(), true);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
 
-double MultipleSequentialModel::evaluate(const Sequence &s,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
+Probability
+MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                        unsigned int pos,
+                                        unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
 
-EvaluatorPtr MultipleSequentialModel::evaluator(const Sequence &s,
-                                               bool cached) {
-  if (cached)
-    return Evaluator::make(
-      CachedEvaluatorImpl<MultipleSequentialModel>::make(
-        std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
-        s, Cache(_models.size())));
-  return Evaluator::make(
-    SimpleEvaluatorImpl<MultipleSequentialModel>::make(
-      std::static_pointer_cast<MultipleSequentialModel>(shared_from_this()),
-      s));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-void MultipleSequentialModel::initializeCachedEvaluator(CEPtr evaluator,
-                                                        unsigned int phase) {
-  auto &evaluators = evaluator->cache();
-  for (unsigned int i = 0; i < _models.size(); i++)
-    evaluators[i] = _models[i]->evaluator(evaluator->sequence(), true);
-}
-
-double MultipleSequentialModel::simpleProbabilityOf(SEPtr evaluator,
-                                                    unsigned int begin,
-                                                    unsigned int end,
-                                                    unsigned int phase) const {
+Probability
+MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const {
   if (begin > end)
     return -HUGE;
 
@@ -130,7 +105,8 @@ double MultipleSequentialModel::simpleProbabilityOf(SEPtr evaluator,
     e = b + _max_length[i] - 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size()-1;
-    sum += _models[i]->evaluator(evaluator->sequence())->probabilityOf(b, e, phase);
+    sum += _models[i]->standardEvaluator(evaluator->sequence())
+      ->evaluateSequence(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
@@ -148,23 +124,28 @@ double MultipleSequentialModel::simpleProbabilityOf(SEPtr evaluator,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += _models[i]->evaluator(evaluator->sequence())->probabilityOf(b, e, phase2);
+    sum += _models[i]->standardEvaluator(evaluator->sequence())
+      ->evaluateSequence(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0)
-    sum += _models[_idx_not_limited]->evaluator(evaluator->sequence())->probabilityOf(
-      begin_of_not_limited, end_of_not_limited, phase);
+    sum += _models[_idx_not_limited]
+      ->standardEvaluator(evaluator->sequence())->evaluateSequence(
+        begin_of_not_limited, end_of_not_limited, phase);
   return sum;
 }
 
-double MultipleSequentialModel::cachedProbabilityOf(CEPtr evaluator,
-                                                    unsigned int begin,
-                                                    unsigned int end,
-                                                    unsigned int phase) const {
-  auto &evaluators = evaluator->cache();
+/*----------------------------------------------------------------------------*/
+
+Probability
+MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const {
+  auto &evaluators = evaluator->cache().evaluators;
   double sum = 0;
   int b = begin;
   int e = 0;
@@ -172,7 +153,7 @@ double MultipleSequentialModel::cachedProbabilityOf(CEPtr evaluator,
     e = b + _max_length[i] - 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size()-1;
-    sum += evaluators[i]->probabilityOf(b, e, phase);
+    sum += evaluators[i]->evaluateSequence(b, e, phase);
     if (e >= static_cast<int>(end))
       return sum;
 
@@ -190,18 +171,36 @@ double MultipleSequentialModel::cachedProbabilityOf(CEPtr evaluator,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += evaluators[i]->probabilityOf(b, e, phase2);
+    sum += evaluators[i]->evaluateSequence(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0) {
-    sum += evaluators[_idx_not_limited]->probabilityOf(
+    sum += evaluators[_idx_not_limited]->evaluateSequence(
         begin_of_not_limited, end_of_not_limited, phase);
   }
   return sum;
 }
+
+/*===============================  GENERATOR  ================================*/
+
+Standard<Symbol>
+MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
+                                            unsigned int pos,
+                                            unsigned int phase,
+                                            const Sequence &context) const {
+  int index = pos;
+  for (unsigned int j = 0; j < _models.size(); j++) {
+    index -= _max_length[j];
+    if (index < 0)
+      return _models[j]->standardGenerator()->drawSymbol(pos, phase, context);
+  }
+  return _models.back()->standardGenerator()->drawSymbol(pos, phase, context);
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -44,9 +44,13 @@ bool Consensus::is(unsigned int symbol) const {
     std::begin(_symbols), std::end(_symbols), symbol) != std::end(_symbols);
 }
 
+/*----------------------------------------------------------------------------*/
+
 const Sequence Consensus::symbols() const {
   return _symbols;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

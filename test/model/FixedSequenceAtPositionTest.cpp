@@ -56,13 +56,13 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 0, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 1, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 0, 1, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})->evaluateSequence(0, 8),
               DoubleNear(-10.1029, 1e-4));
 }
 

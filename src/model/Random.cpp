@@ -27,16 +27,24 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+
 std::mt19937 generator(42);
+
+/*----------------------------------------------------------------------------*/
 
 void resetRandom() {
   generator.seed(42);
 }
 
+/*----------------------------------------------------------------------------*/
+
 double generateRandomDouble(bool reset) {
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
   return distribution(generator);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

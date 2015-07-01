@@ -105,75 +105,73 @@ PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  EVALUATOR  ================================*/
+
+void PhasedInhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
+                                                     unsigned int phase) {
+  auto &prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
+
+  prefix_sum_matrix.resize(_vlmcs.size());
+  for (auto& prefix_sum_array : prefix_sum_matrix)
+    prefix_sum_array.resize(evaluator->sequence().size() + 1);
+
+  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+
+  for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
+    prefix_sum_matrix[t][0] = 0;
+    for (unsigned int i = 0; i < evaluator->sequence().size(); i++) {
+      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i]
+        + evaluateSymbol(simple_evaluator, i, t);
+    }
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PhasedInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+                                               unsigned int pos,
+                                               unsigned int phase) const {
+  return _vlmcs[(pos + phase) % _vlmcs.size()]
+    ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PhasedInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
+                                                 unsigned int begin,
+                                                 unsigned int end,
+                                                 unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluator->evaluateSymbol(i, phase);
+  return prob;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PhasedInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
+                                                 unsigned int begin,
+                                                 unsigned int end,
+                                                 unsigned int phase) const {
+  auto &prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
+  return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
+}
+
+/*===============================  GENERATOR  ================================*/
+
 Standard<Symbol>
 PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                                   unsigned int pos,
-                                                   unsigned int phase,
-                                                   const Sequence &context) const {
+                                           unsigned int pos,
+                                           unsigned int phase,
+                                           const Sequence &context) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
   return vlmc->standardGenerator()->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-double PhasedInhomogeneousMarkovChain::evaluate(
-    const Sequence &s,
-    unsigned int pos,
-    unsigned int phase) const {
-  return _vlmcs[(pos + phase) % _vlmcs.size()]->evaluate(s, pos);
-}
-
-EvaluatorPtr PhasedInhomogeneousMarkovChain::evaluator(const Sequence &s,
-                                                      bool cached) {
-  if (cached)
-    return Evaluator::make(
-      CachedEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
-        std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
-        s, Cache(_vlmcs.size(), std::vector<double>(s.size() + 1))));
-  return Evaluator::make(
-    SimpleEvaluatorImpl<PhasedInhomogeneousMarkovChain>::make(
-      std::static_pointer_cast<PhasedInhomogeneousMarkovChain>(shared_from_this()),
-      s));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
-
-void PhasedInhomogeneousMarkovChain::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &prefix_sum_matrix = evaluator->cache();
-  for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
-    prefix_sum_matrix[t][0] = 0;
-    for (unsigned int i = 0; i < evaluator->sequence().size() ; i++) {
-      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i] + evaluate(evaluator->sequence(), i, t);
-    }
-  }
-}
-
-double PhasedInhomogeneousMarkovChain::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  double prob = 0;
-  for (unsigned int i = begin; i < end; i++)
-    prob += evaluate(evaluator->sequence(), i);
-  return prob;
-}
-
-double PhasedInhomogeneousMarkovChain::cachedProbabilityOf(
-    CEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  auto &prefix_sum_matrix = evaluator->cache();
-  return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
-}
-
 
 }  // namespace model
 }  // namespace tops

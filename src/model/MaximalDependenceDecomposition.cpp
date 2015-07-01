@@ -21,12 +21,14 @@
 #include <cmath>
 #include <vector>
 #include <string>
-#include <algorithm>
 #include <sstream>
+#include <algorithm>
 
 // ToPS headers
 #include "MaximalDependenceDecomposition.hpp"
 #include "Util.hpp"
+
+#include <iostream>
 
 namespace tops {
 namespace model {
@@ -58,6 +60,8 @@ MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
                                        tree));
 }
 
+/*----------------------------------------------------------------------------*/
+
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -74,6 +78,8 @@ MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(
               consensus_model));
 }
 
+/*----------------------------------------------------------------------------*/
+
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
     std::vector<Sequence> training_set,
     int divmin,
@@ -89,6 +95,8 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
                  consensus_sequence,
                  consensus_model);
 }
+
+/*----------------------------------------------------------------------------*/
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     std::string node_name,
@@ -113,7 +121,8 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
-    double prob = consensus_model->evaluate(s, consensus_index);
+    double prob = consensus_model
+      ->standardEvaluator(s)->evaluateSymbol(consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
                                                           model,
@@ -175,6 +184,8 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
   return mdd_node;
 }
 
+/*----------------------------------------------------------------------------*/
+
 InhomogeneousMarkovChainPtr
 MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
     std::vector<Sequence> & sequences,
@@ -198,6 +209,8 @@ MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
   return InhomogeneousMarkovChain::make(position_specific_vlmcs);
 }
 
+/*----------------------------------------------------------------------------*/
+
 int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     InhomogeneousMarkovChainPtr model,
     Sequence selected,
@@ -214,9 +227,9 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
         double chi = -HUGE;
         for (unsigned int k = 0; k < alphabet_size; k++) {
           s[i] = k;
-          double e = consensus_model->evaluate(s, i);
+          double e = consensus_model->standardEvaluator(s)->evaluateSymbol(i);
           s[j] = k;
-          double o = model->evaluate(s, j);
+          double o = model->standardEvaluator(s)->evaluateSymbol(j);
           double x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
@@ -242,6 +255,8 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
   return maximal_i;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void MaximalDependenceDecomposition::subset(
     int index,
     std::vector<Sequence> & sequences,
@@ -258,58 +273,45 @@ void MaximalDependenceDecomposition::subset(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 /*==============================  EVALUATOR  =================================*/
 
-EvaluatorPtr MaximalDependenceDecomposition::evaluator(
-    const Sequence &s,
-    bool cached) {
-  if (cached)
-    return Evaluator::make(
-      CachedEvaluatorImpl<MaximalDependenceDecomposition>::make(
-        std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
-        s, Cache()));
-  return Evaluator::make(
-    SimpleEvaluatorImpl<MaximalDependenceDecomposition>::make(
-      std::static_pointer_cast<MaximalDependenceDecomposition>(shared_from_this()),
-      s));
+void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
+                                                     unsigned int phase) {
+  int slen = evaluator->sequence().size();
+  int clen = _consensus_sequence.size();
+
+  if (slen - clen + 1 <= 0) return;
+
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(slen - clen + 1);
+
+  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+
+  for (int i = 0; i < slen - clen + 1; i++)
+    prefix_sum_array[i]
+      = evaluateSequence(simple_evaluator, i, i + clen, phase);
 }
 
-/*================================  OTHERS  ==================================*/
+/*----------------------------------------------------------------------------*/
 
-double MaximalDependenceDecomposition::evaluate(
-    const Sequence &s,
-     unsigned int pos,
-     unsigned int phase) const {
+Probability
+MaximalDependenceDecomposition::evaluateSymbol(SEPtr<Standard> evaluator,
+                                               unsigned int pos,
+                                               unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
 
-/*==============================  EVALUATOR  =================================*/
-
-void MaximalDependenceDecomposition::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache();
-  prefix_sum_array.clear();
-  int len = evaluator->sequence().size();
-  int clen = _consensus_sequence.size();
-  for (int i = 0; i <= (len - clen); i++) {
-    prefix_sum_array.push_back(simpleProbabilityOf(evaluator, i, i + clen));
-  }
-}
-
-double MaximalDependenceDecomposition::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+Probability
+MaximalDependenceDecomposition::evaluateSequence(SEPtr<Standard> evaluator,
+                                                 unsigned int begin,
+                                                 unsigned int end,
+                                                 unsigned int phase) const {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   auto first = evaluator->sequence().begin() + begin;
@@ -319,12 +321,14 @@ double MaximalDependenceDecomposition::simpleProbabilityOf(
   return _probabilityOf(subseq, _mdd_tree, indexes);
 }
 
-double MaximalDependenceDecomposition::cachedProbabilityOf(
-    CEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->cache();
+/*----------------------------------------------------------------------------*/
+
+Probability
+MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
+                                                 unsigned int begin,
+                                                 unsigned int end,
+                                                 unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   return prefix_sum_array[begin];
@@ -349,6 +353,10 @@ MaximalDependenceDecomposition::drawSequence(
   return Sequence(size, INVALID_SYMBOL);
 }
 
+/*----------------------------------------------------------------------------*/
+/*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
 /*================================  OTHERS  ==================================*/
 
 double MaximalDependenceDecomposition::_probabilityOf(
@@ -357,27 +365,25 @@ double MaximalDependenceDecomposition::_probabilityOf(
     std::vector<int> &indexes) const {
   double p = 0;
   if (node->getLeft()) {
-    p = node->getModel()->evaluate(s, node->getIndex());
+    p = node->getModel()
+      ->standardEvaluator(s)->evaluateSymbol(node->getIndex());
     indexes.push_back(node->getIndex());
-    // cout << node->getIndex() << endl;
-    // cout << "tem filho" << endl;
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
-      // cout << "eh consensus" << endl;
       p += _probabilityOf(s, node->getLeft(), indexes);
     } else {
-      // cout << "nao eh consensus" << endl;
       p += _probabilityOf(s, node->getRight(), indexes);
     }
   } else {  // leaf
-    // cout << "nao tem filho" << endl;
     for (unsigned int i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
-        p += node->getModel()->evaluate(s, i);
+        p += node->getModel()->standardEvaluator(s)->evaluateSymbol(i);
       }
     }
   }
   return p;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecomposition::_drawAux(
     Sequence &s,
@@ -398,6 +404,8 @@ void MaximalDependenceDecomposition::_drawAux(
     }
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

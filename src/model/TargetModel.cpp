@@ -45,18 +45,27 @@ TargetModelPtr TargetModel::make(int alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-double TargetModel::evaluate(const Sequence &s,
-                             unsigned int pos,
-                             unsigned int phase) const {
-  return sequenceDistribution(s)->evaluate(s, pos);
+/*===============================  EVALUATOR  ================================*/
+
+Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                        unsigned int pos,
+                                        unsigned int phase) const {
+  return sequenceDistribution(evaluator->sequence())
+    ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence &s) const {
   return DiscreteIIDModel::trainML({s}, alphabetSize());
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

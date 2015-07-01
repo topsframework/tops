@@ -50,6 +50,19 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+Probability
+InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+                                         unsigned int pos,
+                                         unsigned int phase) const {
+  if (pos + phase < _vlmcs.size())
+    return _vlmcs[pos + phase]->standardEvaluator(
+             evaluator->sequence())->evaluateSymbol(pos);
+  else
+    return -HUGE;
+}
+
+/*----------------------------------------------------------------------------*/
+
 Standard<Symbol>
 InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                      unsigned int pos,
@@ -68,22 +81,17 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
-  else
-    return -HUGE;
-}
-
 InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
   return this;
 }
 
+/*----------------------------------------------------------------------------*/
+
 unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
   return _vlmcs.size();
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

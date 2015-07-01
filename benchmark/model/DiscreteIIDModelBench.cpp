@@ -51,7 +51,7 @@ static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
     state.PauseTiming();
     auto sequence = generateRandomSequence(state.range_y(), state.range_x());
     state.ResumeTiming();
-    model->evaluator(sequence, 0, state.range_y()-1);
+    model->standardEvaluator(sequence, 0, state.range_y()-1);
   }
 }
 BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);

@@ -35,6 +35,8 @@
 // ToPS templates
 #include "model/ProbabilisticModelDecorator.tcc"
 
+#include <iostream>
+
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
@@ -75,22 +77,22 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
     for (auto symbol : data) {
       result += iid->probabilityOf(symbol);
     }
-    ASSERT_THAT(iid->evaluator(data)->probabilityOf(0, 4), DoubleEq(result));
+    ASSERT_THAT(iid->standardEvaluator(data)->evaluateSequence(0, 4), DoubleEq(result));
   }
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
-  auto evaluator = iid->evaluator({0, 1, 0});
-  ASSERT_THAT(evaluator->probabilityOf(0, 1), DoubleEq(log(0.2)));
-  ASSERT_THAT(evaluator->probabilityOf(1, 2), DoubleEq(log(0.8)));
-  ASSERT_THAT(evaluator->probabilityOf(2, 3), DoubleEq(log(0.2)));
+  auto evaluator = iid->standardEvaluator({0, 1, 0});
+  ASSERT_THAT(evaluator->evaluateSequence(0, 1), DoubleEq(log(0.2)));
+  ASSERT_THAT(evaluator->evaluateSequence(1, 2), DoubleEq(log(0.8)));
+  ASSERT_THAT(evaluator->evaluateSequence(2, 3), DoubleEq(log(0.2)));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(iid->evaluator(data, true)->probabilityOf(0, data.size()),
-                DoubleEq(iid->evaluator(data)->probabilityOf(0, data.size())));
+    ASSERT_THAT(iid->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
+                DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, data.size())));
   }
 }
 

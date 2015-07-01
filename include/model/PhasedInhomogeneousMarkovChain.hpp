@@ -52,12 +52,13 @@ using PhasedInhomogeneousMarkovChainPtr
 class PhasedInhomogeneousMarkovChain
     : public ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain> {
  public:
+  // Inner classes
+  struct Cache : ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>::Cache {
+    Matrix prefix_sum_matrix;
+  };
+
   // Alias
   using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
-
-  using Cache = Matrix;
-  using SEPtr = SimpleEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
-  using CEPtr = CachedEvaluatorImplPtr<PhasedInhomogeneousMarkovChain>;
 
   // Static methods
   static PhasedInhomogeneousMarkovChainPtr make(
@@ -73,31 +74,26 @@ class PhasedInhomogeneousMarkovChain
       ProbabilisticModelPtr apriori);
 
   // Virtual methods
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence &context) const override;
-
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false) override;
-
-  // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
 
  private:
   // Instance variables

@@ -38,32 +38,40 @@ class GeneralizedHiddenMarkovModelExplicitDurationState;
  * @typedef GeneralizedHiddenMarkovModelExplicitDurationStatePtr
  * @brief Alias of pointer to GeneralizedHiddenMarkovModelExplicitDurationState.
  */
-using GeneralizedHiddenMarkovModelExplicitDurationStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelExplicitDurationState>;
+using GeneralizedHiddenMarkovModelExplicitDurationStatePtr
+  = std::shared_ptr<GeneralizedHiddenMarkovModelExplicitDurationState>;
 
 /**
  * @class GeneralizedHiddenMarkovModelExplicitDurationState
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelExplicitDurationState : public GeneralizedHiddenMarkovModelState {
+class GeneralizedHiddenMarkovModelExplicitDurationState
+    : public GeneralizedHiddenMarkovModelState {
  public:
-  static GeneralizedHiddenMarkovModelExplicitDurationStatePtr make(Symbol symbol,
-                                                                   ProbabilisticModelPtr observation,
-                                                                   DiscreteIIDModelPtr transition,
-                                                                   DiscreteIIDModelPtr duration);
+  // Static methods
+  static GeneralizedHiddenMarkovModelExplicitDurationStatePtr make(
+      Symbol symbol,
+      ProbabilisticModelPtr observation,
+      DiscreteIIDModelPtr transition,
+      DiscreteIIDModelPtr duration);
 
+  // Virtual methods
   virtual double durationProbability(int l) const;
   virtual bool isGeometricDuration() const;
   virtual int maximumDurationSize() const;
   virtual RangePtr durations() const;
 
  private:
-  GeneralizedHiddenMarkovModelExplicitDurationState(Symbol symbol,
-                                                    ProbabilisticModelPtr observation,
-                                                    DiscreteIIDModelPtr transition,
-                                                    DiscreteIIDModelPtr duration);
-
+  // Instance variables
   DiscreteIIDModelPtr _duration;
   unsigned int _max_duration = 100;
+
+  // Constructors
+  GeneralizedHiddenMarkovModelExplicitDurationState(
+      Symbol symbol,
+      ProbabilisticModelPtr observation,
+      DiscreteIIDModelPtr transition,
+      DiscreteIIDModelPtr duration);
 };
 
 }  // namespace model

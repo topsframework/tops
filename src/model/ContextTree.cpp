@@ -53,9 +53,13 @@ std::vector<ContextTreeNodePtr> & ContextTree::all_context() {
   return _all_context;
 }
 
+/*----------------------------------------------------------------------------*/
+
 ContextTreeNodePtr ContextTree::getRoot() const {
-    return _all_context[0];
-  }
+  return _all_context[0];
+}
+
+/*----------------------------------------------------------------------------*/
 
 ContextTreeNodePtr ContextTree::createContext() {
   ContextTreeNodePtr n = ContextTreeNode::make(_alphabet_size);
@@ -66,9 +70,13 @@ ContextTreeNodePtr ContextTree::createContext() {
   return n;
 }
 
+/*----------------------------------------------------------------------------*/
+
 ContextTreeNodePtr ContextTree::getContext(int id) {
   return _all_context[id];
 }
+
+/*----------------------------------------------------------------------------*/
 
 //! get the context for the sequence s[i-1], s[i-2], s[i-3]...
 ContextTreeNodePtr ContextTree::getContext(const Sequence & s, int i) {
@@ -87,6 +95,8 @@ ContextTreeNodePtr ContextTree::getContext(const Sequence & s, int i) {
   }
   return c;
 }
+
+/*----------------------------------------------------------------------------*/
 
 std::set<int> ContextTree::getLevelOneNodes() {
   std::set<int> result;
@@ -108,6 +118,8 @@ std::set<int> ContextTree::getLevelOneNodes() {
   return result;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTree::removeContextNotUsed() {
   std::vector <ContextTreeNodePtr> newAllVector;
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
@@ -123,6 +135,8 @@ void ContextTree::removeContextNotUsed() {
   _all_context = newAllVector;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTree::normalize() {
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     double total = 0;
@@ -136,6 +150,8 @@ void ContextTree::normalize() {
     _all_context[i]->setDistribution(distr);
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
   if (old == NULL) {
@@ -167,7 +183,7 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
       s3 = s;
       s3.push_back(l);
 
-      double prob = exp(old->evaluate(s3, s3.size()-1));
+      double prob = exp(old->standardEvaluator(s3)->evaluateSymbol(s3.size()-1));
 
       probs[l] = log(static_cast<double>((_all_context[i]->getCounter())[l]
                  + pseudocount*prob)/(total + pseudocount));
@@ -178,11 +194,15 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
                                   int order,
                                   const std::vector<double> &weights) {
   initializeCounter(sequences, order, 0, weights);
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
                                     int order,
@@ -230,6 +250,8 @@ void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTree::pruneTreeSmallSampleSize(int small_) {
   std::set<int> x = getLevelOneNodes();
   std::vector<int> nodesToPrune(x.begin(), x.end());
@@ -274,6 +296,8 @@ void ContextTree::pruneTreeSmallSampleSize(int small_) {
     }
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTree::pruneTree(double delta) {
   double sample_size = 0.0;
@@ -332,6 +356,8 @@ void ContextTree::pruneTree(double delta) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTree::initializeContextTreeRissanen(
     const std::vector<Sequence> & sequences) {
   ContextTreeNodePtr root = createContext();
@@ -389,13 +415,19 @@ void ContextTree::initializeContextTreeRissanen(
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 int ContextTree::getNumberOfNodes() const {
   return _all_context.size();
 }
 
+/*----------------------------------------------------------------------------*/
+
 int ContextTree::alphabetSize() const {
   return _alphabet_size;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

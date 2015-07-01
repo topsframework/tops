@@ -38,7 +38,8 @@ class GeneralizedHiddenMarkovModelState;
  * @typedef GeneralizedHiddenMarkovModelStatePtr
  * @brief Alias of pointer to GeneralizedHiddenMarkovModelState.
  */
-using GeneralizedHiddenMarkovModelStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelState>;
+using GeneralizedHiddenMarkovModelStatePtr
+  = std::shared_ptr<GeneralizedHiddenMarkovModelState>;
 
 /**
  * @class GeneralizedHiddenMarkovModelState
@@ -46,15 +47,19 @@ using GeneralizedHiddenMarkovModelStatePtr = std::shared_ptr<GeneralizedHiddenMa
  */
 class GeneralizedHiddenMarkovModelState {
  public:
-  static GeneralizedHiddenMarkovModelStatePtr make(Symbol symbol,
-                                                   ProbabilisticModelPtr observation,
-                                                   DiscreteIIDModelPtr transition);
+  // Static methods
+  static GeneralizedHiddenMarkovModelStatePtr make(
+      Symbol symbol,
+      ProbabilisticModelPtr observation,
+      DiscreteIIDModelPtr transition);
 
+  // Virtual methods
   virtual double durationProbability(int l) const;
   virtual bool isGeometricDuration() const;
   virtual int maximumDurationSize() const;
   virtual RangePtr durations() const;
 
+  // Concrete methods
   Symbol symbol();
   ProbabilisticModelPtr observation();
   DiscreteIIDModelPtr transition();
@@ -64,15 +69,18 @@ class GeneralizedHiddenMarkovModelState {
   std::vector<int>& successors();
 
  protected:
-  GeneralizedHiddenMarkovModelState(Symbol symbol,
-                                    ProbabilisticModelPtr observation,
-                                    DiscreteIIDModelPtr transition);
-
+  // Instance variables
   Symbol _symbol;
   ProbabilisticModelPtr _observation;
   DiscreteIIDModelPtr _transition;
   std::vector<int> _predecessors;
   std::vector<int> _successors;
+
+  // Constructors
+  GeneralizedHiddenMarkovModelState(
+      Symbol symbol,
+      ProbabilisticModelPtr observation,
+      DiscreteIIDModelPtr transition);
 };
 
 }  // namespace model

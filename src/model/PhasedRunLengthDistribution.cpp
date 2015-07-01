@@ -23,39 +23,14 @@
 
 // ToPS headers
 #include "model/PhasedRunLengthDistribution.hpp"
-
 #include "model/Util.hpp"
 
 namespace tops {
 namespace model {
 
-PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::make(
-    std::vector<double> probabilities,
-    int delta,
-    int input_phase,
-    int output_phase,
-    int nphase) {
-  return PhasedRunLengthDistributionPtr(
-    new PhasedRunLengthDistribution(probabilities,
-                                    delta,
-                                    input_phase,
-                                    output_phase,
-                                    nphase));
-}
-
-PhasedRunLengthDistributionPtr
-  PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
-    DiscreteIIDModelPtr model,
-    int delta,
-    int input_phase,
-    int output_phase,
-    int nphase) {
-  return make(model->probabilities(),
-              delta,
-              input_phase,
-              output_phase,
-              nphase);
-}
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
 
 PhasedRunLengthDistribution::PhasedRunLengthDistribution(
     std::vector<double> probabilities,
@@ -76,16 +51,43 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
   _normfactor = sum;
 }
 
-int PhasedRunLengthDistribution::mod(int D, int d) const {
-  int r = D%d;
-  if (r < 0) {
-    if (d > 0)
-      r = r + d;
-    else
-      r = r - d;
-  }
-  return r;
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::make(
+    std::vector<double> probabilities,
+    int delta,
+    int input_phase,
+    int output_phase,
+    int nphase) {
+  return PhasedRunLengthDistributionPtr(
+    new PhasedRunLengthDistribution(probabilities,
+                                    delta,
+                                    input_phase,
+                                    output_phase,
+                                    nphase));
 }
+
+/*----------------------------------------------------------------------------*/
+
+PhasedRunLengthDistributionPtr
+  PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
+    DiscreteIIDModelPtr model,
+    int delta,
+    int input_phase,
+    int output_phase,
+    int nphase) {
+  return make(model->probabilities(),
+              delta,
+              input_phase,
+              output_phase,
+              nphase);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 double PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   int d = s + _delta;
@@ -94,6 +96,8 @@ double PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   double result = DiscreteIIDModel::probabilityOf(d);
   return result-_normfactor;
 }
+
+/*----------------------------------------------------------------------------*/
 
 Symbol PhasedRunLengthDistribution::draw() const {
   int L = static_cast<int>(DiscreteIIDModel::draw());
@@ -110,6 +114,23 @@ Symbol PhasedRunLengthDistribution::draw() const {
 
   return d;
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+int PhasedRunLengthDistribution::mod(int D, int d) const {
+  int r = D%d;
+  if (r < 0) {
+    if (d > 0)
+      r = r + d;
+    else
+      r = r - d;
+  }
+  return r;
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

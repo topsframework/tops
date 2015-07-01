@@ -45,6 +45,8 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
     new VariableLengthMarkovChain(context_tree));
 }
 
+/*----------------------------------------------------------------------------*/
+
 VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size,
@@ -57,6 +59,8 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
   tree->normalize();
   return VariableLengthMarkovChain::make(tree);
 }
+
+/*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
   VariableLengthMarkovChain::trainFixedLengthMarkovChain(
@@ -80,6 +84,8 @@ VariableLengthMarkovChainPtr
 
   return VariableLengthMarkovChain::make(tree);
 }
+
+/*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
 VariableLengthMarkovChain::trainInterpolatedMarkovChain(
@@ -108,6 +114,20 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+Probability
+VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+                                          unsigned int pos,
+                                          unsigned int phase) const {
+  ContextTreeNodePtr c = _context_tree->getContext(evaluator->sequence(), pos);
+  if (c == NULL)
+    return -HUGE;
+  else
+    return c->getDistribution()->standardEvaluator(
+             evaluator->sequence())->evaluateSymbol(pos);
+}
+
+/*----------------------------------------------------------------------------*/
+
 Standard<Symbol>
 VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
@@ -123,18 +143,6 @@ VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-double VariableLengthMarkovChain::evaluate(const Sequence &s,
-                                           unsigned int pos,
-                                           unsigned int phase) const {
-  ContextTreeNodePtr c = _context_tree->getContext(s, pos);
-  if (c == NULL)
-    return -HUGE;
-  else
-    return c->getDistribution()->evaluate(s, pos);
-}
 
 }  // namespace model
 }  // namespace tops

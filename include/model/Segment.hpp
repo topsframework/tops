@@ -32,13 +32,19 @@ namespace model {
 
 class Segment {
 public:
+  // Constructors
   Segment(Symbol symbol, int begin, int end);
+
+  // Static methods
+  static std::vector<Segment> readSequence(const Sequence &s);
+
+  // Concrete methods
   Symbol symbol();
   int begin();
   int end();
 
-  static std::vector<Segment> readSequence(const Sequence &s);
 private:
+  // Instance variables
   Symbol _symbol;
   int _begin;
   int _end;

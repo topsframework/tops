@@ -28,8 +28,9 @@
 #include "model/ProbabilisticModel.hpp"
 
 // ToPS templates
-#include "model/Generator.tcc"
 #include "model/SimpleGenerator.tcc"
+#include "model/SimpleEvaluator.tcc"
+#include "model/CachedEvaluator.tcc"
 
 namespace tops {
 namespace model {
@@ -61,26 +62,64 @@ using ProbabilisticModelPtrCrtp
 template<typename Derived>
 class ProbabilisticModelCrtp : public ProbabilisticModel {
  public:
+  // Inner classes
+  struct Cache {
+    std::vector<double> prefix_sum_array;
+  };
+
   // Alias
   using Base = ProbabilisticModel;
   using DerivedPtr = std::shared_ptr<Derived>;
 
   template<template<typename Target> class Decorator>
+  using SEPtr = SimpleEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using CEPtr = CachedEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Overriden methods
+  EvaluatorPtr<Standard> standardEvaluator(const Standard<Sequence> &sequence,
+                                           bool cached = false) override;
+
   GeneratorPtr<Standard> standardGenerator() override;
 
   // Purely virtual methods
+  virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const = 0;
+
   virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
                                       const Sequence &context) const = 0;
 
   // Virtual methods
+  virtual void initializeCache(CEPtr<Standard> evaluator,
+                               unsigned int phase);
+
+  virtual Probability evaluateSequence(SEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const;
+
+  virtual Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const;
+  virtual Probability evaluateSequence(CEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const;
+
   virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                           unsigned int size,
                                           unsigned int phase) const;
+
+ private:
+  // Concrete methods
+  DerivedPtr make_shared();
 };
 
 /*
@@ -95,26 +134,99 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  EVALUATOR  ================================*/
+
+template<typename Derived>
+EvaluatorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardEvaluator(
+    const Standard<Sequence> &sequence, bool cached) {
+  if (cached)
+    return CachedEvaluator<Standard, Derived>::make(make_shared(), sequence);
+  return SimpleEvaluator<Standard, Derived>::make(make_shared(), sequence);
+}
+
+/*===============================  GENERATOR  ================================*/
+
 template<typename Derived>
 GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator() {
-  return SimpleGenerator<Standard, Derived>::make(
-    std::static_pointer_cast<Derived>(
-      static_cast<Derived *>(this)->shared_from_this()));
+  return SimpleGenerator<Standard, Derived>::make(make_shared());
 }
 
 /*----------------------------------------------------------------------------*/
 /*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  EVALUATOR  ================================*/
+
 template<typename Derived>
-Standard<Sequence> ProbabilisticModelCrtp<Derived>::drawSequence(
-    SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+void
+ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
+                                                 unsigned int phase) {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(evaluator->sequence().size() + 1);
+
+  prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
+    prefix_sum_array[i+1]
+      = prefix_sum_array[i] + evaluator->evaluateSymbol(i, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+Probability
+ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
+                                                  unsigned int begin,
+                                                  unsigned int end,
+                                                  unsigned int phase) const {
+  double prob = 0;
+  for (unsigned int i = begin; i < end; i++)
+    prob += evaluator->evaluateSymbol(i, phase);
+  return prob;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+Probability
+ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
+                                                unsigned int pos,
+                                                unsigned int phase) const {
+  return evaluateSymbol(static_cast<SEPtr<Standard>>(evaluator), pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+Probability
+ProbabilisticModelCrtp<Derived>::evaluateSequence(CEPtr<Standard> evaluator,
+                                                  unsigned int begin,
+                                                  unsigned int end,
+                                                  unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  return prefix_sum_array[end] - prefix_sum_array[begin];
+}
+
+/*===============================  GENERATOR  ================================*/
+
+template<typename Derived>
+Standard<Sequence>
+ProbabilisticModelCrtp<Derived>::drawSequence(SGPtr<Standard> generator,
+                                              unsigned int size,
+                                              unsigned int phase) const {
   Sequence s;
   for (unsigned int k = 0; k < size; k++)
       s.push_back(generator->drawSymbol(k, phase, s));
   return s;
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+std::shared_ptr<Derived> ProbabilisticModelCrtp<Derived>::make_shared() {
+  return std::static_pointer_cast<Derived>(
+    static_cast<Derived *>(this)->shared_from_this());
 }
 
 /*----------------------------------------------------------------------------*/

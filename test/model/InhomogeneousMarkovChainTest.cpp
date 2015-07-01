@@ -63,19 +63,19 @@ class AnInhomogeneousMarkovChain : public testing::Test {
 };
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(imc->evaluator({0})->probabilityOf(0, 1),
+  ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->evaluator({1})->probabilityOf(0, 1),
+  ASSERT_THAT(imc->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->evaluator({0, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(imc->evaluator({0, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(imc->evaluator({1, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->evaluator({1, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->evaluator({1, 0, 1})->probabilityOf(0, 3),
+  ASSERT_THAT(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
               DoubleEq(-HUGE));
 }
 
@@ -83,26 +83,26 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
     ASSERT_THAT(
-        imc->evaluator(data, true)->probabilityOf(0, data.size()),
-        DoubleEq(imc->evaluator(data)->probabilityOf(0, data.size())));
+        imc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
+        DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, data.size())));
   }
 }
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc = ProbabilisticModelDecorator<InhomogeneousMarkovChain>::make(imc);
-  ASSERT_THAT(decorated_imc->evaluator({0})->probabilityOf(0, 1),
+  ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluator({1})->probabilityOf(0, 1),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluator({0, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(decorated_imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(decorated_imc->evaluator({0, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(decorated_imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(decorated_imc->evaluator({1, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluator({1, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->evaluator({1, 0, 1})->probabilityOf(0, 3),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
               DoubleEq(-HUGE));
 }
 

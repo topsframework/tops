@@ -26,16 +26,12 @@
 
 // ToPS headers
 #include "model/Matrix.hpp"
-#include "model/DecodableEvaluator.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelSignalState.hpp"
 #include "model/GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
 #include "model/DecodableModelCrtp.tcc"
-#include "model/SimpleEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -58,12 +54,10 @@ class GeneralizedHiddenMarkovModel
  public:
   // Alias
   using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
-
   using Cache = Base::Cache;
-  using SEPtr = SimpleEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
-  using CEPtr = CachedEvaluatorImplPtr<GeneralizedHiddenMarkovModel>;
 
   // Hidden name method inheritance
+  using Base::evaluateSequence;
   using Base::drawSequence;
 
   // Static methods
@@ -75,6 +69,44 @@ class GeneralizedHiddenMarkovModel
       unsigned int max_backtracking = 100);
 
   // Overriden methods
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  void initializeCache(CEPtr<Labeling> evaluator,
+                       unsigned int phase) override;
+
+  Probability evaluateSymbol(SEPtr<Labeling> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Labeling> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  Probability evaluateSymbol(CEPtr<Labeling> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Labeling> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
@@ -84,7 +116,6 @@ class GeneralizedHiddenMarkovModel
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence &context) const override;
-
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
@@ -95,18 +126,6 @@ class GeneralizedHiddenMarkovModel
            Labeling<Sequence>::Method method) const override;
 
   // Virtual methods
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false);
-  virtual DecodableEvaluatorPtr decodableEvaluator(const Sequence &s,
-                                                   bool cached = false);
-
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const;
-  virtual double evaluate(const Sequence &xs,
-                          const Sequence &ys,
-                          unsigned int i) const;
-
   virtual double backward(const Sequence &s,
                           Matrix &beta) const;
   virtual double forward(const Sequence &s,
@@ -115,28 +134,11 @@ class GeneralizedHiddenMarkovModel
                                       Matrix &probabilities) const;
 
   // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             const Sequence& s,
-                             unsigned int begin,
-                             unsigned int end) const;
-
-  Estimation<Labeling<Sequence>>
-  simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
-
-  Estimation<Labeling<Sequence>>
-  cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
+  // Estimation<Labeling<Sequence>>
+  // simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
+  //
+  // Estimation<Labeling<Sequence>>
+  // cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
 
  protected:
   // Instance variables

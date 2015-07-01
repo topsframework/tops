@@ -40,32 +40,19 @@ FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-/*==============================  EVALUATOR  =================================*/
-
-EvaluatorPtr FixedSequenceAtPosition::evaluator(
-    const Sequence &s,
-    bool cached) {
-  return Evaluator::make(
-    SimpleEvaluatorImpl<FixedSequenceAtPosition>::make(
-      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
-      s));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 /*==============================  EVALUATOR  =================================*/
 
-double FixedSequenceAtPosition::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  auto result = _model->evaluator(evaluator->sequence())->probabilityOf(begin, end, phase);
+Probability
+FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const {
+  auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
+  auto result = modelEvaluator->evaluateSequence(begin, end, phase);
+
   int j;
   for (j = 0;
        (j < static_cast<int>(_sequence.size()))
@@ -118,6 +105,8 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
         _sequence(sequence),
         _probabilities(distr) {
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

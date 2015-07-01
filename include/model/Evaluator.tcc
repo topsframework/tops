@@ -7,7 +7,7 @@
 /*  the License, or (at your option) any later version.                */
 /*                                                                     */
 /*  This program is distributed in the hope that it will be useful,    */
-/*  but WITHOUT ANY WARRANTY; without even the ied warranty of     */
+/*  but WITHOUT ANY WARRANTY; without even the ied warranty of         */
 /*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      */
 /*  GNU General Public License for more details.                       */
 /*                                                                     */
@@ -17,55 +17,46 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_DECODABLE_EVALUATOR_
-#define TOPS_MODEL_DECODABLE_EVALUATOR_
+#ifndef TOPS_MODEL_EVALUATOR_
+#define TOPS_MODEL_EVALUATOR_
 
 // Standard headers
 #include <memory>
 
 // ToPS headers
-#include "model/Sequence.hpp"
-#include "model/Evaluator.hpp"
-#include "model/EvaluatorImpl.hpp"
+#include "Probability.hpp"
 
 namespace tops {
 namespace model {
 
-class DecodableEvaluator;
+template<template<typename Target> class Decorator>
+class Evaluator;
 
 /**
- * @typedef DecodableEvaluatorPtr
- * @brief Alias of pointer to DecodableEvaluator.
+ * @typedef EvaluatorPtr
+ * @brief Alias of pointer to Evaluator.
  */
-using DecodableEvaluatorPtr = std::shared_ptr<DecodableEvaluator>;
+template<template<typename Target> class Decorator>
+using EvaluatorPtr = std::shared_ptr<Evaluator<Decorator>>;
 
 /**
- * @class DecodableEvaluator
+ * @class Evaluator
  * @brief TODO
  */
-class DecodableEvaluator : public Evaluator {
+template<template<typename Target> class Decorator>
+class Evaluator
+    : public std::enable_shared_from_this<Evaluator<Decorator>> {
  public:
-  // Hidden name method inheritance
-  using Evaluator::probabilityOf;
+  // Purely virtual methods
+  virtual Probability evaluateSymbol(unsigned int pos,
+                                     unsigned int phase = 0) const = 0;
 
-  // Static methods
-  template<typename... Ts>
-  static DecodableEvaluatorPtr make(Ts... args) {
-    return DecodableEvaluatorPtr(
-        new DecodableEvaluator(std::forward<Ts>(args)...));
-  }
+  virtual Probability evaluateSequence(unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase = 0) const = 0;
 
-  // Virtual methods
-  virtual double probabilityOf(const Sequence &s,
-                               unsigned int begin,
-                               unsigned int end);
-
-  virtual Estimation<Labeling<Sequence>>
-  labeling(Labeling<Sequence>::Method method) const;
-
- protected:
-  // Constructors
-  DecodableEvaluator(EvaluatorImplPtr &&impl);
+  virtual Decorator<Sequence>& sequence() = 0;
+  virtual const Decorator<Sequence>& sequence() const = 0;
 };
 
 }  // namespace model

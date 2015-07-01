@@ -27,7 +27,6 @@
 
 // ToPS headers
 #include "model/Consensus.hpp"
-#include "model/ProbabilisticModel.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/MaximalDependenceDecompositionNode.hpp"
 
@@ -50,11 +49,7 @@ class MaximalDependenceDecomposition
     : public ProbabilisticModelCrtp<MaximalDependenceDecomposition> {
  public:
   // Alias
-  using Base = ProbabilisticModelCrtp<InhomogeneousMarkovChain>;
-
-  using Cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorImplPtr<MaximalDependenceDecomposition>;
-  using CEPtr = CachedEvaluatorImplPtr<MaximalDependenceDecomposition>;
+  using Base = ProbabilisticModelCrtp<MaximalDependenceDecomposition>;
 
   // Static methods
   static MaximalDependenceDecompositionPtr make(
@@ -70,35 +65,29 @@ class MaximalDependenceDecomposition
       unsigned int minimum_subset);
 
   // Overriden methods
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence &context) const override;
-
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
-
-  // Virtual methods
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false) override;
-
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-
-  // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
 
  private:
   // Instance variables
@@ -147,7 +136,9 @@ class MaximalDependenceDecomposition
                      ConsensusSequence consensus_sequence);
 
   // Concrete methods
-  double _probabilityOf(const Sequence & s, MaximalDependenceDecompositionNodePtr node, std::vector<int> &indexes) const;
+  double _probabilityOf(const Sequence &s,
+                        MaximalDependenceDecompositionNodePtr node,
+                        std::vector<int> &indexes) const;
   void _drawAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
 };
 

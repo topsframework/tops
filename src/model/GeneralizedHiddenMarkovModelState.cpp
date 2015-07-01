@@ -27,6 +27,10 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
 GeneralizedHiddenMarkovModelState::GeneralizedHiddenMarkovModelState(
     Symbol symbol,
     ProbabilisticModelPtr observation,
@@ -35,6 +39,10 @@ GeneralizedHiddenMarkovModelState::GeneralizedHiddenMarkovModelState(
         _observation(observation),
         _transition(transition) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 GeneralizedHiddenMarkovModelStatePtr GeneralizedHiddenMarkovModelState::make(
     Symbol symbol,
@@ -45,33 +53,9 @@ GeneralizedHiddenMarkovModelStatePtr GeneralizedHiddenMarkovModelState::make(
       symbol, observation, transition));
 }
 
-Symbol GeneralizedHiddenMarkovModelState::symbol() {
-  return _symbol;
-}
-
-ProbabilisticModelPtr GeneralizedHiddenMarkovModelState::observation(){
-  return _observation;
-}
-
-DiscreteIIDModelPtr GeneralizedHiddenMarkovModelState::transition(){
-  return _transition;
-}
-
-void GeneralizedHiddenMarkovModelState::addPredecessor(int id) {
-  _predecessors.push_back(id);
-}
-
-void GeneralizedHiddenMarkovModelState::addSuccessor(int id) {
-  _successors.push_back(id);
-}
-
-std::vector<int>& GeneralizedHiddenMarkovModelState::predecessors() {
-  return _predecessors;
-}
-
-std::vector<int>& GeneralizedHiddenMarkovModelState::successors() {
-  return _successors;
-}
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 double GeneralizedHiddenMarkovModelState::durationProbability(int l) const {
   if (l == 1)
@@ -79,17 +63,69 @@ double GeneralizedHiddenMarkovModelState::durationProbability(int l) const {
   return pow(_transition->probabilityOf(_symbol), l-1);
 }
 
+/*----------------------------------------------------------------------------*/
+
 bool GeneralizedHiddenMarkovModelState::isGeometricDuration() const {
   return true;
 }
+
+/*----------------------------------------------------------------------------*/
 
 int GeneralizedHiddenMarkovModelState::maximumDurationSize() const {
   return 1;
 }
 
+/*----------------------------------------------------------------------------*/
+
 RangePtr GeneralizedHiddenMarkovModelState::durations() const {
   return std::make_shared<SingleValueRange>(1);
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Symbol GeneralizedHiddenMarkovModelState::symbol() {
+  return _symbol;
+}
+
+/*----------------------------------------------------------------------------*/
+
+ProbabilisticModelPtr GeneralizedHiddenMarkovModelState::observation(){
+  return _observation;
+}
+
+/*----------------------------------------------------------------------------*/
+
+DiscreteIIDModelPtr GeneralizedHiddenMarkovModelState::transition(){
+  return _transition;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModelState::addPredecessor(int id) {
+  _predecessors.push_back(id);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModelState::addSuccessor(int id) {
+  _successors.push_back(id);
+}
+
+/*----------------------------------------------------------------------------*/
+
+std::vector<int>& GeneralizedHiddenMarkovModelState::predecessors() {
+  return _predecessors;
+}
+
+/*----------------------------------------------------------------------------*/
+
+std::vector<int>& GeneralizedHiddenMarkovModelState::successors() {
+  return _successors;
+}
+
+/*----------------------------------------------------------------------------*/
 
 }
 }

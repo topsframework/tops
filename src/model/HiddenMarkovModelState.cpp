@@ -61,18 +61,25 @@ bool HiddenMarkovModelState::isSilent() {
   return _emissions == nullptr;
 }
 
+/*----------------------------------------------------------------------------*/
+
 Symbol HiddenMarkovModelState::symbol() {
   return _symbol;
 }
+
+/*----------------------------------------------------------------------------*/
 
 DiscreteIIDModelPtr & HiddenMarkovModelState::emissions() {
   return _emissions;
 }
 
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModelPtr & HiddenMarkovModelState::transitions() {
   return _transitions;
 }
 
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

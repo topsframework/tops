@@ -78,15 +78,14 @@ class VariableLengthMarkovChain
       ProbabilisticModelPtr apriori);
 
   // Overriden methods
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence &context) const override;
-
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
 
  private:
   // Instance variables
