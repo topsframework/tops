@@ -81,12 +81,6 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
-/*----------------------------------------------------------------------------*/
-
 unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
   return _vlmcs.size();
 }

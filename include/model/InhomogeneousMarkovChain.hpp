@@ -67,7 +67,6 @@ class InhomogeneousMarkovChain
                               const Sequence &context) const override;
 
   // Virtual methods
-  virtual InhomogeneousMarkovChain* inhomogeneous();
   virtual unsigned int maximumTimeValue();
 
  protected:

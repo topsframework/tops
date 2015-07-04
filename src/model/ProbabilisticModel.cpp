@@ -23,13 +23,5 @@
 namespace tops {
 namespace model {
 
-/*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
-  return NULL;
-}
-
 }  // namespace model
 }  // namespace tops
