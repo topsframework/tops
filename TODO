@@ -1,45 +1,36 @@
 [Refactoring]
-  [ ] Fix code style
-  [ ] Remove inhomogeneous() method
-  [ ] Implement bayes-classifier app
-  [ ] Implement evaluate app
-  [ ] Implement posterior-decoding app
-  [ ] Implement simulate app
-  [ ] Implement train app
-  [ ] Implement viterbi-decoding app
-  [ ] Implement ToPS-lang
-  [ ] Copy GHMM
-  [ ] Copy Model selection techniques
-  [ ] Implement FixedSequenceAtPosition::prefix_sum_array
-  [ ] Almost all functions are virtual. Verify if it is necessary
-  [ ] Should ProfileHMM be a HMM?
-  [ ] Change PhasedIMC's class name
-  [ ] Check if band_den_bin is correct
-  [ ] Declare overriding function 'override'
-  [ ] Use unique_ptr as default pointer type
-  [ ] Fix HMM's Baum-Welch algorithm
-  [X] Rename probabilitOf to simpleProbabilityOf
-  [x] Add phased version of evaluate of IMC, PhasedIMC and MultipleSequentialModel
-  [x] Prefix sum array can't be parallelized. Should we use a decorator?
-  [x] Refactor evaluate methods
-  [x] Should we add a "phased evaluate" method?
-  [x] Copy DiscreteIIDModel::SmoothedHistogramStanke
-  [x] Copy DiscreteIIDModel::trainSmoothedHistogramBurge
-  [x] Copy DiscreteIIDModel::trainSmoothedHistogramKernelDensity
-  [x] Check training methods of IID and PhasedRunLengthDistribution
-  [x] Copy TargetModel
-  [x] Copy SimilarityBasedSequenceWeighting
-  [x] Copy MDD
-  [x] Copy HMM
-  [x] Copy MultipleSequentialModel
-  [x] Copy TrainInterpolatedMarkovChain
-  [x] Add HMM's evaluate algorithm
+  [ ] Fix code style.
+  [ ] Copy Model selection techniques.
+  [ ] Implement FixedSequenceAtPosition::prefix_sum_array.
+  [ ] Decide if ProfileHMM should be a HMM.
+  [ ] Change PhasedIMC's class name.
+  [ ] Check if band_den_bin is correct.
+  [ ] Use unique_ptr as default pointer type.
+  [ ] Fix HMM's Baum-Welch algorithm.
+  [X] Declare overriding function 'override'.
+  [X] Remove inhomogeneous() method.
+  [X] Rename probabilitOf to simpleProbabilityOf.
+  [x] Add phased version of evaluate of IMC, PhasedIMC and MultipleSequentialModel.
+  [x] Prefix sum array can't be parallelized. Should we use a decorator?.
+  [x] Refactor evaluate methods.
+  [x] Should we add a "phased evaluate" method?.
+  [x] Copy DiscreteIIDModel::SmoothedHistogramStanke.
+  [x] Copy DiscreteIIDModel::trainSmoothedHistogramBurge.
+  [x] Copy DiscreteIIDModel::trainSmoothedHistogramKernelDensity.
+  [x] Check training methods of IID and PhasedRunLengthDistribution.
+  [x] Copy TargetModel.
+  [x] Copy SimilarityBasedSequenceWeighting.
+  [x] Copy MDD.
+  [x] Copy HMM.
+  [x] Copy MultipleSequentialModel.
+  [x] Copy TrainInterpolatedMarkovChain.
+  [x] Add HMM's evaluate algorithm.
 
-[Tests]
-  [ ] Test random functions like draw()
-  [x] Test training methods of VLMC
-  [x] Test training methods of IMC
-  [x] Test evaluation using prefix sum arrays
+[Tests].
+  [X] Test random functions like draw().
+  [x] Test training methods of VLMC.
+  [x] Test training methods of IMC.
+  [x] Test evaluation using prefix sum arrays.
 
-[Benchmarks]
-  [ ] Implement benchmarks
+[Benchmarks].
+  [ ] Implement benchmarks.
