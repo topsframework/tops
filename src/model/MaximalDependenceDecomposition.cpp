@@ -298,9 +298,9 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-MaximalDependenceDecomposition::evaluateSymbol(SEPtr<Standard> evaluator,
-                                               unsigned int pos,
-                                               unsigned int phase) const {
+MaximalDependenceDecomposition::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                               unsigned int /* pos */,
+                                               unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
@@ -311,7 +311,7 @@ Probability
 MaximalDependenceDecomposition::evaluateSequence(SEPtr<Standard> evaluator,
                                                  unsigned int begin,
                                                  unsigned int end,
-                                                 unsigned int phase) const {
+                                                 unsigned int /* phase */) const {
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
   auto first = evaluator->sequence().begin() + begin;
@@ -327,7 +327,7 @@ Probability
 MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
                                                  unsigned int begin,
                                                  unsigned int end,
-                                                 unsigned int phase) const {
+                                                 unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size())
     return -HUGE;
@@ -337,18 +337,19 @@ MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
 /*==============================  GENERATOR  =================================*/
 
 Standard<Symbol>
-MaximalDependenceDecomposition::drawSymbol(SGPtr<Standard> generator,
-                                           unsigned int pos,
-                                           unsigned int phase,
-                                           const Sequence &context) const {
+MaximalDependenceDecomposition::drawSymbol(SGPtr<Standard> /* generator */,
+                                           unsigned int /* pos */,
+                                           unsigned int /* phase */,
+                                           const Sequence &/* context */) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 
+/*----------------------------------------------------------------------------*/
+
 Standard<Sequence>
-MaximalDependenceDecomposition::drawSequence(
-    SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+MaximalDependenceDecomposition::drawSequence(SGPtr<Standard> /* generator */,
+                                             unsigned int size,
+                                             unsigned int /* phase */) const {
   // _drawAux(s, _mdd_tree);
   return Sequence(size, INVALID_SYMBOL);
 }

@@ -108,7 +108,7 @@ PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
 /*===============================  EVALUATOR  ================================*/
 
 void PhasedInhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
-                                                     unsigned int phase) {
+                                                     unsigned int /* phase */) {
   auto &prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
 
   prefix_sum_matrix.resize(_vlmcs.size());
@@ -163,7 +163,7 @@ PhasedInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
+PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
                                            unsigned int pos,
                                            unsigned int phase,
                                            const Sequence &context) const {

@@ -155,9 +155,9 @@ void SimilarityBasedSequenceWeighting::initializeCache(CEPtr<Standard> evaluator
 /*----------------------------------------------------------------------------*/
 
 Probability
-SimilarityBasedSequenceWeighting::evaluateSymbol(SEPtr<Standard> evaluator,
-                                                 unsigned int pos,
-                                                 unsigned int phase) const {
+SimilarityBasedSequenceWeighting::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                                 unsigned int /* pos */,
+                                                 unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
@@ -168,7 +168,7 @@ Probability
 SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
-                                                   unsigned int phase) const {
+                                                   unsigned int /* phase */) const {
   if (end > evaluator->sequence().size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
@@ -216,8 +216,8 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
 Probability
 SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
                                                    unsigned int begin,
-                                                   unsigned int end,
-                                                   unsigned int phase) const {
+                                                   unsigned int /* end */,
+                                                   unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
@@ -227,10 +227,10 @@ SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-SimilarityBasedSequenceWeighting::drawSymbol(SGPtr<Standard> generator,
-                                             unsigned int pos,
-                                             unsigned int phase,
-                                             const Sequence &context) const {
+SimilarityBasedSequenceWeighting::drawSymbol(SGPtr<Standard> /* generator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */,
+                                             const Sequence &/* context */) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 

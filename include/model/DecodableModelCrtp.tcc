@@ -82,7 +82,11 @@ class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Hidden name method inheritance
+  using Base::initializeCache;
+  using Base::evaluateSymbol;
   using Base::evaluateSequence;
+
+  using Base::drawSymbol;
   using Base::drawSequence;
 
   // Overriden methods
