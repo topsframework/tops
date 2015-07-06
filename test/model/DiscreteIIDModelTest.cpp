@@ -143,16 +143,16 @@ TEST(DiscreteIIDModel,
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithmWithEmptyDataSet) {
   auto iid = DiscreteIIDModel::trainML({}, 2);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithmWithEmptyDataSet) {
   auto iid = DiscreteIIDModel::trainSmoothedHistogramBurge({},
                                                            1.0,
                                                            15000);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST(DiscreteIIDModel, ShouldNotBeTrainedUsingSmoothedHistogramStankeAlgorithmWithAnEmptyDataSet) {
@@ -161,14 +161,14 @@ TEST(DiscreteIIDModel, ShouldNotBeTrainedUsingSmoothedHistogramStankeAlgorithmWi
                                                             15000,
                                                             8,
                                                             0.5);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
       {}, 15000);
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-HUGE));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-HUGE));
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
 }

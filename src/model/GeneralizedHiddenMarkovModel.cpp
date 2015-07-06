@@ -83,7 +83,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -93,7 +93,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -129,7 +129,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -236,7 +236,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
 
   for (unsigned int i = 0; i < xs.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      gamma[k][i] = -HUGE;
+      gamma[k][i] = -std::numeric_limits<double>::infinity();
       auto durations = _states[k]->durations();
       for (unsigned int d = durations->begin();
            !durations->end() && d <= (i + 1);
@@ -246,7 +246,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
         if (d > i) {
           gmax = _initial_probabilities->probabilityOf(k);
         } else {
-          gmax = -HUGE;
+          gmax = -std::numeric_limits<double>::infinity();
           for (auto p : _states[k]->predecessors()) {
             double g = gamma[p][i-d]
               + _states[p]->transition()->probabilityOf(k);
@@ -315,7 +315,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
     }
   }
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), -HUGE); // TODO(igorbonadio)
+      Labeling<Sequence>(xs, std::move(path)), -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -327,7 +327,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
 
   for (unsigned int i = 0; i < sequence.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      alpha[k][i] = -HUGE;
+      alpha[k][i] = -std::numeric_limits<double>::infinity();
       auto durations = _states[k]->durations();
       for (unsigned int d = durations->begin();
            !durations->end() && d <= (i + 1);
@@ -339,7 +339,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
               + _states[k]->observation()->standardEvaluator(sequence)
                 ->evaluateSequence(i-d+1, i+1));
         } else {
-          double sum = -HUGE;
+          double sum = -std::numeric_limits<double>::infinity();
           for (auto p : _states[k]->predecessors()) {
             sum = log_sum(sum, alpha[p][i-d]
               + _states[p]->transition()->probabilityOf(k));
@@ -353,7 +353,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
     }
   }
 
-  double px = -HUGE;
+  double px = -std::numeric_limits<double>::infinity();
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     px = log_sum(px, alpha[k][sequence.size()-1]);
   }
@@ -374,9 +374,9 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
 
   for (int i = sequence.size()-2; i >= 0; i--) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      beta[k][i] = -HUGE;
+      beta[k][i] = -std::numeric_limits<double>::infinity();
       for (auto p : _states[k]->successors()) {
-        double sum = -HUGE;
+        double sum = -std::numeric_limits<double>::infinity();
         auto durations = _states[p]->durations();
         for (unsigned int d = durations->begin();
              !durations->end() && d < (sequence.size() - i);
@@ -393,9 +393,9 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
     }
   }
 
-  double px = -HUGE;
+  double px = -std::numeric_limits<double>::infinity();
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    double sum = -HUGE;
+    double sum = -std::numeric_limits<double>::infinity();
     auto durations = _states[k]->durations();
     for (unsigned int d = durations->begin();
          !durations->end() && d <= (sequence.size());

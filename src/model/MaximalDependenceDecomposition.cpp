@@ -218,13 +218,13 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     unsigned int alphabet_size,
     ProbabilisticModelPtr consensus_model) {
   Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
-  double maximal = -HUGE;
+  double maximal = -std::numeric_limits<double>::infinity();
   double maximal_i = -1;
   for (unsigned int i = 0; i < consensus_sequence.size(); i++) {
-    double sum = -HUGE;
+    double sum = -std::numeric_limits<double>::infinity();
     for (unsigned int j = 0; j < consensus_sequence.size(); j++) {
       if (i != j) {
-        double chi = -HUGE;
+        double chi = -std::numeric_limits<double>::infinity();
         for (unsigned int k = 0; k < alphabet_size; k++) {
           s[i] = k;
           double e = consensus_model->standardEvaluator(s)->evaluateSymbol(i);
@@ -302,7 +302,7 @@ MaximalDependenceDecomposition::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* pos */,
                                                unsigned int /* phase */) const {
   // TODO(igorbonadio)
-  return -HUGE;
+  return -std::numeric_limits<double>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -313,7 +313,7 @@ MaximalDependenceDecomposition::evaluateSequence(SEPtr<Standard> evaluator,
                                                  unsigned int end,
                                                  unsigned int /* phase */) const {
   if ((end - begin) != _consensus_sequence.size())
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
   auto first = evaluator->sequence().begin() + begin;
   auto last = evaluator->sequence().begin() + end;
   Sequence subseq(first, last);
@@ -330,7 +330,7 @@ MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
                                                  unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size())
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
   return prefix_sum_array[begin];
 }
 

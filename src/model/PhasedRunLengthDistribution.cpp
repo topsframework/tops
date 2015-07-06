@@ -42,7 +42,7 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
                   _input_phase(input_phase),
                   _output_phase(output_phase),
                   _nphase(nphase) {
-  double sum = -HUGE;
+  double sum = -std::numeric_limits<double>::infinity();
   for (int i = 0; i < alphabetSize(); i++) {
     int d = i + _delta;
     if (mod((d + _input_phase-1), _nphase) == _output_phase)
@@ -92,7 +92,7 @@ PhasedRunLengthDistributionPtr
 double PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   int d = s + _delta;
   if (mod((d + _input_phase-1), _nphase) != _output_phase)
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
   double result = DiscreteIIDModel::probabilityOf(d);
   return result-_normfactor;
 }

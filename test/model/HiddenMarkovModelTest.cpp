@@ -103,7 +103,7 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
   };
 
   for (auto observation : test_set) {
-    double px = -HUGE;
+    double px = -std::numeric_limits<double>::infinity();
     auto standardEvaluator = hmm->standardEvaluator(observation);
 
     std::vector<Sequence> labels = generateAllCombinationsOfSymbols(observation.size());

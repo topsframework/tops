@@ -484,7 +484,7 @@ Symbol DiscreteIIDModel::draw() const {
 
 double DiscreteIIDModel::probabilityOf(Symbol s) const {
   if (s > _probabilities.size())
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
   return _probabilities[s];
 }
 

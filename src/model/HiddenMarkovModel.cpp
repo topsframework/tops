@@ -144,7 +144,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
       for (unsigned int i = 0; i < state_alphabet_size; i++) {
         for (unsigned int j = 0; j < state_alphabet_size; j++) {
           unsigned int t = 0;
-          double sum = -HUGE;
+          double sum = -std::numeric_limits<double>::infinity();
           if (t < observation_training_set[s].size()-1) {
             sum = alpha[i][t] + model->state(i)->transitions()->probabilityOf(j)
                 + model->state(j)->emissions()->probabilityOf(
@@ -162,7 +162,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 
         for (unsigned int sigma = 0; sigma < observation_alphabet_size;
             sigma++) {
-          double sum = -HUGE;
+          double sum = -std::numeric_limits<double>::infinity();
           bool first = true;
           for (unsigned int t = 0; t < observation_training_set[s].size();
               t++) {
@@ -245,7 +245,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -257,8 +257,8 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
                                     unsigned int /* phase */) const {
   Matrix alpha;
   forward(evaluator->sequence(), alpha);
-  double sum_end = -HUGE;
-  double sum_begin = -HUGE;
+  double sum_end = -std::numeric_limits<double>::infinity();
+  double sum_begin = -std::numeric_limits<double>::infinity();
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     sum_end = log_sum(sum_end, alpha[k][end-1]);
     if (begin != 0)
@@ -275,7 +275,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -HUGE; // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -619,7 +619,7 @@ void HiddenMarkovModel::initializeCache(const Sequence &sequence,
   forward(sequence, cache.alpha);
   cache.prefix_sum_array[0] = 0;
   for (unsigned int i = 0; i < sequence.size(); i++) {
-    cache.prefix_sum_array[i] = -HUGE;
+    cache.prefix_sum_array[i] = -std::numeric_limits<double>::infinity();
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       cache.prefix_sum_array[i+1]
         = log_sum(cache.prefix_sum_array[i+1], cache.alpha[k][i]);

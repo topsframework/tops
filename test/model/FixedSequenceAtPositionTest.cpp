@@ -52,16 +52,16 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
       createLoadedCoinIIDModel(),
       3,
       {1, 0, 1},
-      DiscreteIIDModel::make({0, -HUGE}));
+      DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity()}));
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
   ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 8),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})->evaluateSequence(0, 8),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})->evaluateSequence(0, 8),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})->evaluateSequence(0, 8),
               DoubleNear(-10.1029, 1e-4));
 }

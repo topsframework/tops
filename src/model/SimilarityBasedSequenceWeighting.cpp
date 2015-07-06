@@ -159,7 +159,7 @@ SimilarityBasedSequenceWeighting::evaluateSymbol(SEPtr<Standard> /* evaluator */
                                                  unsigned int /* pos */,
                                                  unsigned int /* phase */) const {
   // TODO(igorbonadio)
-  return -HUGE;
+  return -std::numeric_limits<double>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -170,7 +170,7 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
                                                    unsigned int end,
                                                    unsigned int /* phase */) const {
   if (end > evaluator->sequence().size())
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
   int length = (_counter.begin()->first).size();
 
   Sequence ss;
@@ -181,7 +181,7 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
   for (auto weight : _counter) {
     int diff = 0;
     if (ss.size() != weight.first.size())
-      return -HUGE;
+      return -std::numeric_limits<double>::infinity();
 
     bool valid = true;
     for (unsigned int i = 0; i < weight.first.size(); i++) {
@@ -196,7 +196,7 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
     }
 
     if (!valid)
-      return -HUGE;
+      return -std::numeric_limits<double>::infinity();
 
     if (diff == 1) {
       sum += 0.001 * weight.second;
@@ -206,7 +206,7 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
   }
 
   if (close(sum , 0.0, 1e-10))
-    return -HUGE;
+    return -std::numeric_limits<double>::infinity();
 
   return log(sum/(_normalizer));
 }
@@ -221,7 +221,7 @@ SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
-  return -HUGE;
+  return -std::numeric_limits<double>::infinity();
 }
 
 /*===============================  GENERATOR  ================================*/

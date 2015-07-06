@@ -53,9 +53,9 @@ class ASBSW : public testing::Test {
 
 TEST_F(ASBSW, ShouldEvaluateASequence) {
   ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleNear(-6.90776, 1e-4));
   ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),
@@ -105,9 +105,9 @@ TEST(SBSW, ShouldBeTrained) {
   };
   auto sbsw = SimilarityBasedSequenceWeighting::train(training_set, 2, -1, -1, {});
   ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleNear(-1.60684, 1e-4));
   ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),

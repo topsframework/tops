@@ -62,7 +62,7 @@ GeneralizedHiddenMarkovModelSignalState::make(
 double GeneralizedHiddenMarkovModelSignalState::durationProbability(int l) const {
   if (l == _duration_size)
     return 0.0;
-  return -HUGE;
+  return -std::numeric_limits<double>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/

@@ -76,7 +76,7 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
@@ -103,7 +103,7 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
   ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleEq(-HUGE));
+              DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {

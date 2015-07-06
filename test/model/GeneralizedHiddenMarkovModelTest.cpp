@@ -68,17 +68,17 @@ class AGHMM : public testing::Test {
   GeneralizedHiddenMarkovModelStatePtr signal_state
     = GeneralizedHiddenMarkovModelSignalState::make(
     1, createVLMCMC(), DiscreteIIDModel::make(
-        {log(0.1), -HUGE, log(0.9)}), 3);
+        {log(0.1), -std::numeric_limits<double>::infinity(), log(0.9)}), 3);
   GeneralizedHiddenMarkovModelStatePtr explicit_duration_state
     = GeneralizedHiddenMarkovModelExplicitDurationState::make(
       2, createFairCoinIIDModel(),
-      DiscreteIIDModel::make({0, -HUGE, -HUGE}),
+      DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()}),
       DiscreteIIDModel::make(
         {log(0.1), log(0.1), log(0.1), log(0.1), log(0.1), log(0.1), log(0.3), log(0.1)}));
 
   GeneralizedHiddenMarkovModelPtr ghmm = GeneralizedHiddenMarkovModel::make(
     {geometric_state, signal_state, explicit_duration_state},
-    DiscreteIIDModel::make({0, -HUGE, -HUGE}),
+    DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()}),
     3, 2);
 
   virtual void SetUp() {
