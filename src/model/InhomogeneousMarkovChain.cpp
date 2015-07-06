@@ -64,7 +64,7 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
+InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
                                      unsigned int pos,
                                      unsigned int phase,
                                      const Sequence &context) const {
@@ -79,12 +79,6 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 /*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
-  return this;
-}
-
 /*----------------------------------------------------------------------------*/
 
 unsigned int InhomogeneousMarkovChain::maximumTimeValue() {

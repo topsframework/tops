@@ -39,7 +39,7 @@ void resetRandom() {
 
 /*----------------------------------------------------------------------------*/
 
-double generateRandomDouble(bool reset) {
+double generateRandomDouble(bool /* reset */) {
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
   return distribution(generator);
 }

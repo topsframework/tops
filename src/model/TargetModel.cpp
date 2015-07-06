@@ -52,7 +52,7 @@ TargetModelPtr TargetModel::make(int alphabet_size) {
 
 Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
                                         unsigned int pos,
-                                        unsigned int phase) const {
+                                        unsigned int /* phase */) const {
   return sequenceDistribution(evaluator->sequence())
     ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
 }

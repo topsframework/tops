@@ -198,10 +198,11 @@ ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
 
 template<typename Derived>
 Probability
-ProbabilisticModelCrtp<Derived>::evaluateSequence(CEPtr<Standard> evaluator,
-                                                  unsigned int begin,
-                                                  unsigned int end,
-                                                  unsigned int phase) const {
+ProbabilisticModelCrtp<Derived>::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }

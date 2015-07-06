@@ -452,16 +452,17 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
 
 Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
                                              unsigned int pos,
-                                             unsigned int phase) const {
+                                             unsigned int /* phase */) const {
   return probabilityOf(evaluator->sequence()[pos]);
 }
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol> DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
-                                              unsigned int pos,
-                                              unsigned int phase,
-                                              const Sequence &context) const {
+Standard<Symbol>
+DiscreteIIDModel::drawSymbol(SGPtr<Standard> /* generator */,
+                             unsigned int /* pos */,
+                             unsigned int /* phase */,
+                             const Sequence &/* context */) const {
   return draw();
 }
 

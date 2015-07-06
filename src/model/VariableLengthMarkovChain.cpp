@@ -117,7 +117,7 @@ VariableLengthMarkovChain::trainInterpolatedMarkovChain(
 Probability
 VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                           unsigned int pos,
-                                          unsigned int phase) const {
+                                          unsigned int /* phase */) const {
   ContextTreeNodePtr c = _context_tree->getContext(evaluator->sequence(), pos);
   if (c == NULL)
     return -HUGE;
@@ -129,7 +129,7 @@ VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
+VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
                                       unsigned int pos,
                                       unsigned int phase,
                                       const Sequence &context) const {

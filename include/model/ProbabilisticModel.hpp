@@ -62,9 +62,6 @@ class ProbabilisticModel
                     bool cached = false) = 0;
 
   virtual GeneratorPtr<Standard> standardGenerator() = 0;
-
-  // Virtual methods
-  virtual InhomogeneousMarkovChain* inhomogeneous();
 };
 
 }  // namespace model

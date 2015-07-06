@@ -71,7 +71,7 @@ FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
 /*==============================  GENERATOR  =================================*/
 
 Standard<Sequence>
-FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
+FixedSequenceAtPosition::drawSequence(SGPtr<Standard> /* generator */,
                                       unsigned int size,
                                       unsigned int phase) const {
   Sequence s = _model->standardGenerator()->drawSequence(size, phase);

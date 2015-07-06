@@ -71,62 +71,64 @@ GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
 
 /*===============================  EVALUATOR  ================================*/
 
-void GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
-                                                   unsigned int phase) {
+void
+GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
+                                              unsigned int /* phase */) {
   // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
+GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
+                                               unsigned int /* begin */,
+                                               unsigned int /* end */,
+                                               unsigned int /* phase */) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
+GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
+                                               unsigned int /* begin */,
+                                               unsigned int /* end */,
+                                               unsigned int /* phase */) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-void GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
-                                                   unsigned int phase) {
+void
+GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
+                                              unsigned int /* phase */) {
   // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */) const {
   return -HUGE; // TODO(igorbonadio)
 }
 
@@ -134,9 +136,9 @@ GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
 
 Probability
 GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
+                                               unsigned int /* begin */,
+                                               unsigned int /* end */,
+                                               unsigned int /* phase */) const {
   double prob = 0;
   auto segments = Segment::readSequence(evaluator->sequence().label());
   for (unsigned int i = 0; i < segments.size(); i++) {
@@ -178,29 +180,29 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> generator,
-                                         unsigned int pos,
-                                         unsigned int phase,
-                                         const Sequence &context) const {
+GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
+                                         unsigned int /* pos */,
+                                         unsigned int /* phase */,
+                                         const Sequence &/* context */) const {
   return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Labeling<Symbol>
-GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
-                                         unsigned int pos,
-                                         unsigned int phase,
-                                         const Sequence &context) const {
+GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
+                                         unsigned int /* pos */,
+                                         unsigned int /* phase */,
+                                         const Sequence &/* context */) const {
   return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
 Labeling<Sequence>
-GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
                                            unsigned int size,
-                                           unsigned int phase) const {
+                                           unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return Labeling<Sequence>(Sequence(INVALID_SYMBOL, size),
                             Sequence(INVALID_SYMBOL, size));
@@ -317,15 +319,13 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
 
-double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
+double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
                                              Matrix &alpha) const {
   alpha = std::vector<std::vector<double>>(
-    _state_alphabet_size, std::vector<double>(xs.size()));
+    _state_alphabet_size, std::vector<double>(sequence.size()));
 
-  for (unsigned int i = 0; i < xs.size(); i++) {
+  for (unsigned int i = 0; i < sequence.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       alpha[k][i] = -HUGE;
       auto durations = _states[k]->durations();
@@ -336,7 +336,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
           alpha[k][i] = log_sum(alpha[k][i],
             _initial_probabilities->probabilityOf(k)
               + _states[k]->durationProbability(d)
-              + _states[k]->observation()->standardEvaluator(xs)
+              + _states[k]->observation()->standardEvaluator(sequence)
                 ->evaluateSequence(i-d+1, i+1));
         } else {
           double sum = -HUGE;
@@ -346,7 +346,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
           }
           alpha[k][i] = log_sum(alpha[k][i],
             sum + _states[k]->durationProbability(d)
-              + _states[k]->observation()->standardEvaluator(xs)
+              + _states[k]->observation()->standardEvaluator(sequence)
                 ->evaluateSequence(i-d+1, i+1));
         }
       }
@@ -355,7 +355,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
 
   double px = -HUGE;
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    px = log_sum(px, alpha[k][xs.size()-1]);
+    px = log_sum(px, alpha[k][sequence.size()-1]);
   }
 
   return px;
@@ -363,27 +363,27 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &xs,
 
 /*----------------------------------------------------------------------------*/
 
-double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
+double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
                                               Matrix &beta) const {
   beta = std::vector<std::vector<double>>(
-    _state_alphabet_size, std::vector<double>(xs.size()));
+    _state_alphabet_size, std::vector<double>(sequence.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    beta[k][xs.size()-1] = 0.0;
+    beta[k][sequence.size()-1] = 0.0;
   }
 
-  for (int i = xs.size()-2; i >= 0; i--) {
+  for (int i = sequence.size()-2; i >= 0; i--) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       beta[k][i] = -HUGE;
       for (auto p : _states[k]->successors()) {
         double sum = -HUGE;
         auto durations = _states[p]->durations();
         for (unsigned int d = durations->begin();
-             !durations->end() && d < (xs.size() - i);
+             !durations->end() && d < (sequence.size() - i);
              d = durations->next()) {
           sum = log_sum(sum,
             _states[p]->durationProbability(d)
-              + _states[p]->observation()->standardEvaluator(xs)
+              + _states[p]->observation()->standardEvaluator(sequence)
                 ->evaluateSequence(i+1, i+d+1)
               + beta[p][i+d]);
         }
@@ -398,11 +398,11 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
     double sum = -HUGE;
     auto durations = _states[k]->durations();
     for (unsigned int d = durations->begin();
-         !durations->end() && d <= (xs.size());
+         !durations->end() && d <= (sequence.size());
          d = durations->next()) {
       sum = log_sum(sum,
         _states[k]->durationProbability(d)
-          + _states[k]->observation()->standardEvaluator(xs)
+          + _states[k]->observation()->standardEvaluator(sequence)
             ->evaluateSequence(0, d)
           + beta[k][d-1]);
     }
@@ -415,20 +415,20 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &xs,
 /*----------------------------------------------------------------------------*/
 
 void GeneralizedHiddenMarkovModel::posteriorProbabilities(
-    const Sequence &xs,
+    const Sequence &sequence,
     Matrix &probabilities) const {
   probabilities = std::vector<std::vector<double>>(
       _state_alphabet_size,
-      std::vector<double>(xs.size()));
+      std::vector<double>(sequence.size()));
 
   Matrix alpha;  // forward
   Matrix beta;   // backward
 
-  double full = forward(xs, alpha);
-  backward(xs, beta);
+  double full = forward(sequence, alpha);
+  backward(sequence, beta);
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
-    for (unsigned int i = 0; i < xs.size(); i++)
+    for (unsigned int i = 0; i < sequence.size(); i++)
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 

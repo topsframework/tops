@@ -69,7 +69,7 @@ MultipleSequentialModelPtr MultipleSequentialModel::make(
 /*===============================  EVALUATOR  ================================*/
 
 void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
-                                              unsigned int phase) {
+                                              unsigned int /* phase */) {
   evaluator->cache().evaluators.resize(_models.size());
 
   for (unsigned int i = 0; i < _models.size(); i++)
@@ -80,9 +80,9 @@ void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                        unsigned int pos,
-                                        unsigned int phase) const {
+MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                        unsigned int /* pos */,
+                                        unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
@@ -187,7 +187,7 @@ MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
+MultipleSequentialModel::drawSymbol(SGPtr<Standard> /* generator */,
                                             unsigned int pos,
                                             unsigned int phase,
                                             const Sequence &context) const {

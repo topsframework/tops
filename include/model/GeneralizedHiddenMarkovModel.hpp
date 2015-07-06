@@ -125,13 +125,12 @@ class GeneralizedHiddenMarkovModel
            Matrix &probabilities,
            Labeling<Sequence>::Method method) const override;
 
-  // Virtual methods
-  virtual double backward(const Sequence &s,
-                          Matrix &beta) const;
-  virtual double forward(const Sequence &s,
-                         Matrix &alpha) const;
-  virtual void posteriorProbabilities(const Sequence &xs,
-                                      Matrix &probabilities) const;
+  double forward(const Sequence &sequence, Matrix &alpha) const override;
+
+  double backward(const Sequence &sequence, Matrix &beta) const override;
+
+  void posteriorProbabilities(const Sequence &sequence,
+                              Matrix &probabilities) const override;
 
   // Concrete methods
   // Estimation<Labeling<Sequence>>
