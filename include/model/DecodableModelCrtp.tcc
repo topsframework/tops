@@ -26,12 +26,12 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/DecodableModel.hpp"
 
 // ToPS templates
 #include "model/Labeling.tcc"
 #include "model/Generator.tcc"
 #include "model/SimpleGenerator.tcc"
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -61,25 +61,86 @@ using DecodableModelCrtpPtr
  * @brief TODO
  */
 template<typename Derived>
-class DecodableModelCrtp : public DecodableModel {
+class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
  public:
-  // Hidden name method inheritance
-  using DecodableModel::simpleChoose;
+  // Inner classes
+  struct Cache : ProbabilisticModelCrtp<Derived>::Cache {
+    Matrix alpha, beta, gamma, posterior_decoding;
+  };
 
   // Alias
-  using Base = DecodableModel;
+  using Base = ProbabilisticModelCrtp<Derived>;
   using DerivedPtr = std::shared_ptr<Derived>;
 
-  template<typename Target>
-  using SGPtr = SimpleGeneratorPtr<Target, Derived>;
+  template<template<typename Target> class Decorator>
+  using SEPtr = SimpleEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using CEPtr = CachedEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
+
+  // Hidden name method inheritance
+  using Base::evaluateSequence;
+  using Base::drawSequence;
 
   // Overriden methods
-  GeneratorPtr<Labeling<Sequence>> labelingGenerator() override;
+  EvaluatorPtr<Labeling> labelingEvaluator(const Labeling<Sequence> &s,
+                                           bool cached = false);
 
-  // Virtual methods
-  virtual Labeling<Sequence> simpleChoose(SGPtr<Labeling<Sequence>> generator,
+  GeneratorPtr<Labeling> labelingGenerator();
+
+  // Purely virtual methods
+  virtual void initializeCache(CEPtr<Labeling> evaluator,
+                               unsigned int phase) = 0;
+
+  virtual Probability evaluateSymbol(SEPtr<Labeling> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const = 0;
+  virtual Probability evaluateSequence(SEPtr<Labeling> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const = 0;
+
+  virtual Probability evaluateSymbol(CEPtr<Labeling> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const = 0;
+  virtual Probability evaluateSequence(CEPtr<Labeling> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const = 0;
+
+  virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
+                                      unsigned int pos,
+                                      unsigned int phase,
+                                      const Sequence &context) const = 0;
+  virtual Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                           unsigned int size,
-                                          unsigned int phase = 0) const = 0;
+                                          unsigned int phase) const = 0;
+
+  virtual double backward(const Sequence &s,
+                          Matrix &beta) const = 0;
+  virtual double forward(const Sequence &s,
+                         Matrix &alpha) const = 0;
+  virtual void posteriorProbabilities(const Sequence &xs,
+                                      Matrix &probabilities) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const Sequence &xs,
+           Matrix &probabilities,
+           Labeling<Sequence>::Method method) const = 0;
+
+ private:
+  // Virtual methods
+  virtual Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
+
+  // Concrete methods
+  DerivedPtr make_shared();
 };
 
 /*
@@ -91,17 +152,37 @@ class DecodableModelCrtp : public DecodableModel {
 */
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+template<typename Derived>
+EvaluatorPtr<Labeling> DecodableModelCrtp<Derived>::labelingEvaluator(
+    const Labeling<Sequence> &sequence, bool cached) {
+  if (cached)
+    return CachedEvaluator<Labeling, Derived>::make(make_shared(), sequence);
+  return SimpleEvaluator<Labeling, Derived>::make(make_shared(), sequence);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+template<typename Derived>
+GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator() {
+  return SimpleGenerator<Labeling, Derived>::make(make_shared());
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-GeneratorPtr<Labeling<Sequence>>
-DecodableModelCrtp<Derived>::labelingGenerator() {
-
-  return SimpleGenerator<Labeling<Sequence>, Derived>::make(
-    std::static_pointer_cast<Derived>(
-      static_cast<Derived *>(this)->shared_from_this()));
+std::shared_ptr<Derived> DecodableModelCrtp<Derived>::make_shared() {
+  return std::static_pointer_cast<Derived>(
+    static_cast<Derived *>(this)->shared_from_this());
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

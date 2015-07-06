@@ -27,15 +27,26 @@
 namespace tops {
 namespace model {
 
-GeneralizedHiddenMarkovModelExplicitDurationState::GeneralizedHiddenMarkovModelExplicitDurationState(
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+GeneralizedHiddenMarkovModelExplicitDurationState
+::GeneralizedHiddenMarkovModelExplicitDurationState(
     Symbol symbol,
     ProbabilisticModelPtr observation,
     DiscreteIIDModelPtr transition,
     DiscreteIIDModelPtr duration)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition), _duration(duration) {
+      : GeneralizedHiddenMarkovModelState(symbol, observation, transition),
+        _duration(duration) {
 }
 
-GeneralizedHiddenMarkovModelExplicitDurationStatePtr GeneralizedHiddenMarkovModelExplicitDurationState::make(
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+GeneralizedHiddenMarkovModelExplicitDurationStatePtr
+GeneralizedHiddenMarkovModelExplicitDurationState::make(
     Symbol symbol,
     ProbabilisticModelPtr observation,
     DiscreteIIDModelPtr transition,
@@ -45,21 +56,33 @@ GeneralizedHiddenMarkovModelExplicitDurationStatePtr GeneralizedHiddenMarkovMode
       symbol, observation, transition, duration));
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
+/*----------------------------------------------------------------------------*/
+
 double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
   return _duration->probabilityOf(l);
 }
+
+/*----------------------------------------------------------------------------*/
 
 bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
   return false;
 }
 
+/*----------------------------------------------------------------------------*/
+
 int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
   return -1;
 }
 
+/*----------------------------------------------------------------------------*/
+
 RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
   return std::make_shared<LazzyRange>(1, _max_duration);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }
 }

@@ -48,27 +48,21 @@ using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
 class FixedSequenceAtPosition
     : public ProbabilisticModelDecorator<FixedSequenceAtPosition> {
  public:
-  // Alias
-  using SEPtr = SimpleEvaluatorImplPtr<FixedSequenceAtPosition>;
-
   // Static methods
-  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model,
+                                         int position,
+                                         Sequence sequence,
+                                         DiscreteIIDModelPtr distr);
 
-  // Virtual methods
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false) override;
+  // Overriden methods
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  virtual GeneratorPtr<Sequence> sequenceGenerator() override;
-
-  // Concrete methods
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-
-  Sequence simpleChoose(SGPtr<Sequence> generator,
-                        unsigned int size,
-                        unsigned int phase = 0) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase = 0) const override;
 
  private:
   // Instance variables
@@ -77,7 +71,10 @@ class FixedSequenceAtPosition
   DiscreteIIDModelPtr _probabilities;
 
   // Constructors
-  FixedSequenceAtPosition(ProbabilisticModelPtr model, int position, Sequence sequence, DiscreteIIDModelPtr distr);
+  FixedSequenceAtPosition(ProbabilisticModelPtr model,
+                          int position,
+                          Sequence sequence,
+                          DiscreteIIDModelPtr distr);
 
   // Concrete methods
   void addSequence(Sequence & h) const;

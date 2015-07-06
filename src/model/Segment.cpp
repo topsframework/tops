@@ -23,21 +23,17 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
 Segment::Segment(Symbol symbol, int begin, int end)
     :_symbol(symbol), _begin(begin), _end(end) {
 }
 
-Symbol Segment::symbol() {
-  return _symbol;
-}
-
-int Segment::begin() {
-  return _begin;
-}
-
-int Segment::end() {
-  return _end;
-}
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 std::vector<Segment> Segment::readSequence(const Sequence &s) {
   std::vector<Segment> segments;
@@ -53,6 +49,28 @@ std::vector<Segment> Segment::readSequence(const Sequence &s) {
   segments.push_back(Segment(symbol, begin, s.size()));
   return segments;
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+Symbol Segment::symbol() {
+  return _symbol;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int Segment::begin() {
+  return _begin;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int Segment::end() {
+  return _end;
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

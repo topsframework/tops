@@ -7,7 +7,7 @@
 /*  the License, or (at your option) any later version.                */
 /*                                                                     */
 /*  This program is distributed in the hope that it will be useful,    */
-/*  but WITHOUT ANY WARRANTY; without even the implied warranty of     */
+/*  but WITHOUT ANY WARRANTY; without even the ied warranty of         */
 /*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      */
 /*  GNU General Public License for more details.                       */
 /*                                                                     */
@@ -17,37 +17,49 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_EVALUATOR_
+#define TOPS_MODEL_EVALUATOR_
+
+// Standard headers
+#include <memory>
+
 // ToPS headers
-#include "model/Evaluator.hpp"
+#include "Probability.hpp"
 
 namespace tops {
 namespace model {
 
-/*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
-/*----------------------------------------------------------------------------*/
+template<template<typename Target> class Decorator>
+class Evaluator;
 
-Evaluator::Evaluator(EvaluatorImplPtr &&impl)
-    : _impl(std::move(impl)) {
-}
+/**
+ * @typedef EvaluatorPtr
+ * @brief Alias of pointer to Evaluator.
+ */
+template<template<typename Target> class Decorator>
+using EvaluatorPtr = std::shared_ptr<Evaluator<Decorator>>;
 
-/*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
-/*----------------------------------------------------------------------------*/
+/**
+ * @class Evaluator
+ * @brief TODO
+ */
+template<template<typename Target> class Decorator>
+class Evaluator
+    : public std::enable_shared_from_this<Evaluator<Decorator>> {
+ public:
+  // Purely virtual methods
+  virtual Probability evaluateSymbol(unsigned int pos,
+                                     unsigned int phase = 0) const = 0;
 
-inline double Evaluator::probabilityOf(unsigned int begin,
+  virtual Probability evaluateSequence(unsigned int begin,
                                        unsigned int end,
-                                       unsigned int phase) {
-  return _impl->probabilityOf(begin, end, phase);
-}
+                                       unsigned int phase = 0) const = 0;
 
-inline Sequence& Evaluator::sequence() {
-  return _impl->sequence();
-}
-
-inline const Sequence& Evaluator::sequence() const {
-  return _impl->sequence();
-}
+  virtual Decorator<Sequence>& sequence() = 0;
+  virtual const Decorator<Sequence>& sequence() const = 0;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif

@@ -43,12 +43,16 @@ using SingleValueRangePtr = std::shared_ptr<SingleValueRange>;
  */
 class SingleValueRange : public Range {
  public:
+  // Constructors
   SingleValueRange(unsigned int value);
+
+  // Virtual methods
   virtual unsigned int begin();
   virtual unsigned int next();
   virtual bool end();
 
  private:
+  // Instance variables
   int _value;
   bool _end;
 };

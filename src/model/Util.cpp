@@ -27,6 +27,8 @@
 namespace tops {
 namespace model {
 
+/*----------------------------------------------------------------------------*/
+
 double log_sum(double log_a, double log_b) {
   double min = log_a;
   double diff;
@@ -43,6 +45,8 @@ double log_sum(double log_a, double log_b) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 bool close(double a, double b, double tolerance) {
   double diff = fabs(a-b);
 
@@ -52,6 +56,8 @@ bool close(double a, double b, double tolerance) {
     return true;
   return false;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double safe_division(double a, double b) {
   if (b < 1 && a > b*std::numeric_limits<double>::max()) {
@@ -63,6 +69,8 @@ double safe_division(double a, double b) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 int mod(int D, int d) {
   int r = D%d;
   if (r < 0) {
@@ -73,6 +81,8 @@ int mod(int D, int d) {
   }
   return r;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -44,17 +44,26 @@ using ProbabilisticModelDecoratorPtr
  * @class ProbabilisticModelDecorator
  * @brief Base class that defines probabilistic models' decorators.
  *
- * It is the easiest way to change the behaviour of a probabilistic model.
+ * It is the easiest way to change the behavior of a probabilistic model.
  */
 template<typename Derived>
 class ProbabilisticModelDecorator
     : public ProbabilisticModelCrtp<Derived> {
  public:
   // Alias
-  using Base = ProbabilisticModelCrtp<ProbabilisticModelDecorator>;
+  using Base = ProbabilisticModelCrtp<Derived>;
 
   using Self = ProbabilisticModelDecorator<Derived>;
   using SelfPtr = std::shared_ptr<Self>;
+
+  template<template<typename Target> class Decorator>
+  using SEPtr = SimpleEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using CEPtr = CachedEvaluatorPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Static methods
   template<typename... Ts>
@@ -63,16 +72,18 @@ class ProbabilisticModelDecorator
   }
 
   // Overriden methods
-  double evaluate(const Sequence &s,
-                  unsigned int pos,
-                  unsigned int phase = 0) const override {
-    return _model->evaluate(s, pos, phase);
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              unsigned int phase,
+                              const Sequence &context) const override {
+    return _model->standardGenerator()->drawSymbol(pos, phase, context);
   }
 
-  Symbol choose(const Sequence &context,
-                unsigned int pos,
-                unsigned int phase = 0) const override {
-    return _model->choose(context, pos, phase);
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override {
+    auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
+    return modelEvaluator->evaluateSymbol(pos, phase);
   }
 
  protected:

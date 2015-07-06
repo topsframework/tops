@@ -38,29 +38,36 @@ class GeneralizedHiddenMarkovModelSignalState;
  * @typedef GeneralizedHiddenMarkovModelSignalStatePtr
  * @brief Alias of pointer to GeneralizedHiddenMarkovModelSignalState.
  */
-using GeneralizedHiddenMarkovModelSignalStatePtr = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
+using GeneralizedHiddenMarkovModelSignalStatePtr
+  = std::shared_ptr<GeneralizedHiddenMarkovModelSignalState>;
 
 /**
  * @class GeneralizedHiddenMarkovModelSignalState
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelSignalState : public GeneralizedHiddenMarkovModelState {
+class GeneralizedHiddenMarkovModelSignalState
+    : public GeneralizedHiddenMarkovModelState {
  public:
+  // Static methods
   static GeneralizedHiddenMarkovModelSignalStatePtr make(Symbol symbol,
                                                          ProbabilisticModelPtr observation,
                                                          DiscreteIIDModelPtr transition,
                                                          int duration_size);
 
+  // Virtual methods
   virtual double durationProbability(int l) const;
   virtual int maximumDurationSize() const;
   virtual RangePtr durations() const;
 
  private:
+  // Instance variables
+  int _duration_size;
+
+  // Constructors
   GeneralizedHiddenMarkovModelSignalState(Symbol symbol,
                                           ProbabilisticModelPtr observation,
                                           DiscreteIIDModelPtr transition,
                                           int duration_size);
-  int _duration_size;
 };
 
 }  // namespace model

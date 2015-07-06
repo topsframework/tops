@@ -47,6 +47,8 @@ DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
   return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
 }
 
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size) {
@@ -62,6 +64,8 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     log_probabilities[s] = log(log_probabilities[s]/number_of_symbols);
   return DiscreteIIDModel::make(log_probabilities);
 }
+
+/*----------------------------------------------------------------------------*/
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
     std::vector<Sequence> training_set,
@@ -118,6 +122,8 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
 
   return DiscreteIIDModel::make(normalize(prob));
 }
+
+/*----------------------------------------------------------------------------*/
 
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
       std::vector<Sequence> training_set,
@@ -198,6 +204,8 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
   return DiscreteIIDModel::make(normalize(prob));
 }
 
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
       std::vector<Sequence> training_set,
       unsigned int max_length) {
@@ -233,6 +241,8 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
   return DiscreteIIDModel::make(normalize(prob));
 }
 
+/*----------------------------------------------------------------------------*/
+
 std::vector<double> DiscreteIIDModel::normalize(
     std::vector<double> probabilities) {
   double sum = 0;
@@ -246,12 +256,16 @@ std::vector<double> DiscreteIIDModel::normalize(
   return log_probabilities;
 }
 
+/*----------------------------------------------------------------------------*/
+
 double DiscreteIIDModel::kernel_normal(double x, double h) {
   double y = (x/h) * (x/h);
   double f = 1.0/(sqrt(2*M_PI));
   double v = (f/h) * exp(-y/2);
   return v;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::epanechnikov(double x, double h) {
   double a = h * sqrt(5.0);
@@ -263,7 +277,11 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 #define abs9(a) ((a) > 0 ? (a) : (-a))
+
+/*----------------------------------------------------------------------------*/
 
 void DiscreteIIDModel::band_den_bin(int n,
                                     int nb,
@@ -291,6 +309,8 @@ void DiscreteIIDModel::band_den_bin(int n,
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 void DiscreteIIDModel::band_phi6_bin(int n,
                                      int nb,
                                      double d,
@@ -311,6 +331,8 @@ void DiscreteIIDModel::band_phi6_bin(int n,
   *u = sum / (nn * (nn - 1) * pow(h, 7.0) * sqrt(2 * M_PI));
 }
 
+/*----------------------------------------------------------------------------*/
+
 void DiscreteIIDModel::band_phi4_bin(int n,
                                      int nb,
                                      double d,
@@ -330,6 +352,8 @@ void DiscreteIIDModel::band_phi4_bin(int n,
   *u = sum / (nn * (nn - 1) * pow(h, 5.0) * sqrt(2 * M_PI));
 }
 
+/*----------------------------------------------------------------------------*/
+
 double DiscreteIIDModel::mean(const std::vector<double> &data) {
   double sum = 0.0;
   for (unsigned int i = 0; i < data.size(); i++) {
@@ -337,6 +361,8 @@ double DiscreteIIDModel::mean(const std::vector<double> &data) {
   }
   return sum/static_cast<double>(data.size());
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::var(const std::vector<double> &data) {
   double data_mean = mean(data);
@@ -346,6 +372,8 @@ double DiscreteIIDModel::var(const std::vector<double> &data) {
   }
   return sum/(static_cast<double>(data.size()) -1.0);
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::quantile(std::vector<double> data, double q) {
   int low_index = static_cast<int>(
@@ -358,11 +386,15 @@ double DiscreteIIDModel::quantile(std::vector<double> data, double q) {
   return (1-h)*data[low_index] + h * data[high_index];
 }
 
+/*----------------------------------------------------------------------------*/
+
 double DiscreteIIDModel::iqr(const std::vector<double> &data) {
   double q1 = quantile(data, 0.25);
   double q2 = quantile(data, 0.75);
   return q2 - q1;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::kernel_density_estimation(
     double x,
@@ -376,6 +408,8 @@ double DiscreteIIDModel::kernel_density_estimation(
   result /= data.size();
   return result;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
   double n = static_cast<double>(data.size());
@@ -411,22 +445,31 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
 }
 
 /*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                             unsigned int pos,
+                                             unsigned int phase) const {
+  return probabilityOf(evaluator->sequence()[pos]);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+Standard<Symbol> DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
+                                              unsigned int pos,
+                                              unsigned int phase,
+                                              const Sequence &context) const {
+  return draw();
+}
+
+/*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-double DiscreteIIDModel::evaluate(const Sequence &s,
-                                  unsigned int pos,
-                                  unsigned int phase) const {
-  return probabilityOf(s[pos]);
-}
-
-Symbol DiscreteIIDModel::choose(const Sequence &context,
-                                unsigned int pos,
-                                unsigned int phase) const {
-  return choose();
-}
-
-Symbol DiscreteIIDModel::choose() const {
+Symbol DiscreteIIDModel::draw() const {
   double random = generateRandomDouble();
   for (unsigned int symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= exp(_probabilities[symbol]);
@@ -435,6 +478,8 @@ Symbol DiscreteIIDModel::choose() const {
   }
   return _probabilities.size()-1;
 }
+
+/*----------------------------------------------------------------------------*/
 
 double DiscreteIIDModel::probabilityOf(Symbol s) const {
   if (s > _probabilities.size())
@@ -450,9 +495,13 @@ std::vector<double> DiscreteIIDModel::probabilities() {
   return _probabilities;
 }
 
+/*----------------------------------------------------------------------------*/
+
 int DiscreteIIDModel::alphabetSize() const {
   return _probabilities.size();
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

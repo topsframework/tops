@@ -40,39 +40,19 @@ FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-/*==============================  EVALUATOR  =================================*/
-
-EvaluatorPtr FixedSequenceAtPosition::evaluator(
-    const Sequence &s,
-    bool cached) {
-  return Evaluator::make(
-    SimpleEvaluatorImpl<FixedSequenceAtPosition>::make(
-      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()),
-      s));
-}
-
-/*==============================  GENERATOR  =================================*/
-
-GeneratorPtr<Sequence> FixedSequenceAtPosition::sequenceGenerator() {
-  return SimpleGenerator<Sequence, FixedSequenceAtPosition>::make(
-      std::static_pointer_cast<FixedSequenceAtPosition>(shared_from_this()));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 /*==============================  EVALUATOR  =================================*/
 
-double FixedSequenceAtPosition::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  double result = _model->evaluator(evaluator->sequence())->probabilityOf(begin, end, phase);
+Probability
+FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const {
+  auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
+  auto result = modelEvaluator->evaluateSequence(begin, end, phase);
+
   int j;
   for (j = 0;
        (j < static_cast<int>(_sequence.size()))
@@ -90,10 +70,11 @@ double FixedSequenceAtPosition::simpleProbabilityOf(
 
 /*==============================  GENERATOR  =================================*/
 
-Sequence FixedSequenceAtPosition::simpleChoose(SGPtr<Sequence> generator,
-                                               unsigned int size,
-                                               unsigned int phase) const {
-  Sequence s = _model->sequenceGenerator()->choose(size, phase);
+Standard<Sequence>
+FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
+                                      unsigned int size,
+                                      unsigned int phase) const {
+  Sequence s = _model->standardGenerator()->drawSequence(size, phase);
   addSequence(s);
   return s;
 }
@@ -101,7 +82,7 @@ Sequence FixedSequenceAtPosition::simpleChoose(SGPtr<Sequence> generator,
 /*================================  OTHERS  ==================================*/
 
 void FixedSequenceAtPosition::addSequence(Sequence &h) const {
-  if (_probabilities->choose() == 1)
+  if (_probabilities->draw() == 1)
     return;
   for (int i = _position;
        ((i-_position) < static_cast<int>(_sequence.size()))
@@ -124,6 +105,8 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
         _sequence(sequence),
         _probabilities(distr) {
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -56,17 +56,17 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 0, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 1, 0, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})->evaluateSequence(0, 8),
               DoubleEq(-HUGE));
-  ASSERT_THAT(iid->evaluator({0, 0, 0, 1, 0, 1, 0, 0})->probabilityOf(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})->evaluateSequence(0, 8),
               DoubleNear(-10.1029, 1e-4));
 }
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldChooseSequenceWithSeed42) {
   tops::model::resetRandom();
-  ASSERT_THAT(iid->sequenceGenerator()->choose(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
 }

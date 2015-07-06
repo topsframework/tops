@@ -22,13 +22,13 @@
 #include <vector>
 
 // ToPS headers
-#include "InhomogeneousMarkovChain.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 InhomogeneousMarkovChain::InhomogeneousMarkovChain(
@@ -37,7 +37,7 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
@@ -47,34 +47,51 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-double InhomogeneousMarkovChain::evaluate(const Sequence &s,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
+Probability
+InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+                                         unsigned int pos,
+                                         unsigned int phase) const {
   if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->evaluate(s, pos);
+    return _vlmcs[pos + phase]->standardEvaluator(
+             evaluator->sequence())->evaluateSymbol(pos);
   else
     return -HUGE;
 }
 
-Symbol InhomogeneousMarkovChain::choose(const Sequence &context,
-                                        unsigned int pos,
-                                        unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->choose(context, pos);
-  else
-    return 0;  // TODO(igorbonadio): ERROR!
+/*----------------------------------------------------------------------------*/
+
+Standard<Symbol>
+InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
+                                     unsigned int pos,
+                                     unsigned int phase,
+                                     const Sequence &context) const {
+  if (pos + phase < _vlmcs.size()) {
+    auto vlmc = _vlmcs[pos + phase];
+    return vlmc->standardGenerator()->drawSymbol(pos, phase, context);
+  }
+
+  // TODO(igorbonadio): Throw exception!
+  return Standard<Symbol>(INVALID_SYMBOL);
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             VIRTUAL METHODS                                */
+/*----------------------------------------------------------------------------*/
 
 InhomogeneousMarkovChain* InhomogeneousMarkovChain::inhomogeneous() {
   return this;
 }
 
+/*----------------------------------------------------------------------------*/
+
 unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
   return _vlmcs.size();
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

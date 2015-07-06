@@ -17,17 +17,19 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_SIMPLE_GENERATOR_
-#define TOPS_MODEL_SIMPLE_GENERATOR_
+#ifndef TOPS_MODEL_SIMPLE_EVALUATOR_
+#define TOPS_MODEL_SIMPLE_EVALUATOR_
 
 // Standard headers
 #include <memory>
-#include <typeinfo>
-#include <exception>
+#include <type_traits>
+
+// ToPS headers
+#include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Generator.tcc"
-#include "model/MemberDelegator.tcc"
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 
 namespace tops {
 namespace model {
@@ -41,58 +43,67 @@ namespace model {
 */
 
 template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator;
+class SimpleEvaluator;
 
 /**
- * @typedef SimpleGeneratorPtr
- * @brief Alias of pointer to SimpleGenerator.
+ * @typedef SimpleEvaluatorPtr
+ * @brief Alias of pointer to SimpleEvaluator.
  */
 template<template<typename Target> class Decorator, typename Model>
-using SimpleGeneratorPtr = std::shared_ptr<SimpleGenerator<Decorator, Model>>;
+using SimpleEvaluatorPtr = std::shared_ptr<SimpleEvaluator<Decorator, Model>>;
 
 /**
- * @class SimpleGenerator
+ * @class SimpleEvaluator
  * @brief TODO
  */
 template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator : public Generator<Decorator> {
+class SimpleEvaluator : public Evaluator<Decorator> {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
 
-  using Self = SimpleGenerator<Decorator, Model>;
+  using Self = SimpleEvaluator<Decorator, Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
   template<typename... Ts>
-  static SimpleGeneratorPtr<Decorator, Model> make(Ts... args) {
+  static SimpleEvaluatorPtr<Decorator, Model> make(Ts... args) {
     return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
   }
 
   // Overriden methods
-  Decorator<Symbol> drawSymbol(unsigned int pos,
-                               unsigned int phase,
-                               const Sequence &context) const override {
-    CALL_METHOD_DELEGATOR(drawSymbol, pos, phase, context);
+  Probability evaluateSymbol(unsigned int pos,
+                             unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
-  Decorator<Sequence> drawSequence(unsigned int size,
-                                   unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(drawSequence, size, phase);
+  Probability evaluateSequence(unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override {
+    CALL_METHOD_DELEGATOR(evaluateSequence, begin, end, phase);
+  }
+
+  Decorator<Sequence>& sequence() override {
+    return _sequence;
+  }
+
+  const Decorator<Sequence>& sequence() const override {
+    return _sequence;
   }
 
  protected:
   // Instace variables
   ModelPtr _model;
+  Decorator<Sequence> _sequence;
 
   // Constructors
-  SimpleGenerator(ModelPtr m)
-      : _model(std::move(m)) {
+  SimpleEvaluator(ModelPtr model, Decorator<Sequence> sequence)
+      : _model(std::move(model)), _sequence(std::move(sequence)) {
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(drawSequence, _model)
+  GENERATE_METHOD_DELEGATOR(evaluateSymbol, _model)
+  GENERATE_METHOD_DELEGATOR(evaluateSequence, _model)
 };
 
 }  // namespace model

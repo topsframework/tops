@@ -44,7 +44,7 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  *        distributed (IID) model.
  *
  * According to [Aaron Clauset], IID means that if we are given a set of data
- * \f$\{x_i\}\f$, each of these \f$x_i\f$ observations is an independent draw
+ * \f$\{x_i\}\f$, each of these \f$x_i\f$ observations is an independent choose
  * from a fixed probabilistic model. Independence means that
  *
  * \f[
@@ -150,32 +150,36 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
 
   static std::vector<double> normalize(std::vector<double> probabilities);
 
-  // Virtual methods
+  // Overriden methods
   /**
    * Evaluates the given position of a sequence.
-   * @param s   a sequence
-   * @param pos position of a sequence's symbol
+   * @param standardEvaluator standardEvaluator of sequences
+   * @param pos position within standardEvaluator's sequence to be evaluated
    * @return \f$Pr(s[i])\f$
    */
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
 
   /**
    * Draws a new symbol in the ith position.
-   * @param s a sequence
-   * @param i a position
+   * @param generator Generator of sequences
+   * @param pos position of a symbol to be generated
+   * @param phase phase of a symbol to be generated
+   * @param context context to be considered in symbol generation
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
+  // Virtual methods
   /**
    * Draws a new symbol.
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol choose() const;
+  virtual Symbol draw() const;
 
   /**
    * Gets the probability of this model draws the given symbol.

@@ -61,19 +61,27 @@ int MaximalDependenceDecompositionNode::getIndex() {
   return _index;
 }
 
+/*----------------------------------------------------------------------------*/
+
 ProbabilisticModelPtr MaximalDependenceDecompositionNode::getModel() {
   return _model;
 }
+
+/*----------------------------------------------------------------------------*/
 
 MaximalDependenceDecompositionNodePtr
 MaximalDependenceDecompositionNode::getLeft() {
   return _left;
 }
 
+/*----------------------------------------------------------------------------*/
+
 MaximalDependenceDecompositionNodePtr
 MaximalDependenceDecompositionNode::getRight() {
   return _right;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecompositionNode::setChildern(
     MaximalDependenceDecompositionNodePtr left,
@@ -82,10 +90,14 @@ void MaximalDependenceDecompositionNode::setChildern(
   _right = right;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void MaximalDependenceDecompositionNode::setChild(
     MaximalDependenceDecompositionNodePtr child) {
   _left = child;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -23,21 +23,34 @@
 namespace tops {
 namespace model {
 
-SingleValueRange::SingleValueRange(unsigned int value): _value(value), _end(false) {
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+SingleValueRange::SingleValueRange(unsigned int value)
+    : _value(value), _end(false) {
 }
+
+/*----------------------------------------------------------------------------*/
 
 unsigned int SingleValueRange::begin() {
   return _value;
 }
+
+/*----------------------------------------------------------------------------*/
 
 unsigned int SingleValueRange::next() {
   _end = true;
   return _value;
 }
 
+/*----------------------------------------------------------------------------*/
+
 bool SingleValueRange::end() {
   return _end;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

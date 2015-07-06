@@ -32,7 +32,7 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
@@ -49,7 +49,7 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
@@ -65,6 +65,8 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
                                          skip_length,
                                          skip_sequence));
 }
+
+/*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
     std::vector<Sequence> training_set,
@@ -91,6 +93,8 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
                                                 normalizer, skip_offset,
                                                 skip_length, skip_sequence);
 }
+
+/*----------------------------------------------------------------------------*/
 
 double SimilarityBasedSequenceWeighting::calculate_normalizer(
     int skip_length,
@@ -129,54 +133,42 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-double SimilarityBasedSequenceWeighting::evaluate(const Sequence &s,
-                                                  unsigned int pos,
-                                                  unsigned int phase) const {
+/*===============================  EVALUATOR  ================================*/
+
+void SimilarityBasedSequenceWeighting::initializeCache(CEPtr<Standard> evaluator,
+                                                       unsigned int phase) {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(evaluator->sequence().size());
+
+  auto sequence_size = evaluator->sequence().size();
+  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+
+  for (unsigned int i = 0; i < sequence_size; i++)  {
+    prefix_sum_array[i]
+      = evaluateSequence(simple_evaluator, i, sequence_size, phase);
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+SimilarityBasedSequenceWeighting::evaluateSymbol(SEPtr<Standard> evaluator,
+                                                 unsigned int pos,
+                                                 unsigned int phase) const {
   // TODO(igorbonadio)
   return -HUGE;
 }
 
-Symbol SimilarityBasedSequenceWeighting::choose(const Sequence &context,
-                                                unsigned int pos,
-                                                unsigned int phase) const {
-  // TODO(igorbonadio)
-  return 0;
-}
-
-EvaluatorPtr SimilarityBasedSequenceWeighting::evaluator(const Sequence &s,
-                                                         bool cached) {
-  // if (cached)
-  //   return Evaluator::make(
-  //     CachedEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
-  //       std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
-  //       s, Cache(s.size())));
-  return Evaluator::make(
-    SimpleEvaluatorImpl<SimilarityBasedSequenceWeighting>::make(
-      std::static_pointer_cast<SimilarityBasedSequenceWeighting>(shared_from_this()),
-      s));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-void SimilarityBasedSequenceWeighting::initializeCachedEvaluator(
-    CEPtr evaluator,
-    unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache();
-  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)  {
-    prefix_sum_array[i] = simpleProbabilityOf(evaluator, i, evaluator->sequence().size());
-  }
-}
-
-double SimilarityBasedSequenceWeighting::simpleProbabilityOf(
-    SEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+Probability
+SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
+                                                   unsigned int begin,
+                                                   unsigned int end,
+                                                   unsigned int phase) const {
   if (end > evaluator->sequence().size())
     return -HUGE;
   int length = (_counter.begin()->first).size();
@@ -219,16 +211,30 @@ double SimilarityBasedSequenceWeighting::simpleProbabilityOf(
   return log(sum/(_normalizer));
 }
 
-double SimilarityBasedSequenceWeighting::cachedProbabilityOf(
-    CEPtr evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->cache();
+/*----------------------------------------------------------------------------*/
+
+Probability
+SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
+                                                   unsigned int begin,
+                                                   unsigned int end,
+                                                   unsigned int phase) const {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
   return -HUGE;
 }
+
+/*===============================  GENERATOR  ================================*/
+
+Standard<Symbol>
+SimilarityBasedSequenceWeighting::drawSymbol(SGPtr<Standard> generator,
+                                             unsigned int pos,
+                                             unsigned int phase,
+                                             const Sequence &context) const {
+  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

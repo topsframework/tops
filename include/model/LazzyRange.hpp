@@ -43,12 +43,16 @@ using LazzyRangePtr = std::shared_ptr<LazzyRange>;
  */
 class LazzyRange : public Range {
  public:
+  // Constructors
   LazzyRange(unsigned int begin, unsigned int end);
+
+  // Virtual methods
   virtual unsigned int begin();
   virtual unsigned int next();
   virtual bool end();
 
  private:
+  // Instance variables
   unsigned int _begin;
   unsigned int _end;
   unsigned int _current;

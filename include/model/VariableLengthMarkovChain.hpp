@@ -55,10 +55,12 @@ class VariableLengthMarkovChain
 
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
+
   static VariableLengthMarkovChainPtr trainContextAlgorithm(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
       double delta);
+
   static VariableLengthMarkovChainPtr trainFixedLengthMarkovChain(
       std::vector<Sequence> training_set,
       unsigned int order,
@@ -66,6 +68,7 @@ class VariableLengthMarkovChain
       double pseudo_counts,
       std::vector<double> weights,
       ProbabilisticModelPtr apriori);
+
   static VariableLengthMarkovChainPtr trainInterpolatedMarkovChain(
       std::vector<Sequence> training_set,
       std::vector<double> weights,
@@ -74,13 +77,15 @@ class VariableLengthMarkovChain
       double pseudo_counts,
       ProbabilisticModelPtr apriori);
 
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
+  // Overriden methods
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
  private:
   // Instance variables

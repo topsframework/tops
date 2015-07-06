@@ -53,10 +53,6 @@ class SimilarityBasedSequenceWeighting
   // Alias
   using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
 
-  using Cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
-  using CEPtr = CachedEvaluatorImplPtr<SimilarityBasedSequenceWeighting>;
-
   // Static methods
   static SimilarityBasedSequenceWeightingPtr make(
       std::map<Sequence, double> counter,
@@ -64,6 +60,7 @@ class SimilarityBasedSequenceWeighting
       int skip_offset,
       int skip_length,
       Sequence skip_sequence);
+
   static SimilarityBasedSequenceWeightingPtr train(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -71,29 +68,27 @@ class SimilarityBasedSequenceWeighting
       int skip_length,
       Sequence skip_sequence);
 
-  // Virtual methods
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const override;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const override;
+  // Overriden methods
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
 
-  virtual EvaluatorPtr evaluator(const Sequence &s,
-                                 bool cached = false) override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              unsigned int phase,
+                              const Sequence &context) const override;
 
  private:
   // Instance variables

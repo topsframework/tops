@@ -17,17 +17,19 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_SIMPLE_GENERATOR_
-#define TOPS_MODEL_SIMPLE_GENERATOR_
+#ifndef TOPS_MODEL_CACHED_EVALUATOR_IMPL_
+#define TOPS_MODEL_CACHED_EVALUATOR_IMPL_
 
 // Standard headers
 #include <memory>
-#include <typeinfo>
-#include <exception>
+#include <type_traits>
+
+// ToPS headers
+#include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Generator.tcc"
-#include "model/MemberDelegator.tcc"
+#include "model/Labeling.tcc"
+#include "model/Estimation.tcc"
 
 namespace tops {
 namespace model {
@@ -41,58 +43,89 @@ namespace model {
 */
 
 template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator;
+class CachedEvaluator;
 
 /**
- * @typedef SimpleGeneratorPtr
- * @brief Alias of pointer to SimpleGenerator.
+ * @typedef CachedEvaluatorPtr
+ * @brief Alias of pointer to CachedEvaluator.
  */
 template<template<typename Target> class Decorator, typename Model>
-using SimpleGeneratorPtr = std::shared_ptr<SimpleGenerator<Decorator, Model>>;
+using CachedEvaluatorPtr = std::shared_ptr<CachedEvaluator<Decorator, Model>>;
 
 /**
- * @class SimpleGenerator
+ * @class CachedEvaluator
  * @brief TODO
  */
 template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator : public Generator<Decorator> {
+class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
+  using Cache = typename Model::Cache;
 
-  using Self = SimpleGenerator<Decorator, Model>;
+  using Base = SimpleEvaluator<Decorator, Model>;
+  using Self = CachedEvaluator<Decorator, Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
   template<typename... Ts>
-  static SimpleGeneratorPtr<Decorator, Model> make(Ts... args) {
+  static CachedEvaluatorPtr<Decorator, Model> make(Ts... args) {
     return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
   }
 
   // Overriden methods
-  Decorator<Symbol> drawSymbol(unsigned int pos,
-                               unsigned int phase,
-                               const Sequence &context) const override {
-    CALL_METHOD_DELEGATOR(drawSymbol, pos, phase, context);
+  Probability evaluateSymbol(unsigned int pos,
+                             unsigned int phase) const override {
+    const_cast<Self *>(this)->lazyInitializeCache(phase);
+    CALL_METHOD_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
-  Decorator<Sequence> drawSequence(unsigned int size,
-                                   unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(drawSequence, size, phase);
+  Probability evaluateSequence(unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override {
+    const_cast<Self *>(this)->lazyInitializeCache(phase);
+    CALL_METHOD_DELEGATOR(evaluateSequence, begin, end, phase);
+  }
+
+  // Virtual methods
+  virtual void initializeCache(unsigned int phase) {
+    CALL_METHOD_DELEGATOR(initializeCache, phase);
+  }
+
+  // Concrete methods
+  Cache& cache() {
+    return _cache;
+  }
+
+  const Cache& cache() const {
+    return _cache;
   }
 
  protected:
   // Instace variables
-  ModelPtr _model;
+  Cache _cache;
+  bool initialized = false;
 
   // Constructors
-  SimpleGenerator(ModelPtr m)
-      : _model(std::move(m)) {
+  CachedEvaluator(
+      ModelPtr model, Decorator<Sequence> sequence, Cache cache = Cache())
+      : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(drawSequence, _model)
+  // Concrete methods
+  inline void lazyInitializeCache(unsigned int phase) {
+    if (!initialized) {
+      initialized = true;
+      initializeCache(phase);
+    }
+  }
+
+  // Delegators
+  GENERATE_METHOD_DELEGATOR(evaluateSymbol, _model)
+  GENERATE_METHOD_DELEGATOR(evaluateSequence, _model)
+
+  GENERATE_METHOD_DELEGATOR(initializeCache, _model)
 };
 
 }  // namespace model

@@ -36,6 +36,7 @@ using ::testing::ContainerEq;
 
 using tops::model::SimilarityBasedSequenceWeighting;
 using tops::model::SimilarityBasedSequenceWeightingPtr;
+using tops::model::INVALID_SYMBOL;
 using tops::model::Sequence;
 
 class ASBSW : public testing::Test {
@@ -51,47 +52,47 @@ class ASBSW : public testing::Test {
 };
 
 TEST_F(ASBSW, ShouldEvaluateASequence) {
-  ASSERT_THAT(sbsw->evaluator({0})->probabilityOf(0, 1),
+  ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluator({1})->probabilityOf(0, 1),
+  ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluator({0, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({0, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleNear(-0.405465, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleNear(-1.09861, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1})->probabilityOf(0, 3),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0})->probabilityOf(0, 4),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13),
               DoubleNear(-6.90776, 1e-4));
 }
 
 TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(sbsw->evaluator({0}, true)->probabilityOf(0, 1),
-              DoubleNear(sbsw->evaluator({0})->probabilityOf(0, 1), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({0}, true)->evaluateSequence(0, 1),
+              DoubleNear(sbsw->standardEvaluator({0})->evaluateSequence(0, 1), 1e-4));
 
-  ASSERT_THAT(sbsw->evaluator({0, 1}, true)->probabilityOf(0, 2),
-              DoubleNear(sbsw->evaluator({0, 1})->probabilityOf(0, 2), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1}, true)->evaluateSequence(0, 2),
+              DoubleNear(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2), 1e-4));
 
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1}, true)->probabilityOf(0, 3),
-              DoubleNear(sbsw->evaluator({1, 0, 1})->probabilityOf(0, 3), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1}, true)->evaluateSequence(0, 3),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3), 1e-4));
 
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0}, true)->probabilityOf(0, 4),
-              DoubleNear(sbsw->evaluator({1, 0, 1, 0})->probabilityOf(0, 4), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0}, true)->evaluateSequence(0, 4),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4), 1e-4));
 
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->probabilityOf(0, 13),
-              DoubleNear(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->evaluateSequence(0, 13),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13), 1e-4));
 }
 
 TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
   tops::model::resetRandom();
-  ASSERT_THAT(sbsw->sequenceGenerator()->choose(5), ContainerEq(Sequence{0, 0, 0, 0, 0}));
+  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 TEST(SBSW, ShouldBeTrained) {
@@ -103,22 +104,22 @@ TEST(SBSW, ShouldBeTrained) {
     {1, 1},
   };
   auto sbsw = SimilarityBasedSequenceWeighting::train(training_set, 2, -1, -1, {});
-  ASSERT_THAT(sbsw->evaluator({0})->probabilityOf(0, 1),
+  ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluator({1})->probabilityOf(0, 1),
+  ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(-HUGE));
-  ASSERT_THAT(sbsw->evaluator({0, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleNear(-1.60684, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({0, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleNear(-1.60984, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 1})->probabilityOf(0, 2),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleNear(-0.511891, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1})->probabilityOf(0, 3),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0})->probabilityOf(0, 4),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->evaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->probabilityOf(0, 13),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13),
               DoubleNear(-7.1323, 1e-4));
 }

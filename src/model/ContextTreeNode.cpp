@@ -58,38 +58,55 @@ int ContextTreeNode::alphabet_size() const {
   return _alphabet_size;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTreeNode::setParent(int parent) {
   _parent_id = parent;
 }
+
+/*----------------------------------------------------------------------------*/
 
 int ContextTreeNode::getParent() {
   return _parent_id;
 }
 
+/*----------------------------------------------------------------------------*/
+
 int ContextTreeNode::id() {
   return _id;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::setId(int id) {
   _id = id;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTreeNode::addCount(int s) {
   _counter[s] += 1.0;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::addCount(int s, double weight) {
   _counter[s] += weight;
 }
 
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::setCount(int s, double v) {
   _counter[s] = v;
 }
 
+/*----------------------------------------------------------------------------*/
+
 std::vector<double>& ContextTreeNode::getCounter() {
   return _counter;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::setChild(ContextTreeNodePtr child, int symbol) {
   // assert((symbol >= 0) && (symbol < (int)_child.size()));
@@ -99,17 +116,25 @@ void ContextTreeNode::setChild(ContextTreeNodePtr child, int symbol) {
   _leaf = false;
 }
 
+/*----------------------------------------------------------------------------*/
+
 int ContextTreeNode::symbol() {
   return _symbol;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::setSymbol(int symbol) {
   _symbol = symbol;
 }
 
+/*----------------------------------------------------------------------------*/
+
 void ContextTreeNode::setDistribution(DiscreteIIDModelPtr distribution) {
   _distribution = distribution;
 }
+
+/*----------------------------------------------------------------------------*/
 
 ContextTreeNodePtr ContextTreeNode::getChild(int symbol) {
   if (!((symbol >= 0) && (symbol < static_cast<int>(_child.size())))) {
@@ -119,9 +144,13 @@ ContextTreeNodePtr ContextTreeNode::getChild(int symbol) {
   return _child[symbol];
 }
 
+/*----------------------------------------------------------------------------*/
+
 DiscreteIIDModelPtr ContextTreeNode::getDistribution() {
   return _distribution;
 }
+
+/*----------------------------------------------------------------------------*/
 
 void ContextTreeNode::deleteChildren() {
   ContextTreeNodePtr n;
@@ -132,13 +161,20 @@ void ContextTreeNode::deleteChildren() {
   _child.resize(_alphabet_size);
   _leaf = true;
 }
+
+/*----------------------------------------------------------------------------*/
+
 std::vector <ContextTreeNodePtr> ContextTreeNode::getChildren() {
   return _child;
 }
 
+/*----------------------------------------------------------------------------*/
+
 bool ContextTreeNode::isLeaf() {
   return _leaf;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -31,55 +31,5 @@ InhomogeneousMarkovChain* ProbabilisticModel::inhomogeneous() {
   return NULL;
 }
 
-/*==============================  EVALUATOR  =================================*/
-
-EvaluatorPtr ProbabilisticModel::evaluator(const Sequence &s,
-                                           bool cached) {
-  if (cached)
-    return Evaluator::make(
-      CachedEvaluatorImpl<ProbabilisticModel>::make(
-        shared_from_this(), s, Cache(s.size() + 1)));
-  return Evaluator::make(
-    SimpleEvaluatorImpl<ProbabilisticModel>::make(
-      shared_from_this(), s));
-}
-
-/*==============================  GENERATOR  =================================*/
-
-/*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-/*==============================  EVALUATOR  =================================*/
-
-void ProbabilisticModel::initializeCachedEvaluator(CEPtr evaluator,
-                                                   unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache();
-  prefix_sum_array[0] = 0;
-  for (unsigned int i = 0; i < evaluator->sequence().size() ; i++)
-    prefix_sum_array[i+1] = prefix_sum_array[i]
-        + evaluate(evaluator->sequence(), i);
-}
-
-double ProbabilisticModel::simpleProbabilityOf(SEPtr evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
-  double prob = 0;
-  for (unsigned int i = begin; i < end; i++)
-    prob += evaluate(evaluator->sequence(), i);
-  return prob;
-}
-
-double ProbabilisticModel::cachedProbabilityOf(CEPtr evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
-  auto &prefix_sum_array = evaluator->cache();
-  return prefix_sum_array[end] - prefix_sum_array[begin];
-}
-
-/*==============================  GENERATOR  =================================*/
-
 }  // namespace model
 }  // namespace tops

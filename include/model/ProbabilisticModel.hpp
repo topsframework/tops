@@ -25,12 +25,11 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
-#include "model/Evaluator.hpp"
 
 // ToPS templates
+#include "model/Standard.tcc"
+#include "model/Evaluator.tcc"
 #include "model/Generator.tcc"
-#include "model/SimpleEvaluatorImpl.tcc"
-#include "model/CachedEvaluatorImpl.tcc"
 
 namespace tops {
 namespace model {
@@ -57,37 +56,15 @@ class ProbabilisticModel
   // Alias
   using Base = void;
 
-  using Cache = std::vector<double>;
-  using SEPtr = SimpleEvaluatorImplPtr<ProbabilisticModel>;
-  using CEPtr = CachedEvaluatorImplPtr<ProbabilisticModel>;
-
   // Purely virtual methods
-  virtual GeneratorPtr<Sequence> sequenceGenerator() = 0;
+  virtual EvaluatorPtr<Standard>
+  standardEvaluator(const Standard<Sequence> &sequence,
+                    bool cached = false) = 0;
 
-  virtual double evaluate(const Sequence &s,
-                          unsigned int pos,
-                          unsigned int phase = 0) const = 0;
-  virtual Symbol choose(const Sequence &context,
-                        unsigned int pos,
-                        unsigned int phase = 0) const = 0;
+  virtual GeneratorPtr<Standard> standardGenerator() = 0;
 
   // Virtual methods
   virtual InhomogeneousMarkovChain* inhomogeneous();
-
-  virtual EvaluatorPtr evaluator(const Sequence &s, bool cached = false);
-
-  // Concrete methods
-  void initializeCachedEvaluator(CEPtr evaluator,
-                                 unsigned int phase = 0);
-
-  double simpleProbabilityOf(SEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
-  double cachedProbabilityOf(CEPtr evaluator,
-                             unsigned int begin,
-                             unsigned int end,
-                             unsigned int phase = 0) const;
 };
 
 }  // namespace model

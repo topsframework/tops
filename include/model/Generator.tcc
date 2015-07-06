@@ -24,6 +24,10 @@
 #include <memory>
 #include <exception>
 
+// ToPS headers
+#include "Symbol.hpp"
+#include "Sequence.hpp"
+
 namespace tops {
 namespace model {
 
@@ -35,25 +39,30 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<typename Target>
+template<template<typename Target> class Decorator>
 class Generator;
 
 /**
  * @typedef GeneratorPtr
  * @brief Alias of pointer to Generator.
  */
-template<typename Target>
-using GeneratorPtr = std::shared_ptr<Generator<Target>>;
+template<template<typename Target> class Decorator>
+using GeneratorPtr = std::shared_ptr<Generator<Decorator>>;
 
 /**
  * @class Generator
  * @brief TODO
  */
-template<typename Target>
-class Generator : public std::enable_shared_from_this<Generator<Target>> {
+template<template<typename Target> class Decorator>
+class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
  public:
   // Purely virtual methods
-  virtual Target choose(unsigned int size, unsigned int phase = 0) = 0;
+  virtual Decorator<Symbol> drawSymbol(unsigned int pos,
+                                       unsigned int phase = 0,
+                                       const Sequence &context = {}) const = 0;
+
+  virtual Decorator<Sequence> drawSequence(unsigned int size,
+                                           unsigned int phase = 0) const = 0;
 };
 
 }  // namespace model

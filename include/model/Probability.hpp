@@ -17,50 +17,18 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_EVALUATOR_IMPL_
-#define TOPS_MODEL_EVALUATOR_IMPL_
+#ifndef TOPS_MODEL_PROBABILITY_
+#define TOPS_MODEL_PROBABILITY_
 
-// ToPS headers
-#include "model/Sequence.hpp"
-
-// ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+// Standard headers
+#include <limits>
 
 namespace tops {
 namespace model {
 
-class EvaluatorImpl;
-
-/**
- * @typedef EvaluatorImplPtr
- * @brief Alias of pointer to EvaluatorImpl.
- */
-using EvaluatorImplPtr = std::shared_ptr<EvaluatorImpl>;
-
-/**
- * @class EvaluatorImpl
- * @brief TODO
- */
-class EvaluatorImpl : public std::enable_shared_from_this<EvaluatorImpl> {
- public:
-  // Virtual methods
-  virtual double probabilityOf(unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase = 0) = 0;
-  virtual double probabilityOf(const Sequence &s,
-                               unsigned int begin,
-                               unsigned int end) = 0;
-
-  virtual Estimation<Labeling<Sequence>>
-  labeling(Labeling<Sequence>::Method method) = 0;
-
-  // Virtual getters
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
-};
+using Probability = double;
 
 }  // namespace model
 }  // namespace tops
 
-#endif
+#endif  // TOPS_MODEL_PROBABILITY_

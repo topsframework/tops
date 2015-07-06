@@ -23,23 +23,38 @@
 namespace tops {
 namespace model {
 
-LazzyRange::LazzyRange(unsigned int begin, unsigned int end): _begin(begin), _end(end),_current(begin) {
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+LazzyRange::LazzyRange(unsigned int begin, unsigned int end)
+    : _begin(begin), _end(end),_current(begin) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
+/*----------------------------------------------------------------------------*/
 
 unsigned int LazzyRange::begin() {
   return _begin;
 }
+
+/*----------------------------------------------------------------------------*/
 
 unsigned int LazzyRange::next() {
   _current++;
   return _current;
 }
 
+/*----------------------------------------------------------------------------*/
+
 bool LazzyRange::end() {
   if (_current > _end)
     return true;
   return false;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops
