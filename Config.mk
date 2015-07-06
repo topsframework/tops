@@ -6,7 +6,7 @@
 # Project settings
 # ==================
 PROJECT         := ToPS
-VERSION         := 2.0.0
+VERSION         := 1.0.0
 GIT_REMOTE_PATH := git@bitbucket.org:igorbonadio/topspp.git
 
 # Project info
