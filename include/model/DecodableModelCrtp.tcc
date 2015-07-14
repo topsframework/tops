@@ -149,7 +149,7 @@ class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
       CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const = 0;
 
   virtual void initializeCache(CLPtr<Standard> labeler,
-                               unsigned int phase);
+                               unsigned int phase) = 0;
 
  private:
   // Virtual methods
