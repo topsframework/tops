@@ -25,12 +25,9 @@
 #include <vector>
 
 // ToPS headers
-#include "model/Sequence.hpp"
+#include "model/DecodableModel.hpp"
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Generator.tcc"
-#include "model/SimpleGenerator.tcc"
 #include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
@@ -61,7 +58,8 @@ using DecodableModelCrtpPtr
  * @brief TODO
  */
 template<typename Derived>
-class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
+class DecodableModelCrtp
+    : public ProbabilisticModelCrtp<Derived>, public virtual DecodableModel {
  public:
   // Inner classes
   struct Cache : ProbabilisticModelCrtp<Derived>::Cache {
@@ -91,9 +89,9 @@ class DecodableModelCrtp : public ProbabilisticModelCrtp<Derived> {
 
   // Overriden methods
   EvaluatorPtr<Labeling> labelingEvaluator(const Labeling<Sequence> &s,
-                                           bool cached = false);
+                                           bool cached = false) override;
 
-  GeneratorPtr<Labeling> labelingGenerator();
+  GeneratorPtr<Labeling> labelingGenerator() override;
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,

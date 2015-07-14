@@ -60,7 +60,9 @@ using ProbabilisticModelPtrCrtp
  * @brief Implementation of front-end with CRTP to inject methods in  subclasses
  */
 template<typename Derived>
-class ProbabilisticModelCrtp : public ProbabilisticModel {
+class ProbabilisticModelCrtp
+    : public std::enable_shared_from_this<ProbabilisticModelCrtp<Derived>>,
+      public virtual ProbabilisticModel {
  public:
   // Inner classes
   struct Cache {
@@ -68,7 +70,7 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   };
 
   // Alias
-  using Base = ProbabilisticModel;
+  using Base = void;
   using DerivedPtr = std::shared_ptr<Derived>;
 
   template<template<typename Target> class Decorator>
