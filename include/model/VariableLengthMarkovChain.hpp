@@ -53,6 +53,9 @@ class VariableLengthMarkovChain
   // Alias
   using Base = ProbabilisticModelCrtp<VariableLengthMarkovChain>;
 
+  // Constructors
+  explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
+
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
 
@@ -90,9 +93,6 @@ class VariableLengthMarkovChain
  private:
   // Instance variables
   ContextTreePtr _context_tree;
-
-  // Constructors
-  explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
 };
 
 }  // namespace model

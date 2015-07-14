@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_DECODABLE_MODEL_INTERFACE_
-#define TOPS_MODEL_DECODABLE_MODEL_INTERFACE_
+#ifndef TOPS_MODEL_DECODABLE_MODEL_
+#define TOPS_MODEL_DECODABLE_MODEL_
 
 // Standard headers
 #include <memory>
@@ -29,26 +29,31 @@
 
 // ToPS templates
 #include "model/Labeling.tcc"
-#include "model/Generator.tcc"
 
 namespace tops {
 namespace model {
 
-/**
- * @class DecodableModelInterface
- * @brief TODO
- */
-class DecodableModelInterface {
- public:
-  // Purely virtual methods
-  virtual GeneratorPtr<Labeling> labelingGenerator() = 0;
-};
+// Forward declaration
+class DecodableModel;
 
 /**
- * @typedef DecodableModelInterfacePtr
- * @brief Alias of pointer to DecodableModelInterface.
+ * @typedef DecodableModelPtr
+ * @brief Alias of pointer to DecodableModel.
  */
-using DecodableModelInterfacePtr = std::shared_ptr<DecodableModelInterface>;
+using DecodableModelPtr = std::shared_ptr<DecodableModel>;
+
+/**
+ * @class DecodableModel
+ * @brief TODO
+ */
+class DecodableModel : public virtual ProbabilisticModel {
+ public:
+  // Purely virtual methods
+  virtual EvaluatorPtr<Labeling> labelingEvaluator(
+      const Labeling<Sequence> &sequence, bool cached = false) = 0;
+
+  virtual GeneratorPtr<Labeling> labelingGenerator() = 0;
+};
 
 }  // namespace model
 }  // namespace tops

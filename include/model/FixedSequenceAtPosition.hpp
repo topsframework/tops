@@ -48,11 +48,14 @@ using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
 class FixedSequenceAtPosition
     : public ProbabilisticModelDecorator<FixedSequenceAtPosition> {
  public:
-  // Static methods
-  static FixedSequenceAtPositionPtr make(ProbabilisticModelPtr model,
-                                         int position,
-                                         Sequence sequence,
-                                         DiscreteIIDModelPtr distr);
+  // Alias
+  using Base = ProbabilisticModelDecorator<FixedSequenceAtPosition>;
+
+  // Constructors
+  FixedSequenceAtPosition(ProbabilisticModelPtr model,
+                          int position,
+                          Sequence sequence,
+                          DiscreteIIDModelPtr distr);
 
   // Overriden methods
   Probability evaluateSequence(SEPtr<Standard> evaluator,
@@ -69,12 +72,6 @@ class FixedSequenceAtPosition
   int _position;
   Sequence _sequence;
   DiscreteIIDModelPtr _probabilities;
-
-  // Constructors
-  FixedSequenceAtPosition(ProbabilisticModelPtr model,
-                          int position,
-                          Sequence sequence,
-                          DiscreteIIDModelPtr distr);
 
   // Concrete methods
   void addSequence(Sequence & h) const;

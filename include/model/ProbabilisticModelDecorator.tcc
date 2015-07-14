@@ -65,10 +65,9 @@ class ProbabilisticModelDecorator
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
-  // Static methods
-  template<typename... Ts>
-  static SelfPtr make(Ts... args) {
-    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
+  // Constructors
+  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model)
+    : _model(model) {
   }
 
   // Overriden methods
@@ -89,11 +88,6 @@ class ProbabilisticModelDecorator
  protected:
   // Instance variables
   ProbabilisticModelPtr _model;
-
-  // Constructors
-  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model)
-    : _model(model) {
-  }
 };
 
 }  // namespace model

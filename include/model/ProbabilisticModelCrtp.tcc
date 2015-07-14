@@ -60,7 +60,9 @@ using ProbabilisticModelPtrCrtp
  * @brief Implementation of front-end with CRTP to inject methods in  subclasses
  */
 template<typename Derived>
-class ProbabilisticModelCrtp : public ProbabilisticModel {
+class ProbabilisticModelCrtp
+    : public std::enable_shared_from_this<ProbabilisticModelCrtp<Derived>>,
+      public virtual ProbabilisticModel {
  public:
   // Inner classes
   struct Cache {
@@ -68,7 +70,7 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   };
 
   // Alias
-  using Base = ProbabilisticModel;
+  using Base = void;
   using DerivedPtr = std::shared_ptr<Derived>;
 
   template<template<typename Target> class Decorator>
@@ -79,6 +81,10 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
 
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
+
+  // Static methods
+  template<typename... Args>
+  static DerivedPtr make(Args&&... args);
 
   // Overriden methods
   EvaluatorPtr<Standard> standardEvaluator(const Standard<Sequence> &sequence,
@@ -129,6 +135,18 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
+
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+// Static methods
+template<typename Derived>
+template<typename... Args>
+auto ProbabilisticModelCrtp<Derived>::make(Args&&... args)
+    -> typename ProbabilisticModelCrtp<Derived>::DerivedPtr {
+  return DerivedPtr(new Derived(std::forward<Args>(args)...));
+}
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */

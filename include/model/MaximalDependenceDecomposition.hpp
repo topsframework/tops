@@ -51,12 +51,12 @@ class MaximalDependenceDecomposition
   // Alias
   using Base = ProbabilisticModelCrtp<MaximalDependenceDecomposition>;
 
-  // Static methods
-  static MaximalDependenceDecompositionPtr make(
-      ConsensusSequence consensus_sequence,
-      ProbabilisticModelPtr consensus_model,
-      MaximalDependenceDecompositionNodePtr tree);
+  // Constructors
+  MaximalDependenceDecomposition(ConsensusSequence consensus_sequence,
+                                 ProbabilisticModelPtr consensus_model,
+                                 MaximalDependenceDecompositionNodePtr tree);
 
+  // Static methods
   static MaximalDependenceDecompositionPtr train(
       std::vector<Sequence> training_set,
       unsigned int alphabet_size,
@@ -95,11 +95,6 @@ class MaximalDependenceDecomposition
   ConsensusSequence _consensus_sequence;
   ProbabilisticModelPtr _consensus_model;
   std::vector<double> _prefix_sum_array;
-
-  // Constructors
-  MaximalDependenceDecomposition(ConsensusSequence consensus_sequence,
-                                 ProbabilisticModelPtr consensus_model,
-                                 MaximalDependenceDecompositionNodePtr tree);
 
   // Static methods
   static MaximalDependenceDecompositionNodePtr trainTree(

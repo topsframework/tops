@@ -53,6 +53,13 @@ class SimilarityBasedSequenceWeighting
   // Alias
   using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
 
+  // Constructors
+  SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter,
+                                   double normalizer,
+                                   int skip_offset,
+                                   int skip_length,
+                                   Sequence skip_sequence);
+
   // Static methods
   static SimilarityBasedSequenceWeightingPtr make(
       std::map<Sequence, double> counter,
@@ -98,13 +105,6 @@ class SimilarityBasedSequenceWeighting
   unsigned int _skip_length;
   Sequence _skip_sequence;
   double _normalizer;
-
-  // Constructors
-  SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter,
-                                   double normalizer,
-                                   int skip_offset,
-                                   int skip_length,
-                                   Sequence skip_sequence);
 
   // Static methods
   static double calculate_normalizer(int skip_length,

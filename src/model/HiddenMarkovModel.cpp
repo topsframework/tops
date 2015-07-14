@@ -48,20 +48,6 @@ HiddenMarkovModel::HiddenMarkovModel(
 /*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-HiddenMarkovModelPtr HiddenMarkovModel::make(
-    std::vector<HiddenMarkovModelStatePtr> states,
-    DiscreteIIDModelPtr initial_probability,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size) {
-  return HiddenMarkovModelPtr(new HiddenMarkovModel(
-    states,
-    initial_probability,
-    state_alphabet_size,
-    observation_alphabet_size));
-}
-
-/*----------------------------------------------------------------------------*/
-
 HiddenMarkovModelPtr HiddenMarkovModel::trainML(
     std::vector<Sequence> observation_training_set,
     std::vector<Sequence> state_training_set,

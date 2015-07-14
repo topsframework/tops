@@ -60,10 +60,10 @@ class GeneralizedHiddenMarkovModel
   using Base::evaluateSequence;
   using Base::drawSequence;
 
-  // Static methods
-  static GeneralizedHiddenMarkovModelPtr make(
+  // Constructors
+  GeneralizedHiddenMarkovModel(
       std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
-      DiscreteIIDModelPtr initial_probabilities,
+      DiscreteIIDModelPtr initial_probability,
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size,
       unsigned int max_backtracking = 100);
@@ -145,14 +145,6 @@ class GeneralizedHiddenMarkovModel
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
   unsigned int _max_backtracking;
-
-  // Constructors
-  GeneralizedHiddenMarkovModel(
-      std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
-      DiscreteIIDModelPtr initial_probability,
-      unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size,
-      unsigned int max_backtracking);
 
  private:
   // Overriden methods

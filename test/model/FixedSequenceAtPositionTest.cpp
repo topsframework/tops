@@ -27,6 +27,7 @@
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/FixedSequenceAtPosition.hpp"
+#include "model/Probability.hpp"
 #include "model/Sequence.hpp"
 #include "model/Random.hpp"
 
@@ -38,11 +39,12 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
+using tops::model::Probability;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
 using tops::model::FixedSequenceAtPosition;
 using tops::model::FixedSequenceAtPositionPtr;
-using tops::model::Sequence;
 
 using tops::helper::createLoadedCoinIIDModel;
 
@@ -51,8 +53,11 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
   FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(
       createLoadedCoinIIDModel(),
       3,
-      {1, 0, 1},
-      DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity()}));
+      Sequence{ 1, 0, 1 },
+      DiscreteIIDModel::make(
+        std::vector<Probability>{ 0, -std::numeric_limits<double>::infinity()
+      })
+  );
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {

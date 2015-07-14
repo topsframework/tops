@@ -25,6 +25,9 @@
 #include "helper/HiddenMarkovModel.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
+#include "model/Probability.hpp"
+using namespace tops::model;
+
 namespace tops {
 namespace helper {
 
@@ -32,15 +35,28 @@ tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
   std::vector<tops::model::HiddenMarkovModelStatePtr> states = {
     tops::model::HiddenMarkovModelState::make(
       0,
-      tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)}),
-      tops::model::DiscreteIIDModel::make({log(0.7), log(0.3)})),
+      tops::model::DiscreteIIDModel::make(
+        std::vector<Probability>{ log(0.5), log(0.5) }
+      ),
+      tops::model::DiscreteIIDModel::make(
+        std::vector<Probability>{ log(0.7), log(0.3) }
+      )
+    ),
     tops::model::HiddenMarkovModelState::make(
       1,
-      tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)}),
-      tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)}))};
+      tops::model::DiscreteIIDModel::make(
+        std::vector<Probability>{ log(0.2), log(0.8) }
+      ),
+      tops::model::DiscreteIIDModel::make(
+        std::vector<Probability>{ log(0.5), log(0.5) }
+      )
+    )
+  };
   return tops::model::HiddenMarkovModel::make(
     states,
-    tops::model::DiscreteIIDModel::make({log(0.9), log(0.1)}),
+    tops::model::DiscreteIIDModel::make(
+      std::vector<Probability>{ log(0.9), log(0.1) }
+    ),
     2,
     2);
 }

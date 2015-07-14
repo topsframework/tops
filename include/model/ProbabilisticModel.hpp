@@ -34,9 +34,6 @@
 namespace tops {
 namespace model {
 
-class InhomogeneousMarkovChain;
-using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
-
 // Forward declaration
 class ProbabilisticModel;
 
@@ -50,16 +47,11 @@ using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
  * @class ProbabilisticModel
  * @brief Abstract class that represents all probabilistic models.
  */
-class ProbabilisticModel
-    : public std::enable_shared_from_this<ProbabilisticModel> {
+class ProbabilisticModel {
  public:
-  // Alias
-  using Base = void;
-
   // Purely virtual methods
-  virtual EvaluatorPtr<Standard>
-  standardEvaluator(const Standard<Sequence> &sequence,
-                    bool cached = false) = 0;
+  virtual EvaluatorPtr<Standard> standardEvaluator(
+      const Standard<Sequence> &sequence, bool cached = false) = 0;
 
   virtual GeneratorPtr<Standard> standardGenerator() = 0;
 };
