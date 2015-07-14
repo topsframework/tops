@@ -190,18 +190,37 @@ GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
                             Sequence(INVALID_SYMBOL, size));
 }
 
-/*=================================  OTHERS  =================================*/
+/*=================================  LABELER  =================================*/
 
-Estimation<Labeling<Sequence>>
-GeneralizedHiddenMarkovModel::labeling(const Sequence &xs,
-                                       Matrix &probabilities,
-                                       Labeling<Sequence>::Method method) const {
-  switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
-      return viterbi(xs, probabilities);
-    case Labeling<Sequence>::Method::posteriorDecoding:
-      return posteriorDecoding(xs, probabilities);
-  }
+void
+GeneralizedHiddenMarkovModel::initializeCache(CLPtr<Standard> /* labeler */,
+                                              unsigned int /* phase */) {
+  // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
+    SLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
+//   switch (method) {
+//     case Labeling<Sequence>::Method::bestPath:
+//       return viterbi(xs, probabilities);
+//     case Labeling<Sequence>::Method::posteriorDecoding:
+//       return posteriorDecoding(xs, probabilities);
+//   }
+  return Estimation<Labeling<Sequence>>();
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
+    CLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
+//   switch (method) {
+//     case Labeling<Sequence>::Method::bestPath:
+//       return viterbi(xs, probabilities);
+//     case Labeling<Sequence>::Method::posteriorDecoding:
+//       return posteriorDecoding(xs, probabilities);
+//   }
   return Estimation<Labeling<Sequence>>();
 }
 

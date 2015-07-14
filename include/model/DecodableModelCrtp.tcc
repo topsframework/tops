@@ -29,6 +29,9 @@
 
 // ToPS templates
 #include "model/ProbabilisticModelCrtp.tcc"
+#include "model/Labeler.tcc"
+#include "model/SimpleLabeler.tcc"
+#include "model/CachedLabeler.tcc"
 
 namespace tops {
 namespace model {
@@ -79,6 +82,12 @@ class DecodableModelCrtp
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
+  template<template<typename Target> class Decorator>
+  using SLPtr = SimpleLabelerPtr<Decorator, Derived>;
+
+  template<template<typename Target> class Decorator>
+  using CLPtr = CachedLabelerPtr<Decorator, Derived>;
+
   // Hidden name method inheritance
   using Base::initializeCache;
   using Base::evaluateSymbol;
@@ -87,11 +96,14 @@ class DecodableModelCrtp
   using Base::drawSymbol;
   using Base::drawSequence;
 
-  // Overriden methods
+  // Concrete methods
   EvaluatorPtr<Labeling> labelingEvaluator(const Labeling<Sequence> &s,
                                            bool cached = false) override;
 
   GeneratorPtr<Labeling> labelingGenerator() override;
+
+  LabelerPtr<Standard> labelingLabeler(const Standard<Sequence> &s,
+                                       bool cached = false);
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,
@@ -128,10 +140,14 @@ class DecodableModelCrtp
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const Sequence &xs,
-           Matrix &probabilities,
-           Labeling<Sequence>::Method method) const = 0;
+  virtual Estimation<Labeling<Sequence>> labeling(
+      SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const = 0;
+
+  virtual Estimation<Labeling<Sequence>> labeling(
+      CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const = 0;
+
+  virtual void initializeCache(CLPtr<Standard> labeler,
+                               unsigned int phase) = 0;
 
  private:
   // Virtual methods
@@ -172,6 +188,15 @@ EvaluatorPtr<Labeling> DecodableModelCrtp<Derived>::labelingEvaluator(
 template<typename Derived>
 GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator() {
   return SimpleGenerator<Labeling, Derived>::make(make_shared());
+}
+
+/*================================  LABELER  =================================*/
+template<typename Derived>
+LabelerPtr<Standard> DecodableModelCrtp<Derived>::labelingLabeler(
+    const Standard<Sequence> &sequence, bool cached) {
+  if (cached)
+    return CachedLabeler<Standard, Derived>::make(make_shared(), sequence);
+  return SimpleLabeler<Standard, Derived>::make(make_shared(), sequence);
 }
 
 /*----------------------------------------------------------------------------*/

@@ -66,23 +66,37 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
                        log(0.5) + log(0.8)));
 }
 
-// TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
-//   std::vector<std::vector<Sequence>> test_set = {
-//     {{0},{0}},
-//     {{1},{0}},
-//     {{0, 0, 0},{0, 0, 0}},
-//     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
-//   };
-//   for(auto test : test_set) {
-//     auto evaluator = hmm->labelingEvaluator(test[0]);
-//     auto estimation = evaluator->labeling(Labeling<Sequence>::Method::bestPath);
-//     auto labeling = estimation.estimated();
-//
-//     ASSERT_THAT(estimation.probability(),
-//                 DoubleEq(evaluator->evaluateSequence(test[1], 0, test[1].size())));
-//     ASSERT_THAT(labeling.label(), Eq(test[1]));
-//   }
-// }
+TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0},{0}},
+    {{1},{0}},
+    {{0, 0, 0},{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
+  };
+  for(auto test : test_set) {
+    auto labeler = hmm->labelingLabeler(test[0]);
+    auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+    auto labeling = estimation.estimated();
+
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  }
+}
+
+TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0},{0}},
+    {{1},{0}},
+    {{0, 0, 0},{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
+  };
+  for(auto test : test_set) {
+    auto labeler = hmm->labelingLabeler(test[0], true);
+    auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+    auto labeling = estimation.estimated();
+
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  }
+}
 
 TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
   std::vector<Sequence> test_set = {
@@ -116,24 +130,39 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
   }
 }
 
-// TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbability) {
-//   std::vector<std::vector<Sequence>> test_set = {
-//     {{0},{0}},
-//     {{1},{0}},
-//     {{0, 0, 0},{0, 0, 0}},
-//     {{1, 1, 1, 1, 1, 1},{0, 0, 1, 1, 1, 1}}
-//   };
-//
-//   for(auto test : test_set) {
-//     auto evaluator = hmm->labelingEvaluator(test[0]);
-//     auto estimation = evaluator->labeling(Labeling<Sequence>::Method::posteriorDecoding);
-//     auto labeling = estimation.estimated();
-//
-//     ASSERT_THAT(estimation.probability(),
-//                 DoubleEq(evaluator->evaluateSequence(test[1], 0, test[1].size())));
-//     ASSERT_THAT(labeling.label(), Eq(test[1]));
-//   }
-// }
+TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbability) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0},{0}},
+    {{1},{0}},
+    {{0, 0, 0},{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1},{0, 0, 1, 1, 1, 1}}
+  };
+
+  for(auto test : test_set) {
+    auto labeler = hmm->labelingLabeler(test[0]);
+    auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+    auto labeling = estimation.estimated();
+
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  }
+}
+
+TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbabilityWithCache) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0},{0}},
+    {{1},{0}},
+    {{0, 0, 0},{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1},{0, 0, 1, 1, 1, 1}}
+  };
+
+  for(auto test : test_set) {
+    auto labeler = hmm->labelingLabeler(test[0]);
+    auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+    auto labeling = estimation.estimated();
+
+    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  }
+}
 
 TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
   std::vector<Sequence> observation_training_set = {
