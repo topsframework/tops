@@ -389,19 +389,39 @@ Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
   return Labeling<Sequence>(x, y);
 }
 
-/*=================================  OTHERS  =================================*/
-
-Estimation<Labeling<Sequence>>
-HiddenMarkovModel::labeling(const Sequence &xs,
-                            Matrix &probabilities,
-                            Labeling<Sequence>::Method method) const {
+/*=================================  LABELER  =================================*/
+Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
+    SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+  Matrix probabilities;
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(xs, probabilities);
+      return viterbi(labeler->sequence(), probabilities);
     case Labeling<Sequence>::Method::posteriorDecoding:
-      return posteriorDecoding(xs, probabilities);
+      return posteriorDecoding(labeler->sequence(), probabilities);
   }
   return Estimation<Labeling<Sequence>>();
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
+    CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+  // TODOigorbonadio): Use cache...
+  Matrix probabilities;
+  switch (method) {
+    case Labeling<Sequence>::Method::bestPath:
+      return viterbi(labeler->sequence(), probabilities);
+    case Labeling<Sequence>::Method::posteriorDecoding:
+      return posteriorDecoding(labeler->sequence(), probabilities);
+  }
+  return Estimation<Labeling<Sequence>>();
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CLPtr<Standard> labeler,
+                                        unsigned int /*phase*/) {
+  initializeCache(labeler->sequence(), labeler->cache());
 }
 
 /*----------------------------------------------------------------------------*/

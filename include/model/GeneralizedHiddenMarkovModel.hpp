@@ -120,10 +120,16 @@ class GeneralizedHiddenMarkovModel
                                   unsigned int size,
                                   unsigned int phase) const override;
 
-  Estimation<Labeling<Sequence>>
-  labeling(const Sequence &xs,
-           Matrix &probabilities,
-           Labeling<Sequence>::Method method) const override;
+  Estimation<Labeling<Sequence>> labeling(
+      SLPtr<Standard> labeler,
+      Labeling<Sequence>::Method method) const override;
+
+  Estimation<Labeling<Sequence>> labeling(
+      CLPtr<Standard> labeler,
+      Labeling<Sequence>::Method method) const override;
+
+  void initializeCache(CLPtr<Standard> labeler,
+                       unsigned int phase) override;
 
   double forward(const Sequence &sequence, Matrix &alpha) const override;
 
@@ -131,13 +137,6 @@ class GeneralizedHiddenMarkovModel
 
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
-
-  // Concrete methods
-  // Estimation<Labeling<Sequence>>
-  // simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
-  //
-  // Estimation<Labeling<Sequence>>
-  // cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
 
  protected:
   // Instance variables
