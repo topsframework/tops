@@ -80,6 +80,10 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
+  // Static methods
+  template<typename... Args>
+  static DerivedPtr make(Args&&... args);
+
   // Overriden methods
   EvaluatorPtr<Standard> standardEvaluator(const Standard<Sequence> &sequence,
                                            bool cached = false) override;
@@ -129,6 +133,18 @@ class ProbabilisticModelCrtp : public ProbabilisticModel {
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
+
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+// Static methods
+template<typename Derived>
+template<typename... Args>
+auto ProbabilisticModelCrtp<Derived>::make(Args&&... args)
+    -> typename ProbabilisticModelCrtp<Derived>::DerivedPtr {
+  return DerivedPtr(new Derived(std::forward<Args>(args)...));
+}
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */

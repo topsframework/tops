@@ -45,12 +45,20 @@ using PhasedRunLengthDistributionPtr
  */
 class PhasedRunLengthDistribution : public DiscreteIIDModel {
  public:
+  // Constructors
+  PhasedRunLengthDistribution(std::vector<Probability> probabilities,
+                              int delta,
+                              int input_phase,
+                              int output_phase,
+                              int nphase);
+
   // Static methods
-  static PhasedRunLengthDistributionPtr make(std::vector<double> probabilities,
-                                             int delta,
-                                             int input_phase,
-                                             int output_phase,
-                                             int nphase);
+  static PhasedRunLengthDistributionPtr make(
+      std::vector<Probability> probabilities,
+      int delta,
+      int input_phase,
+      int output_phase,
+      int nphase);
 
   static PhasedRunLengthDistributionPtr makeFromDiscreteIIDModel(
       DiscreteIIDModelPtr model,
@@ -71,13 +79,6 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
   int _nphase;
   double _normfactor;
   std::vector<double> _probabilities;
-
-  // Constructors
-  PhasedRunLengthDistribution(std::vector<double> probabilities,
-                              int delta,
-                              int input_phase,
-                              int output_phase,
-                              int nphase);
 
   // Concrete methods
   int mod(int D, int d) const;

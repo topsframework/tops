@@ -37,16 +37,6 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return InhomogeneousMarkovChainPtr(
-    new InhomogeneousMarkovChain(vlmcs));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 

@@ -25,27 +25,34 @@
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Random.hpp"
 
+#include "model/Probability.hpp"
+using namespace tops::model;
+
 namespace tops {
 namespace helper {
 
 tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<double> counts;
+  std::vector<Probability> counts;
   for (int i = 0; i < alphabet_size; i++)
-    counts.push_back(static_cast<double>(generateRandomInteger(alphabet_size)));
+    counts.push_back(generateRandomInteger(alphabet_size));
   return tops::model::DiscreteIIDModel::make(counts);
 }
 
 tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.5), log(0.5)});
+  std::vector<Probability> probabilities{ log(0.5), log(0.5) };
+  return tops::model::DiscreteIIDModel::make(probabilities);
 }
 
 tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  return tops::model::DiscreteIIDModel::make({log(0.2), log(0.8)});
+  std::vector<Probability> probabilities{ log(0.2), log(0.8) };
+  return tops::model::DiscreteIIDModel::make(probabilities);
 }
 
 tops::model::DiscreteIIDModelPtr createDNAModel() {
-  return tops::model::DiscreteIIDModel::make(
-      {log(0.1), log(0.3), log(0.4), log(0.2)});
+  std::vector<Probability> probabilities{
+    log(0.1), log(0.3), log(0.4), log(0.2)
+  };
+  return tops::model::DiscreteIIDModel::make(probabilities);
 }
 
 }  // namespace helper

@@ -58,7 +58,11 @@ class AnInhomogeneousMarkovChain : public testing::Test {
   InhomogeneousMarkovChainPtr imc;
 
   virtual void SetUp() {
-    imc = InhomogeneousMarkovChain::make({createMachlerVLMC(), createVLMCMC()});
+    imc = InhomogeneousMarkovChain::make(
+      std::vector<VariableLengthMarkovChainPtr>{
+        createMachlerVLMC(), createVLMCMC()
+      }
+    );
   }
 };
 
@@ -89,7 +93,8 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
 }
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc = ProbabilisticModelDecorator<InhomogeneousMarkovChain>::make(imc);
+  auto decorated_imc
+    = std::make_shared<ProbabilisticModelDecorator<InhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),

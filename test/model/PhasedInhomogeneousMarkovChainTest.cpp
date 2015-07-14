@@ -91,7 +91,8 @@ TEST_F(APhasedInhomogeneousMarkovChain,
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc = ProbabilisticModelDecorator<PhasedInhomogeneousMarkovChain>::make(imc);
+  auto decorated_imc
+    = std::make_shared<ProbabilisticModelDecorator<PhasedInhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),

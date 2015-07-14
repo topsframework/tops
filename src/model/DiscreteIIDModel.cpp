@@ -43,12 +43,6 @@ DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
 /*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr DiscreteIIDModel::make(std::vector<double> probabilities) {
-  return DiscreteIIDModelPtr(new DiscreteIIDModel(probabilities));
-}
-
-/*----------------------------------------------------------------------------*/
-
 DiscreteIIDModelPtr DiscreteIIDModel::trainML(
     std::vector<Sequence> training_set,
     unsigned int alphabet_size) {

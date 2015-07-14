@@ -48,24 +48,6 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-GeneralizedHiddenMarkovModelPtr GeneralizedHiddenMarkovModel::make(
-    std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
-    DiscreteIIDModelPtr initial_probability,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size,
-    unsigned int max_backtracking) {
-  return GeneralizedHiddenMarkovModelPtr(new GeneralizedHiddenMarkovModel(
-    states,
-    initial_probability,
-    state_alphabet_size,
-    observation_alphabet_size,
-    max_backtracking));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 

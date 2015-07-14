@@ -28,8 +28,6 @@
 #include "MaximalDependenceDecomposition.hpp"
 #include "Util.hpp"
 
-#include <iostream>
-
 namespace tops {
 namespace model {
 
@@ -48,18 +46,6 @@ MaximalDependenceDecomposition::MaximalDependenceDecomposition(
 
 /*----------------------------------------------------------------------------*/
 /*                              STATIC METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::make(
-    ConsensusSequence consensus_sequence,
-    ProbabilisticModelPtr consensus_model,
-    MaximalDependenceDecompositionNodePtr tree) {
-  return MaximalDependenceDecompositionPtr(
-    new MaximalDependenceDecomposition(consensus_sequence,
-                                       consensus_model,
-                                       tree));
-}
-
 /*----------------------------------------------------------------------------*/
 
 MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(

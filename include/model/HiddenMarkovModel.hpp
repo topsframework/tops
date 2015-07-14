@@ -57,13 +57,13 @@ class HiddenMarkovModel
   using Base::evaluateSequence;
   using Base::drawSequence;
 
-  // Static methods
-  static HiddenMarkovModelPtr make(
-      std::vector<HiddenMarkovModelStatePtr> states,
-      DiscreteIIDModelPtr initial_probabilities,
-      unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size);
+  // Constructors
+  HiddenMarkovModel(std::vector<HiddenMarkovModelStatePtr> states,
+                    DiscreteIIDModelPtr initial_probability,
+                    unsigned int state_alphabet_size,
+                    unsigned int observation_alphabet_size);
 
+  // Static methods
   static HiddenMarkovModelPtr trainML(
       std::vector<Sequence> observation_training_set,
       std::vector<Sequence> state_training_set,
@@ -159,12 +159,6 @@ class HiddenMarkovModel
   DiscreteIIDModelPtr _initial_probabilities;
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
-
-  // Constructors
-  HiddenMarkovModel(std::vector<HiddenMarkovModelStatePtr> states,
-                    DiscreteIIDModelPtr initial_probability,
-                    unsigned int state_alphabet_size,
-                    unsigned int observation_alphabet_size);
 
  private:
   // Overriden methods

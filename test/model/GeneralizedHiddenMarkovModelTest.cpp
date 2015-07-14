@@ -26,6 +26,7 @@
 
 // ToPS headers
 #include "model/GeneralizedHiddenMarkovModel.hpp"
+#include "model/Probability.hpp"
 #include "model/Sequence.hpp"
 #include "model/Matrix.hpp"
 #include "model/Util.hpp"
@@ -49,6 +50,7 @@ using tops::model::GeneralizedHiddenMarkovModelSignalState;
 using tops::model::GeneralizedHiddenMarkovModelSignalStatePtr;
 using tops::model::GeneralizedHiddenMarkovModelExplicitDurationState;
 using tops::model::GeneralizedHiddenMarkovModelExplicitDurationStatePtr;
+using tops::model::Probability;
 using tops::model::Sequence;
 using tops::model::Matrix;
 using tops::model::log_sum;
@@ -63,23 +65,45 @@ class AGHMM : public testing::Test {
  protected:
   GeneralizedHiddenMarkovModelStatePtr geometric_state
     = GeneralizedHiddenMarkovModelState::make(
-      0, createMachlerVLMC(), DiscreteIIDModel::make(
-        {log(0.3), log(0.3), log(0.4)}));
+      0, createMachlerVLMC(),
+      DiscreteIIDModel::make(std::vector<Probability>{
+        log(0.3), log(0.3), log(0.4)
+      })
+    );
+
   GeneralizedHiddenMarkovModelStatePtr signal_state
     = GeneralizedHiddenMarkovModelSignalState::make(
-    1, createVLMCMC(), DiscreteIIDModel::make(
-        {log(0.1), -std::numeric_limits<double>::infinity(), log(0.9)}), 3);
+      1, createVLMCMC(),
+      DiscreteIIDModel::make(std::vector<Probability>{
+        log(0.1), -std::numeric_limits<double>::infinity(), log(0.9)
+      }),
+      3
+    );
+
   GeneralizedHiddenMarkovModelStatePtr explicit_duration_state
     = GeneralizedHiddenMarkovModelExplicitDurationState::make(
       2, createFairCoinIIDModel(),
-      DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()}),
-      DiscreteIIDModel::make(
-        {log(0.1), log(0.1), log(0.1), log(0.1), log(0.1), log(0.1), log(0.3), log(0.1)}));
+      DiscreteIIDModel::make(std::vector<Probability>{
+        0, -std::numeric_limits<double>::infinity(),
+        -std::numeric_limits<double>::infinity()
+      }),
+      DiscreteIIDModel::make(std::vector<Probability>{
+        log(0.1), log(0.1), log(0.1), log(0.1),
+        log(0.1), log(0.1), log(0.3), log(0.1)
+      })
+    );
 
-  GeneralizedHiddenMarkovModelPtr ghmm = GeneralizedHiddenMarkovModel::make(
-    {geometric_state, signal_state, explicit_duration_state},
-    DiscreteIIDModel::make({0, -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()}),
-    3, 2);
+  GeneralizedHiddenMarkovModelPtr ghmm
+    = GeneralizedHiddenMarkovModel::make(
+      std::vector<GeneralizedHiddenMarkovModelStatePtr>{
+        geometric_state, signal_state, explicit_duration_state
+      },
+      DiscreteIIDModel::make(std::vector<Probability>{
+        0, -std::numeric_limits<double>::infinity(),
+        -std::numeric_limits<double>::infinity()
+      }),
+      3, 2
+    );
 
   virtual void SetUp() {
     geometric_state->addSuccessor(0);

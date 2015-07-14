@@ -57,6 +57,10 @@ class MultipleSequentialModel
   // Alias
   using Base = ProbabilisticModelCrtp<MultipleSequentialModel>;
 
+  // Constructors
+  MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
+                          std::vector<int> max_length);
+
   // Static methods
   static MultipleSequentialModelPtr make(
       std::vector<ProbabilisticModelPtr> models,
@@ -89,10 +93,6 @@ class MultipleSequentialModel
   std::vector<ProbabilisticModelPtr> _models;
   std::vector<int> _max_length;
   unsigned int _idx_not_limited;
-
-  // Constructors
-  MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
-                          std::vector<int> max_length);
 };
 
 }  // namespace model

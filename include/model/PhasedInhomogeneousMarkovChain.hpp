@@ -60,6 +60,10 @@ class PhasedInhomogeneousMarkovChain
   // Alias
   using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
 
+  // Constructors
+  PhasedInhomogeneousMarkovChain(
+      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+
   // Static methods
   static PhasedInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
@@ -98,10 +102,6 @@ class PhasedInhomogeneousMarkovChain
  private:
   // Instance variables
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
-
-  // Constructors
-  PhasedInhomogeneousMarkovChain(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs);
 };
 
 }  // namespace model

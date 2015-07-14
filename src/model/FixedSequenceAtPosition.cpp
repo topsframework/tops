@@ -27,19 +27,6 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-FixedSequenceAtPositionPtr FixedSequenceAtPosition::make(
-    ProbabilisticModelPtr model,
-    int position,
-    Sequence sequence,
-    DiscreteIIDModelPtr distr) {
-  return FixedSequenceAtPositionPtr(
-    new FixedSequenceAtPosition(model, position, sequence, distr));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 

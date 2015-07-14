@@ -52,9 +52,8 @@ class InhomogeneousMarkovChain
   // Alias
   using Base = ProbabilisticModelCrtp<InhomogeneousMarkovChain>;
 
-  // Static methods
-  static InhomogeneousMarkovChainPtr make(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+  // Constructors
+  InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Overriden methods
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
@@ -72,9 +71,6 @@ class InhomogeneousMarkovChain
  protected:
   // Instance variables
   std::vector<VariableLengthMarkovChainPtr> _vlmcs;
-
-  // Constructors
-  InhomogeneousMarkovChain(std::vector<VariableLengthMarkovChainPtr> vlmcs);
 };
 
 }  // namespace model

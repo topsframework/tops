@@ -76,18 +76,19 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   // Alias
   using Base = ProbabilisticModelCrtp<DiscreteIIDModel>;
 
-  // Static methods
+  // Constructors
 
   /**
-   * Builds a new discrete iid model defined by probabilities.
+   * Constructor. You should not call it directly.
    * @param probabilities probability of each symbol be drawn by this model
    * @see trainML()
    * @see trainSmoothedHistogramBurge()
    * @see trainSmoothedHistogramStanke()
    * @see trainSmoothedHistogramKernelDensity()
-   * @return a new discrete iid model
    */
-  static DiscreteIIDModelPtr make(std::vector<double> probabilities);
+  explicit DiscreteIIDModel(std::vector<Probability> probabilities);
+
+  // Static methods
 
   /**
    * Trains a new discrete iid model using the maximum likelihood method.
@@ -148,9 +149,11 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
       std::vector<Sequence> training_set,
       unsigned int max_length);
 
-  static std::vector<double> normalize(std::vector<double> probabilities);
+  static std::vector<Probability> normalize(
+      std::vector<Probability> probabilities);
 
   // Overriden methods
+
   /**
    * Evaluates the given position of a sequence.
    * @param standardEvaluator standardEvaluator of sequences
@@ -175,6 +178,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
                               const Sequence &context) const override;
 
   // Virtual methods
+
   /**
    * Draws a new symbol.
    * @return \f$x,\ x \in X\f$
@@ -193,27 +197,13 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Gets the probabilities this model draws each symbol.
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
-  std::vector<double> probabilities();
+  std::vector<Probability> probabilities();
 
   int alphabetSize() const;
 
- protected:
-  // Constructors
-
-  /**
-   * Constructor. You should not call it directly.
-   * @param probabilities probability of each symbol be drawn by this model
-   * @see make()
-   * @see trainML()
-   * @see trainSmoothedHistogramBurge()
-   * @see trainSmoothedHistogramStanke()
-   * @see trainSmoothedHistogramKernelDensity()
-   */
-  explicit DiscreteIIDModel(std::vector<double> probabilities);
-
  private:
   // Instance variables
-  std::vector<double> _probabilities;
+  std::vector<Probability> _probabilities;
 
   // Static methods
   static double kernel_normal(double x, double h);
