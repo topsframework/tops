@@ -228,6 +228,26 @@ void HiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
+HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
+                                  unsigned int /* pos */,
+                                  unsigned int /* phase */) const {
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int /* phase */) const {
+  return evaluator->cache().prefix_sum_array[end]
+         - evaluator->cache().prefix_sum_array[begin];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
 HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
@@ -257,29 +277,29 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
-                                  unsigned int /* pos */,
-                                  unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-HiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int /* phase */) const {
-  return evaluator->cache().prefix_sum_array[end]
-         - evaluator->cache().prefix_sum_array[begin];
-}
-
-/*----------------------------------------------------------------------------*/
-
 void HiddenMarkovModel::initializeCache(CEPtr<Labeling> /*evaluator*/,
                                         unsigned int /* phase */) {
   // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                  unsigned int pos,
+                                  unsigned int phase) const {
+  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int phase) const {
+  return evaluateSequence(
+    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -315,26 +335,6 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
   for (unsigned int i = begin; i < end; i++)
     prob += evaluateSymbol(evaluator, i, phase);
   return prob;
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-HiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
-                                  unsigned int pos,
-                                  unsigned int phase) const {
-  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int phase) const {
-  return evaluateSequence(
-    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
 }
 
 /*===============================  GENERATOR  ================================*/
