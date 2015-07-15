@@ -149,13 +149,6 @@ class HiddenMarkovModel
   virtual void posteriorProbabilities(const Sequence &sequence,
                                       Matrix &probabilities) const override;
 
-  // Concrete methods
-  // Estimation<Labeling<Sequence>>
-  // simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
-  //
-  // Estimation<Labeling<Sequence>>
-  // cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
-
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
@@ -176,7 +169,7 @@ class HiddenMarkovModel
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 
   // Concrete methods
-  void initializeCache(const Sequence &sequence, Cache &cache);
+  void initializePrefixSumArray(const Sequence &sequence, Cache &cache);
 };
 
 }  // namespace model

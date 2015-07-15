@@ -222,7 +222,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 
 void HiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
                                         unsigned int /* phase */) {
-  initializeCache(evaluator->sequence(), evaluator->cache());
+  initializePrefixSumArray(evaluator->sequence(), evaluator->cache());
 }
 
 /*----------------------------------------------------------------------------*/
@@ -277,9 +277,9 @@ HiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+void HiddenMarkovModel::initializeCache(CEPtr<Labeling> /*evaluator*/,
                                         unsigned int /* phase */) {
-  initializeCache(evaluator->sequence().observation(), evaluator->cache());
+  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -405,9 +405,9 @@ Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(CLPtr<Standard> labeler,
+void HiddenMarkovModel::initializeCache(CLPtr<Standard> /*labeler*/,
                                         unsigned int /*phase*/) {
-  initializeCache(labeler->sequence(), labeler->cache());
+  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -575,30 +575,6 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
 
 /*================================  OTHERS  ==================================*/
 
-// Estimation<Labeling<Sequence>>
-// HiddenMarkovModel::simpleLabeling(SEPtr evaluator,
-//                                   Labeling<Sequence>::Method method) {
-//   Matrix matrix;
-//   return labeling(evaluator->sequence(), matrix, method);
-// }
-
-/*----------------------------------------------------------------------------*/
-
-// Estimation<Labeling<Sequence>>
-// HiddenMarkovModel::cachedLabeling(CEPtr evaluator,
-//                                   Labeling<Sequence>::Method method) {
-//   switch (method) {
-//     case Labeling<Sequence>::Method::bestPath:
-//       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
-//     case Labeling<Sequence>::Method::posteriorDecoding:
-//       return labeling(evaluator->sequence(),
-//                       evaluator->cache().posterior_decoding,
-//                       method);
-//   }
-//   // TODO(renatocf): throw exception
-//   return Estimation<Labeling<Sequence>>();
-// }
-
 /*----------------------------------------------------------------------------*/
 
 HiddenMarkovModelStatePtr HiddenMarkovModel::state(unsigned int i) const {
@@ -619,8 +595,8 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(const Sequence &sequence,
-                                        Cache &cache) {
+void HiddenMarkovModel::initializePrefixSumArray(const Sequence &sequence,
+                                                 Cache &cache) {
   cache.prefix_sum_array.resize(sequence.size()+1);
   forward(sequence, cache.alpha);
   cache.prefix_sum_array[0] = 0;
