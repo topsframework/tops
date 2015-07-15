@@ -222,7 +222,7 @@ HiddenMarkovModelPtr HiddenMarkovModel::trainBaumWelch(
 
 void HiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
                                         unsigned int /* phase */) {
-  initializePrefixSumArray(evaluator->sequence(), evaluator->cache());
+  initializeStandardPrefixSumArray(evaluator->sequence(), evaluator->cache());
 }
 
 /*----------------------------------------------------------------------------*/
@@ -277,9 +277,9 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(CEPtr<Labeling> /*evaluator*/,
-                                        unsigned int /* phase */) {
-  // TODO(igorbonadio)
+void HiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                        unsigned int phase) {
+  initializeLabelingPrefixSumArray(evaluator, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -297,9 +297,9 @@ Probability
 HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
                                     unsigned int begin,
                                     unsigned int end,
-                                    unsigned int phase) const {
-  return evaluateSequence(
-    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
+                                    unsigned int /*phase*/) const {
+  return evaluator->cache().prefix_sum_array[end]
+         - evaluator->cache().prefix_sum_array[begin];
 }
 
 /*----------------------------------------------------------------------------*/
@@ -595,8 +595,8 @@ unsigned int HiddenMarkovModel::observationAlphabetSize() const {
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializePrefixSumArray(const Sequence &sequence,
-                                                 Cache &cache) {
+void HiddenMarkovModel::initializeStandardPrefixSumArray(
+    const Sequence &sequence, Cache &cache) {
   cache.prefix_sum_array.resize(sequence.size()+1);
   forward(sequence, cache.alpha);
   cache.prefix_sum_array[0] = 0;
@@ -607,6 +607,19 @@ void HiddenMarkovModel::initializePrefixSumArray(const Sequence &sequence,
         = log_sum(cache.prefix_sum_array[i+1], cache.alpha[k][i]);
     }
   }
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeLabelingPrefixSumArray(
+    CEPtr<Labeling> evaluator, unsigned int phase) {
+  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(evaluator->sequence().observation().size() + 1);
+
+  prefix_sum_array[0] = 0;
+  for (unsigned int i = 0; i < evaluator->sequence().observation().size(); i++)
+    prefix_sum_array[i+1]
+      = prefix_sum_array[i] + evaluateSymbol(evaluator, i, phase);
 }
 
 /*----------------------------------------------------------------------------*/

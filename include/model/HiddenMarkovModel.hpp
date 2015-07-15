@@ -167,7 +167,8 @@ class HiddenMarkovModel
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 
   // Concrete methods
-  void initializePrefixSumArray(const Sequence &sequence, Cache &cache);
+  void initializeStandardPrefixSumArray(const Sequence &sequence, Cache &cache);
+  void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator, unsigned int phase);
 };
 
 }  // namespace model

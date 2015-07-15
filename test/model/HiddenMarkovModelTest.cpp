@@ -64,6 +64,11 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
               DoubleEq(log(0.9) + log(0.5) +
                        log(0.3) + log(0.2) +
                        log(0.5) + log(0.8)));
+
+  ASSERT_THAT(hmm->labelingEvaluator(labeling, true)->evaluateSequence(0, 3),
+              DoubleEq(log(0.9) + log(0.5) +
+                       log(0.3) + log(0.2) +
+                       log(0.5) + log(0.8)));
 }
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
