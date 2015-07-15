@@ -392,13 +392,11 @@ Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
 
 Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
     CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
-  // TODOigorbonadio): Use cache...
-  Matrix probabilities;
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), probabilities);
+      return viterbi(labeler->sequence(), labeler->cache().gamma);
     case Labeling<Sequence>::Method::posteriorDecoding:
-      return posteriorDecoding(labeler->sequence(), probabilities);
+      return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
   }
   return Estimation<Labeling<Sequence>>();
 }
