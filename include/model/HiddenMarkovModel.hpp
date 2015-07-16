@@ -81,6 +81,13 @@ class HiddenMarkovModel
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
@@ -90,29 +97,21 @@ class HiddenMarkovModel
                                unsigned int end,
                                unsigned int phase) const override;
 
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
 
   void initializeCache(CEPtr<Labeling> evaluator,
                        unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Labeling> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Labeling> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Probability evaluateSymbol(SEPtr<Labeling> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
   Probability evaluateSequence(SEPtr<Labeling> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
-
-  Probability evaluateSymbol(CEPtr<Labeling> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(CEPtr<Labeling> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
@@ -130,32 +129,24 @@ class HiddenMarkovModel
                                   unsigned int size,
                                   unsigned int phase) const override;
 
-  Estimation<Labeling<Sequence>> labeling(
-      SLPtr<Standard> labeler,
-      Labeling<Sequence>::Method method) const override;
-
+  void initializeCache(CLPtr<Standard> labeler,
+                       unsigned int phase) override;
   Estimation<Labeling<Sequence>> labeling(
       CLPtr<Standard> labeler,
       Labeling<Sequence>::Method method) const override;
 
-  void initializeCache(CLPtr<Standard> labeler,
-                       unsigned int phase) override;
+  Estimation<Labeling<Sequence>> labeling(
+      SLPtr<Standard> labeler,
+      Labeling<Sequence>::Method method) const override;
 
-  // Virtual methods
-  virtual double backward(const Sequence &sequence,
-                          Matrix &beta) const override;
-  virtual double forward(const Sequence &sequence,
-                         Matrix &alpha) const override;
-  virtual void posteriorProbabilities(const Sequence &sequence,
-                                      Matrix &probabilities) const override;
+  double backward(const Sequence &sequence,
+                  Matrix &beta) const override;
+  double forward(const Sequence &sequence,
+                 Matrix &alpha) const override;
+  void posteriorProbabilities(const Sequence &sequence,
+                              Matrix &probabilities) const override;
 
   // Concrete methods
-  // Estimation<Labeling<Sequence>>
-  // simpleLabeling(SEPtr evaluator, Labeling<Sequence>::Method method);
-  //
-  // Estimation<Labeling<Sequence>>
-  // cachedLabeling(CEPtr evaluator, Labeling<Sequence>::Method method);
-
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
   HiddenMarkovModelStatePtr state(unsigned int i) const;
@@ -176,7 +167,8 @@ class HiddenMarkovModel
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
 
   // Concrete methods
-  void initializeCache(const Sequence &sequence, Cache &cache);
+  void initializeStandardPrefixSumArray(const Sequence &sequence, Cache &cache);
+  void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator, unsigned int phase);
 };
 
 }  // namespace model

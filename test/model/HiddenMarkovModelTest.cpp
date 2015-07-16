@@ -66,6 +66,17 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
                        log(0.5) + log(0.8)));
 }
 
+TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbabilityWithCache) {
+  Sequence observation {0, 0, 1};
+  Sequence label       {0, 1, 1};
+  Labeling<Sequence> labeling(observation, label);
+
+  ASSERT_THAT(hmm->labelingEvaluator(labeling, true)->evaluateSequence(0, 3),
+              DoubleEq(log(0.9) + log(0.5) +
+                       log(0.3) + log(0.2) +
+                       log(0.5) + log(0.8)));
+}
+
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   std::vector<std::vector<Sequence>> test_set = {
     {{0},{0}},
@@ -98,7 +109,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
   }
 }
 
-TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservationsUsingForward) {
+TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservations) {
   std::vector<Sequence> test_set = {
     {0},
     {1},
