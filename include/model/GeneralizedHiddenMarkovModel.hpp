@@ -151,7 +151,7 @@ class GeneralizedHiddenMarkovModel
   Estimation<Labeling<Sequence>> viterbi(
       const Sequence &xs,
       Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
+      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
 
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;

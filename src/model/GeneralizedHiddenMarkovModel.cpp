@@ -217,9 +217,10 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
     SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
   Matrix probabilities;
+  auto observation_evaluators = initializeObservationEvaluators(labeler->sequence(), false);
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), probabilities, initializeObservationEvaluators(labeler->sequence(), false));
+      return viterbi(labeler->sequence(), probabilities, observation_evaluators);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
@@ -348,7 +349,7 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
       const Sequence &xs,
       Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const {
+      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
   gamma = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
