@@ -131,33 +131,27 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
   ASSERT_THAT(evaluator->evaluateSequence(0, 21), DoubleNear(-35.4276, 1e-4));
 }
 
-// TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
-//   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-//   Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2 };
-//
-//   for (auto cached : std::vector<bool>{ true, false }) {
-//     auto evaluator = ghmm->labelingEvaluator(observation, cached);
-//     auto estimation = evaluator->labeling(Labeling<Sequence>::Method::bestPath);
-//     auto labeling = estimation.estimated();
-//
-//     ASSERT_THAT(labeling.label(), ContainerEq(label));
-//     // TODO(igorbonadio): assertion for labeling probability
-//   }
-// }
-//
-// TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecoding) {
-//   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-//   Sequence label       { 0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1, 0, 2, 0, 2, 2, 2 };
-//
-//   for (auto cached : std::vector<bool>{ true, false }) {
-//     auto evaluator = ghmm->labelingEvaluator(observation, cached);
-//     auto estimation = evaluator->labeling(Labeling<Sequence>::Method::posteriorDecoding);
-//     auto labeling = estimation.estimated();
-//
-//     ASSERT_THAT(labeling.label(), ContainerEq(label));
-//     // TODO(igorbonadio): add assertion for labeling probability
-//   }
-// }
+TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecoding) {
+  Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
+  Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
+
+  auto labeler = ghmm->labelingLabeler(observation);
+  auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+  auto labeling = estimation.estimated();
+
+  ASSERT_THAT(labeling.label(), ContainerEq(label));
+}
+
+TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecoding) {
+  Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
+  Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
+
+  auto labeler = ghmm->labelingLabeler(observation);
+  auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+  auto labeling = estimation.estimated();
+
+  ASSERT_THAT(labeling.label(), ContainerEq(label));
+}
 
 TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
   Matrix alpha;

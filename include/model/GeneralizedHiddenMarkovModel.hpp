@@ -144,6 +144,12 @@ class GeneralizedHiddenMarkovModel
   unsigned int _max_backtracking;
 
  private:
+  // Concrete methods
+  Estimation<Labeling<Sequence>> viterbi2(
+      const Sequence &xs,
+      Matrix &gamma,
+      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
+
   // Overriden methods
   Estimation<Labeling<Sequence>>
   viterbi(const Sequence &xs, Matrix &gamma) const override;
