@@ -204,7 +204,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
     CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return cachedViterbi(labeler);
+      return viterbi(labeler->sequence(), labeler->cache().gamma, true);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
   }
@@ -218,7 +218,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
   Matrix probabilities;
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), probabilities);
+      return viterbi(labeler->sequence(), probabilities, false);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
@@ -297,17 +297,14 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
       Labeling<Sequence>(xs, std::move(path)), max);
 }
 
-/*----------------------------------------------------------------------------*/
-
-Estimation<Labeling<Sequence>>
-GeneralizedHiddenMarkovModel::cachedViterbi(CLPtr<Standard> labeler) const {
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
+      const Sequence &xs, Matrix &gamma, bool cached) const {
   std::vector<EvaluatorPtr<Standard>> observation_evaluators;
   for (auto state : _states) {
     observation_evaluators.push_back(
-      state->observation()->standardEvaluator(labeler->sequence(), true));
+      state->observation()->standardEvaluator(xs, cached));
   }
-  return viterbiImpl(
-    labeler->sequence(), labeler->cache().gamma, observation_evaluators);
+  return viterbiImpl(xs, gamma, observation_evaluators);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -315,11 +312,7 @@ GeneralizedHiddenMarkovModel::cachedViterbi(CLPtr<Standard> labeler) const {
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
                                       Matrix &gamma) const {
-  std::vector<EvaluatorPtr<Standard>> observation_evaluators;
-  for (auto state : _states) {
-    observation_evaluators.push_back(state->observation()->standardEvaluator(xs));
-  }
-  return viterbiImpl(xs, gamma, observation_evaluators);
+  return viterbi(xs, gamma, false);
 }
 
 /*----------------------------------------------------------------------------*/

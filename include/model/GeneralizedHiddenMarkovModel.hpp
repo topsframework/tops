@@ -149,7 +149,8 @@ class GeneralizedHiddenMarkovModel
       const Sequence &xs,
       Matrix &gamma,
       std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
-  Estimation<Labeling<Sequence>> cachedViterbi(CLPtr<Standard> labeler) const;
+  Estimation<Labeling<Sequence>> viterbi(
+      const Sequence &xs, Matrix &gamma, bool cached) const;
 
   // Overriden methods
   Estimation<Labeling<Sequence>>
