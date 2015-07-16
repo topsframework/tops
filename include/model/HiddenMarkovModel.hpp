@@ -159,14 +159,13 @@ class HiddenMarkovModel
   unsigned int _observation_alphabet_size;
 
  private:
-  // Overriden methods
-  Estimation<Labeling<Sequence>>
-  viterbi(const Sequence &xs, Matrix &gamma) const override;
-
-  Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
-
   // Concrete methods
+  Estimation<Labeling<Sequence>>
+  viterbi(const Sequence &xs, Matrix &gamma) const;
+
+  Estimation<Labeling<Sequence>>
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
+
   void initializeStandardPrefixSumArray(const Sequence &sequence, Cache &cache);
   void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator, unsigned int phase);
 };

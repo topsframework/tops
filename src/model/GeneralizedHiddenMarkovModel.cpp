@@ -205,7 +205,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
     CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbiImpl(labeler->sequence(), labeler->cache().gamma, labeler->cache().observation_evaluators);
+      return viterbi(labeler->sequence(), labeler->cache().gamma, labeler->cache().observation_evaluators);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
   }
@@ -217,44 +217,14 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
     SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
   Matrix probabilities;
+  auto observation_evaluators = initializeObservationEvaluators(labeler->sequence(), false);
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbiImpl(labeler->sequence(), probabilities, initializeObservationEvaluators(labeler->sequence(), false));
+      return viterbi(labeler->sequence(), probabilities, observation_evaluators);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
   return Estimation<Labeling<Sequence>>();
-}
-
-/*----------------------------------------------------------------------------*/
-
-Estimation<Labeling<Sequence>>
-GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
-                                      Matrix &gamma) const {
-  return viterbiImpl(xs, gamma, initializeObservationEvaluators(xs, false));
-}
-
-/*----------------------------------------------------------------------------*/
-
-Estimation<Labeling<Sequence>>
-GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                                Matrix &probabilities) const {
-  posteriorProbabilities(xs, probabilities);
-
-  Sequence path(xs.size());
-
-  for (unsigned int i = 0; i < xs.size(); i++) {
-    double max = probabilities[0][i];
-    path[i] = 0;
-    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-      if (probabilities[k][i] > max) {
-        max = probabilities[k][i];
-        path[i] = k;
-      }
-    }
-  }
-  return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -376,10 +346,10 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
 /*----------------------------------------------------------------------------*/
 
 
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
       const Sequence &xs,
       Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const {
+      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
   gamma = std::vector<std::vector<double>>(
       _state_alphabet_size,
       std::vector<double>(xs.size()));
@@ -448,6 +418,30 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
 
 /*----------------------------------------------------------------------------*/
 
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
+                                                Matrix &probabilities) const {
+  posteriorProbabilities(xs, probabilities);
+
+  Sequence path(xs.size());
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    double max = probabilities[0][i];
+    path[i] = 0;
+    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+      if (probabilities[k][i] > max) {
+        max = probabilities[k][i];
+        path[i] = k;
+      }
+    }
+  }
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(path)),
+        -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
 std::vector<EvaluatorPtr<Standard>>
 GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
     const Sequence &xs, bool cached) const {
@@ -458,6 +452,8 @@ GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
   }
   return std::move(observation_evaluators);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -410,79 +410,6 @@ void HiddenMarkovModel::initializeCache(CLPtr<Standard> /*labeler*/,
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>>
-HiddenMarkovModel::viterbi(const Sequence &xs,
-                           Matrix &gamma) const {
-  gamma = std::vector<std::vector<double>>(
-      _state_alphabet_size,
-      std::vector<double>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
-
-  for (unsigned int k = 0; k < _state_alphabet_size; k++)
-    gamma[k][0] = _initial_probabilities->probabilityOf(k)
-        + _states[k]->emissions()->probabilityOf(xs[0]);
-
-  for (unsigned int i = 0; i < xs.size() - 1; i++) {
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      gamma[k][i+1] =  gamma[0][i]
-          + _states[0]->transitions()->probabilityOf(k);
-      psi[k][i+1] = 0;
-      for (unsigned int p = 1; p < _state_alphabet_size; p++) {
-        double v = gamma[p][i] + _states[p]->transitions()->probabilityOf(k);
-        if (gamma[k][i+1] < v) {
-          gamma[k][i+1] = v;
-          psi[k][i+1] = p;
-        }
-      }
-      gamma[k][i+1] += _states[k]->emissions()->probabilityOf(xs[i+1]);
-    }
-  }
-
-  Sequence ys(xs.size());
-  ys[xs.size() - 1] = 0;
-  double max = gamma[0][xs.size() - 1];
-  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-    if (max < gamma[k][xs.size() - 1]) {
-      max = gamma[k][xs.size() - 1];
-      ys[xs.size() - 1] = k;
-    }
-  }
-  for (int i = xs.size() - 1; i >= 1; i--) {
-    ys[i-1] = psi[ys[i]][i];
-  }
-
-  return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(ys)), max);
-}
-
-/*----------------------------------------------------------------------------*/
-
-Estimation<Labeling<Sequence>>
-HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const {
-  posteriorProbabilities(xs, probabilities);
-  Sequence path(xs.size());
-
-  for (unsigned int i = 0; i < xs.size(); i++) {
-    double max = probabilities[0][i];
-    path[i] = 0;
-    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-      if (probabilities[k][i] > max) {
-        max = probabilities[k][i];
-        path[i] = k;
-      }
-    }
-  }
-
-  auto labeling = Labeling<Sequence>(xs, std::move(path));
-  auto probability
-    = const_cast<HiddenMarkovModel *>(this)->labelingEvaluator(labeling)->evaluateSequence(0, xs.size());
-
-  return Estimation<Labeling<Sequence>>(labeling, probability);
-}
-
-/*----------------------------------------------------------------------------*/
-
 double HiddenMarkovModel::forward(const Sequence &sequence,
                                   Matrix &alpha) const {
   alpha = std::vector<std::vector<double>>(
@@ -618,6 +545,79 @@ void HiddenMarkovModel::initializeLabelingPrefixSumArray(
   for (unsigned int i = 0; i < evaluator->sequence().observation().size(); i++)
     prefix_sum_array[i+1]
       = prefix_sum_array[i] + evaluateSymbol(evaluator, i, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::viterbi(const Sequence &xs,
+                           Matrix &gamma) const {
+  gamma = std::vector<std::vector<double>>(
+      _state_alphabet_size,
+      std::vector<double>(xs.size()));
+  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
+
+  for (unsigned int k = 0; k < _state_alphabet_size; k++)
+    gamma[k][0] = _initial_probabilities->probabilityOf(k)
+        + _states[k]->emissions()->probabilityOf(xs[0]);
+
+  for (unsigned int i = 0; i < xs.size() - 1; i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      gamma[k][i+1] =  gamma[0][i]
+          + _states[0]->transitions()->probabilityOf(k);
+      psi[k][i+1] = 0;
+      for (unsigned int p = 1; p < _state_alphabet_size; p++) {
+        double v = gamma[p][i] + _states[p]->transitions()->probabilityOf(k);
+        if (gamma[k][i+1] < v) {
+          gamma[k][i+1] = v;
+          psi[k][i+1] = p;
+        }
+      }
+      gamma[k][i+1] += _states[k]->emissions()->probabilityOf(xs[i+1]);
+    }
+  }
+
+  Sequence ys(xs.size());
+  ys[xs.size() - 1] = 0;
+  double max = gamma[0][xs.size() - 1];
+  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+    if (max < gamma[k][xs.size() - 1]) {
+      max = gamma[k][xs.size() - 1];
+      ys[xs.size() - 1] = k;
+    }
+  }
+  for (int i = xs.size() - 1; i >= 1; i--) {
+    ys[i-1] = psi[ys[i]][i];
+  }
+
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(ys)), max);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
+                                     Matrix &probabilities) const {
+  posteriorProbabilities(xs, probabilities);
+  Sequence path(xs.size());
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    double max = probabilities[0][i];
+    path[i] = 0;
+    for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+      if (probabilities[k][i] > max) {
+        max = probabilities[k][i];
+        path[i] = k;
+      }
+    }
+  }
+
+  auto labeling = Labeling<Sequence>(xs, std::move(path));
+  auto probability
+    = const_cast<HiddenMarkovModel *>(this)->labelingEvaluator(labeling)->evaluateSequence(0, xs.size());
+
+  return Estimation<Labeling<Sequence>>(labeling, probability);
 }
 
 /*----------------------------------------------------------------------------*/
