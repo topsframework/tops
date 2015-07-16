@@ -417,19 +417,6 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
 
 /*----------------------------------------------------------------------------*/
 
-std::vector<EvaluatorPtr<Standard>>
-GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
-    const Sequence &xs, bool cached) const {
-  std::vector<EvaluatorPtr<Standard>> observation_evaluators;
-  for (auto state : _states) {
-    observation_evaluators.push_back(
-      state->observation()->standardEvaluator(xs, cached));
-  }
-  return std::move(observation_evaluators);
-}
-
-/*----------------------------------------------------------------------------*/
-
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
                                                 Matrix &probabilities) const {
@@ -448,7 +435,21 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
     }
   }
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
+      Labeling<Sequence>(xs, std::move(path)),
+        -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+std::vector<EvaluatorPtr<Standard>>
+GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
+    const Sequence &xs, bool cached) const {
+  std::vector<EvaluatorPtr<Standard>> observation_evaluators;
+  for (auto state : _states) {
+    observation_evaluators.push_back(
+      state->observation()->standardEvaluator(xs, cached));
+  }
+  return std::move(observation_evaluators);
 }
 
 /*----------------------------------------------------------------------------*/

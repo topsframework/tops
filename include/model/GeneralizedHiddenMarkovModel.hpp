@@ -152,11 +152,12 @@ class GeneralizedHiddenMarkovModel
       const Sequence &xs,
       Matrix &gamma,
       std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
-  std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
-      const Sequence &xs, bool cached) const;
 
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
+
+  std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
+      const Sequence &xs, bool cached) const;
 };
 
 }  // namespace model
