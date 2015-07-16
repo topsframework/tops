@@ -193,9 +193,10 @@ GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
 /*=================================  LABELER  =================================*/
 
 void
-GeneralizedHiddenMarkovModel::initializeCache(CLPtr<Standard> /* labeler */,
+GeneralizedHiddenMarkovModel::initializeCache(CLPtr<Standard> labeler,
                                               unsigned int /* phase */) {
-  // TODO(igorbonadio)
+  labeler->cache().observation_evaluators = initializeObservationEvaluators(
+    labeler->sequence(), true);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -204,7 +205,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
     CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), labeler->cache().gamma, true);
+      return viterbiImpl(labeler->sequence(), labeler->cache().gamma, labeler->cache().observation_evaluators);
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
   }
@@ -218,7 +219,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
   Matrix probabilities;
   switch (method) {
     case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), probabilities, false);
+      return viterbiImpl(labeler->sequence(), probabilities, initializeObservationEvaluators(labeler->sequence(), false));
     case Labeling<Sequence>::Method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
@@ -230,7 +231,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
                                       Matrix &gamma) const {
-  return viterbi(xs, gamma, false);
+  return viterbiImpl(xs, gamma, initializeObservationEvaluators(xs, false));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -447,14 +448,15 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
-      const Sequence &xs, Matrix &gamma, bool cached) const {
+std::vector<EvaluatorPtr<Standard>>
+GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
+    const Sequence &xs, bool cached) const {
   std::vector<EvaluatorPtr<Standard>> observation_evaluators;
   for (auto state : _states) {
     observation_evaluators.push_back(
       state->observation()->standardEvaluator(xs, cached));
   }
-  return viterbiImpl(xs, gamma, observation_evaluators);
+  return std::move(observation_evaluators);
 }
 
 }  // namespace model

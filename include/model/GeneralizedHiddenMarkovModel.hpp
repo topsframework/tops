@@ -54,11 +54,14 @@ class GeneralizedHiddenMarkovModel
  public:
   // Alias
   using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
-  using Cache = Base::Cache;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
   using Base::drawSequence;
+
+  struct Cache : Base::Cache {
+    std::vector<EvaluatorPtr<Standard>> observation_evaluators;
+  };
 
   // Constructors
   GeneralizedHiddenMarkovModel(
@@ -149,8 +152,8 @@ class GeneralizedHiddenMarkovModel
       const Sequence &xs,
       Matrix &gamma,
       std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
-  Estimation<Labeling<Sequence>> viterbi(
-      const Sequence &xs, Matrix &gamma, bool cached) const;
+  std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
+      const Sequence &xs, bool cached) const;
 
   // Overriden methods
   Estimation<Labeling<Sequence>>
