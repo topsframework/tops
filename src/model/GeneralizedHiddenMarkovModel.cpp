@@ -227,88 +227,6 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
-      const Sequence &xs,
-      Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const {
-  gamma = std::vector<std::vector<double>>(
-      _state_alphabet_size,
-      std::vector<double>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
-  Matrix psilen(_state_alphabet_size, std::vector<double>(xs.size()));
-
-  for (unsigned int i = 0; i < xs.size(); i++) {
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      gamma[k][i] = -std::numeric_limits<double>::infinity();
-      auto durations = _states[k]->durations();
-      for (unsigned int d = durations->begin();
-           !durations->end() && d <= (i + 1);
-           d = durations->next()) {
-        unsigned int pmax = 0;
-        double gmax;
-        if (d > i) {
-          gmax = _initial_probabilities->probabilityOf(k);
-        } else {
-          gmax = -std::numeric_limits<double>::infinity();
-          for (auto p : _states[k]->predecessors()) {
-            double g = gamma[p][i-d]
-              + _states[p]->transition()->probabilityOf(k);
-            if (gmax < g) {
-              gmax = g;
-              pmax = p;
-            }
-          }
-        }
-        gmax = gmax + _states[k]->durationProbability(d)
-          + observation_evaluators[k]->evaluateSequence(i-d+1, i+1);
-        if (gamma[k][i] < gmax) {
-          gamma[k][i] = gmax;
-          psi[k][i] = pmax;
-          psilen[k][i] = d;
-        }
-      }
-    }
-  }
-
-  unsigned int L = xs.size() - 1;
-  Symbol state = 0;
-  double max = gamma[0][L];
-  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
-    if (max < gamma[k][L]) {
-      max = gamma[k][L];
-      state = k;
-    }
-  }
-
-  Sequence path = Sequence(xs.size());
-
-  unsigned int i = 0;
-  while (i <= L) {
-    unsigned int d = psilen[state][L-i];
-    unsigned int p = psi[state][L-i];
-    for (unsigned int j = 0; j < d; j++) {
-      path[L-i] = state;
-      i++;
-    }
-    state = p;
-  }
-
-  return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), max);
-}
-
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
-      const Sequence &xs, Matrix &gamma, bool cached) const {
-  std::vector<EvaluatorPtr<Standard>> observation_evaluators;
-  for (auto state : _states) {
-    observation_evaluators.push_back(
-      state->observation()->standardEvaluator(xs, cached));
-  }
-  return viterbiImpl(xs, gamma, observation_evaluators);
-}
-
-/*----------------------------------------------------------------------------*/
-
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::viterbi(const Sequence &xs,
                                       Matrix &gamma) const {
@@ -450,6 +368,93 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     for (unsigned int i = 0; i < sequence.size(); i++)
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbiImpl(
+      const Sequence &xs,
+      Matrix &gamma,
+      std::vector<EvaluatorPtr<Standard>> observation_evaluators) const {
+  gamma = std::vector<std::vector<double>>(
+      _state_alphabet_size,
+      std::vector<double>(xs.size()));
+  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
+  Matrix psilen(_state_alphabet_size, std::vector<double>(xs.size()));
+
+  for (unsigned int i = 0; i < xs.size(); i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      gamma[k][i] = -std::numeric_limits<double>::infinity();
+      auto durations = _states[k]->durations();
+      for (unsigned int d = durations->begin();
+           !durations->end() && d <= (i + 1);
+           d = durations->next()) {
+        unsigned int pmax = 0;
+        double gmax;
+        if (d > i) {
+          gmax = _initial_probabilities->probabilityOf(k);
+        } else {
+          gmax = -std::numeric_limits<double>::infinity();
+          for (auto p : _states[k]->predecessors()) {
+            double g = gamma[p][i-d]
+              + _states[p]->transition()->probabilityOf(k);
+            if (gmax < g) {
+              gmax = g;
+              pmax = p;
+            }
+          }
+        }
+        gmax = gmax + _states[k]->durationProbability(d)
+          + observation_evaluators[k]->evaluateSequence(i-d+1, i+1);
+        if (gamma[k][i] < gmax) {
+          gamma[k][i] = gmax;
+          psi[k][i] = pmax;
+          psilen[k][i] = d;
+        }
+      }
+    }
+  }
+
+  unsigned int L = xs.size() - 1;
+  Symbol state = 0;
+  double max = gamma[0][L];
+  for (unsigned int k = 1; k < _state_alphabet_size; k++) {
+    if (max < gamma[k][L]) {
+      max = gamma[k][L];
+      state = k;
+    }
+  }
+
+  Sequence path = Sequence(xs.size());
+
+  unsigned int i = 0;
+  while (i <= L) {
+    unsigned int d = psilen[state][L-i];
+    unsigned int p = psi[state][L-i];
+    for (unsigned int j = 0; j < d; j++) {
+      path[L-i] = state;
+      i++;
+    }
+    state = p;
+  }
+
+  return Estimation<Labeling<Sequence>>(
+      Labeling<Sequence>(xs, std::move(path)), max);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
+      const Sequence &xs, Matrix &gamma, bool cached) const {
+  std::vector<EvaluatorPtr<Standard>> observation_evaluators;
+  for (auto state : _states) {
+    observation_evaluators.push_back(
+      state->observation()->standardEvaluator(xs, cached));
+  }
+  return viterbiImpl(xs, gamma, observation_evaluators);
 }
 
 }  // namespace model
