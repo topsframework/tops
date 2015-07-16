@@ -433,37 +433,5 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
       probabilities[k][i] = alpha[k][i] + beta[k][i] - full;
 }
 
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
-
-/*=================================  OTHERS  =================================*/
-
-// Estimation<Labeling<Sequence>>
-// GeneralizedHiddenMarkovModel::simpleLabeling(
-//     SEPtr evaluator, Labeling<Sequence>::Method method) {
-//   Matrix matrix;
-//   return labeling(evaluator->sequence(), matrix, method);
-// }
-
-/*----------------------------------------------------------------------------*/
-
-// Estimation<Labeling<Sequence>>
-// GeneralizedHiddenMarkovModel::cachedLabeling(
-//     CEPtr evaluator, Labeling<Sequence>::Method method) {
-//   switch (method) {
-//     case Labeling<Sequence>::Method::bestPath:
-//       return labeling(evaluator->sequence(), evaluator->cache().gamma, method);
-//     case Labeling<Sequence>::Method::posteriorDecoding:
-//       return labeling(evaluator->sequence(),
-//                       evaluator->cache().posterior_decoding,
-//                       method);
-//   }
-//   // TODO(igorbonadio): Throw exception!
-//   return Estimation<Labeling<Sequence>>();
-// }
-
-/*----------------------------------------------------------------------------*/
-
 }  // namespace model
 }  // namespace tops
