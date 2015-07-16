@@ -150,12 +150,6 @@ class DecodableModelCrtp
                                unsigned int phase) = 0;
 
  private:
-  // Virtual methods
-  virtual Estimation<Labeling<Sequence>>
-  viterbi(const Sequence &xs, Matrix &gamma) const = 0;
-
-  virtual Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const = 0;
 
   // Concrete methods
   DerivedPtr make_shared();

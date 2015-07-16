@@ -148,19 +148,15 @@ class GeneralizedHiddenMarkovModel
 
  private:
   // Concrete methods
-  Estimation<Labeling<Sequence>> viterbiImpl(
+  Estimation<Labeling<Sequence>> viterbi(
       const Sequence &xs,
       Matrix &gamma,
       std::vector<EvaluatorPtr<Standard>> observation_evaluators) const;
   std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
       const Sequence &xs, bool cached) const;
 
-  // Overriden methods
   Estimation<Labeling<Sequence>>
-  viterbi(const Sequence &xs, Matrix &gamma) const override;
-
-  Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const override;
+  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
 };
 
 }  // namespace model
