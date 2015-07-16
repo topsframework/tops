@@ -62,25 +62,6 @@ GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                             unsigned int /* pos */,
-                                             unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
-                                               unsigned int /* begin */,
-                                               unsigned int /* end */,
-                                               unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
@@ -99,10 +80,49 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
 
 /*----------------------------------------------------------------------------*/
 
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */) const {
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
+                                               unsigned int /* begin */,
+                                               unsigned int /* end */,
+                                               unsigned int /* phase */) const {
+  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
                                               unsigned int /* phase */) {
   // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                             unsigned int pos,
+                                             unsigned int phase) const {
+  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
+  return evaluateSequence(
+    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -137,26 +157,6 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
         segments[i].begin(), segments[i].end());
   }
   return prob;
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
-  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
-  return evaluateSequence(
-    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
 }
 
 /*===============================  GENERATOR  ================================*/
@@ -201,7 +201,7 @@ GeneralizedHiddenMarkovModel::initializeCache(CLPtr<Standard> /* labeler */,
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
-    SLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
+    CLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
 //   switch (method) {
 //     case Labeling<Sequence>::Method::bestPath:
 //       return viterbi(xs, probabilities);
@@ -214,7 +214,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
-    CLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
+    SLPtr<Standard> /*labeler*/, Labeling<Sequence>::Method /*method*/) const {
 //   switch (method) {
 //     case Labeling<Sequence>::Method::bestPath:
 //       return viterbi(xs, probabilities);
