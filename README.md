@@ -4,9 +4,9 @@
 [Documentation](http://topsframework.github.io/tops-refactoring/doc/api/) |
 [Tutorial](http://topsframework.github.io/tutorial.pdf)
 
-[![Build Status](https://travis-ci.org/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
-[![Coverage Status](https://coveralls.io/repos/topsframework/tops-refactoring/badge.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/4131/badge.svg)](https://scan.coverity.com/projects/4131)
+[![Build Status](https://img.shields.io/travis/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
+[![Coverage Status](https://img.shields.io/coveralls/topsframework/tops-refactoring.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
+[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/4131.svg)](https://scan.coverity.com/projects/4131)
 [![Release](https://img.shields.io/github/tag/topsframework/tops-refactoring.svg)](https://github.com/topsframework/tops-refactoring/releases/latest)
 [![License](https://img.shields.io/github/license/topsframework/tops-refactoring.svg)](https://github.com/topsframework/tops-refactoring/blob/master/LICENSE)
 
