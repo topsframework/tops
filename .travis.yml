@@ -44,7 +44,7 @@ before_script:
 
 script:
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
-      make test-coverage COV_IGNORE='*/helper/*';
+      make test-coverage COVIGNORE="*/helper/*";
     fi
 
 after_success:
