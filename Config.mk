@@ -30,24 +30,24 @@ BENCHBIN        := bench
 
 # Dependencies
 # ==============
-GIT_DEPENDENCY  :=
-WEB_DEPENDENCY  := # Same as above, but for URL downloads
+GIT_DEPENDENCY  +=
+WEB_DEPENDENCY  += # Same as above, but for URL downloads
                    # with 'curl -o' (default) or 'wget -O'
 
 # Paths
 # =======
-ASLIBS          := # Assembly paths
-CLIBS           := # C paths
-CXXLIBS         :=
-LDLIBS          :=
+ASLIBS          += # Assembly paths
+CLIBS           += # C paths
+CXXLIBS         +=
+LDLIBS          +=
 
 # Flags
 # =======
-CPPFLAGS        := # Precompiler Flags
-ASFLAGS         := # Assembly Flags
-CFLAGS          := # C Flags
-CXXFLAGS        := -ansi -Wall -Wextra -Werror -pedantic -O2 -std=c++11
-LDFLAGS         :=
+CPPFLAGS        += # Precompiler Flags
+ASFLAGS         += # Assembly Flags
+CFLAGS          += # C Flags
+CXXFLAGS        += -ansi -Wall -Wextra -Werror -pedantic -O2 -std=c++11
+LDFLAGS         +=
 
 # Makeball list
 # ===============
