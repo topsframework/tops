@@ -32,11 +32,6 @@ samplers, and sequence decoders. Finally, ToPS is an extensible and
 portable system that facilitates the implementation of other 
 probabilistic models, and the development of new programs.
 
-Documentation
-==============
-
-
-
 Git Repository
 ===============
 
