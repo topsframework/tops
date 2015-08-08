@@ -28,27 +28,30 @@ install:
       sudo make -C lcov-1.11/ install;
     else
       brew tap homebrew/versions;
-      brew install llvm --with-clang --with-asan;
       brew install gcc5;
-      alias gcc=/usr/bin/g++-5;
-      alias gcov=/usr/bin/gcov-5;
       brew install lcov;
+      if [ "$CC" = "gcc" ]; then
+        export CC=gcc-5;
+        export CXX=g++-5;
+      fi
     fi
   - gem install coveralls-lcov;
-  - g++ --version;
-  - clang++ --version;
+  - $CC --version;
+  - $CXX --version;
   - lcov --version;
 
 before_script:
   - git submodule update --init --recursive
 
 script:
-  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
+  - if [ $TRAVIS_OS_NAME = linux ]; then
       make test-coverage COVIGNORE="*/helper/*";
+    else
+      make test;
     fi
 
 after_success:
-- if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then
+- if [ $TRAVIS_OS_NAME = linux ]; then
     coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info;
   fi
 
