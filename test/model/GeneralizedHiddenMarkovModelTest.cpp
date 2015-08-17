@@ -135,7 +135,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
   Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
 
-  auto labeler = ghmm->labelingLabeler(observation);
+  auto labeler = ghmm->labeler(observation);
   auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
   auto labeling = estimation.estimated();
 
@@ -146,7 +146,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
   Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
 
-  auto labeler = ghmm->labelingLabeler(observation, true);
+  auto labeler = ghmm->labeler(observation, true);
   auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
   auto labeling = estimation.estimated();
 
@@ -157,7 +157,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
   Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
 
-  auto labeler = ghmm->labelingLabeler(observation);
+  auto labeler = ghmm->labeler(observation);
   auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
@@ -168,7 +168,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
   Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
 
-  auto labeler = ghmm->labelingLabeler(observation, true);
+  auto labeler = ghmm->labeler(observation, true);
   auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
