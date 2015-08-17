@@ -85,7 +85,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
   };
   for(auto test : test_set) {
-    auto labeler = hmm->labelingLabeler(test[0]);
+    auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
     auto labeling = estimation.estimated();
 
@@ -101,7 +101,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
     {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
   };
   for(auto test : test_set) {
-    auto labeler = hmm->labelingLabeler(test[0], true);
+    auto labeler = hmm->labeler(test[0], true);
     auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
     auto labeling = estimation.estimated();
 
@@ -150,7 +150,7 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   };
 
   for(auto test : test_set) {
-    auto labeler = hmm->labelingLabeler(test[0]);
+    auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
     auto labeling = estimation.estimated();
 
@@ -167,7 +167,7 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   };
 
   for(auto test : test_set) {
-    auto labeler = hmm->labelingLabeler(test[0]);
+    auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
     auto labeling = estimation.estimated();
 

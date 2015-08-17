@@ -102,7 +102,7 @@ class DecodableModelCrtp
 
   GeneratorPtr<Labeling> labelingGenerator() override;
 
-  LabelerPtr<Standard> labelingLabeler(const Standard<Sequence> &s,
+  LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
                                        bool cached = false);
 
   // Purely virtual methods
@@ -186,7 +186,7 @@ GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator() {
 
 /*================================  LABELER  =================================*/
 template<typename Derived>
-LabelerPtr<Standard> DecodableModelCrtp<Derived>::labelingLabeler(
+LabelerPtr<Standard> DecodableModelCrtp<Derived>::labeler(
     const Standard<Sequence> &sequence, bool cached) {
   if (cached)
     return CachedLabeler<Standard, Derived>::make(make_shared(), sequence);
