@@ -29,7 +29,6 @@
 
 // ToPS templates
 #include "model/ProbabilisticModelCrtp.tcc"
-#include "model/Labeler.tcc"
 #include "model/SimpleLabeler.tcc"
 #include "model/CachedLabeler.tcc"
 
