@@ -103,7 +103,7 @@ class DecodableModelCrtp
   GeneratorPtr<Labeling> labelingGenerator() override;
 
   LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
-                                       bool cached = false);
+                               bool cached = false) override;
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,
