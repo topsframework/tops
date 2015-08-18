@@ -29,7 +29,6 @@
 
 // ToPS templates
 #include "model/ProbabilisticModelCrtp.tcc"
-#include "model/Labeler.tcc"
 #include "model/SimpleLabeler.tcc"
 #include "model/CachedLabeler.tcc"
 
@@ -103,7 +102,7 @@ class DecodableModelCrtp
   GeneratorPtr<Labeling> labelingGenerator() override;
 
   LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
-                                       bool cached = false);
+                               bool cached = false) override;
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,

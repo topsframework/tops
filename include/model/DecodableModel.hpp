@@ -29,6 +29,7 @@
 
 // ToPS templates
 #include "model/Labeling.tcc"
+#include "model/Labeler.tcc"
 
 namespace tops {
 namespace model {
@@ -53,6 +54,8 @@ class DecodableModel : public virtual ProbabilisticModel {
       const Labeling<Sequence> &sequence, bool cached = false) = 0;
 
   virtual GeneratorPtr<Labeling> labelingGenerator() = 0;
+  virtual LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
+                                       bool cached = false) = 0;
 };
 
 }  // namespace model
