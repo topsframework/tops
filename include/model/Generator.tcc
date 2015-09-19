@@ -27,6 +27,7 @@
 // ToPS headers
 #include "Symbol.hpp"
 #include "Sequence.hpp"
+#include "RandomNumberGenerator.hpp"
 
 namespace tops {
 namespace model {
@@ -63,6 +64,8 @@ class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
 
   virtual Decorator<Sequence> drawSequence(unsigned int size,
                                            unsigned int phase = 0) const = 0;
+
+  virtual RandomNumberGeneratorPtr randomNumberGenerator() const = 0;
 };
 
 }  // namespace model

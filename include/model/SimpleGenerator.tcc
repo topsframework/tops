@@ -81,13 +81,22 @@ class SimpleGenerator : public Generator<Decorator> {
     CALL_METHOD_DELEGATOR(drawSequence, size, phase);
   }
 
+  RandomNumberGeneratorPtr randomNumberGenerator() const override {
+    return _generator;
+  }
+
  protected:
+  // Alias
+  using RNG = RandomNumberGenerator;
+  using RNGPtr = std::shared_ptr<RNG>;
+
   // Instace variables
   ModelPtr _model;
+  RNGPtr _generator;
 
   // Constructors
-  SimpleGenerator(ModelPtr m)
-      : _model(std::move(m)) {
+  SimpleGenerator(ModelPtr m, RNGPtr generator)
+      : _model(std::move(m)), _generator(std::move(generator)) {
   }
 
  private:
