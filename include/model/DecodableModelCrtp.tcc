@@ -103,7 +103,7 @@ class DecodableModelCrtp
 
   GeneratorPtr<Labeling>
   labelingGenerator(RandomNumberGeneratorPtr rng
-                      = RNGAdapter<std::mt19937>::make(42)) override;
+                      = RNGAdapter<std::mt19937>::make()) override;
 
   LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
                                        bool cached = false);

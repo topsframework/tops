@@ -97,7 +97,7 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(vlmc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(vlmc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {

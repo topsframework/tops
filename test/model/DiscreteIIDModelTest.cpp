@@ -96,7 +96,7 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 }
 
 TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 1, 1}));
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {

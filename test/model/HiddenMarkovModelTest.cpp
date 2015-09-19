@@ -234,7 +234,7 @@ TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
 TEST_F(AHiddenMarkovModel, ShouldChooseLabelingWithSeed42) {
   auto labeling = hmm->labelingGenerator()->drawSequence(5);
   ASSERT_THAT(labeling.observation(),
-              ContainerEq(Sequence{0, 1, 0, 0, 1}));
+              ContainerEq(Sequence{1, 1, 1, 1, 1}));
   ASSERT_THAT(labeling.label(),
-              ContainerEq(Sequence{0, 1, 0, 0, 0}));
+              ContainerEq(Sequence{0, 1, 0, 0, 1}));
 }

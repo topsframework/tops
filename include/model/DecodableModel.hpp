@@ -53,7 +53,7 @@ class DecodableModel : public virtual ProbabilisticModel {
       const Labeling<Sequence> &sequence, bool cached = false) = 0;
 
   virtual GeneratorPtr<Labeling> labelingGenerator(
-      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make(42)) = 0;
+      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 };
 
 }  // namespace model

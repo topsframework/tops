@@ -93,7 +93,7 @@ class ProbabilisticModelCrtp
 
   GeneratorPtr<Standard>
   standardGenerator(RandomNumberGeneratorPtr rng
-                      = RNGAdapter<std::mt19937>::make(42)) override;
+                      = RNGAdapter<std::mt19937>::make()) override;
 
   // Purely virtual methods
   virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,

@@ -57,7 +57,7 @@ class ProbabilisticModel {
       const Standard<Sequence> &sequence, bool cached = false) = 0;
 
   virtual GeneratorPtr<Standard> standardGenerator(
-      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make(42)) = 0;
+      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 };
 
 }  // namespace model

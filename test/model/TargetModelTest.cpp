@@ -72,5 +72,5 @@ TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(ATargetModel, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(target->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 0}));
+  ASSERT_THAT(target->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 0}));
 }
