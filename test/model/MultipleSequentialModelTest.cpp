@@ -73,6 +73,5 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
   ASSERT_THAT(mm->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }

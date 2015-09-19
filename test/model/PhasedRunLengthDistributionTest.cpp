@@ -62,6 +62,5 @@ TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
 
 TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
   ASSERT_THAT(distribution->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1169, 14, 905, 119, 65}));
 }

@@ -90,7 +90,6 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): implement method
-  tops::model::resetRandom();
   ASSERT_THAT(mdd->standardGenerator()->drawSequence(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 

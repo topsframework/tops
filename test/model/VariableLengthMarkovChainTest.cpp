@@ -98,7 +98,6 @@ TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
   ASSERT_THAT(vlmc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
 }
 
