@@ -187,17 +187,19 @@ MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-MultipleSequentialModel::drawSymbol(SGPtr<Standard> /* generator */,
-                                            unsigned int pos,
-                                            unsigned int phase,
-                                            const Sequence &context) const {
+MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
+                                    unsigned int pos,
+                                    unsigned int phase,
+                                    const Sequence &context) const {
   int index = pos;
   for (unsigned int j = 0; j < _models.size(); j++) {
     index -= _max_length[j];
     if (index < 0)
-      return _models[j]->standardGenerator()->drawSymbol(pos, phase, context);
+      return _models[j]->standardGenerator(generator->randomNumberGenerator())
+                       ->drawSymbol(pos, phase, context);
   }
-  return _models.back()->standardGenerator()->drawSymbol(pos, phase, context);
+  return _models.back()->standardGenerator(generator->randomNumberGenerator())
+                       ->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/

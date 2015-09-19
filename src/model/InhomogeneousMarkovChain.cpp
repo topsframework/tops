@@ -54,13 +54,14 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
+InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                      unsigned int pos,
                                      unsigned int phase,
                                      const Sequence &context) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator()->drawSymbol(pos, phase, context);
+    return vlmc->standardGenerator(generator->randomNumberGenerator())
+               ->drawSymbol(pos, phase, context);
   }
 
   // TODO(igorbonadio): Throw exception!

@@ -350,13 +350,14 @@ HiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
 
 /*----------------------------------------------------------------------------*/
 
-Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
+Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
                                                unsigned int pos,
                                                unsigned int /* phase */,
                                                const Sequence &context) const {
-  Symbol y = (pos == 0) ? _initial_probabilities->draw()
-                        : _states[context[pos-1]]->transitions()->draw();
-  Symbol x = _states[y]->emissions()->draw();
+  auto rng = generator->randomNumberGenerator();
+  Symbol y = (pos == 0) ? _initial_probabilities->draw(rng)
+                        : _states[context[pos-1]]->transitions()->draw(rng);
+  Symbol x = _states[y]->emissions()->draw(rng);
 
   return Labeling<Symbol>(x, y);
 }

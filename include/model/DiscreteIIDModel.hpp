@@ -183,7 +183,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Draws a new symbol.
    * @return \f$x,\ x \in X\f$
    */
-  virtual Symbol draw() const;
+  virtual Symbol draw(RandomNumberGeneratorPtr rng) const;
 
   /**
    * Gets the probability of this model draws the given symbol.

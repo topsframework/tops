@@ -163,12 +163,13 @@ PhasedInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
+PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                            unsigned int pos,
                                            unsigned int phase,
                                            const Sequence &context) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
-  return vlmc->standardGenerator()->drawSymbol(pos, phase, context);
+  return vlmc->standardGenerator(generator->randomNumberGenerator())
+             ->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/
