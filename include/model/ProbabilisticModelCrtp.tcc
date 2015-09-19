@@ -87,10 +87,13 @@ class ProbabilisticModelCrtp
   static DerivedPtr make(Args&&... args);
 
   // Overriden methods
-  EvaluatorPtr<Standard> standardEvaluator(const Standard<Sequence> &sequence,
-                                           bool cached = false) override;
+  EvaluatorPtr<Standard>
+  standardEvaluator(const Standard<Sequence> &sequence,
+                    bool cached = false) override;
 
-  GeneratorPtr<Standard> standardGenerator() override;
+  GeneratorPtr<Standard>
+  standardGenerator(RandomNumberGeneratorPtr rng
+                      = RNGAdapter<std::mt19937>::make(42)) override;
 
   // Purely virtual methods
   virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
@@ -165,8 +168,9 @@ EvaluatorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardEvaluator(
 /*===============================  GENERATOR  ================================*/
 
 template<typename Derived>
-GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator() {
-  return SimpleGenerator<Standard, Derived>::make(make_shared());
+GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator(
+    RandomNumberGeneratorPtr rng) {
+  return SimpleGenerator<Standard, Derived>::make(make_shared(), rng);
 }
 
 /*----------------------------------------------------------------------------*/

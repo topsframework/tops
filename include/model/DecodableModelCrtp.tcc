@@ -97,10 +97,13 @@ class DecodableModelCrtp
   using Base::drawSequence;
 
   // Concrete methods
-  EvaluatorPtr<Labeling> labelingEvaluator(const Labeling<Sequence> &s,
-                                           bool cached = false) override;
+  EvaluatorPtr<Labeling>
+  labelingEvaluator(const Labeling<Sequence> &sequence,
+                    bool cached = false) override;
 
-  GeneratorPtr<Labeling> labelingGenerator() override;
+  GeneratorPtr<Labeling>
+  labelingGenerator(RandomNumberGeneratorPtr rng
+                      = RNGAdapter<std::mt19937>::make(42)) override;
 
   LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
                                        bool cached = false);
@@ -180,8 +183,9 @@ EvaluatorPtr<Labeling> DecodableModelCrtp<Derived>::labelingEvaluator(
 /*===============================  GENERATOR  ================================*/
 
 template<typename Derived>
-GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator() {
-  return SimpleGenerator<Labeling, Derived>::make(make_shared());
+GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator(
+    RandomNumberGeneratorPtr rng) {
+  return SimpleGenerator<Labeling, Derived>::make(make_shared(), rng);
 }
 
 /*================================  LABELER  =================================*/
