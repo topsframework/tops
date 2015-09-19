@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/TargetModel.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

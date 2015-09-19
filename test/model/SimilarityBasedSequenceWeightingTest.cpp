@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/PhasedRunLengthDistribution.hpp"
 #include "helper/Sequence.hpp"

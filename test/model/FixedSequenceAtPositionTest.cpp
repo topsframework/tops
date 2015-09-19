@@ -29,7 +29,6 @@
 #include "model/FixedSequenceAtPosition.hpp"
 #include "model/Probability.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"

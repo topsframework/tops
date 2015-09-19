@@ -28,7 +28,6 @@
 #include "model/PhasedInhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"

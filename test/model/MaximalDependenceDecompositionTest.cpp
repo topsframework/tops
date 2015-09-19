@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/MaximalDependenceDecomposition.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/MaximalDependenceDecomposition.hpp"
 #include "helper/DiscreteIIDModel.hpp"

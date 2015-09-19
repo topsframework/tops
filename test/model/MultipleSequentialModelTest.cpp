@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/MultipleSequentialModel.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"

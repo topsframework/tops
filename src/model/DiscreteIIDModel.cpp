@@ -26,7 +26,6 @@
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
-#include "model/Random.hpp"
 
 namespace tops {
 namespace model {
