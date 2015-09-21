@@ -17,17 +17,40 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_RANDOM_
-#define TOPS_MODEL_RANDOM_
+#ifndef TOPS_MODEL_RANDOM_NUMBER_GENERATOR_
+#define TOPS_MODEL_RANDOM_NUMBER_GENERATOR_
+
+// Standard headers
+#include <memory>
 
 namespace tops {
 namespace model {
 
-void resetRandom();
+class RandomNumberGenerator;
 
-double generateRandomDouble(bool reset = false);
+/**
+ * @typedef RandomNumberGeneratorPtr
+ * @brief Alias of pointer to RandomNumberGenerator.
+ */
+using RandomNumberGeneratorPtr = std::shared_ptr<RandomNumberGenerator>;
+
+/**
+ * @class RandomNumberGenerator
+ * @brief TODO
+ */
+class RandomNumberGenerator {
+ public:
+  // Alias
+  using result_type = uint_fast32_t;
+
+  // Purely Virtual methods
+  virtual void seed (result_type val) = 0;
+  virtual result_type operator()() = 0;
+  virtual void discard (unsigned long long z) = 0;
+  virtual double generateDoubleInUnitInterval() = 0;
+};
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_RANDOM_
+#endif

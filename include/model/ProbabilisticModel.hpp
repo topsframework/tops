@@ -22,14 +22,17 @@
 
 // Standard headers
 #include <memory>
+#include <random>
 
 // ToPS headers
 #include "model/Sequence.hpp"
+#include "model/RandomNumberGenerator.hpp"
 
 // ToPS templates
 #include "model/Standard.tcc"
 #include "model/Evaluator.tcc"
 #include "model/Generator.tcc"
+#include "model/RandomNumberGeneratorAdapter.tcc"
 
 namespace tops {
 namespace model {
@@ -53,7 +56,8 @@ class ProbabilisticModel {
   virtual EvaluatorPtr<Standard> standardEvaluator(
       const Standard<Sequence> &sequence, bool cached = false) = 0;
 
-  virtual GeneratorPtr<Standard> standardGenerator() = 0;
+  virtual GeneratorPtr<Standard> standardGenerator(
+      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 };
 
 }  // namespace model

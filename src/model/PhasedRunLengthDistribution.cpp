@@ -99,8 +99,8 @@ double PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
 
 /*----------------------------------------------------------------------------*/
 
-Symbol PhasedRunLengthDistribution::draw() const {
-  int L = static_cast<int>(DiscreteIIDModel::draw());
+Symbol PhasedRunLengthDistribution::draw(RandomNumberGeneratorPtr rng) const {
+  int L = static_cast<int>(DiscreteIIDModel::draw(rng));
   while (mod((L + _input_phase-1), _nphase ) != _output_phase)
     L++;
 

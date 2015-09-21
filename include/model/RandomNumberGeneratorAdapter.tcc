@@ -17,92 +17,105 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_SIMPLE_GENERATOR_
-#define TOPS_MODEL_SIMPLE_GENERATOR_
+#ifndef TOPS_MODEL_RANDOM_NUMBER_GENERATOR_ADAPTER_
+#define TOPS_MODEL_RANDOM_NUMBER_GENERATOR_ADAPTER_
 
 // Standard headers
 #include <memory>
-#include <typeinfo>
-#include <exception>
+#include <random>
 
-// ToPS templates
-#include "model/Generator.tcc"
-#include "model/MemberDelegator.tcc"
+// ToPS headers
+#include "model/RandomNumberGenerator.hpp"
 
 namespace tops {
 namespace model {
 
+template<typename RNG>
+class RandomNumberGeneratorAdapter;
+
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                    CLASS
+                                      CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator;
-
 /**
- * @typedef SimpleGeneratorPtr
- * @brief Alias of pointer to SimpleGenerator.
+ * @typedef RandomNumberGeneratorAdapterPtr
+ * @brief Alias of pointer to RandomNumberGeneratorAdapter.
  */
-template<template<typename Target> class Decorator, typename Model>
-using SimpleGeneratorPtr = std::shared_ptr<SimpleGenerator<Decorator, Model>>;
+template<typename RNG>
+using RandomNumberGeneratorAdapterPtr
+  = std::shared_ptr<RandomNumberGeneratorAdapter<RNG>>;
 
 /**
- * @class SimpleGenerator
+ * @class RandomNumberGeneratorAdapter
  * @brief TODO
  */
-template<template<typename Target> class Decorator, typename Model>
-class SimpleGenerator : public Generator<Decorator> {
+template<typename RNG>
+class RandomNumberGeneratorAdapter : public RandomNumberGenerator {
  public:
   // Alias
-  using ModelPtr = std::shared_ptr<Model>;
-
-  using Self = SimpleGenerator<Decorator, Model>;
+  using Self = RandomNumberGeneratorAdapter<RNG>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
   template<typename... Ts>
-  static SimpleGeneratorPtr<Decorator, Model> make(Ts... args) {
+  static RandomNumberGeneratorAdapterPtr<RNG> make(Ts... args) {
     return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
   }
 
   // Overriden methods
-  Decorator<Symbol> drawSymbol(unsigned int pos,
-                               unsigned int phase,
-                               const Sequence &context) const override {
-    CALL_METHOD_DELEGATOR(drawSymbol, pos, phase, context);
+  void seed (result_type val = RNG::default_seed) override {
+    _generator.seed(val);
   }
 
-  Decorator<Sequence> drawSequence(unsigned int size,
-                                   unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(drawSequence, size, phase);
+  result_type operator()() override {
+    return _generator();
   }
 
-  RandomNumberGeneratorPtr randomNumberGenerator() const override {
-    return _generator;
+  void discard (unsigned long long z) override {
+    _generator.discard(z);
+  }
+
+  double generateDoubleInUnitInterval() override {
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    return distribution(_generator);
   }
 
  protected:
-  // Alias
-  using RNG = RandomNumberGenerator;
-  using RNGPtr = std::shared_ptr<RNG>;
-
-  // Instace variables
-  ModelPtr _model;
-  RNGPtr _generator;
+  // Instance variables
+  RNG _generator;
 
   // Constructors
-  SimpleGenerator(ModelPtr m, RNGPtr generator)
-      : _model(std::move(m)), _generator(std::move(generator)) {
+  template<typename... Ts>
+  RandomNumberGeneratorAdapter(Ts... args)
+      : _generator(std::forward<Ts>(args)...) {
   }
-
- private:
-  GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(drawSequence, _model)
 };
+
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                      ALIAS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+/**
+ * @typedef RNGAdapter
+ * @brief Alias of RandomNumberGeneratorAdapter.
+ */
+template<typename RNG>
+using RNGAdapter = RandomNumberGeneratorAdapter<RNG>;
+
+/**
+ * @typedef RNGAdapterPtr
+ * @brief Alias of RandomNumberGeneratorAdapterPtr.
+ */
+template<typename RNG>
+using RNGAdapterPtr = RandomNumberGeneratorAdapterPtr<RNG>;
 
 }  // namespace model
 }  // namespace tops

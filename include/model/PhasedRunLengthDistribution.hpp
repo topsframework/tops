@@ -68,7 +68,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
       int nphase);
 
   // Overriden methods
-  Symbol draw() const override;
+  Symbol draw(RandomNumberGeneratorPtr rng) const override;
   double probabilityOf(Symbol s) const override;
 
  private:

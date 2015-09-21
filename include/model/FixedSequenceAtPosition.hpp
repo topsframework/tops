@@ -74,7 +74,7 @@ class FixedSequenceAtPosition
   DiscreteIIDModelPtr _probabilities;
 
   // Concrete methods
-  void addSequence(Sequence & h) const;
+  void addSequence(Sequence &h) const;
 };
 
 }  // namespace model

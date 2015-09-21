@@ -26,7 +26,6 @@
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
-#include "model/Random.hpp"
 
 namespace tops {
 namespace model {
@@ -453,19 +452,19 @@ Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
 /*===============================  GENERATOR  ================================*/
 
 Standard<Symbol>
-DiscreteIIDModel::drawSymbol(SGPtr<Standard> /* generator */,
+DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
                              unsigned int /* pos */,
                              unsigned int /* phase */,
                              const Sequence &/* context */) const {
-  return draw();
+  return draw(generator->randomNumberGenerator());
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-Symbol DiscreteIIDModel::draw() const {
-  double random = generateRandomDouble();
+Symbol DiscreteIIDModel::draw(RandomNumberGeneratorPtr rng) const {
+  double random = rng->generateDoubleInUnitInterval();
   for (unsigned int symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= exp(_probabilities[symbol]);
     if (random <= 0)

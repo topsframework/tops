@@ -58,18 +58,22 @@ FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
 /*==============================  GENERATOR  =================================*/
 
 Standard<Sequence>
-FixedSequenceAtPosition::drawSequence(SGPtr<Standard> /* generator */,
+FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
                                       unsigned int size,
                                       unsigned int phase) const {
-  Sequence s = _model->standardGenerator()->drawSequence(size, phase);
-  addSequence(s);
-  return s;
+  auto model_generator
+    = _model->standardGenerator(generator->randomNumberGenerator());
+  auto sequence = model_generator->drawSequence(size, phase);
+
+  addSequence(sequence);
+  return sequence;
 }
 
 /*================================  OTHERS  ==================================*/
 
 void FixedSequenceAtPosition::addSequence(Sequence &h) const {
-  if (_probabilities->draw() == 1)
+  auto rng = _probabilities->standardGenerator()->randomNumberGenerator();
+  if (_probabilities->draw(rng) == 1)
     return;
   for (int i = _position;
        ((i-_position) < static_cast<int>(_sequence.size()))

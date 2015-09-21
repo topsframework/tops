@@ -28,7 +28,6 @@
 #include "model/PhasedInhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
@@ -111,8 +110,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
 
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1, 0, 1, 1, 1}));
+  ASSERT_THAT(imc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {

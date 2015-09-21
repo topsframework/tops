@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/Sequence.hpp"
-#include "model/Random.hpp"
 
 #include "helper/PhasedRunLengthDistribution.hpp"
 #include "helper/Sequence.hpp"
@@ -62,6 +61,5 @@ TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
 
 TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  tops::model::resetRandom();
-  ASSERT_THAT(distribution->standardGenerator()->drawSequence(5), ContainerEq(Sequence{1169, 14, 905, 119, 65}));
+  ASSERT_THAT(distribution->standardGenerator()->drawSequence(5), ContainerEq(Sequence{5, 2015, 11885, 23, 44}));
 }

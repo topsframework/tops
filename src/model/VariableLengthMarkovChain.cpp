@@ -129,7 +129,7 @@ VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Standard<Symbol>
-VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
+VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
                                       const Sequence &context) const {
@@ -138,8 +138,9 @@ VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> /* generator */,
   // TODO(igorbonadio): ERROR!
   if (c == nullptr) return Standard<Symbol>(INVALID_SYMBOL);
 
-  return c->getDistribution()->standardGenerator()->drawSymbol(
-    pos, phase, context);
+  return c->getDistribution()
+          ->standardGenerator(generator->randomNumberGenerator())
+          ->drawSymbol(pos, phase, context);
 }
 
 /*----------------------------------------------------------------------------*/
