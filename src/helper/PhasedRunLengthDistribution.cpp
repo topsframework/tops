@@ -29,13 +29,13 @@ namespace tops {
 namespace helper {
 
 tops::model::PhasedRunLengthDistributionPtr createLengthDistribution() {
+  auto iid_trainer = tops::model::DiscreteIIDModel::standardTrainer(
+    tops::model::DiscreteIIDModel::smoothed_histogram_burge_algorithm{},
+    1.0, 15000);
+  iid_trainer->add_training_sequence(sequenceOfLengths());
+
   return tops::model::PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
-      tops::model::DiscreteIIDModel::trainSmoothedHistogramBurge(
-        {sequenceOfLengths()}, 1.0, 15000),
-      12,
-      0,
-      1,
-      3);
+    iid_trainer->train(), 12, 0, 1, 3);
 }
 
 }  // namespace helper

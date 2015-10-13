@@ -62,7 +62,11 @@ Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence &s) const {
-  return DiscreteIIDModel::trainML({s}, alphabetSize());
+  auto iid_trainer = DiscreteIIDModel::standardTrainer();
+  iid_trainer->add_training_sequence(s);
+
+  return iid_trainer->train(
+    DiscreteIIDModel::maximum_likehood_algorithm{}, alphabetSize());
 }
 
 /*----------------------------------------------------------------------------*/
