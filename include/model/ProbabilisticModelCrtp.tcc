@@ -28,6 +28,10 @@
 #include "model/ProbabilisticModel.hpp"
 
 // ToPS templates
+#include "model/Trainer.tcc"
+#include "model/FixedTrainer.tcc"
+#include "model/SimpleTrainer.tcc"
+#include "model/CachedTrainer.tcc"
 #include "model/SimpleGenerator.tcc"
 #include "model/SimpleEvaluator.tcc"
 #include "model/CachedEvaluator.tcc"
@@ -86,6 +90,13 @@ class ProbabilisticModelCrtp
   template<typename... Args>
   static DerivedPtr make(Args&&... args);
 
+  static TrainerPtr<Standard, Derived> standardTrainer();
+
+  static TrainerPtr<Standard, Derived> standardTrainer(DerivedPtr model);
+
+  template<typename Tag, typename... Args>
+  static TrainerPtr<Standard, Derived> standardTrainer(Tag, Args&&... args);
+
   // Overriden methods
   EvaluatorPtr<Standard>
   standardEvaluator(const Standard<Sequence> &sequence,
@@ -143,7 +154,30 @@ class ProbabilisticModelCrtp
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-// Static methods
+/*================================  TRAINER  =================================*/
+
+template<typename Derived>
+TrainerPtr<Standard, Derived>
+ProbabilisticModelCrtp<Derived>::standardTrainer() {
+  return SimpleTrainer<Standard, Derived>::make();
+}
+
+template<typename Derived>
+TrainerPtr<Standard, Derived>
+ProbabilisticModelCrtp<Derived>::standardTrainer(DerivedPtr model) {
+  return FixedTrainer<Standard, Derived>::make(model);
+}
+
+template<typename Derived>
+template<typename Tag, typename... Args>
+TrainerPtr<Standard, Derived>
+ProbabilisticModelCrtp<Derived>::standardTrainer(Tag, Args&&... args) {
+  return CachedTrainer<Standard, Derived, Tag, Args...>::make(
+    Tag{}, std::forward<Args>(args)...);
+}
+
+/*=================================  OTHERS  =================================*/
+
 template<typename Derived>
 template<typename... Args>
 auto ProbabilisticModelCrtp<Derived>::make(Args&&... args)

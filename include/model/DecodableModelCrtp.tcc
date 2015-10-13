@@ -96,6 +96,14 @@ class DecodableModelCrtp
   using Base::drawSymbol;
   using Base::drawSequence;
 
+  // Static methods
+  static TrainerPtr<Labeling, Derived> labelingTrainer();
+
+  static TrainerPtr<Labeling, Derived> labelingTrainer(DerivedPtr model);
+
+  template<typename Tag, typename... Args>
+  static TrainerPtr<Labeling, Derived> labelingTrainer(Tag, Args&&... args);
+
   // Concrete methods
   EvaluatorPtr<Labeling>
   labelingEvaluator(const Labeling<Sequence> &sequence,
@@ -167,7 +175,33 @@ class DecodableModelCrtp
 */
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+/*================================  TRAINER  =================================*/
+
+template<typename Derived>
+TrainerPtr<Labeling, Derived>
+DecodableModelCrtp<Derived>::labelingTrainer() {
+  return SimpleTrainer<Labeling, Derived>::make();
+}
+
+template<typename Derived>
+TrainerPtr<Labeling, Derived>
+DecodableModelCrtp<Derived>::labelingTrainer(DerivedPtr model) {
+  return FixedTrainer<Labeling, Derived>::make(model);
+}
+
+template<typename Derived>
+template<typename Tag, typename... Args>
+TrainerPtr<Labeling, Derived>
+DecodableModelCrtp<Derived>::labelingTrainer(Tag, Args&&... args) {
+  return CachedTrainer<Labeling, Derived, Tag, Args...>::make(
+    Tag{}, std::forward<Args>(args)...);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 /*===============================  EVALUATOR  ================================*/
