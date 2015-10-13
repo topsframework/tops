@@ -50,8 +50,14 @@ using SimilarityBasedSequenceWeightingPtr
 class SimilarityBasedSequenceWeighting
     : public ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting> {
  public:
+  // Tags
+  class standard_training_algorithm {};
+
   // Alias
   using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
+
+  using Self = SimilarityBasedSequenceWeighting;
+  using SelfPtr = SimilarityBasedSequenceWeightingPtr;
 
   // Constructors
   SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter,
@@ -68,12 +74,12 @@ class SimilarityBasedSequenceWeighting
       int skip_length,
       Sequence skip_sequence);
 
-  static SimilarityBasedSequenceWeightingPtr train(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      int skip_offset,
-      int skip_length,
-      Sequence skip_sequence);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       standard_training_algorithm,
+                       unsigned int alphabet_size,
+                       int skip_offset,
+                       int skip_length,
+                       Sequence skip_sequence);
 
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,

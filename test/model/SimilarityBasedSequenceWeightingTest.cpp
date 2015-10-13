@@ -94,14 +94,18 @@ TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
 }
 
 TEST(SBSW, ShouldBeTrained) {
-  std::vector<Sequence> training_set = {
-    {1, 1},
-    {0, 1},
-    {1, 1},
-    {0, 0},
-    {1, 1},
-  };
-  auto sbsw = SimilarityBasedSequenceWeighting::train(training_set, 2, -1, -1, {});
+  auto sbsw_trainer = SimilarityBasedSequenceWeighting::standardTrainer();
+
+  sbsw_trainer->add_training_set({{1, 1},
+                                  {0, 1},
+                                  {1, 1},
+                                  {0, 0},
+                                  {1, 1}});
+
+  auto sbsw = sbsw_trainer->train(
+    SimilarityBasedSequenceWeighting::standard_training_algorithm{},
+    2, -1, -1, Sequence{});
+
   ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(-std::numeric_limits<double>::infinity()));
   ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
