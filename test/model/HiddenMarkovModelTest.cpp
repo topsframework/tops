@@ -174,43 +174,17 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   }
 }
 
-TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
-  std::vector<Sequence> observation_training_set = {
-    {0, 0, 0, 1, 1},
-    {0, 0, 0, 1, 0, 0, 1, 1},
-    {0, 0, 0, 1, 1, 0, 0},
-  };
-  std::vector<Sequence> state_training_set = {
-    {1, 1, 1, 1, 1},
-    {0, 1, 1, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 1, 0},
-  };
-
-  auto trained_hmm = HiddenMarkovModel::trainML(
-      observation_training_set, state_training_set, 2, 2, 0.1);
-
-  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
-
-  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
-  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
-  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
-  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
-
-  ASSERT_THAT(evaluator00->evaluateSequence(0, 3), DoubleNear(-2.32992, 1e-4));
-  ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-3.20183, 1e-4));
-  ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-4.81600, 1e-4));
-  ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-4.39373, 1e-4));
-}
-
 TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
-  std::vector<Sequence> observation_training_set = {
+  auto hmm_trainer = HiddenMarkovModel::standardTrainer();
+
+  hmm_trainer->add_training_set({
     {0, 0, 0, 1, 1},
     {0, 0, 0, 1, 0, 0, 1, 1},
     {0, 0, 0, 1, 1, 0, 0},
-  };
+  });
 
-  auto trained_hmm = HiddenMarkovModel::trainBaumWelch(
-      observation_training_set, hmm, 500, 1e-4);
+  auto trained_hmm = hmm_trainer->train(
+    HiddenMarkovModel::baum_welch_algorithm{}, hmm, 500, 1e-4);
 
   std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
 
@@ -223,6 +197,31 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-311.83440, 1e-4));
   ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-110.38680, 1e-4));
   ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-313.26651, 1e-4));
+}
+
+TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
+  auto hmm_trainer = HiddenMarkovModel::labelingTrainer();
+
+  hmm_trainer->add_training_set({
+    Labeling<Sequence>{ {0, 0, 0, 1, 1},          {1, 1, 1, 1, 1}          },
+    Labeling<Sequence>{ {0, 0, 0, 1, 0, 0, 1, 1}, {0, 1, 1, 0, 0, 0, 1, 1} },
+    Labeling<Sequence>{ {0, 0, 0, 1, 1, 0, 0},    {0, 0, 0, 0, 0, 1, 0}    }
+  });
+
+  auto trained_hmm = hmm_trainer->train(
+    HiddenMarkovModel::maximum_likehood_algorithm{}, 2, 2, 0.1);
+
+  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
+
+  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
+  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
+  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
+  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
+
+  ASSERT_THAT(evaluator00->evaluateSequence(0, 3), DoubleNear(-2.32992, 1e-4));
+  ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-3.20183, 1e-4));
+  ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-4.81600, 1e-4));
+  ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-4.39373, 1e-4));
 }
 
 TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
