@@ -39,21 +39,15 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(
 /*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
-    ContextTreePtr context_tree) {
-  return VariableLengthMarkovChainPtr(
-    new VariableLengthMarkovChain(context_tree));
-}
+/*================================  TRAINER  =================================*/
 
-/*----------------------------------------------------------------------------*/
-
-VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
-    std::vector<Sequence> training_set,
-    unsigned int alphabet_size,
-    double delta) {
-
+VariableLengthMarkovChainPtr
+VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+                                 context_algorithm,
+                                 unsigned int alphabet_size,
+                                 double delta) {
   ContextTreePtr tree = ContextTree::make(alphabet_size);
-  tree->initializeContextTreeRissanen(training_set);
+  tree->initializeContextTreeRissanen(trainer->training_set());
   tree->pruneTree(delta);
   tree->removeContextNotUsed();
   tree->normalize();
@@ -63,22 +57,22 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::trainContextAlgorithm(
 /*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
-  VariableLengthMarkovChain::trainFixedLengthMarkovChain(
-    std::vector<Sequence> training_set,
-    unsigned int order,
-    unsigned int alphabet_size,
-    double pseudo_counts,
-    std::vector<double> weights,
-    ProbabilisticModelPtr apriori) {
-
-
+VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+                                 fixed_length_algorithm,
+                                 unsigned int order,
+                                 unsigned int alphabet_size,
+                                 double pseudo_counts,
+                                 std::vector<double> weights,
+                                 ProbabilisticModelPtr apriori) {
   ContextTreePtr tree = ContextTree::make(alphabet_size);
 
   if (apriori) {
-    tree->initializeCounter(training_set, order, 0, weights);
+    tree->initializeCounter(trainer->training_set(),
+                            order, 0, weights);
     tree->normalize(apriori, pseudo_counts);
   } else {
-    tree->initializeCounter(training_set, order, pseudo_counts, weights);
+    tree->initializeCounter(trainer->training_set(),
+                            order, pseudo_counts, weights);
     tree->normalize();
   }
 
@@ -88,26 +82,36 @@ VariableLengthMarkovChainPtr
 /*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
-VariableLengthMarkovChain::trainInterpolatedMarkovChain(
-    std::vector<Sequence> training_set,
-    std::vector<double> weights,
-    unsigned int alphabet_size,
-    unsigned int order,
-    double pseudo_counts,
-    ProbabilisticModelPtr apriori) {
+VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+                                 interpolation_algorithm,
+                                 std::vector<double> weights,
+                                 unsigned int alphabet_size,
+                                 unsigned int order,
+                                 double pseudo_counts,
+                                 ProbabilisticModelPtr apriori) {
   auto tree = ContextTree::make(alphabet_size);
 
   if (apriori != NULL) {
-    tree->initializeCounter(training_set, order, 0, weights);
+    tree->initializeCounter(trainer->training_set(),
+                            order, 0, weights);
     tree->pruneTreeSmallSampleSize(400);
     tree->normalize(apriori, pseudo_counts);
   } else {
-    tree->initializeCounter(training_set, order, pseudo_counts, weights);
+    tree->initializeCounter(trainer->training_set(),
+                            order, pseudo_counts, weights);
     tree->pruneTreeSmallSampleSize(400);
     tree->normalize();
   }
 
   return VariableLengthMarkovChain::make(tree);
+}
+
+/*=================================  OTHERS  =================================*/
+
+VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
+    ContextTreePtr context_tree) {
+  return VariableLengthMarkovChainPtr(
+    new VariableLengthMarkovChain(context_tree));
 }
 
 /*----------------------------------------------------------------------------*/

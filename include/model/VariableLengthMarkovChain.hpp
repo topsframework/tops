@@ -50,8 +50,16 @@ using VariableLengthMarkovChainPtr
 class VariableLengthMarkovChain
     : public ProbabilisticModelCrtp<VariableLengthMarkovChain> {
  public:
+  // Tags
+  class context_algorithm {};
+  class fixed_length_algorithm {};
+  class interpolation_algorithm {};
+
   // Alias
   using Base = ProbabilisticModelCrtp<VariableLengthMarkovChain>;
+
+  using Self = VariableLengthMarkovChain;
+  using SelfPtr = VariableLengthMarkovChainPtr;
 
   // Constructors
   explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
@@ -59,26 +67,26 @@ class VariableLengthMarkovChain
   // Static methods
   static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
 
-  static VariableLengthMarkovChainPtr trainContextAlgorithm(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      double delta);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       context_algorithm,
+                       unsigned int alphabet_size,
+                       double delta);
 
-  static VariableLengthMarkovChainPtr trainFixedLengthMarkovChain(
-      std::vector<Sequence> training_set,
-      unsigned int order,
-      unsigned int alphabet_size,
-      double pseudo_counts,
-      std::vector<double> weights,
-      ProbabilisticModelPtr apriori);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       fixed_length_algorithm,
+                       unsigned int order,
+                       unsigned int alphabet_size,
+                       double pseudo_counts,
+                       std::vector<double> weights,
+                       ProbabilisticModelPtr apriori);
 
-  static VariableLengthMarkovChainPtr trainInterpolatedMarkovChain(
-      std::vector<Sequence> training_set,
-      std::vector<double> weights,
-      unsigned int alphabet_size,
-      unsigned int order,
-      double pseudo_counts,
-      ProbabilisticModelPtr apriori);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       interpolation_algorithm,
+                       std::vector<double> weights,
+                       unsigned int alphabet_size,
+                       unsigned int order,
+                       double pseudo_counts,
+                       ProbabilisticModelPtr apriori);
 
   // Overriden methods
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
