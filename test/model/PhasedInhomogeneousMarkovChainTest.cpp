@@ -114,13 +114,17 @@ TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
-  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
-  auto imc
-    = PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
-      training_set, 2, 2, 2, 1.5, {1.0, 1.0, 1.0, 1.0}, ProbabilisticModelPtr(NULL));
+  auto imc_trainer = PhasedInhomogeneousMarkovChain::standardTrainer();
+
+  imc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                 {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                 {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                 {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+
+  auto imc = imc_trainer->train(
+      PhasedInhomogeneousMarkovChain::interpolation_algorithm{},
+      2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
+
   ASSERT_THAT(imc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-2.99504, 1e-4));
   ASSERT_THAT(imc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
