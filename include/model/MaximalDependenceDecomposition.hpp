@@ -48,8 +48,14 @@ using MaximalDependenceDecompositionPtr = std::shared_ptr<MaximalDependenceDecom
 class MaximalDependenceDecomposition
     : public ProbabilisticModelCrtp<MaximalDependenceDecomposition> {
  public:
+  // Tags
+  class standard_training_algorithm {};
+
   // Alias
   using Base = ProbabilisticModelCrtp<MaximalDependenceDecomposition>;
+
+  using Self = MaximalDependenceDecomposition;
+  using SelfPtr = MaximalDependenceDecompositionPtr;
 
   // Constructors
   MaximalDependenceDecomposition(ConsensusSequence consensus_sequence,
@@ -57,12 +63,12 @@ class MaximalDependenceDecomposition
                                  MaximalDependenceDecompositionNodePtr tree);
 
   // Static methods
-  static MaximalDependenceDecompositionPtr train(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      ConsensusSequence consensus_sequence,
-      ProbabilisticModelPtr consensus_model,
-      unsigned int minimum_subset);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       standard_training_algorithm,
+                       unsigned int alphabet_size,
+                       ConsensusSequence consensus_sequence,
+                       ProbabilisticModelPtr consensus_model,
+                       unsigned int minimum_subset);
 
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,
