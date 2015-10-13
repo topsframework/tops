@@ -73,12 +73,12 @@ class SimpleGenerator : public Generator<Decorator> {
   Decorator<Symbol> drawSymbol(unsigned int pos,
                                unsigned int phase,
                                const Sequence &context) const override {
-    CALL_METHOD_DELEGATOR(drawSymbol, pos, phase, context);
+    CALL_MEMBER_FUNCTION_DELEGATOR(drawSymbol, pos, phase, context);
   }
 
   Decorator<Sequence> drawSequence(unsigned int size,
                                    unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(drawSequence, size, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(drawSequence, size, phase);
   }
 
   RandomNumberGeneratorPtr randomNumberGenerator() const override {
@@ -100,8 +100,8 @@ class SimpleGenerator : public Generator<Decorator> {
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(drawSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(drawSequence, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(drawSymbol, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(drawSequence, _model)
 };
 
 }  // namespace model

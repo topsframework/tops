@@ -51,7 +51,7 @@ template <typename T>
 using non_const_return_t = typename non_const_return<T>::type;
 
 template<typename T>
-non_const_return_t<T> cast_to_non_const(T t) {
+non_const_return_t<T> non_const_cast(T t) {
     return (non_const_return_t<T>) t;
 }
 
@@ -86,58 +86,31 @@ struct inject_first_parameter<Ptr, Result(Klass::*)(Args...) const> {
 };
 
 /*============================================================================*/
-/*                         MEMBER DELEGATOR GENERATION                        */
+/*                              CONTAINER UNPACK                              */
 /*============================================================================*/
 
-#define GENERATE_METHOD_DELEGATOR(method, delegatedObject)                     \
-                                                                               \
-GENERATE_HAS_MEMBER_METHOD(method);                                            \
-                                                                               \
-template<typename... Args>                                                     \
-inline auto method##Impl(Args... args) const                                   \
-    -> decltype(cast_to_non_const(this)->method(args...)) {                    \
-                                                                               \
-  using MethodType = typename inject_first_parameter<                          \
-    std::shared_ptr<class_of_t<decltype(this)>>,                               \
-    decltype(&class_of_t<decltype(this)>::method)                              \
-  >::type;                                                                     \
-                                                                               \
-  using DelegatedType = typename std::remove_cv<                               \
-    typename std::remove_pointer<decltype(this->delegatedObject)>::type        \
-  >::type::element_type;                                                       \
-                                                                               \
-  return method##Impl(                                                         \
-    typename has_method_##method<DelegatedType, MethodType>::tag(),            \
-    std::forward<Args>(args)...);                                              \
-}                                                                              \
+template<typename Func, template<typename...> class Pack,
+         typename Ptr, typename... Args, std::size_t... I>
+auto call_helper(const Func &func, const Ptr &ptr, const Pack<Args...> &params,
+                   std::index_sequence<I...>) {
+  return func(ptr, std::get<I>(params)...);
+}
+
+template<typename Func, template<typename...> class Pack,
+         typename Ptr, typename... Args>
+auto call(const Func &func, const Ptr &ptr, const Pack<Args...> &params) {
+  return call_helper(func, ptr, params, std::index_sequence_for<Args...>{});
+}
+
+/*============================================================================*/
+/*                    MEMBER FUNCTION DELEGATOR GENERATION                    */
+/*============================================================================*/
+
+#define GENERATE_MEMBER_FUNCTION_DELEGATOR(method, delegatedObject)            \
                                                                                \
 template<typename... Args>                                                     \
-inline auto method##Impl(Args... args)                                         \
-    -> decltype(this->method(args...)) {                                       \
-  return (non_const_return_t<decltype(this->method(args...))>) (               \
-    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
-      std::forward<Args>(args)...));                                           \
-}                                                                              \
-                                                                               \
-template<typename... Args>                                                     \
-inline auto method##Impl(no_##method##_tag, Args... args) const                \
-    -> decltype(cast_to_non_const(this)->method(args...)) {                    \
-  static_assert(always_false<decltype(this)>::value,                           \
-                "Missing implementation of member function '" #method "'!");   \
-  throw std::logic_error("Calling from base class with no 'method'");          \
-}                                                                              \
-                                                                               \
-template<typename... Args>                                                     \
-inline auto method##Impl(no_##method##_tag, Args... args)                      \
-    -> decltype(this->method(args...)) {                                       \
-  return (non_const_return_t<decltype(this->method(args...))>) (               \
-    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
-      no_##method##_tag(), std::forward<Args>(args)...));                      \
-}                                                                              \
-                                                                               \
-template<typename... Args>                                                     \
-inline auto method##Impl(has_##method##_tag, Args... args) const               \
-    -> decltype(cast_to_non_const(this)->method(args...)) {                    \
+inline auto method##Impl(Args&&... args) const                                 \
+    -> decltype(non_const_cast(this)->method(std::forward<Args>(args)...)) {   \
   return (this->delegatedObject)->method(                                      \
     std::static_pointer_cast<class_of_t<decltype(this)>>(                      \
       const_cast<class_of_t<decltype(this)>*>(this)->shared_from_this()),      \
@@ -145,18 +118,110 @@ inline auto method##Impl(has_##method##_tag, Args... args) const               \
 }                                                                              \
                                                                                \
 template<typename... Args>                                                     \
-inline auto method##Impl(has_##method##_tag, Args... args)                     \
-    -> decltype(this->method(args...)) {                                       \
+inline auto method##Impl(Args&&... args)                                       \
+    -> decltype(this->method(std::forward<Args>(args)...)) {                   \
   return (non_const_return_t<decltype(this->method(args...))>) (               \
-    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
-      has_##method##_tag(), std::forward<Args>(args)...));                     \
+    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
+      std::forward<Args>(args)...));                                           \
 }
 
 /*============================================================================*/
-/*                           MEMBER DELEGATOR CALL                            */
+/*                       MEMBER FUNCTION DELEGATOR CALL                       */
 /*============================================================================*/
 
-#define CALL_METHOD_DELEGATOR(method, ...)                                     \
+#define CALL_MEMBER_FUNCTION_DELEGATOR(method, ...)                            \
+do { return method##Impl(__VA_ARGS__); } while (false)
+
+/*============================================================================*/
+/*                STATIC MEMBER FUNCTION DELEGATOR GENERATION                 */
+/*============================================================================*/
+
+#define GENERATE_STATIC_MEMBER_FUNCTION_DELEGATOR(method, delegatedClass)      \
+                                                                               \
+GENERATE_HAS_STATIC_MEMBER_FUNCTION(delegate);                                 \
+GENERATE_HAS_STATIC_MEMBER_FUNCTION(method##Alt);                              \
+                                                                               \
+template<typename... Args>                                                     \
+inline auto method##Impl(Args&&... args) const                                 \
+    -> decltype(non_const_cast(this)->method(std::forward<Args>(args)...)) {   \
+  if (delegate()) {                                                            \
+    return delegatedClass::method(                                             \
+      std::static_pointer_cast<class_of_t<decltype(this)>>(                    \
+        const_cast<class_of_t<decltype(this)>*>(this)->shared_from_this()),    \
+      std::forward<Args>(args)...);                                            \
+  }                                                                            \
+  return method##Alt();                                                        \
+}                                                                              \
+                                                                               \
+template<typename... Args>                                                     \
+inline auto method##Impl(Args&&... args)                                       \
+    -> decltype(this->method(std::forward<Args>(args)...)) {                   \
+  return (non_const_return_t<                                                  \
+            decltype(this->method(std::forward<Args>(args)...))>) (            \
+    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
+      std::forward<Args>(args)...));                                           \
+}                                                                              \
+                                                                               \
+inline auto method##Impl() const                                               \
+    -> decltype(non_const_cast(this)->method()) {                              \
+  return method##Alt();                                                        \
+}                                                                              \
+                                                                               \
+inline auto method##Impl()                                                     \
+    -> decltype(this->method()) {                                              \
+  return (non_const_return_t<decltype(this->method())>) (                      \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
+}                                                                              \
+                                                                               \
+template<typename _T = void>                                                   \
+inline constexpr auto method##Alt(_T* = nullptr) const                         \
+    -> decltype(typename std::enable_if<                                       \
+                  !has_static_member_function_##method##Alt<                   \
+                    class_of_t<decltype(this)>, void()                         \
+                  >::value                                                     \
+                >::type(),                                                     \
+                non_const_cast(this)->method()) {                              \
+  throw std::logic_error("Cannot call '" #method "' without parameters");      \
+}                                                                              \
+                                                                               \
+template<typename _T = void>                                                   \
+inline constexpr auto method##Alt(_T* = nullptr)                               \
+    -> decltype(typename std::enable_if<                                       \
+                  !has_static_member_function_##method##Alt<                   \
+                    class_of_t<decltype(this)>, void()                         \
+                  >::value                                                     \
+                >::type(),                                                     \
+                non_const_cast(this)->method()) {                              \
+  return (non_const_return_t<decltype(this->method())>) (                      \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
+}                                                                              \
+                                                                               \
+template<typename _T = void>                                                   \
+inline constexpr auto delegate(_T* = nullptr) const                            \
+    -> decltype(typename std::enable_if<                                       \
+                  !has_static_member_function_delegate<                        \
+                    class_of_t<decltype(this)>, void()                         \
+                  >::value                                                     \
+                >::type(), bool()) {                                           \
+  return true;                                                                 \
+}                                                                              \
+                                                                               \
+template<typename _T = void>                                                   \
+inline constexpr auto delegate(_T* = nullptr)                                  \
+    -> decltype(typename std::enable_if<                                       \
+                  !has_static_member_function_delegate<                        \
+                    class_of_t<decltype(this)>, void()                         \
+                  >::value                                                     \
+                >::type(), bool()) {                                           \
+  return (non_const_return_t<decltype(this->method())>) (                      \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
+}
+
+/*============================================================================*/
+/*                   STATIC MEMBER FUNCTION DELEGATOR CALL                    */
+/*============================================================================*/
+
+#define CALL_STATIC_MEMBER_FUNCTION_DELEGATOR(method, ...)                     \
 do { return method##Impl(__VA_ARGS__); } while (false)
 
 }  // namespace model

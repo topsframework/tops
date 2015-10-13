@@ -74,7 +74,7 @@ class SimpleLabeler : public Labeler<Decorator> {
   // Concrete methods
   Estimation<Labeling<Sequence>> labeling(
       Labeling<Sequence>::Method method) const override {
-    CALL_METHOD_DELEGATOR(labeling, method);
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
   }
 
   // Overriden methods
@@ -98,7 +98,7 @@ class SimpleLabeler : public Labeler<Decorator> {
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(labeling, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
 };
 
 }  // namespace model
