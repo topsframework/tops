@@ -101,14 +101,16 @@ TEST_F(AVLMC, ShouldChooseSequenceWithSeed42) {
 }
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
-  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
-  auto vlmc = VariableLengthMarkovChain::trainContextAlgorithm(
-      training_set,
-      2,
-      0.1);
+  auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
+
+  vlmc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                  {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+
+  auto vlmc = vlmc_trainer->train(
+    VariableLengthMarkovChain::context_algorithm{}, 2, 0.1);
+
   ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-2.77259, 1e-4));
   ASSERT_THAT(vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
@@ -116,14 +118,17 @@ TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
 }
 
 TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
-  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
-  auto vlmc = VariableLengthMarkovChain::trainFixedLengthMarkovChain(
-    training_set, 2, 2, 1.5,
-    {1.0, 1.0, 1.0, 1.0},
-    ProbabilisticModelPtr(NULL));
+  auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
+
+  vlmc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                  {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+
+  auto vlmc = vlmc_trainer->train(
+    VariableLengthMarkovChain::fixed_length_algorithm{},
+    2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
+
   ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-1.37235, 1e-4));
   ASSERT_THAT(vlmc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
@@ -133,15 +138,17 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
 }
 
 TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
-  std::vector<Sequence> training_set = {{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                        {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                        {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}};
-  auto vlmc = VariableLengthMarkovChain::trainInterpolatedMarkovChain(
-    training_set,
-    {1.0, 1.0, 1.0, 1.0},
-    2, 2, 1.5,
-    ProbabilisticModelPtr(NULL));
+  auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
+
+  vlmc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                  {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+
+  auto vlmc = vlmc_trainer->train(
+    VariableLengthMarkovChain::interpolation_algorithm{},
+    std::vector<double>{1.0, 1.0, 1.0, 1.0}, 2, 2, 1.5, nullptr);
+
   ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-2.77913, 1e-4));
   ASSERT_THAT(vlmc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),

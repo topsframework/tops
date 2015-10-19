@@ -11,30 +11,35 @@ compiler:
   - g++
 
 before_install:
-  - if [ $TRAVIS_OS_NAME = linux ]; then
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
+      sudo add-apt-repository -y ppa:h-rayflood/llvm-upper;
       sudo apt-get -qq update;
-    else
+    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew update;
+      brew tap homebrew/versions;
     fi
 
 install:
-  - if [ $TRAVIS_OS_NAME = linux ]; then
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo apt-get -qq install gcc-5 g++-5;
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90;
+      sudo apt-get -qq install --allow-unauthenticated clang-3.6;
       sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90;
       wget http://ftp.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz;
       tar xf lcov_1.11.orig.tar.gz;
       sudo make -C lcov-1.11/ install;
-    else
-      brew tap homebrew/versions;
+    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew install gcc5;
+      brew install llvm36 --with-clang;
       brew install lcov;
-      if [ "$CC" = "gcc" ]; then
-        export CC=gcc-5;
-        export CXX=g++-5;
-      fi
     fi
+  - if [ "$CC" = "gcc" ]; then
+      export CC=gcc-5;
+      export CXX=g++-5;
+    elif [ "$CC" = "clang" ]; then
+      export CC=clang-3.6;
+      export CXX=clang++-3.6;
+    fi;
   - gem install coveralls-lcov;
   - $CC --version;
   - $CXX --version;
@@ -44,16 +49,16 @@ before_script:
   - git submodule update --init --recursive
 
 script:
-  - if [ $TRAVIS_OS_NAME = linux ]; then
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       make test-coverage COVIGNORE="*/helper/*";
-    else
+    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
       make test;
     fi
 
 after_success:
-- if [ $TRAVIS_OS_NAME = linux ]; then
-    coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info;
-  fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      coveralls-lcov --repo-token ThN9JAPkYk61L9an6g80s3c3QIj9ORtq3 coverage/test/test.info;
+    fi
 
 env:
   global:

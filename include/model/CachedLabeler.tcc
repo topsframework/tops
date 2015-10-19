@@ -75,7 +75,7 @@ class CachedLabeler : public SimpleLabeler<Decorator, Model> {
 
   // Virtual methods
   virtual void initializeCache(unsigned int phase) {
-    CALL_METHOD_DELEGATOR(initializeCache, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, phase);
   }
 
   // Concrete methods
@@ -83,7 +83,7 @@ class CachedLabeler : public SimpleLabeler<Decorator, Model> {
   Estimation<Labeling<Sequence>> labeling(
       Labeling<Sequence>::Method method) const override {
     const_cast<Self *>(this)->lazyInitializeCache(0);
-    CALL_METHOD_DELEGATOR(labeling, method);
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
   }
 
   Cache& cache() {
@@ -115,8 +115,8 @@ class CachedLabeler : public SimpleLabeler<Decorator, Model> {
   }
 
   // Delegators
-  GENERATE_METHOD_DELEGATOR(labeling, _model)
-  GENERATE_METHOD_DELEGATOR(initializeCache, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(initializeCache, _model)
 };
 
 }  // namespace model

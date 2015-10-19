@@ -68,12 +68,14 @@ SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::make(
 
 /*----------------------------------------------------------------------------*/
 
-SimilarityBasedSequenceWeightingPtr SimilarityBasedSequenceWeighting::train(
-    std::vector<Sequence> training_set,
-    unsigned int alphabet_size,
-    int skip_offset,
-    int skip_length,
-    Sequence skip_sequence) {
+SimilarityBasedSequenceWeightingPtr
+SimilarityBasedSequenceWeighting::train(TrainerPtr<Standard, Self> trainer,
+                                        standard_training_algorithm,
+                                        unsigned int alphabet_size,
+                                        int skip_offset,
+                                        int skip_length,
+                                        Sequence skip_sequence) {
+  auto& training_set = trainer->training_set();
 
   std::map<Sequence, double> counter;
   unsigned int min_length = 999999999;

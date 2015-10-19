@@ -93,21 +93,20 @@ TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
 }
 
 TEST(MDD, ShouldBeTrained) {
-  auto consensus_sequence = createConsensusSequence();
-  auto consensus_model = createDNAModel();
-  std::vector<Sequence> training_set = {{1, 0, 3, 1, 3, 2, 3, 0, 1},
-                                        {0, 1, 2, 2, 3, 2, 3, 0, 2},
-                                        {1, 0, 3, 2, 3, 1, 0, 0, 2},
-                                        {0, 1, 2, 1, 3, 1, 0, 0, 3},
-                                        {1, 0, 2, 2, 2, 1, 0, 1, 3},
-                                        {0, 1, 3, 2, 3, 2, 0, 1, 3},
-                                        {1, 0, 2, 1, 3, 2, 3, 1, 0}};
-  auto mdd = MaximalDependenceDecomposition::train(
-    training_set,
-    4,
-    consensus_sequence,
-    consensus_model,
-    2);
+  auto mdd_trainer = MaximalDependenceDecomposition::standardTrainer();
+
+  mdd_trainer->add_training_set({{1, 0, 3, 1, 3, 2, 3, 0, 1},
+                                 {0, 1, 2, 2, 3, 2, 3, 0, 2},
+                                 {1, 0, 3, 2, 3, 1, 0, 0, 2},
+                                 {0, 1, 2, 1, 3, 1, 0, 0, 3},
+                                 {1, 0, 2, 2, 2, 1, 0, 1, 3},
+                                 {0, 1, 3, 2, 3, 2, 0, 1, 3},
+                                 {1, 0, 2, 1, 3, 2, 3, 1, 0}});
+
+  auto mdd = mdd_trainer->train(
+    MaximalDependenceDecomposition::standard_training_algorithm{},
+    4, createConsensusSequence(), createDNAModel(), 2);
+
   ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->evaluateSequence(0, 9),
               DoubleNear(-6.45814, 1e-4));
   ASSERT_THAT(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})->evaluateSequence(0, 9),

@@ -77,19 +77,19 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
   Probability evaluateSymbol(unsigned int pos,
                              unsigned int phase) const override {
     const_cast<Self *>(this)->lazyInitializeCache(phase);
-    CALL_METHOD_DELEGATOR(evaluateSymbol, pos, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
   Probability evaluateSequence(unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override {
     const_cast<Self *>(this)->lazyInitializeCache(phase);
-    CALL_METHOD_DELEGATOR(evaluateSequence, begin, end, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }
 
   // Virtual methods
   virtual void initializeCache(unsigned int phase) {
-    CALL_METHOD_DELEGATOR(initializeCache, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, phase);
   }
 
   // Concrete methods
@@ -122,10 +122,10 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
   }
 
   // Delegators
-  GENERATE_METHOD_DELEGATOR(evaluateSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(evaluateSequence, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, _model)
 
-  GENERATE_METHOD_DELEGATOR(initializeCache, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(initializeCache, _model)
 };
 
 }  // namespace model

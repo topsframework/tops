@@ -7,7 +7,7 @@
 /*  the License, or (at your option) any later version.                */
 /*                                                                     */
 /*  This program is distributed in the hope that it will be useful,    */
-/*  but WITHOUT ANY WARRANTY; without even the implied warranty of     */
+/*  but WITHOUT ANY WARRANTY; without even the ied warranty of         */
 /*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      */
 /*  GNU General Public License for more details.                       */
 /*                                                                     */
@@ -17,91 +17,98 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_SIMPLE_LABELER_
-#define TOPS_MODEL_SIMPLE_LABELER_
+#ifndef TOPS_MODEL_FIXED_TRAINER_
+#define TOPS_MODEL_FIXED_TRAINER_
 
 // Standard headers
 #include <memory>
-#include <type_traits>
-
-// ToPS headers
-#include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+#include "model/Trainer.tcc"
 
 namespace tops {
 namespace model {
 
-/*
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- -------------------------------------------------------------------------------
-                                    CLASS
- -------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
-*/
-
 template<template<typename Target> class Decorator, typename Model>
-class SimpleLabeler;
+class FixedTrainer;
 
 /**
- * @typedef SimpleLabelerPtr
- * @brief Alias of pointer to SimpleLabeler.
+ * @typedef FixedTrainerPtr
+ * @brief Alias of pointer to FixedTrainer.
  */
 template<template<typename Target> class Decorator, typename Model>
-using SimpleLabelerPtr = std::shared_ptr<SimpleLabeler<Decorator, Model>>;
+using FixedTrainerPtr = std::shared_ptr<FixedTrainer<Decorator, Model>>;
 
 /**
- * @class SimpleLabeler
+ * @class FixedTrainer
  * @brief TODO
  */
 template<template<typename Target> class Decorator, typename Model>
-class SimpleLabeler : public Labeler<Decorator> {
+class FixedTrainer
+    : public Trainer<Decorator, Model> {
  public:
   // Alias
+  using Base = Trainer<Decorator, Model>;
   using ModelPtr = std::shared_ptr<Model>;
 
-  using Self = SimpleLabeler<Decorator, Model>;
+  using Self = FixedTrainer<Decorator, Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
-  // Static methods
-  template<typename... Ts>
-  static SimpleLabelerPtr<Decorator, Model> make(Ts... args) {
-    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
-  }
+  using TrainingSet = typename Base::TrainingSet;
 
-  // Concrete methods
-  Estimation<Labeling<Sequence>> labeling(
-      Labeling<Sequence>::Method method) const override {
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  // Static methods
+  template<typename... Args>
+  static SelfPtr make(Args&&... args) {
+    return SelfPtr(new Self(std::forward<Args>(args)...));
   }
 
   // Overriden methods
-
-  Decorator<Sequence>& sequence() override {
-    return _sequence;
+  TrainingSet& training_set() override {
+    return const_cast<TrainingSet&>(
+      static_cast<const Self *>(this)->training_set());
   }
 
-  const Decorator<Sequence>& sequence() const override {
-    return _sequence;
+  const TrainingSet& training_set() const override {
+    throw std::logic_error("Should not be used");
+  }
+
+  void add_training_set(TrainingSet&& /* training_set */) override {
+    /* do nothing */
+  }
+
+  void add_training_set(const TrainingSet& /* training_set */) override {
+    /* do nothing */
+  }
+
+  void add_training_sequence(
+      Decorator<Sequence>&& /* sequence */) override {
+    /* do nothing */
+  }
+
+  void add_training_sequence(
+      const Decorator<Sequence>& /* sequence */) override {
+    /* do nothing */
   }
 
  protected:
-  // Instace variables
+  // Instance variables
   ModelPtr _model;
-  Decorator<Sequence> _sequence;
 
   // Constructors
-  SimpleLabeler(ModelPtr model, Decorator<Sequence> sequence)
-      : _model(std::move(model)), _sequence(std::move(sequence)) {
+  FixedTrainer(ModelPtr model) : _model(std::move(model)) {
   }
 
- private:
-  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
+  // Overriden methods
+  bool delegate() const override {
+    return false;
+  }
+
+  ModelPtr trainAlt() const override {
+    return Model::make(*(_model.get()));
+  }
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_SIMPLE_LABELER_
+#endif

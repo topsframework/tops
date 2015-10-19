@@ -49,9 +49,16 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
 class HiddenMarkovModel
     : public DecodableModelCrtp<HiddenMarkovModel> {
  public:
+  // Tags
+  class baum_welch_algorithm {};
+  class maximum_likehood_algorithm {};
+
   // Alias
   using Base = DecodableModelCrtp<HiddenMarkovModel>;
   using Cache = Base::Cache;
+
+  using Self = HiddenMarkovModel;
+  using SelfPtr = HiddenMarkovModelPtr;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -65,18 +72,17 @@ class HiddenMarkovModel
                     unsigned int observation_alphabet_size);
 
   // Static methods
-  static HiddenMarkovModelPtr trainML(
-      std::vector<Sequence> observation_training_set,
-      std::vector<Sequence> state_training_set,
-      unsigned int state_alphabet_size,
-      unsigned int observation_alphabet_size,
-      double pseudocont);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       baum_welch_algorithm,
+                       HiddenMarkovModelPtr initial_model,
+                       unsigned int maxiterations,
+                       double diff_threshold);
 
-  static HiddenMarkovModelPtr trainBaumWelch(
-      std::vector<Sequence> observation_training_set,
-      HiddenMarkovModelPtr initial_model,
-      unsigned int maxiterations,
-      double diff_threshold);
+  static SelfPtr train(TrainerPtr<Labeling, Self> trainer,
+                       maximum_likehood_algorithm,
+                       unsigned int state_alphabet_size,
+                       unsigned int observation_alphabet_size,
+                       double pseudocont);
 
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,

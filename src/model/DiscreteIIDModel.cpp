@@ -42,12 +42,15 @@ DiscreteIIDModel::DiscreteIIDModel(std::vector<double> probabilities)
 /*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr DiscreteIIDModel::trainML(
-    std::vector<Sequence> training_set,
-    unsigned int alphabet_size) {
+/*================================  TRAINER  =================================*/
+
+DiscreteIIDModelPtr
+DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
+                        maximum_likehood_algorithm,
+                        unsigned int alphabet_size) {
   std::vector<double> log_probabilities(alphabet_size, 0);
   unsigned int number_of_symbols = 0;
-  for (auto sequence : training_set) {
+  for (auto sequence : trainer->training_set()) {
     for (auto symbol : sequence) {
       log_probabilities[symbol]++;
       number_of_symbols++;
@@ -60,14 +63,14 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainML(
 
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
-    std::vector<Sequence> training_set,
-    double c,
-    unsigned int max_length) {
-
+DiscreteIIDModelPtr
+DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
+                        smoothed_histogram_burge_algorithm,
+                        double c,
+                        unsigned int max_length) {
   std::vector<Symbol> data;
 
-  for (auto sequence : training_set)
+  for (auto sequence : trainer->training_set())
     for (auto symbol : sequence)
       data.push_back(symbol);
 
@@ -118,18 +121,19 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramBurge(
 
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
-      std::vector<Sequence> training_set,
-      std::vector<unsigned int> weights,
-      unsigned int max_length,
-      unsigned int m,
-      double slope) {
+DiscreteIIDModelPtr
+DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
+                        smoothed_histogram_stanke_algorithm,
+                        std::vector<unsigned int> weights,
+                        unsigned int max_length,
+                        unsigned int m,
+                        double slope) {
   unsigned int L = max_length;
   unsigned int max = L + 4 * slope * L;
 
   std::vector<Symbol> data;
-  for (unsigned int i = 0; i < training_set.size(); i++)
-    for (auto symbol : training_set[i])
+  for (unsigned int i = 0; i < trainer->training_set().size(); i++)
+    for (auto symbol : trainer->training_set()[i])
       for (unsigned int k = 0; k < weights[i]; k++)
         data.push_back(symbol);
 
@@ -199,11 +203,12 @@ DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramStanke(
 
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr DiscreteIIDModel::trainSmoothedHistogramKernelDensity(
-      std::vector<Sequence> training_set,
-      unsigned int max_length) {
+DiscreteIIDModelPtr
+DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
+                        smoothed_histogram_kernel_density_algorithm,
+                        unsigned int max_length) {
   std::vector<double> data;
-  for (auto sequence : training_set) {
+  for (auto sequence : trainer->training_set()) {
     for (auto symbol : sequence) {
       data.push_back(symbol);
     }

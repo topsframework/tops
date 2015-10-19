@@ -48,23 +48,26 @@ MaximalDependenceDecomposition::MaximalDependenceDecomposition(
 /*                              STATIC METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-MaximalDependenceDecompositionPtr MaximalDependenceDecomposition::train(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      ConsensusSequence consensus_sequence,
-      ProbabilisticModelPtr consensus_model,
-      unsigned int minimum_subset) {
+/*================================  TRAINER  =================================*/
+
+MaximalDependenceDecompositionPtr
+MaximalDependenceDecomposition::train(TrainerPtr<Standard, Self> trainer,
+                                      standard_training_algorithm,
+                                      unsigned int alphabet_size,
+                                      ConsensusSequence consensus_sequence,
+                                      ProbabilisticModelPtr consensus_model,
+                                      unsigned int minimum_subset) {
   return MaximalDependenceDecomposition::make(
     consensus_sequence,
     consensus_model,
-    trainTree(training_set,
+    trainTree(trainer->training_set(),
               minimum_subset,
               alphabet_size,
               consensus_sequence,
               consensus_model));
 }
 
-/*----------------------------------------------------------------------------*/
+/*=================================  OTHERS  =================================*/
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
     std::vector<Sequence> training_set,

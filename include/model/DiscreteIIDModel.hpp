@@ -73,8 +73,17 @@ using DiscreteIIDModelPtr = std::shared_ptr<DiscreteIIDModel>;
  */
 class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
  public:
+  // Tags
+  class maximum_likehood_algorithm {};
+  class smoothed_histogram_burge_algorithm {};
+  class smoothed_histogram_stanke_algorithm {};
+  class smoothed_histogram_kernel_density_algorithm {};
+
   // Alias
   using Base = ProbabilisticModelCrtp<DiscreteIIDModel>;
+
+  using Self = DiscreteIIDModel;
+  using SelfPtr = DiscreteIIDModelPtr;
 
   // Constructors
 
@@ -99,8 +108,9 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
-  static DiscreteIIDModelPtr trainML(std::vector<Sequence> training_set,
-                                     unsigned int alphabet_size);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       maximum_likehood_algorithm,
+                       unsigned int alphabet_size);
 
   /**
    * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Burge].
@@ -112,10 +122,10 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
-  static DiscreteIIDModelPtr trainSmoothedHistogramBurge(
-      std::vector<Sequence> training_set,
-      double c,
-      unsigned int max_length);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       smoothed_histogram_burge_algorithm,
+                       double c,
+                       unsigned int max_length);
 
   /**
    * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Stanke].
@@ -129,12 +139,12 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @see trainSmoothedHistogramKernelDensity()
    * @return a trained discrete iid model
    */
-  static DiscreteIIDModelPtr trainSmoothedHistogramStanke(
-      std::vector<Sequence> training_set,
-      std::vector<unsigned int> weights,
-      unsigned int max_length,
-      unsigned int m,
-      double slope);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       smoothed_histogram_stanke_algorithm,
+                       std::vector<unsigned int> weights,
+                       unsigned int max_length,
+                       unsigned int m,
+                       double slope);
 
   /**
    * Trains a new discrete iid model using the Smoothed Histogram Kernel Density Method defined by [Sheather].
@@ -145,9 +155,9 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @see trainSmoothedHistogramStanke()
    * @return a trained discrete iid model
    */
-  static DiscreteIIDModelPtr trainSmoothedHistogramKernelDensity(
-      std::vector<Sequence> training_set,
-      unsigned int max_length);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       smoothed_histogram_kernel_density_algorithm,
+                       unsigned int max_length);
 
   static std::vector<Probability> normalize(
       std::vector<Probability> probabilities);

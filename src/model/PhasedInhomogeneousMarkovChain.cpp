@@ -40,21 +40,19 @@ PhasedInhomogeneousMarkovChain::PhasedInhomogeneousMarkovChain(
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return PhasedInhomogeneousMarkovChainPtr(
-    new PhasedInhomogeneousMarkovChain(vlmcs));
-}
+/*================================  TRAINER  =================================*/
 
 PhasedInhomogeneousMarkovChainPtr
-PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
-    std::vector<Sequence> training_set,
-    unsigned int alphabet_size,
-    unsigned int order,
-    unsigned int nphases,
-    double pseudo_counts,
-    std::vector<double> weights,
-    ProbabilisticModelPtr apriori) {
+PhasedInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+                                      interpolation_algorithm,
+                                      unsigned int alphabet_size,
+                                      unsigned int order,
+                                      unsigned int nphases,
+                                      double pseudo_counts,
+                                      std::vector<double> weights,
+                                      ProbabilisticModelPtr apriori) {
+  auto& training_set = trainer->training_set();
+
   unsigned int length = nphases;
   std::vector<VariableLengthMarkovChainPtr> vlmcs(length);
 
@@ -99,6 +97,14 @@ PhasedInhomogeneousMarkovChain::trainInterpolatedPhasedMarkovChain(
   }
 
   return PhasedInhomogeneousMarkovChain::make(vlmcs);
+}
+
+/*=================================  OTHERS  =================================*/
+
+PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
+    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
+  return PhasedInhomogeneousMarkovChainPtr(
+    new PhasedInhomogeneousMarkovChain(vlmcs));
 }
 
 /*----------------------------------------------------------------------------*/

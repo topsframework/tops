@@ -74,13 +74,13 @@ class SimpleEvaluator : public Evaluator<Decorator> {
   // Overriden methods
   Probability evaluateSymbol(unsigned int pos,
                              unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(evaluateSymbol, pos, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
   Probability evaluateSequence(unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override {
-    CALL_METHOD_DELEGATOR(evaluateSequence, begin, end, phase);
+    CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }
 
   Decorator<Sequence>& sequence() override {
@@ -102,8 +102,8 @@ class SimpleEvaluator : public Evaluator<Decorator> {
   }
 
  private:
-  GENERATE_METHOD_DELEGATOR(evaluateSymbol, _model)
-  GENERATE_METHOD_DELEGATOR(evaluateSequence, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, _model)
 };
 
 }  // namespace model

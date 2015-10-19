@@ -57,8 +57,14 @@ class PhasedInhomogeneousMarkovChain
     Matrix prefix_sum_matrix;
   };
 
+  // Tags
+  class interpolation_algorithm {};
+
   // Alias
   using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
+
+  using Self = PhasedInhomogeneousMarkovChain;
+  using SelfPtr = PhasedInhomogeneousMarkovChainPtr;
 
   // Constructors
   PhasedInhomogeneousMarkovChain(
@@ -68,14 +74,14 @@ class PhasedInhomogeneousMarkovChain
   static PhasedInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
-  static PhasedInhomogeneousMarkovChainPtr trainInterpolatedPhasedMarkovChain(
-      std::vector<Sequence> training_set,
-      unsigned int alphabet_size,
-      unsigned int order,
-      unsigned int nphases,
-      double pseudo_counts,
-      std::vector<double> weights,
-      ProbabilisticModelPtr apriori);
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       interpolation_algorithm,
+                       unsigned int alphabet_size,
+                       unsigned int order,
+                       unsigned int nphases,
+                       double pseudo_counts,
+                       std::vector<double> weights,
+                       ProbabilisticModelPtr apriori);
 
   // Virtual methods
   void initializeCache(CEPtr<Standard> evaluator,
