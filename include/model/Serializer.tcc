@@ -17,53 +17,59 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_
+#ifndef TOPS_MODEL_SERIALIZER_
+#define TOPS_MODEL_SERIALIZER_
 
 // Standard headers
 #include <memory>
-#include <random>
 
 // ToPS headers
-#include "model/Sequence.hpp"
-#include "model/RandomNumberGenerator.hpp"
-
-// ToPS templates
-#include "model/Standard.tcc"
-#include "model/Evaluator.tcc"
-#include "model/Generator.tcc"
-#include "model/Serializer.tcc"
-#include "model/RandomNumberGeneratorAdapter.tcc"
+#include "model/Translator.hpp"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class ProbabilisticModel;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+class Serializer;
 
 /**
- * @typedef ProbabilisticModelPtr
- * @brief Alias of pointer to ProbabilisticModel.
+ * @typedef SerializerPtr
+ * @brief Alias of pointer to Serializer.
  */
-using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
+using SerializerPtr = std::shared_ptr<Serializer>;
 
 /**
- * @class ProbabilisticModel
- * @brief Abstract class that represents all probabilistic models.
+ * @class Serializer
+ * @brief TODO
  */
-class ProbabilisticModel {
+class Serializer : public std::enable_shared_from_this<Serializer> {
  public:
+  // Enum classes
+  enum class traversal { pre_order, post_order };
+
   // Purely virtual methods
-  virtual EvaluatorPtr<Standard> standardEvaluator(
-      const Standard<Sequence> &sequence, bool cached = false) = 0;
+  virtual void serialize(const traversal &type = traversal::post_order) = 0;
 
-  virtual GeneratorPtr<Standard> standardGenerator(
-      RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
+  virtual TranslatorPtr translator() = 0;
 
-  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+  // Concrete methods
+  void pre_order() {
+    serialize(traversal::pre_order);
+  }
+
+  void post_order() {
+    serialize(traversal::post_order);
+  }
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_
+#endif

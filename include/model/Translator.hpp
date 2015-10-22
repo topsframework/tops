@@ -1,0 +1,71 @@
+/***********************************************************************/
+/*  Copyright 2015 ToPS                                                */
+/*                                                                     */
+/*  This program is free software; you can redistribute it and/or      */
+/*  modify it under the terms of the GNU  General Public License as    */
+/*  published by the Free Software Foundation; either version 3 of     */
+/*  the License, or (at your option) any later version.                */
+/*                                                                     */
+/*  This program is distributed in the hope that it will be useful,    */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of     */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      */
+/*  GNU General Public License for more details.                       */
+/*                                                                     */
+/*  You should have received a copy of the GNU General Public License  */
+/*  along with this program; if not, write to the Free Software        */
+/*  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,         */
+/*  MA 02110-1301, USA.                                                */
+/***********************************************************************/
+
+#ifndef TOPS_MODEL_TRANSLATOR_
+#define TOPS_MODEL_TRANSLATOR_
+
+namespace tops {
+namespace model {
+
+// Forward declaration
+class DiscreteIIDModel;
+class FixedSequenceAtPosition;
+class GeneralizedHiddenMarkovModel;
+class HiddenMarkovModel;
+class InhomogeneousMarkovChain;
+class MaximalDependenceDecomposition;
+class MultipleSequentialModel;
+class PhasedInhomogeneousMarkovChain;
+class PhasedRunLengthDistribution;
+class SimilarityBasedSequenceWeighting;
+class TargetModel;
+class VariableLengthMarkovChain;
+
+// Forward declaration
+class Translator;
+
+// Alias
+using TranslatorPtr
+  = std::shared_ptr<Translator>;
+
+class Translator {
+ public:
+  // Alias
+  template<typename T>
+  using Ptr = std::shared_ptr<T>;
+
+  // Purely virtual functions
+  virtual void translate(Ptr<DiscreteIIDModel> model) = 0;
+  virtual void translate(Ptr<FixedSequenceAtPosition> model) = 0;
+  virtual void translate(Ptr<GeneralizedHiddenMarkovModel> model) = 0;
+  virtual void translate(Ptr<HiddenMarkovModel> model) = 0;
+  virtual void translate(Ptr<InhomogeneousMarkovChain> model) = 0;
+  virtual void translate(Ptr<MaximalDependenceDecomposition> model) = 0;
+  virtual void translate(Ptr<MultipleSequentialModel> model) = 0;
+  virtual void translate(Ptr<PhasedInhomogeneousMarkovChain> model) = 0;
+  virtual void translate(Ptr<PhasedRunLengthDistribution> model) = 0;
+  virtual void translate(Ptr<SimilarityBasedSequenceWeighting> model) = 0;
+  virtual void translate(Ptr<TargetModel> model) = 0;
+  virtual void translate(Ptr<VariableLengthMarkovChain> model) = 0;
+};
+
+}  // namespace model
+}  // namespace tops
+
+#endif  // TOPS_MODEL_SYMBOL_
