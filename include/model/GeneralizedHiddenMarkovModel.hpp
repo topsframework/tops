@@ -121,15 +121,14 @@ class GeneralizedHiddenMarkovModel
                                   unsigned int size,
                                   unsigned int phase) const override;
 
-  void initializeCache(CLPtr<Standard> labeler,
-                       unsigned int phase) override;
+  void initializeCache(CLPtr labeler) override;
   Estimation<Labeling<Sequence>> labeling(
-      CLPtr<Standard> labeler,
-      Labeling<Sequence>::Method method) const override;
+      CLPtr labeler,
+      const Labeler::method &method) const override;
 
   Estimation<Labeling<Sequence>> labeling(
-      SLPtr<Standard> labeler,
-      Labeling<Sequence>::Method method) const override;
+      SLPtr labeler,
+      const Labeler::method &method) const override;
 
   double forward(const Sequence &sequence, Matrix &alpha) const override;
 

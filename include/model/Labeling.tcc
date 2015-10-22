@@ -41,9 +41,6 @@ class Labeling;
 template<typename Target>
 class Labeling {
  public:
-  // Symbols
-  enum class Method { bestPath, posteriorDecoding };
-
   // Constructors
   Labeling();
   Labeling(const Target &observation, const Target &label);

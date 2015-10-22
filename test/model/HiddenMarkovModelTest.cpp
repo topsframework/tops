@@ -43,6 +43,7 @@ using tops::model::HiddenMarkovModelPtr;
 using tops::model::Sequence;
 using tops::model::Labeling;
 using tops::model::Matrix;
+using tops::model::Labeler;
 using tops::model::log_sum;
 using tops::model::INVALID_SYMBOL;
 
@@ -85,7 +86,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   };
   for(auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+    auto estimation = labeler->labeling(Labeler::method::bestPath);
     auto labeling = estimation.estimated();
 
     ASSERT_THAT(labeling.label(), Eq(test[1]));
@@ -101,7 +102,7 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
   };
   for(auto test : test_set) {
     auto labeler = hmm->labeler(test[0], true);
-    auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+    auto estimation = labeler->labeling(Labeler::method::bestPath);
     auto labeling = estimation.estimated();
 
     ASSERT_THAT(labeling.label(), Eq(test[1]));
@@ -150,7 +151,7 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
 
   for(auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+    auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
     auto labeling = estimation.estimated();
 
     ASSERT_THAT(labeling.label(), Eq(test[1]));
@@ -167,7 +168,7 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
 
   for(auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+    auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
     auto labeling = estimation.estimated();
 
     ASSERT_THAT(labeling.label(), Eq(test[1]));

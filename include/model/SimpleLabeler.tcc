@@ -22,14 +22,12 @@
 
 // Standard headers
 #include <memory>
-#include <type_traits>
 
 // ToPS headers
 #include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+#include "model/Labeler.tcc"
 
 namespace tops {
 namespace model {
@@ -42,58 +40,57 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<typename Target> class Decorator, typename Model>
+template<typename Model>
 class SimpleLabeler;
 
 /**
  * @typedef SimpleLabelerPtr
  * @brief Alias of pointer to SimpleLabeler.
  */
-template<template<typename Target> class Decorator, typename Model>
-using SimpleLabelerPtr = std::shared_ptr<SimpleLabeler<Decorator, Model>>;
+template<typename Model>
+using SimpleLabelerPtr = std::shared_ptr<SimpleLabeler<Model>>;
 
 /**
  * @class SimpleLabeler
  * @brief TODO
  */
-template<template<typename Target> class Decorator, typename Model>
-class SimpleLabeler : public Labeler<Decorator> {
+template<typename Model>
+class SimpleLabeler : public Labeler {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
 
-  using Self = SimpleLabeler<Decorator, Model>;
+  using Base = Labeler;
+  using Self = SimpleLabeler<Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
-  template<typename... Ts>
-  static SimpleLabelerPtr<Decorator, Model> make(Ts... args) {
-    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
-  }
-
-  // Concrete methods
-  Estimation<Labeling<Sequence>> labeling(
-      Labeling<Sequence>::Method method) const override {
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  template<typename... Args>
+  static SelfPtr make(Args... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Args>(args)...));
   }
 
   // Overriden methods
+  Estimation<Labeling<Sequence>>
+  labeling(const Labeler::method& method) const override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  }
 
-  Decorator<Sequence>& sequence() override {
+  Sequence& sequence() override {
     return _sequence;
   }
 
-  const Decorator<Sequence>& sequence() const override {
+  const Sequence& sequence() const override {
     return _sequence;
   }
 
  protected:
   // Instace variables
   ModelPtr _model;
-  Decorator<Sequence> _sequence;
+  Sequence _sequence;
 
   // Constructors
-  SimpleLabeler(ModelPtr model, Decorator<Sequence> sequence)
+  SimpleLabeler(ModelPtr model, Sequence sequence)
       : _model(std::move(model)), _sequence(std::move(sequence)) {
   }
 

@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_CACHED_LABELER_IMPL_
-#define TOPS_MODEL_CACHED_LABELER_IMPL_
+#ifndef TOPS_MODEL_CACHED_LABELER_
+#define TOPS_MODEL_CACHED_LABELER_
 
 // Standard headers
 #include <memory>
@@ -42,50 +42,50 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<typename Target> class Decorator, typename Model>
+template<typename Model>
 class CachedLabeler;
 
 /**
  * @typedef CachedLabelerPtr
  * @brief Alias of pointer to CachedLabeler.
  */
-template<template<typename Target> class Decorator, typename Model>
-using CachedLabelerPtr = std::shared_ptr<CachedLabeler<Decorator, Model>>;
+template<typename Model>
+using CachedLabelerPtr = std::shared_ptr<CachedLabeler<Model>>;
 
 /**
  * @class CachedLabeler
  * @brief TODO
  */
-template<template<typename Target> class Decorator, typename Model>
-class CachedLabeler : public SimpleLabeler<Decorator, Model> {
+template<typename Model>
+class CachedLabeler : public SimpleLabeler<Model> {
  public:
   // Alias
   using ModelPtr = std::shared_ptr<Model>;
   using Cache = typename Model::Cache;
 
-  using Base = SimpleLabeler<Decorator, Model>;
-  using Self = CachedLabeler<Decorator, Model>;
+  using Base = SimpleLabeler<Model>;
+  using Self = CachedLabeler<Model>;
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
-  template<typename... Ts>
-  static CachedLabelerPtr<Decorator, Model> make(Ts... args) {
-    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
+  template<typename... Args>
+  static SelfPtr make(Args... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Args>(args)...));
   }
 
-  // Virtual methods
-  virtual void initializeCache(unsigned int phase) {
-    CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, phase);
-  }
-
-  // Concrete methods
-
-  Estimation<Labeling<Sequence>> labeling(
-      Labeling<Sequence>::Method method) const override {
-    const_cast<Self *>(this)->lazyInitializeCache(0);
+  // Overriden methods
+  Estimation<Labeling<Sequence>>
+  labeling(const Labeler::method& method) const override {
+    lazyInitializeCache();
     CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
   }
 
+  // Virtual methods
+  virtual void initializeCache() const {
+    CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, /* void */);
+  }
+
+  // Concrete methods
   Cache& cache() {
     return _cache;
   }
@@ -96,21 +96,21 @@ class CachedLabeler : public SimpleLabeler<Decorator, Model> {
 
  protected:
   // Instace variables
-  Cache _cache;
-  bool initialized = false;
+  mutable Cache _cache;
+  mutable bool initialized = false;
 
   // Constructors
   CachedLabeler(
-      ModelPtr model, Decorator<Sequence> sequence, Cache cache = Cache())
+      ModelPtr model, Sequence sequence, Cache cache = Cache())
       : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
   }
 
  private:
   // Concrete methods
-  inline void lazyInitializeCache(unsigned int phase) {
+  inline void lazyInitializeCache() const {
     if (!initialized) {
       initialized = true;
-      initializeCache(phase);
+      initializeCache();
     }
   }
 
@@ -122,4 +122,4 @@ class CachedLabeler : public SimpleLabeler<Decorator, Model> {
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_CACHED_LABELER_IMPL_
+#endif  // TOPS_MODEL_CACHED_LABELER_

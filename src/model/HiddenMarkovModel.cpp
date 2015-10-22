@@ -382,13 +382,15 @@ Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
 }
 
 /*=================================  LABELER  =================================*/
-Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
-    SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::labeling(SLPtr labeler,
+                            const Labeler::method &method) const {
   Matrix probabilities;
   switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
+    case Labeler::method::bestPath:
       return viterbi(labeler->sequence(), probabilities);
-    case Labeling<Sequence>::Method::posteriorDecoding:
+    case Labeler::method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
   return Estimation<Labeling<Sequence>>();
@@ -396,25 +398,26 @@ Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>> HiddenMarkovModel::labeling(
-    CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::labeling(CLPtr labeler,
+                            const Labeler::method &method) const {
   switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
+    case Labeler::method::bestPath:
       return viterbi(labeler->sequence(), labeler->cache().gamma);
-    case Labeling<Sequence>::Method::posteriorDecoding:
-      return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
+    case Labeler::method::posteriorDecoding:
+      return posteriorDecoding(labeler->sequence(),
+             labeler->cache().posterior_decoding);
   }
   return Estimation<Labeling<Sequence>>();
 }
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(CLPtr<Standard> /*labeler*/,
-                                        unsigned int /*phase*/) {
+void HiddenMarkovModel::initializeCache(CLPtr /*labeler*/) {
   // TODO(igorbonadio)
 }
 
-/*----------------------------------------------------------------------------*/
+/*=================================  OTHERS  =================================*/
 
 double HiddenMarkovModel::forward(const Sequence &sequence,
                                   Matrix &alpha) const {

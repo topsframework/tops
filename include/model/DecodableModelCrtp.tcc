@@ -82,11 +82,9 @@ class DecodableModelCrtp
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
-  template<template<typename Target> class Decorator>
-  using SLPtr = SimpleLabelerPtr<Decorator, Derived>;
+  using SLPtr = SimpleLabelerPtr<Derived>;
 
-  template<template<typename Target> class Decorator>
-  using CLPtr = CachedLabelerPtr<Decorator, Derived>;
+  using CLPtr = CachedLabelerPtr<Derived>;
 
   // Hidden name method inheritance
   using Base::initializeCache;
@@ -113,8 +111,7 @@ class DecodableModelCrtp
   labelingGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
 
-  LabelerPtr<Standard> labeler(const Standard<Sequence> &s,
-                                       bool cached = false);
+  LabelerPtr labeler(const Sequence &sequence, bool cached = false);
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,
@@ -144,24 +141,22 @@ class DecodableModelCrtp
                                           unsigned int size,
                                           unsigned int phase) const = 0;
 
-  virtual double backward(const Sequence &s,
-                          Matrix &beta) const = 0;
+  virtual void initializeCache(CLPtr labeler) = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  labeling(SLPtr labeler, const Labeler::method &method) const = 0;
+
+  virtual Estimation<Labeling<Sequence>>
+  labeling(CLPtr labeler, const Labeler::method &method) const = 0;
+
   virtual double forward(const Sequence &s,
                          Matrix &alpha) const = 0;
+  virtual double backward(const Sequence &s,
+                          Matrix &beta) const = 0;
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
-  virtual Estimation<Labeling<Sequence>> labeling(
-      SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const = 0;
-
-  virtual Estimation<Labeling<Sequence>> labeling(
-      CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const = 0;
-
-  virtual void initializeCache(CLPtr<Standard> labeler,
-                               unsigned int phase) = 0;
-
  private:
-
   // Concrete methods
   DerivedPtr make_shared();
 };
@@ -223,12 +218,13 @@ GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator(
 }
 
 /*================================  LABELER  =================================*/
+
 template<typename Derived>
-LabelerPtr<Standard> DecodableModelCrtp<Derived>::labeler(
+LabelerPtr DecodableModelCrtp<Derived>::labeler(
     const Standard<Sequence> &sequence, bool cached) {
   if (cached)
-    return CachedLabeler<Standard, Derived>::make(make_shared(), sequence);
-  return SimpleLabeler<Standard, Derived>::make(make_shared(), sequence);
+    return CachedLabeler<Derived>::make(make_shared(), sequence);
+  return SimpleLabeler<Derived>::make(make_shared(), sequence);
 }
 
 /*----------------------------------------------------------------------------*/
