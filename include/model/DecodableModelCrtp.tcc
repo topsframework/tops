@@ -111,7 +111,7 @@ class DecodableModelCrtp
   labelingGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
 
-  LabelerPtr labeler(const Sequence &sequence, bool cached = false);
+  LabelerPtr labeler(const Sequence &sequence, bool cached = false) override;
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,

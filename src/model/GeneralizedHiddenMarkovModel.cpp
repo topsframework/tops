@@ -456,7 +456,7 @@ GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
     observation_evaluators.push_back(
       state->observation()->standardEvaluator(xs, cached));
   }
-  return std::move(observation_evaluators);
+  return observation_evaluators;
 }
 
 /*----------------------------------------------------------------------------*/
