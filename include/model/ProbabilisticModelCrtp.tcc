@@ -142,8 +142,7 @@ class ProbabilisticModelCrtp
                                           unsigned int size,
                                           unsigned int phase) const;
 
-  virtual void serialize(SSPtr serializer,
-                         const Serializer::traversal &type);
+  virtual void serialize(SSPtr serializer);
 
  private:
   // Concrete methods
@@ -296,9 +295,7 @@ ProbabilisticModelCrtp<Derived>::drawSequence(SGPtr<Standard> generator,
 
 template<typename Derived>
 void
-ProbabilisticModelCrtp<Derived>::serialize(
-    SSPtr serializer,
-    const Serializer::traversal &/* type */) {
+ProbabilisticModelCrtp<Derived>::serialize(SSPtr serializer) {
   serializer->translator()->translate(this->make_shared());
 }
 

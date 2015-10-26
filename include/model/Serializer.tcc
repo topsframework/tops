@@ -51,22 +51,10 @@ using SerializerPtr = std::shared_ptr<Serializer>;
  */
 class Serializer : public std::enable_shared_from_this<Serializer> {
  public:
-  // Enum classes
-  enum class traversal { pre_order, post_order };
-
   // Purely virtual methods
-  virtual void serialize(const traversal &type = traversal::post_order) = 0;
+  virtual void serialize() = 0;
 
   virtual TranslatorPtr translator() = 0;
-
-  // Concrete methods
-  void pre_order() {
-    serialize(traversal::pre_order);
-  }
-
-  void post_order() {
-    serialize(traversal::post_order);
-  }
 };
 
 }  // namespace model

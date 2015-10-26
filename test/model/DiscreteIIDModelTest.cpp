@@ -102,10 +102,10 @@ TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
   ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 1, 1}));
 }
 
-TEST_F(ADiscreteIIDModel, ShouldBeSExprSerializedInPostOrder) {
+TEST_F(ADiscreteIIDModel, ShouldBeSExprSerialized) {
   auto translator = SExprTranslator::make();
   auto serializer = iid->serializer(translator);
-  serializer->post_order();
+  serializer->serialize();
   ASSERT_EQ(translator->sexpr(), "(DiscreteIIDModel: -1.609438 -0.223144)");
 }
 

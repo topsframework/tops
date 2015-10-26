@@ -70,8 +70,8 @@ class SimpleSerializer : public Serializer {
   }
 
   // Overriden methods
-  void serialize(const Serializer::traversal &type) override {
-    CALL_MEMBER_FUNCTION_DELEGATOR(serialize, type);
+  void serialize() override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(serialize, /* empty */);
   }
 
   TranslatorPtr translator() override {
