@@ -30,6 +30,7 @@
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
+#include "helper/SExprTranslator.hpp"
 
 // ToPS templates
 #include "model/ProbabilisticModelDecorator.tcc"
@@ -50,6 +51,8 @@ using tops::model::Sequence;
 using tops::helper::createLoadedCoinIIDModel;
 using tops::helper::generateRandomSequence;
 using tops::helper::sequenceOfLengths;
+
+using tops::helper::SExprTranslator;
 
 class ADiscreteIIDModel : public testing::Test {
  protected:
@@ -97,6 +100,13 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
   ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 1, 1}));
+}
+
+TEST_F(ADiscreteIIDModel, ShouldBeSExprSerializedInPostOrder) {
+  auto translator = SExprTranslator::make();
+  auto serializer = iid->serializer(translator);
+  serializer->post_order();
+  ASSERT_EQ(translator->sexpr(), "(DiscreteIIDModel: -1.609438 -0.223144)");
 }
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
