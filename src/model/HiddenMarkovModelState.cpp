@@ -57,6 +57,21 @@ HiddenMarkovModelStatePtr HiddenMarkovModelState::make(
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  SERIALIZER  ===============================*/
+
+SerializerPtr HiddenMarkovModelState::serializer(TranslatorPtr translator) {
+  return SimpleSerializer<HiddenMarkovModelState>::make(
+    this->shared_from_this(), translator);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModelState::serialize(SSPtr serializer) {
+  serializer->translator()->translate(this->shared_from_this());
+}
+
+/*=================================  OTHERS  =================================*/
+
 bool HiddenMarkovModelState::isSilent() {
   return _emissions == nullptr;
 }

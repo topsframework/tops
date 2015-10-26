@@ -37,6 +37,8 @@ class SimilarityBasedSequenceWeighting;
 class TargetModel;
 class VariableLengthMarkovChain;
 
+class HiddenMarkovModelState;
+
 // Forward declaration
 class Translator;
 
@@ -44,7 +46,7 @@ class Translator;
 using TranslatorPtr
   = std::shared_ptr<Translator>;
 
-class Translator {
+class Translator : public std::enable_shared_from_this<Translator> {
  public:
   // Alias
   template<typename T>
@@ -63,6 +65,8 @@ class Translator {
   virtual void translate(Ptr<SimilarityBasedSequenceWeighting> model) = 0;
   virtual void translate(Ptr<TargetModel> model) = 0;
   virtual void translate(Ptr<VariableLengthMarkovChain> model) = 0;
+
+  virtual void translate(Ptr<HiddenMarkovModelState> model) = 0;
 };
 
 }  // namespace model

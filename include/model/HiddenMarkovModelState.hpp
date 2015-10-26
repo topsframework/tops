@@ -48,17 +48,22 @@ using HiddenMarkovModelStateSequence = std::vector<HiddenMarkovModelState>;
  * @class HiddenMarkovModelState
  * @brief TODO
  */
-class HiddenMarkovModelState {
+class HiddenMarkovModelState
+    : public std::enable_shared_from_this<HiddenMarkovModelState> {
  public:
+  // Alias
+  using SSPtr = SimpleSerializerPtr<HiddenMarkovModelState>;
+
   // Static methods
   static HiddenMarkovModelStatePtr make(Symbol symbol,
                                         DiscreteIIDModelPtr emissions,
                                         DiscreteIIDModelPtr transitions);
 
   // Concrete methods
-  bool isSilent();
+  SerializerPtr serializer(TranslatorPtr translator);
+  void serialize(SSPtr serializer);
 
-  // Concrete Getters
+  bool isSilent();
   Symbol symbol();
   DiscreteIIDModelPtr &emissions();
   DiscreteIIDModelPtr &transitions();

@@ -35,7 +35,7 @@ namespace tops {
 namespace helper {
 
 void SExprTranslator::translate(Ptr<model::DiscreteIIDModel> model) {
-  _sexpr = "(DiscreteIIDModel:";
+  _sexpr += "(DiscreteIIDModel:";
   for (auto p : model->probabilities()) {
     _sexpr += " " + std::to_string(p);
   }
@@ -50,8 +50,13 @@ void SExprTranslator::translate(Ptr<model::GeneralizedHiddenMarkovModel> /* mode
 
 }
 
-void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> /* model */) {
-
+void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> model) {
+  _sexpr += "(HiddenMarkovModel: ";
+  for (unsigned int i = 0; i < model->stateAlphabetSize(); i++) {
+    model->state(i)->serializer(make_shared())->serialize();
+    _sexpr += " ";
+  }
+  _sexpr[_sexpr.size()-1] =  ')';
 }
 
 void SExprTranslator::translate(Ptr<model::InhomogeneousMarkovChain> /* model */) {
@@ -84,6 +89,18 @@ void SExprTranslator::translate(Ptr<model::TargetModel> /* model */) {
 
 void SExprTranslator::translate(Ptr<model::VariableLengthMarkovChain> /* model */) {
 
+}
+
+void SExprTranslator::translate(Ptr<model::HiddenMarkovModelState> state) {
+  _sexpr += "(State: ";
+  state->emissions()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->transitions()->serializer(make_shared())->serialize();
+  _sexpr += ")";
+}
+
+SExprTranslatorPtr SExprTranslator::make_shared() {
+  return std::static_pointer_cast<Self>(this->shared_from_this());
 }
 
 

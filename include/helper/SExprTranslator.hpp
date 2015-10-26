@@ -66,10 +66,14 @@ class SExprTranslator : public model::Translator {
   void translate(Ptr<model::TargetModel> model) override;
   void translate(Ptr<model::VariableLengthMarkovChain> model) override;
 
+  void translate(Ptr<model::HiddenMarkovModelState> state) override;
+
   // Concrete mehtods
   std::string sexpr() {
     return _sexpr;
   }
+
+  SelfPtr make_shared();
 
  private:
   // Instance variables
