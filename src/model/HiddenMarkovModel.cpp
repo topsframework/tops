@@ -34,7 +34,7 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 HiddenMarkovModel::HiddenMarkovModel(
-    std::vector<HiddenMarkovModelStatePtr> states,
+    std::vector<StatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
     unsigned int state_alphabet_size,
     unsigned int observation_alphabet_size)
@@ -140,7 +140,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
         }
       }
 
-      std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+      std::vector<StatePtr> states(state_alphabet_size);
       for (unsigned int k = 0; k < state_alphabet_size; k++) {
         for (unsigned int l = 0; l < state_alphabet_size; l++) {
           A[k][l] = A[k][l] - sumA[k];
@@ -203,7 +203,7 @@ HiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
   }
 
   initial_probabilities = DiscreteIIDModel::normalize(initial_probabilities);
-  std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+  std::vector<StatePtr> states(state_alphabet_size);
   for (unsigned int i = 0; i < state_alphabet_size; i++) {
     transitions[i] = DiscreteIIDModel::normalize(transitions[i]);
     emissions[i] = DiscreteIIDModel::normalize(emissions[i]);
@@ -507,16 +507,6 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-/*================================  OTHERS  ==================================*/
-
-/*----------------------------------------------------------------------------*/
-
-HiddenMarkovModelStatePtr HiddenMarkovModel::state(unsigned int i) const {
-  return _states[i];
-}
-
-/*----------------------------------------------------------------------------*/
-
 unsigned int HiddenMarkovModel::stateAlphabetSize() const {
   return _state_alphabet_size;
 }
@@ -525,6 +515,24 @@ unsigned int HiddenMarkovModel::stateAlphabetSize() const {
 
 unsigned int HiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto HiddenMarkovModel::state(StateId id) -> StatePtr {
+  return _states[id];
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto HiddenMarkovModel::states() -> std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto HiddenMarkovModel::states() const -> const std::vector<StatePtr> {
+  return _states;
 }
 
 /*----------------------------------------------------------------------------*/

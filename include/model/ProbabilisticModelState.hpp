@@ -17,63 +17,39 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#define TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
 
 // Standard headers
 #include <memory>
-#include <vector>
 
 // ToPS headers
-#include "model/DiscreteIIDModel.hpp"
-
-// ToPS templates
-#include "model/ProbabilisticModelStateCrtp.tcc"
+#include "model/Serializer.tcc"
 
 namespace tops {
 namespace model {
 
-class HiddenMarkovModelState;
+// Forward declaration
+class ProbabilisticModelState;
 
 /**
- * @typedef HiddenMarkovModelStatePtr
- * @brief Alias of pointer to HiddenMarkovModelState.
+ * @typedef ProbabilisticModelStatePtr
+ * @brief Alias of pointer to ProbabilisticModelState.
  */
-using HiddenMarkovModelStatePtr = std::shared_ptr<HiddenMarkovModelState>;
+using ProbabilisticModelStatePtr = std::shared_ptr<ProbabilisticModelState>;
 
 /**
- * @typedef HiddenMarkovModelStateSequence
- * @brief Alias of sequence of HiddenMarkovModelState.
- */
-using HiddenMarkovModelStateSequence = std::vector<HiddenMarkovModelState>;
-
-/**
- * @class HiddenMarkovModelState
+ * @class ProbabilisticModelState
  * @brief TODO
  */
-class HiddenMarkovModelState
-    : public ProbabilisticModelStateCrtp<HiddenMarkovModelState> {
+class ProbabilisticModelState
+    : public std::enable_shared_from_this<ProbabilisticModelState> {
  public:
-  // Constructors
-  HiddenMarkovModelState(Symbol symbol,
-                         DiscreteIIDModelPtr emissions,
-                         DiscreteIIDModelPtr transitions);
-
-  // Concrete methods
-  bool isSilent();
-  Symbol symbol();
-
-  DiscreteIIDModelPtr &emissions();
-  DiscreteIIDModelPtr &transitions();
-
- private:
-  // Instance Variables
-  Symbol _symbol;
-  DiscreteIIDModelPtr _emissions;
-  DiscreteIIDModelPtr _transitions;
+  // Purely virtual methods
+  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_STATE_

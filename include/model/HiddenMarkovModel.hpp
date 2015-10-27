@@ -54,11 +54,16 @@ class HiddenMarkovModel
   class maximum_likehood_algorithm {};
 
   // Alias
-  using Base = DecodableModelCrtp<HiddenMarkovModel>;
-  using Cache = Base::Cache;
-
   using Self = HiddenMarkovModel;
   using SelfPtr = HiddenMarkovModelPtr;
+
+  using Base = DecodableModelCrtp<HiddenMarkovModel>;
+
+  using State = HiddenMarkovModelState;
+  using StateId = typename State::Id;
+  using StatePtr = std::shared_ptr<State>;
+
+  using Cache = Base::Cache;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -66,7 +71,7 @@ class HiddenMarkovModel
   using Base::initializeCache;
 
   // Constructors
-  HiddenMarkovModel(std::vector<HiddenMarkovModelStatePtr> states,
+  HiddenMarkovModel(std::vector<StatePtr> states,
                     DiscreteIIDModelPtr initial_probability,
                     unsigned int state_alphabet_size,
                     unsigned int observation_alphabet_size);
@@ -154,11 +159,14 @@ class HiddenMarkovModel
   // Concrete methods
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
-  HiddenMarkovModelStatePtr state(unsigned int i) const;
+
+  StatePtr state(StateId id);
+  std::vector<StatePtr> states();
+  const std::vector<StatePtr> states() const;
 
  protected:
   // Instance variables
-  std::vector<HiddenMarkovModelStatePtr> _states;
+  std::vector<StatePtr> _states;
   DiscreteIIDModelPtr _initial_probabilities;
   unsigned int _state_alphabet_size;
   unsigned int _observation_alphabet_size;
