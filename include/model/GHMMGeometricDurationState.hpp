@@ -17,41 +17,52 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#ifndef TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_
+#define TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_
 
 // Standard headers
 #include <memory>
 
-// ToPS headers
-#include "model/Serializer.tcc"
+// ToPS templates
+#include "model/GHMMStateCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class ProbabilisticModelState;
+class GHMMGeometricDurationState;
 
 /**
- * @typedef ProbabilisticModelStatePtr
- * @brief Alias of pointer to ProbabilisticModelState.
+ * @typedef GHMMGeometricDurationStatePtr
+ * @brief Alias of pointer to GHMMGeometricDurationState.
  */
-using ProbabilisticModelStatePtr = std::shared_ptr<ProbabilisticModelState>;
+using GHMMGeometricDurationStatePtr
+  = std::shared_ptr<GHMMGeometricDurationState>;
 
 /**
- * @class ProbabilisticModelState
+ * @class GHMMGeometricDurationState
  * @brief TODO
  */
-class ProbabilisticModelState {
+class GHMMGeometricDurationState
+    : public GHMMStateCrtp<GHMMGeometricDurationState> {
  public:
   // Alias
-  using Id = unsigned int;
+  using Base = GHMMStateCrtp<GHMMGeometricDurationState>;
 
-  // Purely virtual methods
-  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+  using Self = GHMMGeometricDurationState;
+  using SelfPtr = std::shared_ptr<Self>;
+
+  // Constructors
+  GHMMGeometricDurationState(Id id,
+                             ProbabilisticModelPtr observation,
+                             DiscreteIIDModelPtr transition);
+
+  // Overriden methods
+  Probability durationProbability(unsigned int length) const override;
+  unsigned int maximumDurationSize() const override;
+  RangePtr durations() const override;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#endif  // TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_

@@ -31,9 +31,14 @@
 #include "model/Matrix.hpp"
 #include "model/Util.hpp"
 
+#include "model/GHMMSignalDurationState.hpp"
+#include "model/GHMMExplicitDurationState.hpp"
+#include "model/GHMMGeometricDurationState.hpp"
+
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+#include "helper/SExprTranslator.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -44,12 +49,16 @@ using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
 using tops::model::GeneralizedHiddenMarkovModel;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
+
 using tops::model::GeneralizedHiddenMarkovModelState;
 using tops::model::GeneralizedHiddenMarkovModelStatePtr;
-using tops::model::GeneralizedHiddenMarkovModelSignalState;
-using tops::model::GeneralizedHiddenMarkovModelSignalStatePtr;
-using tops::model::GeneralizedHiddenMarkovModelExplicitDurationState;
-using tops::model::GeneralizedHiddenMarkovModelExplicitDurationStatePtr;
+using tops::model::GHMMSignalDurationState;
+using tops::model::GHMMSignalDurationStatePtr;
+using tops::model::GHMMExplicitDurationState;
+using tops::model::GHMMExplicitDurationStatePtr;
+using tops::model::GHMMGeometricDurationState;
+using tops::model::GHMMGeometricDurationStatePtr;
+
 using tops::model::Probability;
 using tops::model::Sequence;
 using tops::model::Matrix;
@@ -62,18 +71,12 @@ using tops::helper::createVLMCMC;
 using tops::helper::createFairCoinIIDModel;
 using tops::helper::generateAllCombinationsOfSymbols;
 
+using tops::helper::SExprTranslator;
+
 class AGHMM : public testing::Test {
  protected:
-  GeneralizedHiddenMarkovModelStatePtr geometric_state
-    = GeneralizedHiddenMarkovModelState::make(
-      0, createMachlerVLMC(),
-      DiscreteIIDModel::make(std::vector<Probability>{
-        log(0.3), log(0.3), log(0.4)
-      })
-    );
-
-  GeneralizedHiddenMarkovModelStatePtr signal_state
-    = GeneralizedHiddenMarkovModelSignalState::make(
+  GHMMSignalDurationStatePtr signal_duration_state
+    = GHMMSignalDurationState::make(
       1, createVLMCMC(),
       DiscreteIIDModel::make(std::vector<Probability>{
         log(0.1), -std::numeric_limits<double>::infinity(), log(0.9)
@@ -81,8 +84,8 @@ class AGHMM : public testing::Test {
       3
     );
 
-  GeneralizedHiddenMarkovModelStatePtr explicit_duration_state
-    = GeneralizedHiddenMarkovModelExplicitDurationState::make(
+  GHMMExplicitDurationStatePtr explicit_duration_state
+    = GHMMExplicitDurationState::make(
       2, createFairCoinIIDModel(),
       DiscreteIIDModel::make(std::vector<Probability>{
         0, -std::numeric_limits<double>::infinity(),
@@ -94,10 +97,20 @@ class AGHMM : public testing::Test {
       })
     );
 
+  GHMMGeometricDurationStatePtr geometric_duration_state
+    = GHMMGeometricDurationState::make(
+      0, createMachlerVLMC(),
+      DiscreteIIDModel::make(std::vector<Probability>{
+        log(0.3), log(0.3), log(0.4)
+      })
+    );
+
   GeneralizedHiddenMarkovModelPtr ghmm
     = GeneralizedHiddenMarkovModel::make(
       std::vector<GeneralizedHiddenMarkovModelStatePtr>{
-        geometric_state, signal_state, explicit_duration_state
+        geometric_duration_state,
+        signal_duration_state,
+        explicit_duration_state
       },
       DiscreteIIDModel::make(std::vector<Probability>{
         0, -std::numeric_limits<double>::infinity(),
@@ -107,22 +120,40 @@ class AGHMM : public testing::Test {
     );
 
   virtual void SetUp() {
-    geometric_state->addSuccessor(0);
-    geometric_state->addSuccessor(1);
-    geometric_state->addSuccessor(2);
-    geometric_state->addPredecessor(0);
-    geometric_state->addPredecessor(1);
-    geometric_state->addPredecessor(2);
+    geometric_duration_state->addSuccessor(0);
+    geometric_duration_state->addSuccessor(1);
+    geometric_duration_state->addSuccessor(2);
+    geometric_duration_state->addPredecessor(0);
+    geometric_duration_state->addPredecessor(1);
+    geometric_duration_state->addPredecessor(2);
 
-    signal_state->addSuccessor(0);
-    signal_state->addSuccessor(2);
-    signal_state->addPredecessor(0);
+    signal_duration_state->addSuccessor(0);
+    signal_duration_state->addSuccessor(2);
+    signal_duration_state->addPredecessor(0);
 
     explicit_duration_state->addSuccessor(0);
     explicit_duration_state->addPredecessor(0);
     explicit_duration_state->addPredecessor(1);
   }
 };
+
+TEST_F(AGHMM, ShouldBeSExprSerialized) {
+  auto translator = SExprTranslator::make();
+  auto serializer = ghmm->serializer(translator);
+  serializer->serialize();
+  ASSERT_EQ(
+    "(GeneralizedHiddenMarkovModel: "
+      "(GHMMGeometricDurationState: "
+        " " /* VLMC serializarion not implemented */
+        "(DiscreteIIDModel: -1.203973 -1.203973 -0.916291)) "
+      "(GHMMSignalDurationState: "
+        " " /* VLMC serializarion not implemented */
+        "(DiscreteIIDModel: -2.302585 -inf -0.105361)) "
+      "(GHMMExplicitDurationState: "
+        "(DiscreteIIDModel: -0.693147 -0.693147) "
+        "(DiscreteIIDModel: 0.000000 -inf -inf)))",
+    translator->sexpr());
+}
 
 TEST_F(AGHMM, ShouldEvaluateSequence) {
   Sequence observation {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
@@ -134,7 +165,8 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
 
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
+  Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };
+  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation);
   auto estimation = labeler->labeling(Labeler::method::bestPath);
@@ -145,7 +177,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
 
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
+  Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };
+  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation, true);
   auto estimation = labeler->labeling(Labeler::method::bestPath);
@@ -156,7 +189,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
 
 TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
+  Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };
+  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation);
   auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
@@ -167,7 +201,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
 
 TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   Sequence observation { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
+  Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };
+  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation, true);
   auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
@@ -177,8 +212,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
 }
 
 TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
-  Matrix alpha;
-  Matrix beta;
+  Matrix alpha, beta;
   Sequence sequence = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-  ASSERT_THAT(ghmm->forward(sequence, alpha), DoubleNear(ghmm->backward(sequence, beta), 1e-4));
+  ASSERT_THAT(ghmm->forward(sequence, alpha),
+              DoubleNear(ghmm->backward(sequence, beta), 1e-4));
 }

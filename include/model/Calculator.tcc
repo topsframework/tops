@@ -17,41 +17,56 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#ifndef TOPS_MODEL_CALCULATOR_
+#define TOPS_MODEL_CALCULATOR_
 
 // Standard headers
 #include <memory>
 
 // ToPS headers
-#include "model/Serializer.tcc"
+#include "State.hpp"
+#include "Symbol.hpp"
+#include "Sequence.hpp"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class ProbabilisticModelState;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+class Calculator;
 
 /**
- * @typedef ProbabilisticModelStatePtr
- * @brief Alias of pointer to ProbabilisticModelState.
+ * @typedef CalculatorPtr
+ * @brief Alias of pointer to Calculator.
  */
-using ProbabilisticModelStatePtr = std::shared_ptr<ProbabilisticModelState>;
+using CalculatorPtr = std::shared_ptr<Calculator>;
 
 /**
- * @class ProbabilisticModelState
+ * @class Calculator
  * @brief TODO
  */
-class ProbabilisticModelState {
+class Calculator : public std::enable_shared_from_this<Calculator> {
  public:
-  // Alias
-  using Id = unsigned int;
+  // Enum classes
+  enum class direction { forward, backward };
 
   // Purely virtual methods
-  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+  virtual Probability calculate(const method& method) const = 0;
+
+  virtual Probability posteriorProbabilityOf(State state,
+                                             Symbol symbol) const = 0;
+
+  virtual Sequence& sequence() = 0;
+  virtual const Sequence& sequence() const = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#endif  // TOPS_MODEL_CALCULATOR_

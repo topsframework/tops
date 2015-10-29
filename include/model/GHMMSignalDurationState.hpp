@@ -17,41 +17,58 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#ifndef TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_
+#define TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_
 
 // Standard headers
 #include <memory>
+#include <vector>
 
-// ToPS headers
-#include "model/Serializer.tcc"
+// ToPS templates
+#include "model/GHMMStateCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class ProbabilisticModelState;
+class GHMMSignalDurationState;
 
 /**
- * @typedef ProbabilisticModelStatePtr
- * @brief Alias of pointer to ProbabilisticModelState.
+ * @typedef GHMMSignalDurationStatePtr
+ * @brief Alias of pointer to GHMMSignalDurationState.
  */
-using ProbabilisticModelStatePtr = std::shared_ptr<ProbabilisticModelState>;
+using GHMMSignalDurationStatePtr
+  = std::shared_ptr<GHMMSignalDurationState>;
 
 /**
- * @class ProbabilisticModelState
+ * @class GHMMSignalDurationState
  * @brief TODO
  */
-class ProbabilisticModelState {
+class GHMMSignalDurationState
+    : public GHMMStateCrtp<GHMMSignalDurationState> {
  public:
   // Alias
-  using Id = unsigned int;
+  using Base = GHMMStateCrtp<GHMMSignalDurationState>;
 
-  // Purely virtual methods
-  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+  using Self = GHMMSignalDurationState;
+  using SelfPtr = std::shared_ptr<Self>;
+
+  // Constructors
+  GHMMSignalDurationState(Id id,
+                          ProbabilisticModelPtr observation,
+                          DiscreteIIDModelPtr transition,
+                          unsigned int duration_size);
+
+  // Overriden methods
+  Probability durationProbability(unsigned int length) const override;
+  unsigned int maximumDurationSize() const override;
+  RangePtr durations() const override;
+
+ private:
+  // Instance variables
+  unsigned int _duration_size;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_MODEL_STATE_
+#endif  // TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_

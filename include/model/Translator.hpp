@@ -38,6 +38,9 @@ class TargetModel;
 class VariableLengthMarkovChain;
 
 class HiddenMarkovModelState;
+class GHMMSignalDurationState;
+class GHMMExplicitDurationState;
+class GHMMGeometricDurationState;
 
 // Forward declaration
 class Translator;
@@ -66,7 +69,10 @@ class Translator : public std::enable_shared_from_this<Translator> {
   virtual void translate(Ptr<TargetModel> model) = 0;
   virtual void translate(Ptr<VariableLengthMarkovChain> model) = 0;
 
-  virtual void translate(Ptr<HiddenMarkovModelState> model) = 0;
+  virtual void translate(Ptr<HiddenMarkovModelState> state) = 0;
+  virtual void translate(Ptr<GHMMSignalDurationState> state) = 0;
+  virtual void translate(Ptr<GHMMExplicitDurationState> state) = 0;
+  virtual void translate(Ptr<GHMMGeometricDurationState> state) = 0;
 };
 
 }  // namespace model

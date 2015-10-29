@@ -25,9 +25,12 @@
 #include <vector>
 
 // ToPS headers
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
-#include "Range.hpp"
+#include "model/Range.hpp"
+#include "model/Symbol.hpp"
+#include "model/Probability.hpp"
+#include "model/DiscreteIIDModel.hpp"
+#include "model/ProbabilisticModel.hpp"
+#include "model/ProbabilisticModelState.hpp"
 
 namespace tops {
 namespace model {
@@ -45,42 +48,25 @@ using GeneralizedHiddenMarkovModelStatePtr
  * @class GeneralizedHiddenMarkovModelState
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelState {
+class GeneralizedHiddenMarkovModelState
+    : public virtual ProbabilisticModelState {
  public:
-  // Static methods
-  static GeneralizedHiddenMarkovModelStatePtr make(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition);
+  // Purely virtual methods
+  virtual Probability durationProbability(unsigned int length) const = 0;
+  virtual unsigned int maximumDurationSize() const = 0;
+  virtual RangePtr durations() const = 0;
 
-  // Virtual methods
-  virtual double durationProbability(int l) const;
-  virtual bool isGeometricDuration() const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
+  virtual Id id() const = 0;
+  virtual ProbabilisticModelPtr observation() = 0;
+  virtual DiscreteIIDModelPtr transition() = 0;
 
-  // Concrete methods
-  Symbol symbol();
-  ProbabilisticModelPtr observation();
-  DiscreteIIDModelPtr transition();
-  void addPredecessor(int id);
-  void addSuccessor(int id);
-  std::vector<int>& predecessors();
-  std::vector<int>& successors();
+  virtual void addPredecessor(Id id) = 0;
+  virtual std::vector<Id>& predecessors() = 0;
+  virtual const std::vector<Id>& predecessors() const = 0;
 
- protected:
-  // Instance variables
-  Symbol _symbol;
-  ProbabilisticModelPtr _observation;
-  DiscreteIIDModelPtr _transition;
-  std::vector<int> _predecessors;
-  std::vector<int> _successors;
-
-  // Constructors
-  GeneralizedHiddenMarkovModelState(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition);
+  virtual void addSuccessor(Id id) = 0;
+  virtual std::vector<Id>& successors() = 0;
+  virtual const std::vector<Id>& successors() const = 0;
 };
 
 }  // namespace model

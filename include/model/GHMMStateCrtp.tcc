@@ -17,24 +17,28 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PROBABILISTIC_MODEL_STATE_CRTP_
-#define TOPS_MODEL_PROBABILISTIC_MODEL_STATE_CRTP_
+#ifndef TOPS_MODEL_GHMM_STATE_CRTP_
+#define TOPS_MODEL_GHMM_STATE_CRTP_
 
 // Standard headers
 #include <memory>
+#include <vector>
 
 // ToPS headers
-#include "model/ProbabilisticModelState.hpp"
+#include "model/Range.hpp"
+#include "model/DiscreteIIDModel.hpp"
+#include "model/ProbabilisticModel.hpp"
+#include "model/GeneralizedHiddenMarkovModelState.hpp"
 
 // ToPS templates
-#include "model/SimpleSerializer.tcc"
+#include "model/ProbabilisticModelStateCrtp.tcc"
 
 namespace tops {
 namespace model {
 
 // Forward declaration
 template<typename Derived>
-class ProbabilisticModelStateCrtp;
+class GHMMStateCrtp;
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -45,42 +49,55 @@ class ProbabilisticModelStateCrtp;
 */
 
 /**
- * @typedef ProbabilisticModelStateCrtpPtr
- * @brief Alias of pointer to ProbabilisticModelStateCrtp.
+ * @typedef GHMMStateCrtpPtr
+ * @brief Alias of pointer to GHMMStateCrtp.
  */
 template<typename Derived>
-using ProbabilisticModelStateCrtpPtr
-  = std::shared_ptr<ProbabilisticModelStateCrtp<Derived>>;
+using GHMMStateCrtpPtr
+  = std::shared_ptr<GHMMStateCrtp<Derived>>;
 
 /**
- * @class ProbabilisticModelStateCrtp
+ * @class GHMMStateCrtp
  * @brief TODO
  */
 template<typename Derived>
-class ProbabilisticModelStateCrtp
-    : public std::enable_shared_from_this<ProbabilisticModelStateCrtp<Derived>>,
-      public virtual ProbabilisticModelState {
+class GHMMStateCrtp
+  : public ProbabilisticModelStateCrtp<Derived>,
+    public virtual GeneralizedHiddenMarkovModelState {
  public:
   // Alias
-  using Base = void;
-  using DerivedPtr = std::shared_ptr<Derived>;
-  using Id = ProbabilisticModelState::Id;
+  using Base = ProbabilisticModelStateCrtp<Derived>;
+  using Id = typename ProbabilisticModelStateCrtp<Derived>::Id;
 
-  using SSPtr = SimpleSerializerPtr<Derived>;
+  using Self = GHMMStateCrtp<Derived>;
+  using SelfPtr = std::shared_ptr<Self>;
 
-  // Static methods
-  template<typename... Args>
-  static DerivedPtr make(Args&&... args);
+  // Constructors
+  GHMMStateCrtp(Id id,
+                ProbabilisticModelPtr observation,
+                DiscreteIIDModelPtr transition);
 
   // Overriden methods
-  SerializerPtr serializer(TranslatorPtr translator) override;
+  Id id() const override;
 
-  // Virtual methods
-  virtual void serialize(SSPtr serializer);
+  ProbabilisticModelPtr observation() override;
+  DiscreteIIDModelPtr transition() override;
 
- private:
-  // Concrete methods
-  DerivedPtr make_shared();
+  void addPredecessor(Id id) override;
+  std::vector<Id>& predecessors() override;
+  const std::vector<Id>& predecessors() const override;
+
+  void addSuccessor(Id id) override;
+  std::vector<Id>& successors() override;
+  const std::vector<Id>& successors() const override;
+
+ protected:
+  // Instance variables
+  Id _id;
+  ProbabilisticModelPtr _observation;
+  DiscreteIIDModelPtr _transition;
+  std::vector<Id> _predecessors;
+  std::vector<Id> _successors;
 };
 
 /*
@@ -92,53 +109,88 @@ class ProbabilisticModelStateCrtp
 */
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-template<typename... Args>
-auto ProbabilisticModelStateCrtp<Derived>::make(Args&&... args)
-    -> typename ProbabilisticModelStateCrtp<Derived>::DerivedPtr {
-  return DerivedPtr(new Derived(std::forward<Args>(args)...));
+GHMMStateCrtp<Derived>::GHMMStateCrtp(
+    Id id,
+    ProbabilisticModelPtr observation,
+    DiscreteIIDModelPtr transition)
+    : _id(std::move(id)),
+      _observation(std::move(observation)),
+      _transition(std::move(transition)) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-/*===============================  SERIALIZER  ===============================*/
-
 template<typename Derived>
-SerializerPtr ProbabilisticModelStateCrtp<Derived>::serializer(
-    TranslatorPtr translator) {
-  return SimpleSerializer<Derived>::make(make_shared(), translator);
+auto GHMMStateCrtp<Derived>::id() const -> Id {
+  return _id;
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-/*===============================  SERIALIZER  ===============================*/
 
 template<typename Derived>
-void
-ProbabilisticModelStateCrtp<Derived>::serialize(SSPtr serializer) {
-  serializer->translator()->translate(this->make_shared());
+ProbabilisticModelPtr GHMMStateCrtp<Derived>::observation() {
+  return _observation;
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-std::shared_ptr<Derived> ProbabilisticModelStateCrtp<Derived>::make_shared() {
-  return std::static_pointer_cast<Derived>(
-    static_cast<Derived *>(this)->shared_from_this());
+DiscreteIIDModelPtr GHMMStateCrtp<Derived>::transition() {
+  return _transition;
 }
 
 /*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+void GHMMStateCrtp<Derived>::addPredecessor(GHMMStateCrtp<Derived>::Id id) {
+  _predecessors.push_back(id);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto GHMMStateCrtp<Derived>::predecessors() -> std::vector<Id>& {
+  return _predecessors;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto GHMMStateCrtp<Derived>::predecessors() const -> const std::vector<Id>& {
+  return _predecessors;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+void GHMMStateCrtp<Derived>::addSuccessor(GHMMStateCrtp<Derived>::Id id) {
+  _successors.push_back(id);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto GHMMStateCrtp<Derived>::successors() -> std::vector<Id>& {
+  return _successors;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto GHMMStateCrtp<Derived>::successors() const -> const std::vector<Id>& {
+  return _successors;
+}
+
+/*----------------------------------------------------------------------------*/
+
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PROBABILISTIC_STATE_MODEL_
+#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_CRTP_

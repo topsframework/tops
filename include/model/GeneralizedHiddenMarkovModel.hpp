@@ -27,8 +27,6 @@
 // ToPS headers
 #include "model/Matrix.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
-#include "model/GeneralizedHiddenMarkovModelSignalState.hpp"
-#include "model/GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
 
 // ToPS templates
 #include "model/DecodableModelCrtp.tcc"
@@ -54,6 +52,10 @@ class GeneralizedHiddenMarkovModel
  public:
   // Alias
   using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
+
+  using State = GeneralizedHiddenMarkovModelState;
+  using StateId = typename State::Id;
+  using StatePtr = std::shared_ptr<State>;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -136,6 +138,14 @@ class GeneralizedHiddenMarkovModel
 
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
+
+  // Concrete methods
+  unsigned int stateAlphabetSize() const;
+  unsigned int observationAlphabetSize() const;
+
+  StatePtr state(StateId id);
+  std::vector<StatePtr> states();
+  const std::vector<StatePtr> states() const;
 
  protected:
   // Instance variables

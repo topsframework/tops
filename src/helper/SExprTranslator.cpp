@@ -29,10 +29,19 @@
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/TargetModel.hpp"
+
+#include "model/GHMMSignalDurationState.hpp"
+#include "model/GHMMExplicitDurationState.hpp"
+#include "model/GHMMGeometricDurationState.hpp"
+
 #include "helper/SExprTranslator.hpp"
 
 namespace tops {
 namespace helper {
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::DiscreteIIDModel> model) {
   _sexpr += "(DiscreteIIDModel:";
@@ -42,13 +51,23 @@ void SExprTranslator::translate(Ptr<model::DiscreteIIDModel> model) {
   _sexpr += ")";
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::FixedSequenceAtPosition> /* model */) {
-
 }
 
-void SExprTranslator::translate(Ptr<model::GeneralizedHiddenMarkovModel> /* model */) {
+/*----------------------------------------------------------------------------*/
 
+void SExprTranslator::translate(Ptr<model::GeneralizedHiddenMarkovModel> model) {
+  _sexpr += "(GeneralizedHiddenMarkovModel: ";
+  for (const auto& state : model->states()) {
+    state->serializer(make_shared())->serialize();
+    _sexpr += " ";
+  }
+  _sexpr[_sexpr.size()-1] =  ')';
 }
+
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> model) {
   _sexpr += "(HiddenMarkovModel: ";
@@ -59,37 +78,55 @@ void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> model) {
   _sexpr[_sexpr.size()-1] =  ')';
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::InhomogeneousMarkovChain> /* model */) {
 
 }
+
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::MaximalDependenceDecomposition> /* model */) {
 
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::MultipleSequentialModel> /* model */) {
 
 }
+
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::PhasedInhomogeneousMarkovChain> /* model */) {
 
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::PhasedRunLengthDistribution> /* model */) {
 
 }
+
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::SimilarityBasedSequenceWeighting> /* model */) {
 
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::TargetModel> /* model */) {
 
 }
 
+/*----------------------------------------------------------------------------*/
+
 void SExprTranslator::translate(Ptr<model::VariableLengthMarkovChain> /* model */) {
 
 }
+
+/*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::HiddenMarkovModelState> state) {
   _sexpr += "(State: ";
@@ -99,10 +136,51 @@ void SExprTranslator::translate(Ptr<model::HiddenMarkovModelState> state) {
   _sexpr += ")";
 }
 
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(Ptr<model::GHMMSignalDurationState> state) {
+  _sexpr += "(GHMMSignalDurationState: ";
+  state->observation()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->transition()->serializer(make_shared())->serialize();
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(Ptr<model::GHMMExplicitDurationState> state) {
+  _sexpr += "(GHMMExplicitDurationState: ";
+  state->observation()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->transition()->serializer(make_shared())->serialize();
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(Ptr<model::GHMMGeometricDurationState> state) {
+  _sexpr += "(GHMMGeometricDurationState: ";
+  state->observation()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->transition()->serializer(make_shared())->serialize();
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+std::string SExprTranslator::sexpr() {
+  return _sexpr;
+}
+
+/*----------------------------------------------------------------------------*/
+
 SExprTranslatorPtr SExprTranslator::make_shared() {
   return std::static_pointer_cast<Self>(this->shared_from_this());
 }
 
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

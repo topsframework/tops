@@ -17,64 +17,58 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
+#ifndef TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_
+#define TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_
 
 // Standard headers
 #include <memory>
-#include <vector>
 
-// ToPS headers
-#include "GeneralizedHiddenMarkovModelState.hpp"
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
+// ToPS templates
+#include "model/GHMMStateCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelExplicitDurationState;
+class GHMMExplicitDurationState;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelExplicitDurationStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelExplicitDurationState.
+ * @typedef GHMMExplicitDurationStatePtr
+ * @brief Alias of pointer to GHMMExplicitDurationState.
  */
-using GeneralizedHiddenMarkovModelExplicitDurationStatePtr
-  = std::shared_ptr<GeneralizedHiddenMarkovModelExplicitDurationState>;
+using GHMMExplicitDurationStatePtr
+  = std::shared_ptr<GHMMExplicitDurationState>;
 
 /**
- * @class GeneralizedHiddenMarkovModelExplicitDurationState
+ * @class GHMMExplicitDurationState
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelExplicitDurationState
-    : public GeneralizedHiddenMarkovModelState {
+class GHMMExplicitDurationState
+    : public GHMMStateCrtp<GHMMExplicitDurationState> {
  public:
-  // Static methods
-  static GeneralizedHiddenMarkovModelExplicitDurationStatePtr make(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition,
-      DiscreteIIDModelPtr duration);
+  // Alias
+  using Base = GHMMStateCrtp<GHMMExplicitDurationState>;
 
-  // Virtual methods
-  virtual double durationProbability(int l) const;
-  virtual bool isGeometricDuration() const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
+  using Self = GHMMExplicitDurationState;
+  using SelfPtr = std::shared_ptr<Self>;
+
+  // Constructors
+  GHMMExplicitDurationState(Id id,
+                            ProbabilisticModelPtr observation,
+                            DiscreteIIDModelPtr transition,
+                            DiscreteIIDModelPtr duration);
+
+  // Overriden methods
+  Probability durationProbability(unsigned int length) const override;
+  unsigned int maximumDurationSize() const override;
+  RangePtr durations() const override;
 
  private:
   // Instance variables
   DiscreteIIDModelPtr _duration;
   unsigned int _max_duration = 100;
-
-  // Constructors
-  GeneralizedHiddenMarkovModelExplicitDurationState(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition,
-      DiscreteIIDModelPtr duration);
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_

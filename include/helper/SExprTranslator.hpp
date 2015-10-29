@@ -47,9 +47,9 @@ class SExprTranslator : public model::Translator {
   using SelfPtr = std::shared_ptr<Self>;
 
   // Static methods
-  template<typename... Ts>
-  static SelfPtr make(Ts... args) {
-    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
+  template<typename... Args>
+  static SelfPtr make(Args... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Args>(args)...));
   }
 
   // Overriden methods
@@ -67,12 +67,12 @@ class SExprTranslator : public model::Translator {
   void translate(Ptr<model::VariableLengthMarkovChain> model) override;
 
   void translate(Ptr<model::HiddenMarkovModelState> state) override;
+  void translate(Ptr<model::GHMMSignalDurationState> state) override;
+  void translate(Ptr<model::GHMMExplicitDurationState> state) override;
+  void translate(Ptr<model::GHMMGeometricDurationState> state) override;
 
   // Concrete mehtods
-  std::string sexpr() {
-    return _sexpr;
-  }
-
+  std::string sexpr();
   SelfPtr make_shared();
 
  private:

@@ -21,8 +21,8 @@
 #include <cmath>
 
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
-#include "LazzyRange.hpp"
+#include "model/GHMMGeometricDurationState.hpp"
+#include "model/SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
@@ -31,55 +31,34 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelExplicitDurationState
-::GeneralizedHiddenMarkovModelExplicitDurationState(
-    Symbol symbol,
+GHMMGeometricDurationState::GHMMGeometricDurationState(
+    Id id,
     ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition),
-        _duration(duration) {
+    DiscreteIIDModelPtr transition)
+    : Base(std::move(id), std::move(observation), std::move(transition)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelExplicitDurationStatePtr
-GeneralizedHiddenMarkovModelExplicitDurationState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration) {
-  return GeneralizedHiddenMarkovModelExplicitDurationStatePtr(
-    new GeneralizedHiddenMarkovModelExplicitDurationState(
-      symbol, observation, transition, duration));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
-  return _duration->probabilityOf(l);
+Probability
+GHMMGeometricDurationState::durationProbability(unsigned int length) const {
+  if (length == 1)
+    return 0.0;
+  return pow(_transition->probabilityOf(_id), length - 1);
 }
 
 /*----------------------------------------------------------------------------*/
 
-bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
-  return false;
+unsigned int GHMMGeometricDurationState::maximumDurationSize() const {
+  return 1;
 }
 
 /*----------------------------------------------------------------------------*/
 
-int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
-  return -1;
-}
-
-/*----------------------------------------------------------------------------*/
-
-RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
-  return std::make_shared<LazzyRange>(1, _max_duration);
+RangePtr GHMMGeometricDurationState::durations() const {
+  return std::make_shared<SingleValueRange>(1);
 }
 
 /*----------------------------------------------------------------------------*/

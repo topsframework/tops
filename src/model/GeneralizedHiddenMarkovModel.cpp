@@ -35,7 +35,7 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
-    std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
+    std::vector<StatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
     unsigned int state_alphabet_size,
     unsigned int observation_alphabet_size,
@@ -351,6 +351,35 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+unsigned int GeneralizedHiddenMarkovModel::stateAlphabetSize() const {
+  return _state_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+unsigned int GeneralizedHiddenMarkovModel::observationAlphabetSize() const {
+  return _observation_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto GeneralizedHiddenMarkovModel::state(StateId id) -> StatePtr {
+  return _states[id];
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto GeneralizedHiddenMarkovModel::states() -> std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto GeneralizedHiddenMarkovModel::states() const -> const std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
       const Sequence &xs,
