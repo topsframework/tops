@@ -38,10 +38,8 @@ HiddenMarkovModel::HiddenMarkovModel(
     DiscreteIIDModelPtr initial_probabilities,
     unsigned int state_alphabet_size,
     unsigned int observation_alphabet_size)
-    : _states(states),
-      _initial_probabilities(initial_probabilities),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+    : Base(std::move(states), initial_probabilities,
+           state_alphabet_size, observation_alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -505,36 +503,6 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
 
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-unsigned int HiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-unsigned int HiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::state(StateId id) -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::states() const -> const std::vector<StatePtr> {
-  return _states;
-}
-
 /*----------------------------------------------------------------------------*/
 
 void HiddenMarkovModel::initializeStandardPrefixSumArray(

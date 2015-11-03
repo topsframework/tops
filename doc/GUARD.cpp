@@ -48,9 +48,10 @@
 
 /*----------------------------------------------------------------------------*/
 
-  // Inner classes
   // Tags
   // Alias
+  // Type traits
+  // Inner classes
   // Hidden name method inheritance
   // Instance variables
   // Constructors

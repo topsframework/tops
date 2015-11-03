@@ -34,7 +34,19 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class HiddenMarkovModel;
+
+/**
+ * @typedef StateTraits
+ * @brief GeneralizedHiddenMarkovModel specialization of StateTraits
+ */
+template<>
+struct StateTraits<HiddenMarkovModel> {
+  using State = Standard<HiddenMarkovModelState>;
+  using StateId = typename State::Id;
+  using StatePtr = std::shared_ptr<State>;
+};
 
 /**
  * @typedef HiddenMarkovModelPtr
@@ -59,11 +71,12 @@ class HiddenMarkovModel
 
   using Base = DecodableModelCrtp<HiddenMarkovModel>;
 
-  using State = HiddenMarkovModelState;
-  using StateId = typename State::Id;
-  using StatePtr = std::shared_ptr<State>;
-
   using Cache = Base::Cache;
+
+  // Type traits
+  using State = typename StateTraits<Self>::State;
+  using StateId = typename StateTraits<Self>::StateId;
+  using StatePtr = typename StateTraits<Self>::StatePtr;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -155,21 +168,6 @@ class HiddenMarkovModel
                  Matrix &alpha) const override;
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
-
-  // Concrete methods
-  unsigned int stateAlphabetSize() const;
-  unsigned int observationAlphabetSize() const;
-
-  StatePtr state(StateId id);
-  std::vector<StatePtr> states();
-  const std::vector<StatePtr> states() const;
-
- protected:
-  // Instance variables
-  std::vector<StatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
 
  private:
   // Concrete methods

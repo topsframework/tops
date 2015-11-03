@@ -34,7 +34,19 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class GeneralizedHiddenMarkovModel;
+
+/**
+ * @typedef StateTraits
+ * @brief HiddenMarkovModel specialization of StateTraits
+ */
+template<>
+struct StateTraits<GeneralizedHiddenMarkovModel> {
+  using State = Standard<GeneralizedHiddenMarkovModelState>;
+  using StateId = typename State::Id;
+  using StatePtr = std::shared_ptr<State>;
+};
 
 /**
  * @typedef GeneralizedHiddenMarkovModelPtr
@@ -51,11 +63,15 @@ class GeneralizedHiddenMarkovModel
     : public DecodableModelCrtp<GeneralizedHiddenMarkovModel> {
  public:
   // Alias
-  using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
+  using Self = GeneralizedHiddenMarkovModel;
+  using SelfPtr = std::shared_ptr<Self>;
 
-  using State = GeneralizedHiddenMarkovModelState;
-  using StateId = typename State::Id;
-  using StatePtr = std::shared_ptr<State>;
+  using Base = DecodableModelCrtp<Self>;
+
+  // Type traits
+  using State = typename StateTraits<Self>::State;
+  using StateId = typename StateTraits<Self>::StateId;
+  using StatePtr = typename StateTraits<Self>::StatePtr;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -67,7 +83,7 @@ class GeneralizedHiddenMarkovModel
 
   // Constructors
   GeneralizedHiddenMarkovModel(
-      std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
+      std::vector<StatePtr> states,
       DiscreteIIDModelPtr initial_probability,
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size,
@@ -139,20 +155,8 @@ class GeneralizedHiddenMarkovModel
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
 
-  // Concrete methods
-  unsigned int stateAlphabetSize() const;
-  unsigned int observationAlphabetSize() const;
-
-  StatePtr state(StateId id);
-  std::vector<StatePtr> states();
-  const std::vector<StatePtr> states() const;
-
  protected:
   // Instance variables
-  std::vector<GeneralizedHiddenMarkovModelStatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
   unsigned int _max_backtracking;
 
  private:

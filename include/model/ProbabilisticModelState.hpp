@@ -51,6 +51,17 @@ class ProbabilisticModelState {
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 };
 
+/**
+ * @class StateTraits
+ * @brief Trait class to hold common types related to states
+ */
+template<typename Model>
+struct StateTraits {
+  using State = typename Model::State;
+  using StateId = typename Model::StateId;
+  using StatePtr = typename Model::StatePtr;
+};
+
 }  // namespace model
 }  // namespace tops
 

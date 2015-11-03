@@ -40,10 +40,8 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     unsigned int state_alphabet_size,
     unsigned int observation_alphabet_size,
     unsigned int max_backtracking)
-    : _states(states),
-      _initial_probabilities(initial_probabilities),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size),
+    : Base(std::move(states), initial_probabilities,
+           state_alphabet_size, observation_alphabet_size),
       _max_backtracking(max_backtracking) {
 }
 
@@ -349,36 +347,6 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
 
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
-
-unsigned int GeneralizedHiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-unsigned int GeneralizedHiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::state(StateId id) -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::states() const -> const std::vector<StatePtr> {
-  return _states;
-}
-
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
