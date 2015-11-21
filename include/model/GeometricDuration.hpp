@@ -17,57 +17,58 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+#ifndef TOPS_MODEL_GEOMETRIC_DURATION_
+#define TOPS_MODEL_GEOMETRIC_DURATION_
+
 // Standard headers
 #include <cmath>
-#include <vector>
-#include <algorithm>
+#include <memory>
 
 // ToPS headers
-#include "model/HiddenMarkovModelState.hpp"
+#include "model/ProbabilisticModel.hpp"
+
+// ToPS templates
+#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-/*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
-/*----------------------------------------------------------------------------*/
+// Forward declaration
+class GeometricDuration;
 
-HiddenMarkovModelState::HiddenMarkovModelState(
-    Symbol symbol,
-    DiscreteIIDModelPtr emissions,
-    DiscreteIIDModelPtr transitions)
-    : _symbol(symbol),
-      _emissions(emissions),
-      _transitions(transitions) {
-}
+/**
+ * @typedef GeometricDurationPtr
+ * @brief Alias of pointer to GeometricDuration.
+ */
+using GeometricDurationPtr = std::shared_ptr<GeometricDuration>;
 
-/*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
+/**
+ * @class GeometricDuration
+ * @brief TODO
+ */
+class GeometricDuration : public DurationCrtp<GeometricDuration> {
+ public:
+  // Alias
+  using Self = GeometricDuration;
+  using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
 
-bool HiddenMarkovModelState::isSilent() {
-  return _emissions == nullptr;
-}
+  // Constructors
+  GeometricDuration(unsigned int id,
+                    ProbabilisticModelPtr transition);
 
-/*----------------------------------------------------------------------------*/
+  // Overriden methods
+  RangePtr range() const override;
+  unsigned int maximumDurationSize() const override;
+  Probability durationProbability(unsigned int length) const override;
 
-Symbol HiddenMarkovModelState::symbol() {
-  return _symbol;
-}
-
-/*----------------------------------------------------------------------------*/
-
-DiscreteIIDModelPtr & HiddenMarkovModelState::emissions() {
-  return _emissions;
-}
-
-/*----------------------------------------------------------------------------*/
-
-DiscreteIIDModelPtr & HiddenMarkovModelState::transitions() {
-  return _transitions;
-}
-
-/*----------------------------------------------------------------------------*/
+ private:
+  // Instance variables
+  unsigned int _id;
+  ProbabilisticModelPtr _transition;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL__GEOMETRIC_DURATION_

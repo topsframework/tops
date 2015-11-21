@@ -103,6 +103,19 @@ auto call(const Func &func, const Ptr &ptr, const Pack<Args...> &params) {
 }
 
 /*============================================================================*/
+/*                          MAKE FROM TUPLE ELEMENTS                          */
+/*============================================================================*/
+
+template<template<typename... Ts> class Target, typename Tuple>
+struct make_from_tuple_elements;
+
+template<template<typename... Ts> class Target,
+         template<typename... Ts> class Tuple, typename... Args>
+struct make_from_tuple_elements<Target, Tuple<Args...>> {
+  using type = Target<Args...>;
+};
+
+/*============================================================================*/
 /*                    MEMBER FUNCTION DELEGATOR GENERATION                    */
 /*============================================================================*/
 

@@ -60,4 +60,4 @@ class Serializer : public std::enable_shared_from_this<Serializer> {
 }  // namespace model
 }  // namespace tops
 
-#endif
+#endif  // TOPS_MODEL_SERIALIZER_

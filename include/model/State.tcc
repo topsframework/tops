@@ -17,56 +17,71 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_LABELER_
-#define TOPS_MODEL_LABELER_
+#ifndef TOPS_MODEL_State_
+#define TOPS_MODEL_State_
 
 // Standard headers
 #include <memory>
-
-// ToPS headers
-#include "model/Sequence.hpp"
+#include <vector>
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+#include "model/Serializer.tcc"
 
 namespace tops {
 namespace model {
 
+// Forward declaration
+template<typename EmissionModel, typename TransitionModel>
+class State;
+
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                    CLASS
+                                      CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-class Labeler;
-
 /**
- * @typedef LabelerPtr
- * @brief Alias of pointer to Labeler.
+ * @typedef StatePtr
+ * @brief Alias of pointer to State.
  */
-using LabelerPtr = std::shared_ptr<Labeler>;
+template<typename EmissionModel, typename TransitionModel>
+using StatePtr
+  = std::shared_ptr<State<EmissionModel, TransitionModel>>;
 
 /**
- * @class Labeler
+ * @class State
  * @brief TODO
  */
-class Labeler : public std::enable_shared_from_this<Labeler> {
+template<typename EmissionModel, typename TransitionModel>
+class State {
  public:
-  // Enum classes
-  enum class method { bestPath, posteriorDecoding };
+  // Alias
+  using Self = State<EmissionModel, TransitionModel>;
+  using SelfPtr = std::shared_ptr<Self>;
+
+  using Id = unsigned int;
+  using EmissionModelPtr = std::shared_ptr<EmissionModel>;
+  using TransitionModelPtr = std::shared_ptr<TransitionModel>;
 
   // Purely virtual methods
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const method& method) const = 0;
+  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
+  virtual Id id() const = 0;
+  virtual EmissionModelPtr emission() = 0;
+  virtual TransitionModelPtr transition() = 0;
+
+  virtual void addPredecessor(Id id) = 0;
+  virtual std::vector<Id>& predecessors() = 0;
+  virtual const std::vector<Id>& predecessors() const = 0;
+
+  virtual void addSuccessor(Id id) = 0;
+  virtual std::vector<Id>& successors() = 0;
+  virtual const std::vector<Id>& successors() const = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_LABELER_
+#endif  // TOPS_MODEL_State_

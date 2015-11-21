@@ -29,6 +29,7 @@
 #include "model/HiddenMarkovModelState.hpp"
 
 // ToPS templates
+#include "model/SimpleState.tcc"
 #include "model/DecodableModelCrtp.tcc"
 
 namespace tops {
@@ -36,17 +37,6 @@ namespace model {
 
 // Forward declaration
 class HiddenMarkovModel;
-
-/**
- * @typedef StateTraits
- * @brief GeneralizedHiddenMarkovModel specialization of StateTraits
- */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = Standard<HiddenMarkovModelState>;
-  using StateId = typename State::Id;
-  using StatePtr = std::shared_ptr<State>;
-};
 
 /**
  * @typedef HiddenMarkovModelPtr
@@ -75,8 +65,7 @@ class HiddenMarkovModel
 
   // Type traits
   using State = typename StateTraits<Self>::State;
-  using StateId = typename StateTraits<Self>::StateId;
-  using StatePtr = typename StateTraits<Self>::StatePtr;
+  using StatePtr = std::shared_ptr<State>;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;

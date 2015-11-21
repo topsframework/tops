@@ -18,22 +18,6 @@
 /***********************************************************************/
 
 // ToPS headers
-#include "model/DiscreteIIDModel.hpp"
-#include "model/FixedSequenceAtPosition.hpp"
-#include "model/GeneralizedHiddenMarkovModel.hpp"
-#include "model/HiddenMarkovModel.hpp"
-#include "model/InhomogeneousMarkovChain.hpp"
-#include "model/MaximalDependenceDecomposition.hpp"
-#include "model/MultipleSequentialModel.hpp"
-#include "model/PhasedInhomogeneousMarkovChain.hpp"
-#include "model/PhasedRunLengthDistribution.hpp"
-#include "model/SimilarityBasedSequenceWeighting.hpp"
-#include "model/TargetModel.hpp"
-
-#include "model/GHMMSignalDurationState.hpp"
-#include "model/GHMMExplicitDurationState.hpp"
-#include "model/GHMMGeometricDurationState.hpp"
-
 #include "helper/SExprTranslator.hpp"
 
 namespace tops {
@@ -128,19 +112,9 @@ void SExprTranslator::translate(Ptr<model::VariableLengthMarkovChain> /* model *
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::HiddenMarkovModelState> state) {
-  _sexpr += "(State: ";
-  state->emissions()->serializer(make_shared())->serialize();
-  _sexpr += " ";
-  state->transitions()->serializer(make_shared())->serialize();
-  _sexpr += ")";
-}
-
-/*----------------------------------------------------------------------------*/
-
-void SExprTranslator::translate(Ptr<model::GHMMSignalDurationState> state) {
-  _sexpr += "(GHMMSignalDurationState: ";
-  state->observation()->serializer(make_shared())->serialize();
+void SExprTranslator::translate(Ptr<model::HiddenMarkovModel::State> state) {
+  _sexpr += "(HMM::State: ";
+  state->emission()->serializer(make_shared())->serialize();
   _sexpr += " ";
   state->transition()->serializer(make_shared())->serialize();
   _sexpr += ")";
@@ -148,21 +122,38 @@ void SExprTranslator::translate(Ptr<model::GHMMSignalDurationState> state) {
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::GHMMExplicitDurationState> state) {
-  _sexpr += "(GHMMExplicitDurationState: ";
-  state->observation()->serializer(make_shared())->serialize();
+void SExprTranslator::translate(
+    Ptr<model::GeneralizedHiddenMarkovModel::State> state) {
+  _sexpr += "(GHMM::State: ";
+  state->emission()->serializer(make_shared())->serialize();
   _sexpr += " ";
   state->transition()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->duration()->serializer(make_shared())->serialize();
   _sexpr += ")";
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::GHMMGeometricDurationState> state) {
-  _sexpr += "(GHMMGeometricDurationState: ";
-  state->observation()->serializer(make_shared())->serialize();
-  _sexpr += " ";
-  state->transition()->serializer(make_shared())->serialize();
+void SExprTranslator::translate(Ptr<model::SignalDuration> duration) {
+  _sexpr += "(SignalDuration: maximumDuration = ";
+  _sexpr += std::to_string(duration->maximumDurationSize());
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(Ptr<model::ExplicitDuration> duration) {
+  _sexpr += "(ExplicitDuration: maximumDuration = ";
+  _sexpr += std::to_string(duration->maximumDurationSize());
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(Ptr<model::GeometricDuration> duration) {
+  _sexpr += "(GeometricDuration: maximumDuration = ";
+  _sexpr += std::to_string(duration->maximumDurationSize());
   _sexpr += ")";
 }
 

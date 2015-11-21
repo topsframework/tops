@@ -17,33 +17,52 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_SIGNAL_DURATION_
+#define TOPS_MODEL_SIGNAL_DURATION_
 
 // Standard headers
 #include <memory>
-#include <vector>
+
+// ToPS templates
+#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
 
 // Forward declaration
-class HiddenMarkovModel;
-
-class DiscreteIIDModel;
-template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+class SignalDuration;
 
 /**
- * @typedef StateTraits
- * @brief HiddenMarkovModel specialization of StateTraits
+ * @typedef SignalDurationPtr
+ * @brief Alias of pointer to SignalDuration.
  */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+using SignalDurationPtr = std::shared_ptr<SignalDuration>;
+
+/**
+ * @class SignalDuration
+ * @brief TODO
+ */
+class SignalDuration : public DurationCrtp<SignalDuration> {
+ public:
+  // Alias
+  using Self = SignalDuration;
+  using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
+
+  // Constructors
+  SignalDuration(unsigned int duration_size);
+
+  // Overriden methods
+  RangePtr range() const override;
+  unsigned int maximumDurationSize() const override;
+  Probability durationProbability(unsigned int length) const override;
+
+ private:
+  // Instance variables
+  unsigned int _duration_size;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_SIGNAL_DURATION_

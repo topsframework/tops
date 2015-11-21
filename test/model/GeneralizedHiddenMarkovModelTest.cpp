@@ -31,9 +31,9 @@
 #include "model/Matrix.hpp"
 #include "model/Util.hpp"
 
-#include "model/GHMMSignalDurationState.hpp"
-#include "model/GHMMExplicitDurationState.hpp"
-#include "model/GHMMGeometricDurationState.hpp"
+#include "model/SignalDuration.hpp"
+#include "model/ExplicitDuration.hpp"
+#include "model/GeometricDuration.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
@@ -50,14 +50,12 @@ using tops::model::DiscreteIIDModelPtr;
 using tops::model::GeneralizedHiddenMarkovModel;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
 
-using tops::model::GeneralizedHiddenMarkovModelState;
-using tops::model::GeneralizedHiddenMarkovModelStatePtr;
-using tops::model::GHMMSignalDurationState;
-using tops::model::GHMMSignalDurationStatePtr;
-using tops::model::GHMMExplicitDurationState;
-using tops::model::GHMMExplicitDurationStatePtr;
-using tops::model::GHMMGeometricDurationState;
-using tops::model::GHMMGeometricDurationStatePtr;
+using tops::model::VariableLengthMarkovChain;
+using tops::model::VariableLengthMarkovChainPtr;
+
+using tops::model::SignalDuration;
+using tops::model::ExplicitDuration;
+using tops::model::GeometricDuration;
 
 using tops::model::Probability;
 using tops::model::Sequence;
@@ -73,41 +71,47 @@ using tops::helper::generateAllCombinationsOfSymbols;
 
 using tops::helper::SExprTranslator;
 
+using GHMM = GeneralizedHiddenMarkovModel;
+
 class AGHMM : public testing::Test {
  protected:
-  GHMMSignalDurationStatePtr signal_duration_state
-    = GHMMSignalDurationState::make(
+  GHMM::StatePtr signal_duration_state
+    = GHMM::State::make(
       1, createVLMCMC(),
       DiscreteIIDModel::make(std::vector<Probability>{
         log(0.1), -std::numeric_limits<double>::infinity(), log(0.9)
       }),
-      3
+      SignalDuration::make(3)
     );
 
-  GHMMExplicitDurationStatePtr explicit_duration_state
-    = GHMMExplicitDurationState::make(
+  GHMM::StatePtr explicit_duration_state
+    = GHMM::State::make(
       2, createFairCoinIIDModel(),
       DiscreteIIDModel::make(std::vector<Probability>{
         0, -std::numeric_limits<double>::infinity(),
         -std::numeric_limits<double>::infinity()
       }),
-      DiscreteIIDModel::make(std::vector<Probability>{
-        log(0.1), log(0.1), log(0.1), log(0.1),
-        log(0.1), log(0.1), log(0.3), log(0.1)
-      })
+      ExplicitDuration::make(
+        DiscreteIIDModel::make(std::vector<Probability>{
+          log(0.1), log(0.1), log(0.1), log(0.1),
+          log(0.1), log(0.1), log(0.3), log(0.1)
+      }))
     );
 
-  GHMMGeometricDurationStatePtr geometric_duration_state
-    = GHMMGeometricDurationState::make(
-      0, createMachlerVLMC(),
-      DiscreteIIDModel::make(std::vector<Probability>{
+  DiscreteIIDModelPtr geometric_transition
+    = DiscreteIIDModel::make(std::vector<Probability>{
         log(0.3), log(0.3), log(0.4)
-      })
+    });
+
+  GHMM::StatePtr geometric_duration_state
+    = GHMM::State::make(
+      0, createMachlerVLMC(), geometric_transition,
+      GeometricDuration::make(0, geometric_transition)
     );
 
   GeneralizedHiddenMarkovModelPtr ghmm
     = GeneralizedHiddenMarkovModel::make(
-      std::vector<GeneralizedHiddenMarkovModelStatePtr>{
+      std::vector<GeneralizedHiddenMarkovModel::StatePtr>{
         geometric_duration_state,
         signal_duration_state,
         explicit_duration_state
@@ -143,15 +147,18 @@ TEST_F(AGHMM, ShouldBeSExprSerialized) {
   serializer->serialize();
   ASSERT_EQ(
     "(GeneralizedHiddenMarkovModel: "
-      "(GHMMGeometricDurationState: "
+      "(GHMM::State: "
         " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: -1.203973 -1.203973 -0.916291)) "
-      "(GHMMSignalDurationState: "
+        "(DiscreteIIDModel: -1.203973 -1.203973 -0.916291) "
+        "(GeometricDuration: maximumDuration = 1)) "
+      "(GHMM::State: "
         " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: -2.302585 -inf -0.105361)) "
-      "(GHMMExplicitDurationState: "
+        "(DiscreteIIDModel: -2.302585 -inf -0.105361) "
+        "(SignalDuration: maximumDuration = 3)) "
+      "(GHMM::State: "
         "(DiscreteIIDModel: -0.693147 -0.693147) "
-        "(DiscreteIIDModel: 0.000000 -inf -inf)))",
+        "(DiscreteIIDModel: 0.000000 -inf -inf) "
+        "(ExplicitDuration: maximumDuration = 0)))",
     translator->sexpr());
 }
 

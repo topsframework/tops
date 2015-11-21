@@ -17,51 +17,45 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-
 // ToPS headers
-#include "model/GHMMGeometricDurationState.hpp"
-#include "model/SingleValueRange.hpp"
+#include "model/LazzyRange.hpp"
+#include "model/ExplicitDuration.hpp"
 
 namespace tops {
 namespace model {
+
 
 /*----------------------------------------------------------------------------*/
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-GHMMGeometricDurationState::GHMMGeometricDurationState(
-    Id id,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition)
-    : Base(std::move(id), std::move(observation), std::move(transition)) {
+ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration,
+                                   unsigned int max_duration_size)
+    : _duration(std::move(duration)), _max_duration_size(max_duration_size) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+RangePtr ExplicitDuration::range() const {
+  return std::make_shared<LazzyRange>(1, _max_duration_size);
+}
+
+/*----------------------------------------------------------------------------*/
+
+unsigned int ExplicitDuration::maximumDurationSize() const {
+  return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
 Probability
-GHMMGeometricDurationState::durationProbability(unsigned int length) const {
-  if (length == 1)
-    return 0.0;
-  return pow(_transition->probabilityOf(_id), length - 1);
+ExplicitDuration::durationProbability(unsigned int length) const {
+  return _duration->standardEvaluator(Sequence{length})->evaluateSymbol(0);
 }
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int GHMMGeometricDurationState::maximumDurationSize() const {
-  return 1;
-}
-
-/*----------------------------------------------------------------------------*/
-
-RangePtr GHMMGeometricDurationState::durations() const {
-  return std::make_shared<SingleValueRange>(1);
-}
-
-/*----------------------------------------------------------------------------*/
-
-}
-}
+}  // namespace model
+}  // namespace tops

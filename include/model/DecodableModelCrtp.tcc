@@ -26,9 +26,10 @@
 
 // ToPS headers
 #include "model/DecodableModel.hpp"
-#include "model/ProbabilisticModelState.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 // ToPS templates
+#include "model/State.tcc"
 #include "model/Labeler.tcc"
 #include "model/SimpleLabeler.tcc"
 #include "model/CachedLabeler.tcc"
@@ -87,8 +88,7 @@ class DecodableModelCrtp
 
   // Type traits
   using State = typename StateTraits<Derived>::State;
-  using StateId = typename StateTraits<Derived>::StateId;
-  using StatePtr = typename StateTraits<Derived>::StatePtr;
+  using StatePtr = std::shared_ptr<State>;
 
   // Inner classes
   struct Cache : Base::Cache {
@@ -169,7 +169,7 @@ class DecodableModelCrtp
   unsigned int stateAlphabetSize() const;
   unsigned int observationAlphabetSize() const;
 
-  virtual StatePtr state(StateId id);
+  virtual StatePtr state(unsigned int id);
   virtual std::vector<StatePtr> states();
   virtual const std::vector<StatePtr> states() const;
 
@@ -296,7 +296,7 @@ unsigned int DecodableModelCrtp<Derived>::observationAlphabetSize() const {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-auto DecodableModelCrtp<Derived>::state(StateId id) -> StatePtr {
+auto DecodableModelCrtp<Derived>::state(unsigned int id) -> StatePtr {
   return _states[id];
 }
 

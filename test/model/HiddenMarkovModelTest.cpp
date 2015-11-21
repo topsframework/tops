@@ -209,10 +209,10 @@ TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
   serializer->serialize();
   ASSERT_EQ(translator->sexpr(),
     "(HiddenMarkovModel: "
-      "(State: "
+      "(HMM::State: "
         "(DiscreteIIDModel: -0.693147 -0.693147) "
         "(DiscreteIIDModel: -0.356675 -1.203973)) "
-      "(State: "
+      "(HMM::State: "
         "(DiscreteIIDModel: -1.609438 -0.223144) "
         "(DiscreteIIDModel: -0.693147 -0.693147)))");
 }

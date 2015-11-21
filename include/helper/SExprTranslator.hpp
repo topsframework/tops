@@ -25,6 +25,22 @@
 #include <string>
 
 // ToPS headers
+#include "model/DiscreteIIDModel.hpp"
+#include "model/FixedSequenceAtPosition.hpp"
+#include "model/GeneralizedHiddenMarkovModel.hpp"
+#include "model/HiddenMarkovModel.hpp"
+#include "model/InhomogeneousMarkovChain.hpp"
+#include "model/MaximalDependenceDecomposition.hpp"
+#include "model/MultipleSequentialModel.hpp"
+#include "model/PhasedInhomogeneousMarkovChain.hpp"
+#include "model/PhasedRunLengthDistribution.hpp"
+#include "model/SimilarityBasedSequenceWeighting.hpp"
+#include "model/TargetModel.hpp"
+
+#include "model/SignalDuration.hpp"
+#include "model/ExplicitDuration.hpp"
+#include "model/GeometricDuration.hpp"
+
 #include "model/Translator.hpp"
 
 namespace tops {
@@ -66,10 +82,12 @@ class SExprTranslator : public model::Translator {
   void translate(Ptr<model::TargetModel> model) override;
   void translate(Ptr<model::VariableLengthMarkovChain> model) override;
 
-  void translate(Ptr<model::HiddenMarkovModelState> state) override;
-  void translate(Ptr<model::GHMMSignalDurationState> state) override;
-  void translate(Ptr<model::GHMMExplicitDurationState> state) override;
-  void translate(Ptr<model::GHMMGeometricDurationState> state) override;
+  void translate(Ptr<typename model::HiddenMarkovModel::State> state) override;
+  void translate(Ptr<typename model::GeneralizedHiddenMarkovModel::State> state) override;
+
+  void translate(Ptr<model::SignalDuration> duration) override;
+  void translate(Ptr<model::ExplicitDuration> duration) override;
+  void translate(Ptr<model::GeometricDuration> duration) override;
 
   // Concrete mehtods
   std::string sexpr();

@@ -17,52 +17,45 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_
-#define TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_
+#ifndef TOPS_MODEL_DURATION_
+#define TOPS_MODEL_DURATION_
 
 // Standard headers
 #include <memory>
 
+// ToPS headers
+#include "model/Range.hpp"
+#include "model/Probability.hpp"
+
 // ToPS templates
-#include "model/GHMMStateCrtp.tcc"
+#include "model/Serializer.tcc"
 
 namespace tops {
 namespace model {
 
-class GHMMGeometricDurationState;
+class Duration;
 
 /**
- * @typedef GHMMGeometricDurationStatePtr
- * @brief Alias of pointer to GHMMGeometricDurationState.
+ * @typedef DurationPtr
+ * @brief Alias of pointer to Duration.
  */
-using GHMMGeometricDurationStatePtr
-  = std::shared_ptr<GHMMGeometricDurationState>;
+using DurationPtr = std::shared_ptr<Duration>;
 
 /**
- * @class GHMMGeometricDurationState
+ * @class Duration
  * @brief TODO
  */
-class GHMMGeometricDurationState
-    : public GHMMStateCrtp<GHMMGeometricDurationState> {
+class Duration {
  public:
-  // Alias
-  using Base = GHMMStateCrtp<GHMMGeometricDurationState>;
+  // Purely virtual methods
+  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
-  using Self = GHMMGeometricDurationState;
-  using SelfPtr = std::shared_ptr<Self>;
-
-  // Constructors
-  GHMMGeometricDurationState(Id id,
-                             ProbabilisticModelPtr observation,
-                             DiscreteIIDModelPtr transition);
-
-  // Overriden methods
-  Probability durationProbability(unsigned int length) const override;
-  unsigned int maximumDurationSize() const override;
-  RangePtr durations() const override;
+  virtual RangePtr range() const = 0;
+  virtual unsigned int maximumDurationSize() const = 0;
+  virtual Probability durationProbability(unsigned int length) const = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_GHMM_GEOMETRIC_DURATION_STATE_
+#endif  // TOPS_MODEL_DURATION_

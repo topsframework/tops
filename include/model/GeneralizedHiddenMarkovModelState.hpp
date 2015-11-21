@@ -24,52 +24,28 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
-#include "model/Range.hpp"
-#include "model/Symbol.hpp"
-#include "model/Probability.hpp"
-#include "model/DiscreteIIDModel.hpp"
-#include "model/ProbabilisticModel.hpp"
-#include "model/ProbabilisticModelState.hpp"
-
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelState;
+// Forward declaration
+class GeneralizedHiddenMarkovModel;
+
+class DiscreteIIDModel;
+class ProbabilisticModel;
+template<typename Model> struct StateTraits;
+template<typename Emission, typename Transition> class DurationState;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelState.
+ * @typedef StateTraits
+ * @brief HiddenMarkovModel specialization of StateTraits
  */
-using GeneralizedHiddenMarkovModelStatePtr
-  = std::shared_ptr<GeneralizedHiddenMarkovModelState>;
-
-/**
- * @class GeneralizedHiddenMarkovModelState
- * @brief TODO
- */
-class GeneralizedHiddenMarkovModelState
-    : public virtual ProbabilisticModelState {
- public:
-  // Purely virtual methods
-  virtual Probability durationProbability(unsigned int length) const = 0;
-  virtual unsigned int maximumDurationSize() const = 0;
-  virtual RangePtr durations() const = 0;
-
-  virtual Id id() const = 0;
-  virtual ProbabilisticModelPtr observation() = 0;
-  virtual DiscreteIIDModelPtr transition() = 0;
-
-  virtual void addPredecessor(Id id) = 0;
-  virtual std::vector<Id>& predecessors() = 0;
-  virtual const std::vector<Id>& predecessors() const = 0;
-
-  virtual void addSuccessor(Id id) = 0;
-  virtual std::vector<Id>& successors() = 0;
-  virtual const std::vector<Id>& successors() const = 0;
+template<>
+struct StateTraits<GeneralizedHiddenMarkovModel> {
+  using State
+    = tops::model::DurationState<ProbabilisticModel, DiscreteIIDModel>;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_STATE_

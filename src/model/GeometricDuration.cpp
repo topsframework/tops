@@ -18,8 +18,8 @@
 /***********************************************************************/
 
 // ToPS headers
-#include "model/GHMMSignalDurationState.hpp"
 #include "model/SingleValueRange.hpp"
+#include "model/GeometricDuration.hpp"
 
 namespace tops {
 namespace model {
@@ -28,39 +28,35 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-GHMMSignalDurationState::GHMMSignalDurationState(
-    Id id,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    unsigned int duration_size)
-    : Base(std::move(id), std::move(observation), std::move(transition)),
-      _duration_size(duration_size) {
+GeometricDuration::GeometricDuration(unsigned int id,
+                                     ProbabilisticModelPtr transition)
+    : _id(id), _transition(std::move(transition)) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Probability
-GHMMSignalDurationState::durationProbability(unsigned int length) const {
-  if (length == _duration_size)
-    return 0.0;
-  return -std::numeric_limits<double>::infinity();
+RangePtr GeometricDuration::range() const {
+  return std::make_shared<SingleValueRange>(1);
 }
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int GHMMSignalDurationState::maximumDurationSize() const {
-  return _duration_size;
+unsigned int GeometricDuration::maximumDurationSize() const {
+  return 1;
 }
 
 /*----------------------------------------------------------------------------*/
 
-RangePtr GHMMSignalDurationState::durations() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
+Probability GeometricDuration::durationProbability(unsigned int length) const {
+  if (length == 1) return 0.0;
+  return std::pow(
+      _transition->standardEvaluator(Sequence{_id})->evaluateSymbol(0),
+      length-1);
 }
 
 /*----------------------------------------------------------------------------*/
 
-}
-}
+}  // namespace model
+}  // namespace tops

@@ -17,58 +17,44 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_
-#define TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_
-
-// Standard headers
-#include <memory>
-
-// ToPS templates
-#include "model/GHMMStateCrtp.tcc"
+// ToPS headers
+#include "model/SignalDuration.hpp"
+#include "model/SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
 
-class GHMMExplicitDurationState;
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
 
-/**
- * @typedef GHMMExplicitDurationStatePtr
- * @brief Alias of pointer to GHMMExplicitDurationState.
- */
-using GHMMExplicitDurationStatePtr
-  = std::shared_ptr<GHMMExplicitDurationState>;
+SignalDuration::SignalDuration(unsigned int duration_size)
+    : _duration_size(duration_size) {
+}
 
-/**
- * @class GHMMExplicitDurationState
- * @brief TODO
- */
-class GHMMExplicitDurationState
-    : public GHMMStateCrtp<GHMMExplicitDurationState> {
- public:
-  // Alias
-  using Base = GHMMStateCrtp<GHMMExplicitDurationState>;
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
 
-  using Self = GHMMExplicitDurationState;
-  using SelfPtr = std::shared_ptr<Self>;
+RangePtr SignalDuration::range() const {
+  return std::make_shared<SingleValueRange>(_duration_size);
+}
 
-  // Constructors
-  GHMMExplicitDurationState(Id id,
-                            ProbabilisticModelPtr observation,
-                            DiscreteIIDModelPtr transition,
-                            DiscreteIIDModelPtr duration);
+/*----------------------------------------------------------------------------*/
 
-  // Overriden methods
-  Probability durationProbability(unsigned int length) const override;
-  unsigned int maximumDurationSize() const override;
-  RangePtr durations() const override;
+unsigned int SignalDuration::maximumDurationSize() const {
+  return _duration_size;
+}
 
- private:
-  // Instance variables
-  DiscreteIIDModelPtr _duration;
-  unsigned int _max_duration = 100;
-};
+/*----------------------------------------------------------------------------*/
+
+Probability SignalDuration::durationProbability(unsigned int length) const {
+  if (length == _duration_size)
+    return 0.0;
+  return -std::numeric_limits<Probability>::infinity();
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops
-
-#endif  // TOPS_MODEL_GHMM_EXPLICIT_DURATION_STATE_

@@ -17,58 +17,57 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_
-#define TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_
+#ifndef TOPS_MODEL_EXPLICIT_DURATION_
+#define TOPS_MODEL_EXPLICIT_DURATION_
 
 // Standard headers
 #include <memory>
-#include <vector>
+
+// ToPS headers
+#include "model/ProbabilisticModel.hpp"
 
 // ToPS templates
-#include "model/GHMMStateCrtp.tcc"
+#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-class GHMMSignalDurationState;
+// Forward declaration
+class ExplicitDuration;
 
 /**
- * @typedef GHMMSignalDurationStatePtr
- * @brief Alias of pointer to GHMMSignalDurationState.
+ * @typedef ExplicitDurationPtr
+ * @brief Alias of pointer to ExplicitDuration.
  */
-using GHMMSignalDurationStatePtr
-  = std::shared_ptr<GHMMSignalDurationState>;
+using ExplicitDurationPtr = std::shared_ptr<ExplicitDuration>;
 
 /**
- * @class GHMMSignalDurationState
+ * @class ExplicitDuration
  * @brief TODO
  */
-class GHMMSignalDurationState
-    : public GHMMStateCrtp<GHMMSignalDurationState> {
+class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
  public:
   // Alias
-  using Base = GHMMStateCrtp<GHMMSignalDurationState>;
-
-  using Self = GHMMSignalDurationState;
+  using Self = ExplicitDuration;
   using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
 
   // Constructors
-  GHMMSignalDurationState(Id id,
-                          ProbabilisticModelPtr observation,
-                          DiscreteIIDModelPtr transition,
-                          unsigned int duration_size);
+  ExplicitDuration(ProbabilisticModelPtr duration,
+                   unsigned int max_duration = 100);
 
   // Overriden methods
-  Probability durationProbability(unsigned int length) const override;
+  RangePtr range() const override;
   unsigned int maximumDurationSize() const override;
-  RangePtr durations() const override;
+  Probability durationProbability(unsigned int length) const override;
 
  private:
   // Instance variables
-  unsigned int _duration_size;
+  ProbabilisticModelPtr _duration;
+  unsigned int _max_duration_size;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_GHMM_SIGNAL_DURATION_STATE_
+#endif  // TOPS_MODEL_EXPLICIT_DURATION_
