@@ -24,11 +24,12 @@
 #include <memory>
 #include <vector>
 
+// ToPS templates
+#include "model/Labeler.tcc"
+#include "model/Labeling.tcc"
+
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
-
-// ToPS templates
-#include "model/Labeling.tcc"
 
 namespace tops {
 namespace model {
@@ -54,6 +55,9 @@ class DecodableModel : public virtual ProbabilisticModel {
 
   virtual GeneratorPtr<Labeling> labelingGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
+
+  virtual LabelerPtr labeler(
+      const Sequence &sequence, bool cached = false) = 0;
 };
 
 }  // namespace model

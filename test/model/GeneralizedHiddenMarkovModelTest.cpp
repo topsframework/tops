@@ -53,6 +53,7 @@ using tops::model::GeneralizedHiddenMarkovModelExplicitDurationStatePtr;
 using tops::model::Probability;
 using tops::model::Sequence;
 using tops::model::Matrix;
+using tops::model::Labeler;
 using tops::model::log_sum;
 using tops::model::Labeling;
 
@@ -136,7 +137,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation);
-  auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+  auto estimation = labeler->labeling(Labeler::method::bestPath);
   auto labeling = estimation.estimated();
 
   ASSERT_THAT(labeling.label(), ContainerEq(label));
@@ -147,7 +148,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
   Sequence label       { 0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation, true);
-  auto estimation = labeler->labeling(Labeling<Sequence>::Method::bestPath);
+  auto estimation = labeler->labeling(Labeler::method::bestPath);
   auto labeling = estimation.estimated();
 
   ASSERT_THAT(labeling.label(), ContainerEq(label));
@@ -158,7 +159,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation);
-  auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+  auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
   ASSERT_THAT(labeling.label(), ContainerEq(label));
@@ -169,7 +170,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   Sequence label       { 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };  // TODO(igorbonadio): check if it is correct
 
   auto labeler = ghmm->labeler(observation, true);
-  auto estimation = labeler->labeling(Labeling<Sequence>::Method::posteriorDecoding);
+  auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
   ASSERT_THAT(labeling.label(), ContainerEq(label));

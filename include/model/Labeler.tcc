@@ -22,10 +22,8 @@
 
 // Standard headers
 #include <memory>
-#include <exception>
 
 // ToPS headers
-#include "Symbol.hpp"
 #include "Sequence.hpp"
 
 namespace tops {
@@ -39,29 +37,29 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-template<template<typename Target> class Decorator>
 class Labeler;
 
 /**
  * @typedef LabelerPtr
  * @brief Alias of pointer to Labeler.
  */
-template<template<typename Target> class Decorator>
-using LabelerPtr = std::shared_ptr<Labeler<Decorator>>;
+using LabelerPtr = std::shared_ptr<Labeler>;
 
 /**
  * @class Labeler
  * @brief TODO
  */
-template<template<typename Target> class Decorator>
-class Labeler : public std::enable_shared_from_this<Labeler<Decorator>> {
+class Labeler : public std::enable_shared_from_this<Labeler> {
  public:
-  // Purely virtual methods
-  virtual Estimation<Labeling<Sequence>> labeling(
-      Labeling<Sequence>::Method method) const = 0;
+  // Enum classes
+  enum class method { bestPath, posteriorDecoding };
 
-  virtual Decorator<Sequence>& sequence() = 0;
-  virtual const Decorator<Sequence>& sequence() const = 0;
+  // Purely virtual methods
+  virtual Estimation<Labeling<Sequence>>
+  labeling(const method& method) const = 0;
+
+  virtual Sequence& sequence() = 0;
+  virtual const Sequence& sequence() const = 0;
 };
 
 }  // namespace model

@@ -193,41 +193,47 @@ GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
 /*=================================  LABELER  =================================*/
 
 void
-GeneralizedHiddenMarkovModel::initializeCache(CLPtr<Standard> labeler,
-                                              unsigned int /* phase */) {
-  labeler->cache().observation_evaluators = initializeObservationEvaluators(
-    labeler->sequence(), true);
+GeneralizedHiddenMarkovModel::initializeCache(CLPtr labeler) {
+  labeler->cache().observation_evaluators
+    = initializeObservationEvaluators(labeler->sequence(), true);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
-    CLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::labeling(CLPtr labeler,
+                                       const Labeler::method &method) const {
   switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), labeler->cache().gamma, labeler->cache().observation_evaluators);
-    case Labeling<Sequence>::Method::posteriorDecoding:
-      return posteriorDecoding(labeler->sequence(), labeler->cache().posterior_decoding);
+    case Labeler::method::bestPath:
+      return viterbi(labeler->sequence(), labeler->cache().gamma,
+                     labeler->cache().observation_evaluators);
+    case Labeler::method::posteriorDecoding:
+      return posteriorDecoding(labeler->sequence(),
+                               labeler->cache().posterior_decoding);
   }
   return Estimation<Labeling<Sequence>>();
 }
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::labeling(
-    SLPtr<Standard> labeler, Labeling<Sequence>::Method method) const {
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::labeling(SLPtr labeler,
+                                       const Labeler::method &method) const {
   Matrix probabilities;
-  auto observation_evaluators = initializeObservationEvaluators(labeler->sequence(), false);
+  auto observation_evaluators
+    = initializeObservationEvaluators(labeler->sequence(), false);
+
   switch (method) {
-    case Labeling<Sequence>::Method::bestPath:
-      return viterbi(labeler->sequence(), probabilities, observation_evaluators);
-    case Labeling<Sequence>::Method::posteriorDecoding:
+    case Labeler::method::bestPath:
+      return viterbi(labeler->sequence(), probabilities,
+                     observation_evaluators);
+    case Labeler::method::posteriorDecoding:
       return posteriorDecoding(labeler->sequence(), probabilities);
   }
   return Estimation<Labeling<Sequence>>();
 }
 
-/*----------------------------------------------------------------------------*/
+/*=================================  OTHERS  =================================*/
 
 double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
                                              Matrix &alpha) const {
@@ -450,7 +456,7 @@ GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
     observation_evaluators.push_back(
       state->observation()->standardEvaluator(xs, cached));
   }
-  return std::move(observation_evaluators);
+  return observation_evaluators;
 }
 
 /*----------------------------------------------------------------------------*/
