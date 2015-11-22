@@ -148,7 +148,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
       prob += _states[segments[i-1].symbol()]->transition()->probabilityOf(
         segments[i].symbol());
     }
-    prob += _states[segments[i].symbol()]->duration()->durationProbability(
+    prob += _states[segments[i].symbol()]->duration()->probabilityOfLenght(
       segments[i].end() - segments[i].begin());
     prob += _states[segments[i].symbol()]->emission()->standardEvaluator(
       evaluator->sequence().observation())->evaluateSequence(
@@ -248,7 +248,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
         if (d > i) {
           alpha[k][i] = log_sum(alpha[k][i],
             _initial_probabilities->probabilityOf(k)
-              + _states[k]->duration()->durationProbability(d)
+              + _states[k]->duration()->probabilityOfLenght(d)
               + _states[k]->emission()->standardEvaluator(sequence)
                 ->evaluateSequence(i-d+1, i+1));
         } else {
@@ -258,7 +258,7 @@ double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
               + _states[p]->transition()->probabilityOf(k));
           }
           alpha[k][i] = log_sum(alpha[k][i],
-            sum + _states[k]->duration()->durationProbability(d)
+            sum + _states[k]->duration()->probabilityOfLenght(d)
               + _states[k]->emission()->standardEvaluator(sequence)
                 ->evaluateSequence(i-d+1, i+1));
         }
@@ -295,7 +295,7 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
              !range->end() && d < (sequence.size() - i);
              d = range->next()) {
           sum = log_sum(sum,
-            _states[p]->duration()->durationProbability(d)
+            _states[p]->duration()->probabilityOfLenght(d)
               + _states[p]->emission()->standardEvaluator(sequence)
                 ->evaluateSequence(i+1, i+d+1)
               + beta[p][i+d]);
@@ -314,7 +314,7 @@ double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
          !range->end() && d <= (sequence.size());
          d = range->next()) {
       sum = log_sum(sum,
-        _states[k]->duration()->durationProbability(d)
+        _states[k]->duration()->probabilityOfLenght(d)
           + _states[k]->emission()->standardEvaluator(sequence)
             ->evaluateSequence(0, d)
           + beta[k][d-1]);
@@ -381,7 +381,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
             }
           }
         }
-        gmax = gmax + _states[k]->duration()->durationProbability(d)
+        gmax = gmax + _states[k]->duration()->probabilityOfLenght(d)
           + observation_evaluators[k]->evaluateSequence(i-d+1, i+1);
         if (gamma[k][i] < gmax) {
           gamma[k][i] = gmax;

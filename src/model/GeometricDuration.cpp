@@ -49,7 +49,7 @@ unsigned int GeometricDuration::maximumSize() const {
 
 /*----------------------------------------------------------------------------*/
 
-Probability GeometricDuration::durationProbability(unsigned int length) const {
+Probability GeometricDuration::probabilityOfLenght(unsigned int length) const {
   if (length == 1) return 0.0;
   return std::pow(
       _transition->standardEvaluator(Sequence{_id})->evaluateSymbol(0),

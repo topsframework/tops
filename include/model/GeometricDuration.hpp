@@ -60,7 +60,7 @@ class GeometricDuration : public DurationCrtp<GeometricDuration> {
   // Overriden methods
   RangePtr range() const override;
   unsigned int maximumSize() const override;
-  Probability durationProbability(unsigned int length) const override;
+  Probability probabilityOfLenght(unsigned int length) const override;
 
  private:
   // Instance variables

@@ -51,7 +51,7 @@ unsigned int ExplicitDuration::maximumSize() const {
 /*----------------------------------------------------------------------------*/
 
 Probability
-ExplicitDuration::durationProbability(unsigned int length) const {
+ExplicitDuration::probabilityOfLenght(unsigned int length) const {
   return _duration->standardEvaluator(Sequence{length})->evaluateSymbol(0);
 }
 
