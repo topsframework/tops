@@ -80,10 +80,6 @@ class DurationState
   // Virtual methods
   virtual DurationPtr duration();
 
-  virtual RangePtr range() const;
-  virtual unsigned int maximumDurationSize() const;
-  virtual Probability durationProbability(unsigned int length) const;
-
  protected:
   // Instance variables
   DurationPtr _duration;
@@ -116,28 +112,6 @@ DurationState<E, T>::DurationState(Id id, EmissionModelPtr emission,
 template<typename E, typename T>
 DurationPtr DurationState<E, T>::duration() {
   return _duration;
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-RangePtr DurationState<E, T>::range() const {
-  return _duration->range();
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-unsigned int DurationState<E, T>::maximumDurationSize() const {
-  return _duration->maximumDurationSize();
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-Probability
-DurationState<E, T>::durationProbability(unsigned int length) const {
-  return _duration->durationProbability(length);
 }
 
 /*----------------------------------------------------------------------------*/
