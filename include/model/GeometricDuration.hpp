@@ -17,33 +17,58 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_GEOMETRIC_DURATION_
+#define TOPS_MODEL_GEOMETRIC_DURATION_
 
 // Standard headers
+#include <cmath>
 #include <memory>
-#include <vector>
+
+// ToPS headers
+#include "model/ProbabilisticModel.hpp"
+
+// ToPS templates
+#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
 
 // Forward declaration
-class HiddenMarkovModel;
-
-class DiscreteIIDModel;
-template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+class GeometricDuration;
 
 /**
- * @typedef StateTraits
- * @brief HiddenMarkovModel specialization of StateTraits
+ * @typedef GeometricDurationPtr
+ * @brief Alias of pointer to GeometricDuration.
  */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+using GeometricDurationPtr = std::shared_ptr<GeometricDuration>;
+
+/**
+ * @class GeometricDuration
+ * @brief TODO
+ */
+class GeometricDuration : public DurationCrtp<GeometricDuration> {
+ public:
+  // Alias
+  using Self = GeometricDuration;
+  using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
+
+  // Constructors
+  GeometricDuration(unsigned int id,
+                    ProbabilisticModelPtr transition);
+
+  // Overriden methods
+  RangePtr range() const override;
+  unsigned int maximumSize() const override;
+  Probability probabilityOfLenght(unsigned int length) const override;
+
+ private:
+  // Instance variables
+  unsigned int _id;
+  ProbabilisticModelPtr _transition;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL__GEOMETRIC_DURATION_

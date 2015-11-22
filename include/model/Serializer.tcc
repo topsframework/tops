@@ -17,33 +17,47 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_SERIALIZER_
+#define TOPS_MODEL_SERIALIZER_
 
 // Standard headers
 #include <memory>
-#include <vector>
+
+// ToPS headers
+#include "model/Translator.hpp"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class HiddenMarkovModel;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
 
-class DiscreteIIDModel;
-template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+class Serializer;
 
 /**
- * @typedef StateTraits
- * @brief HiddenMarkovModel specialization of StateTraits
+ * @typedef SerializerPtr
+ * @brief Alias of pointer to Serializer.
  */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+using SerializerPtr = std::shared_ptr<Serializer>;
+
+/**
+ * @class Serializer
+ * @brief TODO
+ */
+class Serializer : public std::enable_shared_from_this<Serializer> {
+ public:
+  // Purely virtual methods
+  virtual void serialize() = 0;
+
+  virtual TranslatorPtr translator() = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_SERIALIZER_

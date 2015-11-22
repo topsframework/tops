@@ -17,33 +17,56 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_CALCULATOR_
+#define TOPS_MODEL_CALCULATOR_
 
 // Standard headers
 #include <memory>
-#include <vector>
+
+// ToPS headers
+#include "State.hpp"
+#include "Symbol.hpp"
+#include "Sequence.hpp"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class HiddenMarkovModel;
+/*
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+ -------------------------------------------------------------------------------
+                                    CLASS
+ -------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+*/
 
-class DiscreteIIDModel;
-template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+class Calculator;
 
 /**
- * @typedef StateTraits
- * @brief HiddenMarkovModel specialization of StateTraits
+ * @typedef CalculatorPtr
+ * @brief Alias of pointer to Calculator.
  */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+using CalculatorPtr = std::shared_ptr<Calculator>;
+
+/**
+ * @class Calculator
+ * @brief TODO
+ */
+class Calculator : public std::enable_shared_from_this<Calculator> {
+ public:
+  // Enum classes
+  enum class direction { forward, backward };
+
+  // Purely virtual methods
+  virtual Probability calculate(const method& method) const = 0;
+
+  virtual Probability posteriorProbabilityOf(State state,
+                                             Symbol symbol) const = 0;
+
+  virtual Sequence& sequence() = 0;
+  virtual const Sequence& sequence() const = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_CALCULATOR_

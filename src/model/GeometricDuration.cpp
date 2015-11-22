@@ -17,12 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
-#include "LazzyRange.hpp"
+#include "model/SingleValueRange.hpp"
+#include "model/GeometricDuration.hpp"
 
 namespace tops {
 namespace model {
@@ -31,58 +28,35 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelExplicitDurationState
-::GeneralizedHiddenMarkovModelExplicitDurationState(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition),
-        _duration(duration) {
+GeometricDuration::GeometricDuration(unsigned int id,
+                                     ProbabilisticModelPtr transition)
+    : _id(id), _transition(std::move(transition)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelExplicitDurationStatePtr
-GeneralizedHiddenMarkovModelExplicitDurationState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    DiscreteIIDModelPtr duration) {
-  return GeneralizedHiddenMarkovModelExplicitDurationStatePtr(
-    new GeneralizedHiddenMarkovModelExplicitDurationState(
-      symbol, observation, transition, duration));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-double GeneralizedHiddenMarkovModelExplicitDurationState::durationProbability(int l) const {
-  return _duration->probabilityOf(l);
+RangePtr GeometricDuration::range() const {
+  return std::make_shared<SingleValueRange>(1);
 }
 
 /*----------------------------------------------------------------------------*/
 
-bool GeneralizedHiddenMarkovModelExplicitDurationState::isGeometricDuration() const {
-  return false;
+unsigned int GeometricDuration::maximumSize() const {
+  return 1;
 }
 
 /*----------------------------------------------------------------------------*/
 
-int GeneralizedHiddenMarkovModelExplicitDurationState::maximumDurationSize() const {
-  return -1;
+Probability GeometricDuration::probabilityOfLenght(unsigned int length) const {
+  if (length == 1) return 0.0;
+  return std::pow(
+      _transition->standardEvaluator(Sequence{_id})->evaluateSymbol(0),
+      length-1);
 }
 
 /*----------------------------------------------------------------------------*/
 
-RangePtr GeneralizedHiddenMarkovModelExplicitDurationState::durations() const {
-  return std::make_shared<LazzyRange>(1, _max_duration);
-}
-
-/*----------------------------------------------------------------------------*/
-
-}
-}
+}  // namespace model
+}  // namespace tops

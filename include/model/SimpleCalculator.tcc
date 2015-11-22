@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_LABELER_
-#define TOPS_MODEL_LABELER_
+#ifndef TOPS_MODEL_SIMPLE_CALCULATOR_
+#define TOPS_MODEL_SIMPLE_CALCULATOR_
 
 // Standard headers
 #include <memory>
@@ -27,8 +27,7 @@
 #include "model/Sequence.hpp"
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+#include "model/Calculator.tcc"
 
 namespace tops {
 namespace model {
@@ -41,32 +40,65 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-class Labeler;
+template<typename Model>
+class SimpleCalculator;
 
 /**
- * @typedef LabelerPtr
- * @brief Alias of pointer to Labeler.
+ * @typedef SimpleCalculatorPtr
+ * @brief Alias of pointer to SimpleCalculator.
  */
-using LabelerPtr = std::shared_ptr<Labeler>;
+template<typename Model>
+using SimpleCalculatorPtr = std::shared_ptr<SimpleCalculator<Model>>;
 
 /**
- * @class Labeler
+ * @class SimpleCalculator
  * @brief TODO
  */
-class Labeler : public std::enable_shared_from_this<Labeler> {
+template<typename Model>
+class SimpleCalculator : public Calculator {
  public:
-  // Enum classes
-  enum class method { bestPath, posteriorDecoding };
+  // Alias
+  using ModelPtr = std::shared_ptr<Model>;
 
-  // Purely virtual methods
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const method& method) const = 0;
+  using Base = Calculator;
+  using Self = SimpleCalculator<Model>;
+  using SelfPtr = std::shared_ptr<Self>;
 
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
+  // Static methods
+  template<typename... Args>
+  static SelfPtr make(Args... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Args>(args)...));
+  }
+
+  // Overriden methods
+  Estimation<Labeling<Sequence>>
+  labeling(const Calculator::method& method) const override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  }
+
+  Sequence& sequence() override {
+    return _sequence;
+  }
+
+  const Sequence& sequence() const override {
+    return _sequence;
+  }
+
+ protected:
+  // Instace variables
+  ModelPtr _model;
+  Sequence _sequence;
+
+  // Constructors
+  SimpleCalculator(ModelPtr model, Sequence sequence)
+      : _model(std::move(model)), _sequence(std::move(sequence)) {
+  }
+
+ private:
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_LABELER_
+#endif  // TOPS_MODEL_SIMPLE_CALCULATOR_

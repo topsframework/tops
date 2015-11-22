@@ -34,14 +34,12 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 HiddenMarkovModel::HiddenMarkovModel(
-    std::vector<HiddenMarkovModelStatePtr> states,
+    std::vector<StatePtr> states,
     DiscreteIIDModelPtr initial_probabilities,
     unsigned int state_alphabet_size,
     unsigned int observation_alphabet_size)
-    : _states(states),
-      _initial_probabilities(initial_probabilities),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+    : Base(std::move(states), initial_probabilities,
+           state_alphabet_size, observation_alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -92,14 +90,14 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
           unsigned int t = 0;
           double sum = -std::numeric_limits<double>::infinity();
           if (t < observation_training_set[s].size()-1) {
-            sum = alpha[i][t] + model->state(i)->transitions()->probabilityOf(j)
-                + model->state(j)->emissions()->probabilityOf(
+            sum = alpha[i][t] + model->state(i)->transition()->probabilityOf(j)
+                + model->state(j)->emission()->probabilityOf(
                     observation_training_set[s][t+1])
                 + beta[j][t+1];
             for (t = 1; t < observation_training_set[s].size()-1; t++)
               sum = log_sum(sum,
-                  alpha[i][t] + model->state(i)->transitions()->probabilityOf(j)
-                  + model->state(j)->emissions()->probabilityOf(
+                  alpha[i][t] + model->state(i)->transition()->probabilityOf(j)
+                  + model->state(j)->emission()->probabilityOf(
                       observation_training_set[s][t+1])
                   + beta[j][t+1]);
           }
@@ -140,7 +138,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
         }
       }
 
-      std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+      std::vector<StatePtr> states(state_alphabet_size);
       for (unsigned int k = 0; k < state_alphabet_size; k++) {
         for (unsigned int l = 0; l < state_alphabet_size; l++) {
           A[k][l] = A[k][l] - sumA[k];
@@ -148,7 +146,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
         for (unsigned int b = 0; b <observation_alphabet_size; b++) {
           E[k][b] = E[k][b] - sumE[k];
         }
-        states[k] = HiddenMarkovModelState::make(
+        states[k] = State::make(
           k,
           DiscreteIIDModel::make(E[k]),
           DiscreteIIDModel::make(A[k]));
@@ -203,11 +201,11 @@ HiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
   }
 
   initial_probabilities = DiscreteIIDModel::normalize(initial_probabilities);
-  std::vector<HiddenMarkovModelStatePtr> states(state_alphabet_size);
+  std::vector<StatePtr> states(state_alphabet_size);
   for (unsigned int i = 0; i < state_alphabet_size; i++) {
     transitions[i] = DiscreteIIDModel::normalize(transitions[i]);
     emissions[i] = DiscreteIIDModel::normalize(emissions[i]);
-    states[i] = HiddenMarkovModelState::make(
+    states[i] = State::make(
       i,
       DiscreteIIDModel::make(emissions[i]),
       DiscreteIIDModel::make(transitions[i]));
@@ -321,11 +319,11 @@ HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
     transition = _initial_probabilities
       ->standardEvaluator(label)->evaluateSymbol(0);
   else
-    transition = _states[label[pos-1]]->transitions()
+    transition = _states[label[pos-1]]->transition()
       ->standardEvaluator(label)->evaluateSymbol(pos);
 
   return transition
-    + _states[label[pos]]->emissions()
+    + _states[label[pos]]->emission()
       ->standardEvaluator(observation)->evaluateSymbol(pos);
 }
 
@@ -361,8 +359,8 @@ Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
                                                const Sequence &context) const {
   auto rng = generator->randomNumberGenerator();
   Symbol y = (pos == 0) ? _initial_probabilities->draw(rng)
-                        : _states[context[pos-1]]->transitions()->draw(rng);
-  Symbol x = _states[y]->emissions()->draw(rng);
+                        : _states[context[pos-1]]->transition()->draw(rng);
+  Symbol x = _states[y]->emission()->draw(rng);
 
   return Labeling<Symbol>(x, y);
 }
@@ -427,17 +425,17 @@ double HiddenMarkovModel::forward(const Sequence &sequence,
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     alpha[k][0] = _initial_probabilities->probabilityOf(k)
-        + _states[k]->emissions()->probabilityOf(sequence[0]);
+        + _states[k]->emission()->probabilityOf(sequence[0]);
 
   for (unsigned int t = 0; t < sequence.size() - 1; t++) {
     for (unsigned int i = 0; i < _state_alphabet_size; i++) {
-      alpha[i][t+1] = alpha[0][t] + _states[0]->transitions()->probabilityOf(i);
+      alpha[i][t+1] = alpha[0][t] + _states[0]->transition()->probabilityOf(i);
       for (unsigned int j = 1; j < _state_alphabet_size; j++) {
         alpha[i][t+1] = log_sum(
             alpha[i][t+1],
-            alpha[j][t] + _states[j]->transitions()->probabilityOf(i));
+            alpha[j][t] + _states[j]->transition()->probabilityOf(i));
       }
-      alpha[i][t+1] += _states[i]->emissions()->probabilityOf(sequence[t+1]);
+      alpha[i][t+1] += _states[i]->emission()->probabilityOf(sequence[t+1]);
     }
   }
 
@@ -461,24 +459,24 @@ double HiddenMarkovModel::backward(const Sequence &sequence,
 
   for (int t = sequence.size()-2; t >= 0; t--) {
     for (unsigned int i = 0; i < _state_alphabet_size; i++) {
-      beta[i][t] =  _states[i]->transitions()->probabilityOf(0)
-          + _states[0]->emissions()->probabilityOf(sequence[t+1])
+      beta[i][t] =  _states[i]->transition()->probabilityOf(0)
+          + _states[0]->emission()->probabilityOf(sequence[t+1])
           + beta[0][t+1];
       for (unsigned int j = 1; j < _state_alphabet_size; j++) {
         beta[i][t] = log_sum(
             beta[i][t],
-            _states[i]->transitions()->probabilityOf(j)
-                + _states[j]->emissions()->probabilityOf(sequence[t+1])
+            _states[i]->transition()->probabilityOf(j)
+                + _states[j]->emission()->probabilityOf(sequence[t+1])
                 + beta[j][t+1]);
       }
     }
   }
 
   double sum = beta[0][0] + _initial_probabilities->probabilityOf(0)
-      + _states[0]->emissions()->probabilityOf(sequence[0]);
+      + _states[0]->emission()->probabilityOf(sequence[0]);
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     sum = log_sum(sum, beta[k][0] + _initial_probabilities->probabilityOf(k)
-        + _states[k]->emissions()->probabilityOf(sequence[0]));
+        + _states[k]->emission()->probabilityOf(sequence[0]));
   }
 
   return sum;
@@ -505,28 +503,6 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
 
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-/*================================  OTHERS  ==================================*/
-
-/*----------------------------------------------------------------------------*/
-
-HiddenMarkovModelStatePtr HiddenMarkovModel::state(unsigned int i) const {
-  return _states[i];
-}
-
-/*----------------------------------------------------------------------------*/
-
-unsigned int HiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-unsigned int HiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
 /*----------------------------------------------------------------------------*/
 
 void HiddenMarkovModel::initializeStandardPrefixSumArray(
@@ -568,21 +544,21 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     gamma[k][0] = _initial_probabilities->probabilityOf(k)
-        + _states[k]->emissions()->probabilityOf(xs[0]);
+        + _states[k]->emission()->probabilityOf(xs[0]);
 
   for (unsigned int i = 0; i < xs.size() - 1; i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
       gamma[k][i+1] =  gamma[0][i]
-          + _states[0]->transitions()->probabilityOf(k);
+          + _states[0]->transition()->probabilityOf(k);
       psi[k][i+1] = 0;
       for (unsigned int p = 1; p < _state_alphabet_size; p++) {
-        double v = gamma[p][i] + _states[p]->transitions()->probabilityOf(k);
+        double v = gamma[p][i] + _states[p]->transition()->probabilityOf(k);
         if (gamma[k][i+1] < v) {
           gamma[k][i+1] = v;
           psi[k][i+1] = p;
         }
       }
-      gamma[k][i+1] += _states[k]->emissions()->probabilityOf(xs[i+1]);
+      gamma[k][i+1] += _states[k]->emission()->probabilityOf(xs[i+1]);
     }
   }
 

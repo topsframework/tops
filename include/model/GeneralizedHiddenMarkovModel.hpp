@@ -26,16 +26,15 @@
 
 // ToPS headers
 #include "model/Matrix.hpp"
-#include "model/GeneralizedHiddenMarkovModelState.hpp"
-#include "model/GeneralizedHiddenMarkovModelSignalState.hpp"
-#include "model/GeneralizedHiddenMarkovModelExplicitDurationState.hpp"
 
 // ToPS templates
+#include "model/DurationState.tcc"
 #include "model/DecodableModelCrtp.tcc"
 
 namespace tops {
 namespace model {
 
+// Forward declaration
 class GeneralizedHiddenMarkovModel;
 
 /**
@@ -53,7 +52,14 @@ class GeneralizedHiddenMarkovModel
     : public DecodableModelCrtp<GeneralizedHiddenMarkovModel> {
  public:
   // Alias
-  using Base = DecodableModelCrtp<GeneralizedHiddenMarkovModel>;
+  using Self = GeneralizedHiddenMarkovModel;
+  using SelfPtr = std::shared_ptr<Self>;
+
+  using Base = DecodableModelCrtp<Self>;
+
+  // Type traits
+  using State = typename StateTraits<Self>::State;
+  using StatePtr = std::shared_ptr<State>;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -65,7 +71,7 @@ class GeneralizedHiddenMarkovModel
 
   // Constructors
   GeneralizedHiddenMarkovModel(
-      std::vector<GeneralizedHiddenMarkovModelStatePtr> states,
+      std::vector<StatePtr> states,
       DiscreteIIDModelPtr initial_probability,
       unsigned int state_alphabet_size,
       unsigned int observation_alphabet_size,
@@ -139,10 +145,6 @@ class GeneralizedHiddenMarkovModel
 
  protected:
   // Instance variables
-  std::vector<GeneralizedHiddenMarkovModelStatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
   unsigned int _max_backtracking;
 
  private:

@@ -17,66 +17,42 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-#include <vector>
-#include <algorithm>
-
 // ToPS headers
-#include "model/HiddenMarkovModelState.hpp"
+#include "model/LazzyRange.hpp"
+#include "model/ExplicitDuration.hpp"
 
 namespace tops {
 namespace model {
 
+
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-HiddenMarkovModelState::HiddenMarkovModelState(
-    Symbol symbol,
-    DiscreteIIDModelPtr emissions,
-    DiscreteIIDModelPtr transitions)
-    : _symbol(symbol),
-      _emissions(emissions),
-      _transitions(transitions) {
+ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration,
+                                   unsigned int max_duration_size)
+    : _duration(std::move(duration)), _max_duration_size(max_duration_size) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              STATIC METHODS                                */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-HiddenMarkovModelStatePtr HiddenMarkovModelState::make(
-    Symbol symbol,
-    DiscreteIIDModelPtr emissions,
-    DiscreteIIDModelPtr transitions) {
-  return HiddenMarkovModelStatePtr(new HiddenMarkovModelState(
-      symbol, emissions, transitions));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-bool HiddenMarkovModelState::isSilent() {
-  return _emissions == nullptr;
+RangePtr ExplicitDuration::range() const {
+  return std::make_shared<LazzyRange>(1, _max_duration_size);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Symbol HiddenMarkovModelState::symbol() {
-  return _symbol;
+unsigned int ExplicitDuration::maximumSize() const {
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr & HiddenMarkovModelState::emissions() {
-  return _emissions;
-}
-
-/*----------------------------------------------------------------------------*/
-
-DiscreteIIDModelPtr & HiddenMarkovModelState::transitions() {
-  return _transitions;
+Probability
+ExplicitDuration::probabilityOfLenght(unsigned int length) const {
+  return _duration->standardEvaluator(Sequence{length})->evaluateSymbol(0);
 }
 
 /*----------------------------------------------------------------------------*/

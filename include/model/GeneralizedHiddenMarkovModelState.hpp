@@ -24,66 +24,28 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
-#include "Range.hpp"
-
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelState;
+// Forward declaration
+class GeneralizedHiddenMarkovModel;
+
+class DiscreteIIDModel;
+class ProbabilisticModel;
+template<typename Model> struct StateTraits;
+template<typename Emission, typename Transition> class DurationState;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelState.
+ * @typedef StateTraits
+ * @brief HiddenMarkovModel specialization of StateTraits
  */
-using GeneralizedHiddenMarkovModelStatePtr
-  = std::shared_ptr<GeneralizedHiddenMarkovModelState>;
-
-/**
- * @class GeneralizedHiddenMarkovModelState
- * @brief TODO
- */
-class GeneralizedHiddenMarkovModelState {
- public:
-  // Static methods
-  static GeneralizedHiddenMarkovModelStatePtr make(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition);
-
-  // Virtual methods
-  virtual double durationProbability(int l) const;
-  virtual bool isGeometricDuration() const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
-
-  // Concrete methods
-  Symbol symbol();
-  ProbabilisticModelPtr observation();
-  DiscreteIIDModelPtr transition();
-  void addPredecessor(int id);
-  void addSuccessor(int id);
-  std::vector<int>& predecessors();
-  std::vector<int>& successors();
-
- protected:
-  // Instance variables
-  Symbol _symbol;
-  ProbabilisticModelPtr _observation;
-  DiscreteIIDModelPtr _transition;
-  std::vector<int> _predecessors;
-  std::vector<int> _successors;
-
-  // Constructors
-  GeneralizedHiddenMarkovModelState(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition);
+template<>
+struct StateTraits<GeneralizedHiddenMarkovModel> {
+  using State
+    = tops::model::DurationState<ProbabilisticModel, DiscreteIIDModel>;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_STATE_

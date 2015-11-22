@@ -17,18 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_LABELER_
-#define TOPS_MODEL_LABELER_
+#ifndef TOPS_MODEL_SIMPLE_SERIALIZER_
+#define TOPS_MODEL_SIMPLE_SERIALIZER_
 
 // Standard headers
 #include <memory>
-
-// ToPS headers
-#include "model/Sequence.hpp"
+#include <typeinfo>
+#include <exception>
 
 // ToPS templates
-#include "model/Labeling.tcc"
-#include "model/Estimation.tcc"
+#include "model/Serializer.tcc"
+#include "model/MemberDelegator.tcc"
 
 namespace tops {
 namespace model {
@@ -41,32 +40,59 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-class Labeler;
+template<typename Model>
+class SimpleSerializer;
 
 /**
- * @typedef LabelerPtr
- * @brief Alias of pointer to Labeler.
+ * @typedef SimpleSerializerPtr
+ * @brief Alias of pointer to SimpleSerializer.
  */
-using LabelerPtr = std::shared_ptr<Labeler>;
+template<typename Model>
+using SimpleSerializerPtr = std::shared_ptr<SimpleSerializer<Model>>;
 
 /**
- * @class Labeler
+ * @class SimpleSerializer
  * @brief TODO
  */
-class Labeler : public std::enable_shared_from_this<Labeler> {
+template<typename Model>
+class SimpleSerializer : public Serializer {
  public:
-  // Enum classes
-  enum class method { bestPath, posteriorDecoding };
+  // Alias
+  using ModelPtr = std::shared_ptr<Model>;
 
-  // Purely virtual methods
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const method& method) const = 0;
+  using Self = SimpleSerializer<Model>;
+  using SelfPtr = std::shared_ptr<Self>;
 
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
+  // Static methods
+  template<typename... Ts>
+  static SelfPtr make(Ts... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Ts>(args)...));
+  }
+
+  // Overriden methods
+  void serialize() override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(serialize, /* empty */);
+  }
+
+  TranslatorPtr translator() override {
+    return _translator;
+  }
+
+ protected:
+  // Instance variables
+  ModelPtr _model;
+  TranslatorPtr _translator;
+
+  // Constructors
+  SimpleSerializer(ModelPtr m, TranslatorPtr translator)
+      : _model(std::move(m)), _translator(std::move(translator)) {
+  }
+
+ private:
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(serialize, _model)
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_LABELER_
+#endif

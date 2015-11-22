@@ -17,64 +17,57 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_EXPLICIT_DURATION_STATE_
+#ifndef TOPS_MODEL_EXPLICIT_DURATION_
+#define TOPS_MODEL_EXPLICIT_DURATION_
 
 // Standard headers
 #include <memory>
-#include <vector>
 
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelState.hpp"
-#include "ProbabilisticModel.hpp"
-#include "DiscreteIIDModel.hpp"
+#include "model/ProbabilisticModel.hpp"
+
+// ToPS templates
+#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
 
-class GeneralizedHiddenMarkovModelExplicitDurationState;
+// Forward declaration
+class ExplicitDuration;
 
 /**
- * @typedef GeneralizedHiddenMarkovModelExplicitDurationStatePtr
- * @brief Alias of pointer to GeneralizedHiddenMarkovModelExplicitDurationState.
+ * @typedef ExplicitDurationPtr
+ * @brief Alias of pointer to ExplicitDuration.
  */
-using GeneralizedHiddenMarkovModelExplicitDurationStatePtr
-  = std::shared_ptr<GeneralizedHiddenMarkovModelExplicitDurationState>;
+using ExplicitDurationPtr = std::shared_ptr<ExplicitDuration>;
 
 /**
- * @class GeneralizedHiddenMarkovModelExplicitDurationState
+ * @class ExplicitDuration
  * @brief TODO
  */
-class GeneralizedHiddenMarkovModelExplicitDurationState
-    : public GeneralizedHiddenMarkovModelState {
+class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
  public:
-  // Static methods
-  static GeneralizedHiddenMarkovModelExplicitDurationStatePtr make(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition,
-      DiscreteIIDModelPtr duration);
+  // Alias
+  using Self = ExplicitDuration;
+  using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
 
-  // Virtual methods
-  virtual double durationProbability(int l) const;
-  virtual bool isGeometricDuration() const;
-  virtual int maximumDurationSize() const;
-  virtual RangePtr durations() const;
+  // Constructors
+  ExplicitDuration(ProbabilisticModelPtr duration,
+                   unsigned int max_duration = 100);
+
+  // Overriden methods
+  RangePtr range() const override;
+  unsigned int maximumSize() const override;
+  Probability probabilityOfLenght(unsigned int length) const override;
 
  private:
   // Instance variables
-  DiscreteIIDModelPtr _duration;
-  unsigned int _max_duration = 100;
-
-  // Constructors
-  GeneralizedHiddenMarkovModelExplicitDurationState(
-      Symbol symbol,
-      ProbabilisticModelPtr observation,
-      DiscreteIIDModelPtr transition,
-      DiscreteIIDModelPtr duration);
+  ProbabilisticModelPtr _duration;
+  unsigned int _max_duration_size;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_EXPLICIT_DURATION_

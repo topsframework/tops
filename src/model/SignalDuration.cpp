@@ -17,12 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <cmath>
-
 // ToPS headers
-#include "GeneralizedHiddenMarkovModelSignalState.hpp"
-#include "SingleValueRange.hpp"
+#include "model/SignalDuration.hpp"
+#include "model/SingleValueRange.hpp"
 
 namespace tops {
 namespace model {
@@ -31,53 +28,33 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelSignalState::GeneralizedHiddenMarkovModelSignalState(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    int duration_size)
-      : GeneralizedHiddenMarkovModelState(symbol, observation, transition),
-        _duration_size(duration_size) {
+SignalDuration::SignalDuration(unsigned int duration_size)
+    : _duration_size(duration_size) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-GeneralizedHiddenMarkovModelSignalStatePtr
-GeneralizedHiddenMarkovModelSignalState::make(
-    Symbol symbol,
-    ProbabilisticModelPtr observation,
-    DiscreteIIDModelPtr transition,
-    int duration_size) {
-  return GeneralizedHiddenMarkovModelSignalStatePtr(
-    new GeneralizedHiddenMarkovModelSignalState(
-      symbol, observation, transition, duration_size));
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-double GeneralizedHiddenMarkovModelSignalState::durationProbability(int l) const {
-  if (l == _duration_size)
-    return 0.0;
-  return -std::numeric_limits<double>::infinity();
-}
-
-/*----------------------------------------------------------------------------*/
-
-int GeneralizedHiddenMarkovModelSignalState::maximumDurationSize() const {
-  return _duration_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-RangePtr GeneralizedHiddenMarkovModelSignalState::durations() const {
+RangePtr SignalDuration::range() const {
   return std::make_shared<SingleValueRange>(_duration_size);
 }
 
 /*----------------------------------------------------------------------------*/
 
+unsigned int SignalDuration::maximumSize() const {
+  return _duration_size;
 }
+
+/*----------------------------------------------------------------------------*/
+
+Probability SignalDuration::probabilityOfLenght(unsigned int length) const {
+  if (length == _duration_size)
+    return 0.0;
+  return -std::numeric_limits<Probability>::infinity();
 }
+
+/*----------------------------------------------------------------------------*/
+
+}  // namespace model
+}  // namespace tops

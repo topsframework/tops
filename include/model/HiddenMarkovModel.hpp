@@ -29,11 +29,13 @@
 #include "model/HiddenMarkovModelState.hpp"
 
 // ToPS templates
+#include "model/SimpleState.tcc"
 #include "model/DecodableModelCrtp.tcc"
 
 namespace tops {
 namespace model {
 
+// Forward declaration
 class HiddenMarkovModel;
 
 /**
@@ -54,11 +56,16 @@ class HiddenMarkovModel
   class maximum_likehood_algorithm {};
 
   // Alias
-  using Base = DecodableModelCrtp<HiddenMarkovModel>;
-  using Cache = Base::Cache;
-
   using Self = HiddenMarkovModel;
   using SelfPtr = HiddenMarkovModelPtr;
+
+  using Base = DecodableModelCrtp<HiddenMarkovModel>;
+
+  using Cache = Base::Cache;
+
+  // Type traits
+  using State = typename StateTraits<Self>::State;
+  using StatePtr = std::shared_ptr<State>;
 
   // Hidden name method inheritance
   using Base::evaluateSequence;
@@ -66,7 +73,7 @@ class HiddenMarkovModel
   using Base::initializeCache;
 
   // Constructors
-  HiddenMarkovModel(std::vector<HiddenMarkovModelStatePtr> states,
+  HiddenMarkovModel(std::vector<StatePtr> states,
                     DiscreteIIDModelPtr initial_probability,
                     unsigned int state_alphabet_size,
                     unsigned int observation_alphabet_size);
@@ -150,18 +157,6 @@ class HiddenMarkovModel
                  Matrix &alpha) const override;
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
-
-  // Concrete methods
-  unsigned int stateAlphabetSize() const;
-  unsigned int observationAlphabetSize() const;
-  HiddenMarkovModelStatePtr state(unsigned int i) const;
-
- protected:
-  // Instance variables
-  std::vector<HiddenMarkovModelStatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
 
  private:
   // Concrete methods

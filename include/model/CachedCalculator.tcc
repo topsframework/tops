@@ -17,11 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_LABELER_
-#define TOPS_MODEL_LABELER_
+#ifndef TOPS_MODEL_CACHED_CALCULATOR_
+#define TOPS_MODEL_CACHED_CALCULATOR_
 
 // Standard headers
 #include <memory>
+#include <type_traits>
 
 // ToPS headers
 #include "model/Sequence.hpp"
@@ -41,32 +42,84 @@ namespace model {
 ////////////////////////////////////////////////////////////////////////////////
 */
 
-class Labeler;
+template<typename Model>
+class CachedCalculator;
 
 /**
- * @typedef LabelerPtr
- * @brief Alias of pointer to Labeler.
+ * @typedef CachedCalculatorPtr
+ * @brief Alias of pointer to CachedCalculator.
  */
-using LabelerPtr = std::shared_ptr<Labeler>;
+template<typename Model>
+using CachedCalculatorPtr = std::shared_ptr<CachedCalculator<Model>>;
 
 /**
- * @class Labeler
+ * @class CachedCalculator
  * @brief TODO
  */
-class Labeler : public std::enable_shared_from_this<Labeler> {
+template<typename Model>
+class CachedCalculator : public SimpleCalculator<Model> {
  public:
-  // Enum classes
-  enum class method { bestPath, posteriorDecoding };
+  // Alias
+  using ModelPtr = std::shared_ptr<Model>;
+  using Cache = typename Model::Cache;
 
-  // Purely virtual methods
-  virtual Estimation<Labeling<Sequence>>
-  labeling(const method& method) const = 0;
+  using Base = SimpleCalculator<Model>;
+  using Self = CachedCalculator<Model>;
+  using SelfPtr = std::shared_ptr<Self>;
 
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
+  // Static methods
+  template<typename... Args>
+  static SelfPtr make(Args... args) {
+    return std::shared_ptr<Self>(new Self(std::forward<Args>(args)...));
+  }
+
+  // Overriden methods
+  Estimation<Labeling<Sequence>>
+  labeling(const Calculator::method& method) const override {
+    lazyInitializeCache();
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  }
+
+  // Virtual methods
+  virtual void initializeCache() const {
+    CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, /* void */);
+  }
+
+  // Concrete methods
+  Cache& cache() {
+    return _cache;
+  }
+
+  const Cache& cache() const {
+    return _cache;
+  }
+
+ protected:
+  // Instace variables
+  mutable Cache _cache;
+  mutable bool initialized = false;
+
+  // Constructors
+  CachedCalculator(
+      ModelPtr model, Sequence sequence, Cache cache = Cache())
+      : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
+  }
+
+ private:
+  // Concrete methods
+  inline void lazyInitializeCache() const {
+    if (!initialized) {
+      initialized = true;
+      initializeCache();
+    }
+  }
+
+  // Delegators
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(initializeCache, _model)
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_LABELER_
+#endif  // TOPS_MODEL_CACHED_CALCULATOR_

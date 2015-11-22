@@ -35,6 +35,7 @@
 #include "model/SimpleGenerator.tcc"
 #include "model/SimpleEvaluator.tcc"
 #include "model/CachedEvaluator.tcc"
+#include "model/SimpleSerializer.tcc"
 
 namespace tops {
 namespace model {
@@ -86,6 +87,8 @@ class ProbabilisticModelCrtp
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
+  using SSPtr = SimpleSerializerPtr<Derived>;
+
   // Static methods
   template<typename... Args>
   static DerivedPtr make(Args&&... args);
@@ -105,6 +108,8 @@ class ProbabilisticModelCrtp
   GeneratorPtr<Standard>
   standardGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
+
+  SerializerPtr serializer(TranslatorPtr translator) override;
 
   // Purely virtual methods
   virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
@@ -136,6 +141,8 @@ class ProbabilisticModelCrtp
   virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                           unsigned int size,
                                           unsigned int phase) const;
+
+  virtual void serialize(SSPtr serializer);
 
  private:
   // Concrete methods
@@ -207,6 +214,14 @@ GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator(
   return SimpleGenerator<Standard, Derived>::make(make_shared(), rng);
 }
 
+/*===============================  SERIALIZER  ===============================*/
+
+template<typename Derived>
+SerializerPtr ProbabilisticModelCrtp<Derived>::serializer(
+    TranslatorPtr translator) {
+  return SimpleSerializer<Derived>::make(make_shared(), translator);
+}
+
 /*----------------------------------------------------------------------------*/
 /*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
@@ -274,6 +289,14 @@ ProbabilisticModelCrtp<Derived>::drawSequence(SGPtr<Standard> generator,
   for (unsigned int k = 0; k < size; k++)
       s.push_back(generator->drawSymbol(k, phase, s));
   return s;
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+template<typename Derived>
+void
+ProbabilisticModelCrtp<Derived>::serialize(SSPtr serializer) {
+  serializer->translator()->translate(this->make_shared());
 }
 
 /*----------------------------------------------------------------------------*/

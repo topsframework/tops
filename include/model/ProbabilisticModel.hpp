@@ -32,6 +32,7 @@
 #include "model/Standard.tcc"
 #include "model/Evaluator.tcc"
 #include "model/Generator.tcc"
+#include "model/Serializer.tcc"
 #include "model/RandomNumberGeneratorAdapter.tcc"
 
 namespace tops {
@@ -58,6 +59,8 @@ class ProbabilisticModel {
 
   virtual GeneratorPtr<Standard> standardGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
+
+  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 };
 
 }  // namespace model

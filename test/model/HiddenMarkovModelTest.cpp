@@ -32,6 +32,7 @@
 
 #include "helper/HiddenMarkovModel.hpp"
 #include "helper/Sequence.hpp"
+#include "helper/SExprTranslator.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -49,6 +50,8 @@ using tops::model::INVALID_SYMBOL;
 
 using tops::helper::createDishonestCoinCasinoHMM;
 using tops::helper::generateAllCombinationsOfSymbols;
+
+using tops::helper::SExprTranslator;
 
 class AHiddenMarkovModel : public testing::Test {
  protected:
@@ -198,6 +201,20 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-311.83440, 1e-4));
   ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-110.38680, 1e-4));
   ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-313.26651, 1e-4));
+}
+
+TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
+  auto translator = SExprTranslator::make();
+  auto serializer = hmm->serializer(translator);
+  serializer->serialize();
+  ASSERT_EQ(translator->sexpr(),
+    "(HiddenMarkovModel: "
+      "(HMM::State: "
+        "(DiscreteIIDModel: -0.693147 -0.693147) "
+        "(DiscreteIIDModel: -0.356675 -1.203973)) "
+      "(HMM::State: "
+        "(DiscreteIIDModel: -1.609438 -0.223144) "
+        "(DiscreteIIDModel: -0.693147 -0.693147)))");
 }
 
 TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {

@@ -17,33 +17,45 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_MODEL_DURATION_
+#define TOPS_MODEL_DURATION_
 
 // Standard headers
 #include <memory>
-#include <vector>
+
+// ToPS headers
+#include "model/Range.hpp"
+#include "model/Probability.hpp"
+
+// ToPS templates
+#include "model/Serializer.tcc"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
-class HiddenMarkovModel;
-
-class DiscreteIIDModel;
-template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+class Duration;
 
 /**
- * @typedef StateTraits
- * @brief HiddenMarkovModel specialization of StateTraits
+ * @typedef DurationPtr
+ * @brief Alias of pointer to Duration.
  */
-template<>
-struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+using DurationPtr = std::shared_ptr<Duration>;
+
+/**
+ * @class Duration
+ * @brief TODO
+ */
+class Duration {
+ public:
+  // Purely virtual methods
+  virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+
+  virtual RangePtr range() const = 0;
+  virtual unsigned int maximumSize() const = 0;
+  virtual Probability probabilityOfLenght(unsigned int length) const = 0;
 };
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_MODEL_DURATION_

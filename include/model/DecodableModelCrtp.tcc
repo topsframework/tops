@@ -26,12 +26,14 @@
 
 // ToPS headers
 #include "model/DecodableModel.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
 // ToPS templates
-#include "model/ProbabilisticModelCrtp.tcc"
+#include "model/State.tcc"
 #include "model/Labeler.tcc"
 #include "model/SimpleLabeler.tcc"
 #include "model/CachedLabeler.tcc"
+#include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -64,12 +66,10 @@ template<typename Derived>
 class DecodableModelCrtp
     : public ProbabilisticModelCrtp<Derived>, public virtual DecodableModel {
  public:
-  // Inner classes
-  struct Cache : ProbabilisticModelCrtp<Derived>::Cache {
-    Matrix alpha, beta, gamma, posterior_decoding;
-  };
-
   // Alias
+  using Self = DecodableModelCrtp<Derived>;
+  using SelfPtr = std::shared_ptr<Self>;
+
   using Base = ProbabilisticModelCrtp<Derived>;
   using DerivedPtr = std::shared_ptr<Derived>;
 
@@ -85,6 +85,15 @@ class DecodableModelCrtp
   using SLPtr = SimpleLabelerPtr<Derived>;
 
   using CLPtr = CachedLabelerPtr<Derived>;
+
+  // Type traits
+  using State = typename StateTraits<Derived>::State;
+  using StatePtr = std::shared_ptr<State>;
+
+  // Inner classes
+  struct Cache : Base::Cache {
+    Matrix alpha, beta, gamma, posterior_decoding;
+  };
 
   // Hidden name method inheritance
   using Base::initializeCache;
@@ -102,7 +111,7 @@ class DecodableModelCrtp
   template<typename Tag, typename... Args>
   static TrainerPtr<Labeling, Derived> labelingTrainer(Tag, Args&&... args);
 
-  // Concrete methods
+  // Overriden methods
   EvaluatorPtr<Labeling>
   labelingEvaluator(const Labeling<Sequence> &sequence,
                     bool cached = false) override;
@@ -156,6 +165,27 @@ class DecodableModelCrtp
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
+  // Virtual methods
+  unsigned int stateAlphabetSize() const;
+  unsigned int observationAlphabetSize() const;
+
+  virtual StatePtr state(unsigned int id);
+  virtual std::vector<StatePtr> states();
+  virtual const std::vector<StatePtr> states() const;
+
+ protected:
+  // Instance variables
+  std::vector<StatePtr> _states;
+  DiscreteIIDModelPtr _initial_probabilities;
+  unsigned int _state_alphabet_size;
+  unsigned int _observation_alphabet_size;
+
+  // Constructors
+  DecodableModelCrtp(std::vector<StatePtr> states,
+                     DiscreteIIDModelPtr _initial_probabilities,
+                     unsigned int state_alphabet_size,
+                     unsigned int observation_alphabet_size);
+
  private:
   // Concrete methods
   DerivedPtr make_shared();
@@ -170,6 +200,22 @@ class DecodableModelCrtp
 */
 
 /*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+DecodableModelCrtp<Derived>::DecodableModelCrtp(
+    std::vector<StatePtr> states,
+    DiscreteIIDModelPtr initial_probabilities,
+    unsigned int state_alphabet_size,
+    unsigned int observation_alphabet_size)
+    : _states(std::move(states)),
+      _initial_probabilities(initial_probabilities),
+      _state_alphabet_size(state_alphabet_size),
+      _observation_alphabet_size(observation_alphabet_size) {
+}
+
+/*----------------------------------------------------------------------------*/
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
@@ -181,11 +227,15 @@ DecodableModelCrtp<Derived>::labelingTrainer() {
   return SimpleTrainer<Labeling, Derived>::make();
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Derived>
 TrainerPtr<Labeling, Derived>
 DecodableModelCrtp<Derived>::labelingTrainer(DerivedPtr model) {
   return FixedTrainer<Labeling, Derived>::make(model);
 }
+
+/*----------------------------------------------------------------------------*/
 
 template<typename Derived>
 template<typename Tag, typename... Args>
@@ -228,11 +278,48 @@ LabelerPtr DecodableModelCrtp<Derived>::labeler(
 }
 
 /*----------------------------------------------------------------------------*/
+/*                              VIRTUAL METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+unsigned int DecodableModelCrtp<Derived>::stateAlphabetSize() const {
+  return _state_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+unsigned int DecodableModelCrtp<Derived>::observationAlphabetSize() const {
+  return _observation_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto DecodableModelCrtp<Derived>::state(unsigned int id) -> StatePtr {
+  return _states[id];
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto DecodableModelCrtp<Derived>::states() -> std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+auto DecodableModelCrtp<Derived>::states() const -> const std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-std::shared_ptr<Derived> DecodableModelCrtp<Derived>::make_shared() {
+auto DecodableModelCrtp<Derived>::make_shared() -> DerivedPtr {
   return std::static_pointer_cast<Derived>(
     static_cast<Derived *>(this)->shared_from_this());
 }
