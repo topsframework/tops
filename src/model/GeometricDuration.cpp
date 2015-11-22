@@ -43,7 +43,7 @@ RangePtr GeometricDuration::range() const {
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int GeometricDuration::maximumDurationSize() const {
+unsigned int GeometricDuration::maximumSize() const {
   return 1;
 }
 

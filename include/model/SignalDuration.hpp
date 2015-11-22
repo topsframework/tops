@@ -54,7 +54,7 @@ class SignalDuration : public DurationCrtp<SignalDuration> {
 
   // Overriden methods
   RangePtr range() const override;
-  unsigned int maximumDurationSize() const override;
+  unsigned int maximumSize() const override;
   Probability durationProbability(unsigned int length) const override;
 
  private:

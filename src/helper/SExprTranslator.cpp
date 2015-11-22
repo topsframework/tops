@@ -137,7 +137,7 @@ void SExprTranslator::translate(
 
 void SExprTranslator::translate(Ptr<model::SignalDuration> duration) {
   _sexpr += "(SignalDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumDurationSize());
+  _sexpr += std::to_string(duration->maximumSize());
   _sexpr += ")";
 }
 
@@ -145,7 +145,7 @@ void SExprTranslator::translate(Ptr<model::SignalDuration> duration) {
 
 void SExprTranslator::translate(Ptr<model::ExplicitDuration> duration) {
   _sexpr += "(ExplicitDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumDurationSize());
+  _sexpr += std::to_string(duration->maximumSize());
   _sexpr += ")";
 }
 
@@ -153,7 +153,7 @@ void SExprTranslator::translate(Ptr<model::ExplicitDuration> duration) {
 
 void SExprTranslator::translate(Ptr<model::GeometricDuration> duration) {
   _sexpr += "(GeometricDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumDurationSize());
+  _sexpr += std::to_string(duration->maximumSize());
   _sexpr += ")";
 }
 

@@ -44,7 +44,7 @@ RangePtr ExplicitDuration::range() const {
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int ExplicitDuration::maximumDurationSize() const {
+unsigned int ExplicitDuration::maximumSize() const {
   return 0;
 }
 

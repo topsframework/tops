@@ -58,7 +58,7 @@ class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
 
   // Overriden methods
   RangePtr range() const override;
-  unsigned int maximumDurationSize() const override;
+  unsigned int maximumSize() const override;
   Probability durationProbability(unsigned int length) const override;
 
  private:

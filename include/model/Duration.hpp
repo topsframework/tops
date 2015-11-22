@@ -51,7 +51,7 @@ class Duration {
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
   virtual RangePtr range() const = 0;
-  virtual unsigned int maximumDurationSize() const = 0;
+  virtual unsigned int maximumSize() const = 0;
   virtual Probability durationProbability(unsigned int length) const = 0;
 };
 

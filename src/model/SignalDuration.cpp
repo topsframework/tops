@@ -42,7 +42,7 @@ RangePtr SignalDuration::range() const {
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int SignalDuration::maximumDurationSize() const {
+unsigned int SignalDuration::maximumSize() const {
   return _duration_size;
 }
 
