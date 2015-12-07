@@ -32,9 +32,6 @@
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
 
-// ToPS templates
-#include "model/ProbabilisticModelDecorator.tcc"
-
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -45,8 +42,6 @@ using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
-using tops::model::ProbabilisticModelDecorator;
-using tops::model::ProbabilisticModelDecoratorPtr;
 using tops::model::Sequence;
 
 using tops::helper::createMachlerVLMC;

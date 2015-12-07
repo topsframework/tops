@@ -30,30 +30,30 @@ namespace tops {
 namespace model {
 
 template<typename Derived>
-class ProbabilisticModelDecorator;
+class ProbabilisticModelDecoratorCrtp;
 
 /**
- * @typedef ProbabilisticModelDecoratorPtr
- * @brief Alias of pointer to ProbabilisticModelDecorator.
+ * @typedef ProbabilisticModelDecoratorCrtpPtr
+ * @brief Alias of pointer to ProbabilisticModelDecoratorCrtp.
  */
 template<typename Derived>
-using ProbabilisticModelDecoratorPtr
-    = std::shared_ptr<ProbabilisticModelDecorator<Derived>>;
+using ProbabilisticModelDecoratorCrtpPtr
+    = std::shared_ptr<ProbabilisticModelDecoratorCrtp<Derived>>;
 
 /**
- * @class ProbabilisticModelDecorator
+ * @class ProbabilisticModelDecoratorCrtp
  * @brief Base class that defines probabilistic models' decorators.
  *
  * It is the easiest way to change the behavior of a probabilistic model.
  */
 template<typename Derived>
-class ProbabilisticModelDecorator
+class ProbabilisticModelDecoratorCrtp
     : public ProbabilisticModelCrtp<Derived> {
  public:
   // Alias
   using Base = ProbabilisticModelCrtp<Derived>;
 
-  using Self = ProbabilisticModelDecorator<Derived>;
+  using Self = ProbabilisticModelDecoratorCrtp<Derived>;
   using SelfPtr = std::shared_ptr<Self>;
 
   template<template<typename Target> class Decorator>
@@ -66,7 +66,7 @@ class ProbabilisticModelDecorator
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
 
   // Constructors
-  explicit ProbabilisticModelDecorator(ProbabilisticModelPtr model)
+  explicit ProbabilisticModelDecoratorCrtp(ProbabilisticModelPtr model)
     : _model(model) {
   }
 

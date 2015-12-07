@@ -32,11 +32,6 @@
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
 
-// ToPS templates
-#include "model/ProbabilisticModelDecorator.tcc"
-
-#include <iostream>
-
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
@@ -44,8 +39,6 @@ using ::testing::ContainerEq;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
-using tops::model::ProbabilisticModelDecorator;
-using tops::model::ProbabilisticModelDecoratorPtr;
 using tops::model::Sequence;
 
 using tops::helper::createLoadedCoinIIDModel;

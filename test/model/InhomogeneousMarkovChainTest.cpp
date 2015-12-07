@@ -33,7 +33,7 @@
 #include "helper/Sequence.hpp"
 
 // ToPS templates
-#include "model/ProbabilisticModelDecorator.tcc"
+#include "model/ProbabilisticModelDecoratorCrtp.tcc"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -45,8 +45,8 @@ using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::InhomogeneousMarkovChain;
 using tops::model::InhomogeneousMarkovChainPtr;
-using tops::model::ProbabilisticModelDecorator;
-using tops::model::ProbabilisticModelDecoratorPtr;
+using tops::model::ProbabilisticModelDecoratorCrtp;
+using tops::model::ProbabilisticModelDecoratorCrtpPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
@@ -93,7 +93,7 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
-    = std::make_shared<ProbabilisticModelDecorator<InhomogeneousMarkovChain>>(imc);
+    = std::make_shared<ProbabilisticModelDecoratorCrtp<InhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
