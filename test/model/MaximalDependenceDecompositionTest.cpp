@@ -101,7 +101,7 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
   }
 }
 
-TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
+TEST_F(AMDD, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): implement method
   ASSERT_THAT(mdd->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence(5, INVALID_SYMBOL)));

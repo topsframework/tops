@@ -78,7 +78,7 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
                  ->evaluateSequence(0, 13), 1e-4));
 }
 
-TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithSeed42) {
+TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(mm->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));

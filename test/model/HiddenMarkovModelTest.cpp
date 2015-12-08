@@ -253,7 +253,7 @@ TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
   ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-4.39373, 1e-4));
 }
 
-TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithSeed42) {
+TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): implement method
   ASSERT_THAT(hmm->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence(5, INVALID_SYMBOL)));

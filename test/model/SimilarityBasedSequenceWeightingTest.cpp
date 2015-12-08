@@ -102,7 +102,7 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
                    ->evaluateSequence(0, 13), 1e-4));
 }
 
-TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
+TEST_F(ASBSW, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence(5, INVALID_SYMBOL)));

@@ -112,7 +112,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
-TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
+TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));

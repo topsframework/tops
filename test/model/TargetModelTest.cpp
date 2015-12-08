@@ -80,7 +80,7 @@ TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
     DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
 }
 
-TEST_F(ATargetModel, ShouldDrawSequence) {
+TEST_F(ATargetModel, ShouldDrawSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(target->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 0}));

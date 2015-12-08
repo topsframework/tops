@@ -74,7 +74,8 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
               DoubleNear(-10.1029, 1e-4));
 }
 
-TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldDrawSequence) {
+TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition,
+    ShouldDrawSequenceWithDefaultSeed) {
   ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 1, 0}));
 }

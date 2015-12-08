@@ -112,7 +112,7 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
-TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
+TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
   ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{ 0, 1, INVALID_SYMBOL,
                                     INVALID_SYMBOL, INVALID_SYMBOL }));
