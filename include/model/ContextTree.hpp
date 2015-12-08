@@ -81,11 +81,6 @@ class ContextTree {
 
   // Constructors
   explicit ContextTree(int alphabet_size);
-
-  // Static methods
-  void printTree(ContextTreeNodePtr node, std::stringstream & out) const;
-  void buildParameters(ContextTreeNodePtr node,
-                       std::map<std::string, double> & parameters) const;
 };
 
 }  // namespace model

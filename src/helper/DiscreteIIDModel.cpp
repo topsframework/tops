@@ -26,33 +26,32 @@
 #include "helper/Random.hpp"
 
 #include "model/Probability.hpp"
-using namespace tops::model;
 
 namespace tops {
 namespace helper {
 
-tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<Probability> counts;
+model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
+  std::vector<model::Probability> counts;
   for (int i = 0; i < alphabet_size; i++)
     counts.push_back(generateRandomInteger(alphabet_size));
-  return tops::model::DiscreteIIDModel::make(counts);
+  return model::DiscreteIIDModel::make(counts);
 }
 
-tops::model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  std::vector<Probability> probabilities{ log(0.5), log(0.5) };
-  return tops::model::DiscreteIIDModel::make(probabilities);
+model::DiscreteIIDModelPtr createFairCoinIIDModel() {
+  std::vector<model::Probability> probabilities{ log(0.5), log(0.5) };
+  return model::DiscreteIIDModel::make(probabilities);
 }
 
-tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  std::vector<Probability> probabilities{ log(0.2), log(0.8) };
-  return tops::model::DiscreteIIDModel::make(probabilities);
+model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
+  std::vector<model::Probability> probabilities{ log(0.2), log(0.8) };
+  return model::DiscreteIIDModel::make(probabilities);
 }
 
-tops::model::DiscreteIIDModelPtr createDNAModel() {
-  std::vector<Probability> probabilities{
+model::DiscreteIIDModelPtr createDNAModel() {
+  std::vector<model::Probability> probabilities{
     log(0.1), log(0.3), log(0.4), log(0.2)
   };
-  return tops::model::DiscreteIIDModel::make(probabilities);
+  return model::DiscreteIIDModel::make(probabilities);
 }
 
 }  // namespace helper

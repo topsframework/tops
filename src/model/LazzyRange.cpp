@@ -28,7 +28,7 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 LazzyRange::LazzyRange(unsigned int begin, unsigned int end)
-    : _begin(begin), _end(end),_current(begin) {
+    : _begin(begin), _end(end), _current(begin) {
 }
 
 /*----------------------------------------------------------------------------*/

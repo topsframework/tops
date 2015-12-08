@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -54,12 +55,16 @@ TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
 }
 
 TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
-  ASSERT_THAT(distribution->probabilityOf(125), DoubleNear(-4.79025, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(4187), DoubleNear(-10.2697, 1e-04));
-  ASSERT_THAT(distribution->probabilityOf(4188), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(distribution->probabilityOf(125),
+              DoubleNear(-4.79025, 1e-04));
+  ASSERT_THAT(distribution->probabilityOf(4187),
+              DoubleNear(-10.2697, 1e-04));
+  ASSERT_THAT(distribution->probabilityOf(4188),
+              DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
-TEST_F(APhasedRunLengthDistribution, ShouldChooseSequenceWithSeed42) {
+TEST_F(APhasedRunLengthDistribution, ShouldDrawSequence) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(distribution->standardGenerator()->drawSequence(5), ContainerEq(Sequence{5, 2015, 11885, 23, 44}));
+  ASSERT_THAT(distribution->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{5, 2015, 11885, 23, 44}));
 }

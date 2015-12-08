@@ -31,7 +31,7 @@ namespace tops {
 namespace model {
 
 class Segment {
-public:
+ public:
   // Constructors
   Segment(Symbol symbol, int begin, int end);
 
@@ -43,7 +43,7 @@ public:
   int begin();
   int end();
 
-private:
+ private:
   // Instance variables
   Symbol _symbol;
   int _begin;

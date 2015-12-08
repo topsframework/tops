@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <algorithm>
 
@@ -234,7 +235,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -254,7 +255,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -379,7 +380,7 @@ Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
   return Labeling<Sequence>(x, y);
 }
 
-/*=================================  LABELER  =================================*/
+/*================================  LABELER  =================================*/
 
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::labeling(SLPtr labeler,
@@ -600,7 +601,8 @@ HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 
   auto labeling = Labeling<Sequence>(xs, std::move(path));
   auto probability
-    = const_cast<HiddenMarkovModel *>(this)->labelingEvaluator(labeling)->evaluateSequence(0, xs.size());
+    = const_cast<HiddenMarkovModel *>(this)
+        ->labelingEvaluator(labeling)->evaluateSequence(0, xs.size());
 
   return Estimation<Labeling<Sequence>>(labeling, probability);
 }

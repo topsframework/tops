@@ -84,14 +84,17 @@ TEST_F(APhasedInhomogeneousMarkovChain,
        ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(imc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-                DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, data.size())));
+    ASSERT_THAT(imc->standardEvaluator(data, true)
+                   ->evaluateSequence(0, data.size()),
+                DoubleEq(imc->standardEvaluator(data)
+                            ->evaluateSequence(0, data.size())));
   }
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
-    = std::make_shared<ProbabilisticModelDecoratorCrtp<PhasedInhomogeneousMarkovChain>>(imc);
+    = std::make_shared<
+          ProbabilisticModelDecoratorCrtp<PhasedInhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
@@ -104,13 +107,15 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})
+                           ->evaluateSequence(0, 3),
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 1}));
+  ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 
 TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
@@ -129,6 +134,7 @@ TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
               DoubleNear(-2.99504, 1e-4));
   ASSERT_THAT(imc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
               DoubleNear(-2.99504, 1e-4));
-  ASSERT_THAT(imc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
+  ASSERT_THAT(imc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                 ->evaluateSequence(0, 7),
               DoubleNear(-4.87431, 1e-4));
 }

@@ -17,12 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <vector>
+// Standard headers
 #include <random>
 #include <string>
+#include <vector>
 
+// External headers
 #include "benchmark/benchmark.h"
 
+// ToPS headers
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
@@ -49,4 +52,6 @@ static void BM_InhomogeneousMarkovChainEvaluate(benchmark::State& state) {
     model->standardEvaluator(sequence, 0, state.range_y()-1);
   }
 }
-BENCHMARK(BM_InhomogeneousMarkovChainEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);
+
+BENCHMARK(BM_InhomogeneousMarkovChainEvaluate)
+  ->RangePair(2, 16, 2, 1024 * 1024 * 1024);

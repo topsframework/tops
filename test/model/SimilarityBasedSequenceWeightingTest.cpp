@@ -18,7 +18,9 @@
 /***********************************************************************/
 
 // Standard headers
-#include <math.h>
+#include <map>
+#include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -67,30 +69,43 @@ TEST_F(ASBSW, ShouldEvaluateASequence) {
               DoubleNear(-6.90776, 1e-4));
   ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                  ->evaluateSequence(0, 13),
               DoubleNear(-6.90776, 1e-4));
 }
 
 TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(sbsw->standardEvaluator({0}, true)->evaluateSequence(0, 1),
-              DoubleNear(sbsw->standardEvaluator({0})->evaluateSequence(0, 1), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({0}, true)
+                  ->evaluateSequence(0, 1),
+              DoubleNear(sbsw->standardEvaluator({0})
+                             ->evaluateSequence(0, 1), 1e-4));
 
-  ASSERT_THAT(sbsw->standardEvaluator({0, 1}, true)->evaluateSequence(0, 2),
-              DoubleNear(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1}, true)
+                  ->evaluateSequence(0, 2),
+              DoubleNear(sbsw->standardEvaluator({0, 1})
+                             ->evaluateSequence(0, 2), 1e-4));
 
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1}, true)->evaluateSequence(0, 3),
-              DoubleNear(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1}, true)
+                  ->evaluateSequence(0, 3),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1})
+                             ->evaluateSequence(0, 3), 1e-4));
 
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0}, true)->evaluateSequence(0, 4),
-              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4), 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0}, true)
+                  ->evaluateSequence(0, 4),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0})
+                             ->evaluateSequence(0, 4), 1e-4));
 
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->evaluateSequence(0, 13),
-              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13), 1e-4));
+  ASSERT_THAT(
+    sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
+        ->evaluateSequence(0, 13),
+    DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                   ->evaluateSequence(0, 13), 1e-4));
 }
 
 TEST_F(ASBSW, ShouldChooseSequenceWithSeed42) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 TEST(SBSW, ShouldBeTrained) {
@@ -122,6 +137,7 @@ TEST(SBSW, ShouldBeTrained) {
               DoubleNear(-7.1323, 1e-4));
   ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-7.1323, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13),
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                  ->evaluateSequence(0, 13),
               DoubleNear(-7.1323, 1e-4));
 }

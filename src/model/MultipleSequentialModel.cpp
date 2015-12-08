@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <cstdlib>
 

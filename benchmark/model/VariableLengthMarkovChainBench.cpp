@@ -17,15 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#include <vector>
+// Standard headers
 #include <random>
 #include <string>
+#include <vector>
 
+// External headers
 #include "benchmark/benchmark.h"
 
+// ToPS headers
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
-#include "model/VariableLengthMarkovChain.hpp"
 
 #include "helper/Random.hpp"
 #include "helper/Sequence.hpp"
@@ -48,7 +50,9 @@ static void BM_VariableLengthMarkovChainChoose(benchmark::State& state) {
   while (state.KeepRunning())
     model->choosePosition(sequence, index);
 }
-BENCHMARK(BM_VariableLengthMarkovChainChoose)->RangePair(2, 16, 2, 1024*1024*1024);
+
+BENCHMARK(BM_VariableLengthMarkovChainChoose)
+  ->RangePair(2, 16, 2, 1024 * 1024 * 1024);
 
 static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
   state.PauseTiming();
@@ -59,4 +63,6 @@ static void BM_VariableLengthMarkovChainEvaluate(benchmark::State& state) {
     model->evaluateSequence(sequence, 0, state.range_y());
   }
 }
-BENCHMARK(BM_VariableLengthMarkovChainEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);
+
+BENCHMARK(BM_VariableLengthMarkovChainEvaluate)
+  ->RangePair(2, 16, 2, 1024 * 1024 * 1024);

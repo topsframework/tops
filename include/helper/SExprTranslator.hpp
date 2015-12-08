@@ -82,8 +82,10 @@ class SExprTranslator : public model::Translator {
   void translate(Ptr<model::TargetModel> model) override;
   void translate(Ptr<model::VariableLengthMarkovChain> model) override;
 
-  void translate(Ptr<typename model::HiddenMarkovModel::State> state) override;
-  void translate(Ptr<typename model::GeneralizedHiddenMarkovModel::State> state) override;
+  void translate(
+    Ptr<typename model::HiddenMarkovModel::State> state) override;
+  void translate(
+    Ptr<typename model::GeneralizedHiddenMarkovModel::State> state) override;
 
   void translate(Ptr<model::SignalDuration> duration) override;
   void translate(Ptr<model::ExplicitDuration> duration) override;
@@ -98,7 +100,7 @@ class SExprTranslator : public model::Translator {
   std::string _sexpr;
 };
 
-}  // namespace model
+}  // namespace helper
 }  // namespace tops
 
-#endif  // TOPS_MODEL_SYMBOL_
+#endif  // TOPS_HELPER_SEXPR_TRANSLATOR_

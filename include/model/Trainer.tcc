@@ -22,6 +22,7 @@
 
 // Standard headers
 #include <memory>
+#include <vector>
 
 // ToPS templates
 #include "model/MemberDelegator.tcc"

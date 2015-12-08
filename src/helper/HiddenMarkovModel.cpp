@@ -35,27 +35,20 @@ tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
     tops::model::HiddenMarkovModel::State::make(
       0,
       tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::Probability>{ log(0.5), log(0.5) }
-      ),
+        std::vector<tops::model::Probability>{ log(0.5), log(0.5) }),
       tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::Probability>{ log(0.7), log(0.3) }
-      )
-    ),
+        std::vector<tops::model::Probability>{ log(0.7), log(0.3) })),
     tops::model::HiddenMarkovModel::State::make(
       1,
       tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::Probability>{ log(0.2), log(0.8) }
-      ),
+        std::vector<tops::model::Probability>{ log(0.2), log(0.8) }),
       tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::Probability>{ log(0.5), log(0.5) }
-      )
-    )
-  };
+        std::vector<tops::model::Probability>{ log(0.5), log(0.5) }))};
+
   return tops::model::HiddenMarkovModel::make(
     states,
     tops::model::DiscreteIIDModel::make(
-      std::vector<tops::model::Probability>{ log(0.9), log(0.1) }
-    ),
+      std::vector<tops::model::Probability>{ log(0.9), log(0.1) }),
     2,
     2);
 }

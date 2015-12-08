@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <iostream>
 
@@ -82,12 +83,12 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbabilityWithCache) {
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   std::vector<std::vector<Sequence>> test_set = {
-    {{0},{0}},
-    {{1},{0}},
-    {{0, 0, 0},{0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 1, 1}}
   };
-  for(auto test : test_set) {
+  for (auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeler::method::bestPath);
     auto labeling = estimation.estimated();
@@ -98,12 +99,12 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
   std::vector<std::vector<Sequence>> test_set = {
-    {{0},{0}},
-    {{1},{0}},
-    {{0, 0, 0},{0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1},{0, 1, 1, 1, 1, 1}}
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 1, 1}}
   };
-  for(auto test : test_set) {
+  for (auto test : test_set) {
     auto labeler = hmm->labeler(test[0], true);
     auto estimation = labeler->labeling(Labeler::method::bestPath);
     auto labeling = estimation.estimated();
@@ -134,25 +135,30 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservations) {
     double px = -std::numeric_limits<double>::infinity();
     auto standardEvaluator = hmm->standardEvaluator(observation);
 
-    std::vector<Sequence> labels = generateAllCombinationsOfSymbols(observation.size());
+    std::vector<Sequence> labels
+      = generateAllCombinationsOfSymbols(observation.size());
+
     for (auto label : labels) {
       auto labelingEvaluator = hmm->labelingEvaluator({ observation, label });
-      px = log_sum(px, labelingEvaluator->evaluateSequence(0, observation.size()));
+      px = log_sum(
+        px, labelingEvaluator->evaluateSequence(0, observation.size()));
     }
+
     ASSERT_THAT(standardEvaluator->evaluateSequence(0, observation.size()),
                 DoubleEq(px));
   }
 }
 
-TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbability) {
+TEST_F(AHiddenMarkovModel,
+    DecodesASequenceOfObservationsUsingThePosteriorProbability) {
   std::vector<std::vector<Sequence>> test_set = {
-    {{0},{0}},
-    {{1},{0}},
-    {{0, 0, 0},{0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1},{0, 0, 1, 1, 1, 1}}
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
   };
 
-  for(auto test : test_set) {
+  for (auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
     auto labeling = estimation.estimated();
@@ -161,15 +167,16 @@ TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbab
   }
 }
 
-TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservationsUsingThePosteriorProbabilityWithCache) {
+TEST_F(AHiddenMarkovModel,
+    DecodesASequenceOfObservationsUsingThePosteriorProbabilityWithCache) {
   std::vector<std::vector<Sequence>> test_set = {
-    {{0},{0}},
-    {{1},{0}},
-    {{0, 0, 0},{0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1},{0, 0, 1, 1, 1, 1}}
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
   };
 
-  for(auto test : test_set) {
+  for (auto test : test_set) {
     auto labeler = hmm->labeler(test[0]);
     auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
     auto labeling = estimation.estimated();
@@ -197,10 +204,14 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
   auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
 
-  ASSERT_THAT(evaluator00->evaluateSequence(0, 3), DoubleNear(-1.65545, 1e-4));
-  ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-311.83440, 1e-4));
-  ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-110.38680, 1e-4));
-  ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-313.26651, 1e-4));
+  ASSERT_THAT(evaluator00->evaluateSequence(0, 3),
+              DoubleNear(-1.65545, 1e-4));
+  ASSERT_THAT(evaluator01->evaluateSequence(0, 3),
+              DoubleNear(-311.83440, 1e-4));
+  ASSERT_THAT(evaluator10->evaluateSequence(0, 3),
+              DoubleNear(-110.38680, 1e-4));
+  ASSERT_THAT(evaluator11->evaluateSequence(0, 3),
+              DoubleNear(-313.26651, 1e-4));
 }
 
 TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {

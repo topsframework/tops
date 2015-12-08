@@ -23,13 +23,14 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 template<typename Target>
 class Labeling;
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                    CLASS
+                                      CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
@@ -42,9 +43,8 @@ template<typename Target>
 class Labeling {
  public:
   // Constructors
-  Labeling();
-  Labeling(const Target &observation, const Target &label);
-  Labeling(Target &&observation, Target &&label);
+  Labeling() = default;
+  Labeling(Target observation, Target label);
 
   // Concrete Getters
   const Target& observation() const;
@@ -62,32 +62,22 @@ class Labeling {
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                IMPLEMENTATION
+                                 IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                               CONSTRUCTORS                                 */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-Labeling<Target>::Labeling()
-    : _observation(), _label() {
-}
-
-template<typename Target>
-Labeling<Target>::Labeling(const Target &observation, const Target &label)
-    : _observation(observation), _label(label) {
-}
-
-template<typename Target>
-Labeling<Target>::Labeling(Target &&observation, Target &&label)
+Labeling<Target>::Labeling(Target observation, Target label)
     : _observation(std::move(observation)), _label(std::move(label)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
@@ -95,22 +85,30 @@ const Target& Labeling<Target>::observation() const {
   return _observation;
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Target>
 Target& Labeling<Target>::observation() {
   return const_cast<Target &>(
     static_cast<const Labeling *>(this)->observation());
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Target>
 const Target& Labeling<Target>::label() const {
   return _label;
 }
+
+/*----------------------------------------------------------------------------*/
 
 template<typename Target>
 Target& Labeling<Target>::label() {
   return const_cast<Target &>(
     static_cast<const Labeling *>(this)->label());
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -59,9 +60,7 @@ class AnInhomogeneousMarkovChain : public testing::Test {
   virtual void SetUp() {
     imc = InhomogeneousMarkovChain::make(
       std::vector<VariableLengthMarkovChainPtr>{
-        createMachlerVLMC(), createVLMCMC()
-      }
-    );
+        createMachlerVLMC(), createVLMCMC() });
   }
 };
 
@@ -87,13 +86,15 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
     auto data = generateRandomSequence(i, 2);
     ASSERT_THAT(
         imc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-        DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, data.size())));
+        DoubleEq(imc->standardEvaluator(data)
+                    ->evaluateSequence(0, data.size())));
   }
 }
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
-    = std::make_shared<ProbabilisticModelDecoratorCrtp<InhomogeneousMarkovChain>>(imc);
+    = std::make_shared<
+        ProbabilisticModelDecoratorCrtp<InhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
@@ -106,10 +107,13 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.50) + log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
+  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})
+                           ->evaluateSequence(0, 3),
               DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, INVALID_SYMBOL, INVALID_SYMBOL, INVALID_SYMBOL}));
+  ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{ 0, 1, INVALID_SYMBOL,
+                                    INVALID_SYMBOL, INVALID_SYMBOL }));
 }

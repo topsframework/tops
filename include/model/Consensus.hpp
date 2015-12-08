@@ -51,7 +51,7 @@ using ConsensusSequence = std::vector<Consensus>;
 class Consensus {
  public:
   // Constructors
-  Consensus(const Sequence& symbols);
+  explicit Consensus(const Sequence& symbols);
 
   // Concrete methods
   bool is(unsigned int symbol) const;

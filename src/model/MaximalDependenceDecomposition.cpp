@@ -19,8 +19,9 @@
 
 // Standard headers
 #include <cmath>
-#include <vector>
+#include <limits>
 #include <string>
+#include <vector>
 #include <sstream>
 #include <algorithm>
 
@@ -286,21 +287,21 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-MaximalDependenceDecomposition::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                               unsigned int /* pos */,
-                                               unsigned int /* phase */) const {
+Probability MaximalDependenceDecomposition::evaluateSymbol(
+    SEPtr<Standard> /* evaluator */,
+    unsigned int /* pos */,
+    unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return -std::numeric_limits<double>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-MaximalDependenceDecomposition::evaluateSequence(SEPtr<Standard> evaluator,
-                                                 unsigned int begin,
-                                                 unsigned int end,
-                                                 unsigned int /* phase */) const {
+Probability MaximalDependenceDecomposition::evaluateSequence(
+    SEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int /* phase */) const {
   if ((end - begin) != _consensus_sequence.size())
     return -std::numeric_limits<double>::infinity();
   auto first = evaluator->sequence().begin() + begin;
@@ -312,11 +313,11 @@ MaximalDependenceDecomposition::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
-                                                 unsigned int begin,
-                                                 unsigned int end,
-                                                 unsigned int /* phase */) const {
+Probability MaximalDependenceDecomposition::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size())
     return -std::numeric_limits<double>::infinity();
@@ -325,20 +326,20 @@ MaximalDependenceDecomposition::evaluateSequence(CEPtr<Standard> evaluator,
 
 /*==============================  GENERATOR  =================================*/
 
-Standard<Symbol>
-MaximalDependenceDecomposition::drawSymbol(SGPtr<Standard> /* generator */,
-                                           unsigned int /* pos */,
-                                           unsigned int /* phase */,
-                                           const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+Standard<Symbol> MaximalDependenceDecomposition::drawSymbol(
+    SGPtr<Standard> /* generator */,
+    unsigned int /* pos */,
+    unsigned int /* phase */,
+    const Sequence &/* context */) const {
+  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence>
-MaximalDependenceDecomposition::drawSequence(SGPtr<Standard> /* generator */,
-                                             unsigned int size,
-                                             unsigned int /* phase */) const {
+Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
+    SGPtr<Standard> /* generator */,
+    unsigned int size,
+    unsigned int /* phase */) const {
   // _drawAux(s, _mdd_tree);
   return Sequence(size, INVALID_SYMBOL);
 }
@@ -380,7 +381,8 @@ void MaximalDependenceDecomposition::_drawAux(
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]
-      = node->getModel()->standardGenerator()->drawSymbol(node->getIndex(), 0, s);
+      = node->getModel()
+        ->standardGenerator()->drawSymbol(node->getIndex(), 0, s);
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       _drawAux(s, node->getLeft());
     } else {

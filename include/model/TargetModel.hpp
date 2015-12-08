@@ -57,7 +57,7 @@ class TargetModel : public DiscreteIIDModel {
 
  private:
   // Constructors
-  TargetModel(int alphabet_size);
+  explicit TargetModel(int alphabet_size);
 };
 
 }  // namespace model
