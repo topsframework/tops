@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <limits>
+
 // ToPS headers
 #include "model/SignalDuration.hpp"
 #include "model/SingleValueRange.hpp"

@@ -23,13 +23,14 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 template<typename Target, typename Probability>
 class Estimation;
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                     CLASS
+                                      CLASS
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
@@ -42,11 +43,10 @@ template<typename Target, typename Probability = double>
 class Estimation {
  public:
   // Constructors
-  Estimation();
-  Estimation(const Target &estimated, const Probability &probability);
-  Estimation(Target &&estimated, Probability &&probability);
+  Estimation() = default;
+  Estimation(Target estimated, Probability probability);
 
-  // Getters
+  // Concrete methods
   const Target& estimated() const;
   Target& estimated();
 
@@ -54,6 +54,7 @@ class Estimation {
   Probability& probability();
 
  private:
+  // Instance variables
   Target _estimated;
   Probability _probability;
 };
@@ -61,34 +62,23 @@ class Estimation {
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  -------------------------------------------------------------------------------
-                                  IMPLEMENTATION
+                                 IMPLEMENTATION
  -------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 */
 
 /*----------------------------------------------------------------------------*/
-/*                              Constructors                                  */
+/*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
 template<typename Target, typename Probability>
-Estimation<Target, Probability>::Estimation()
-    : _estimated(), _probability() {
-}
-
-template<typename Target, typename Probability>
-Estimation<Target, Probability>::Estimation(const Target &estimated,
-                                            const Probability &probability)
-    : _estimated(estimated), _probability(probability) {
-}
-
-template<typename Target, typename Probability>
-Estimation<Target, Probability>::Estimation(Target &&estimated,
-                                            Probability &&probability)
-    : _estimated(std::move(estimated)), _probability(probability) {
+Estimation<Target, Probability>::Estimation(Target estimated,
+                                            Probability probability)
+    : _estimated(std::move(estimated)), _probability(std::move(probability)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                           Getters and Setters                              */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 template<typename Target, typename Probability>
@@ -96,22 +86,30 @@ const Target& Estimation<Target, Probability>::estimated() const {
   return _estimated;
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Target, typename Probability>
 Target& Estimation<Target, Probability>::estimated() {
   return const_cast<Target &>(
     static_cast<const Estimation *>(this)->estimated());
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Target, typename Probability>
 const Probability& Estimation<Target, Probability>::probability() const {
   return _probability;
 }
+
+/*----------------------------------------------------------------------------*/
 
 template<typename Target, typename Probability>
 Probability& Estimation<Target, Probability>::probability() {
   return const_cast<Probability &>(
     static_cast<const Estimation *>(this)->probability());
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace model
 }  // namespace tops

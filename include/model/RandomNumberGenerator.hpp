@@ -44,9 +44,9 @@ class RandomNumberGenerator {
   using result_type = uint_fast32_t;
 
   // Purely Virtual methods
-  virtual void seed (result_type val) = 0;
+  virtual void seed(result_type val) = 0;
   virtual result_type operator()() = 0;
-  virtual void discard (unsigned long long z) = 0;
+  virtual void discard(uint64_t z) = 0;
   virtual double generateDoubleInUnitInterval() = 0;
 };
 

@@ -166,8 +166,10 @@ class HiddenMarkovModel
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
 
-  void initializeStandardPrefixSumArray(const Sequence &sequence, Cache &cache);
-  void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator, unsigned int phase);
+  void initializeStandardPrefixSumArray(const Sequence &sequence,
+                                        Cache &cache);
+  void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator,
+                                        unsigned int phase);
 };
 
 }  // namespace model

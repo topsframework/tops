@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <string>
+
 // ToPS headers
 #include "helper/SExprTranslator.hpp"
 
@@ -37,12 +40,14 @@ void SExprTranslator::translate(Ptr<model::DiscreteIIDModel> model) {
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::FixedSequenceAtPosition> /* model */) {
+void SExprTranslator::translate(
+    Ptr<model::FixedSequenceAtPosition> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::GeneralizedHiddenMarkovModel> model) {
+void SExprTranslator::translate(
+    Ptr<model::GeneralizedHiddenMarkovModel> model) {
   _sexpr += "(GeneralizedHiddenMarkovModel: ";
   for (const auto& state : model->states()) {
     state->serializer(make_shared())->serialize();
@@ -64,50 +69,49 @@ void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> model) {
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::InhomogeneousMarkovChain> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::InhomogeneousMarkovChain> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::MaximalDependenceDecomposition> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::MaximalDependenceDecomposition> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::MultipleSequentialModel> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::MultipleSequentialModel> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::PhasedInhomogeneousMarkovChain> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::PhasedInhomogeneousMarkovChain> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::PhasedRunLengthDistribution> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::PhasedRunLengthDistribution> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::SimilarityBasedSequenceWeighting> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::SimilarityBasedSequenceWeighting> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::TargetModel> /* model */) {
-
 }
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::VariableLengthMarkovChain> /* model */) {
-
+void SExprTranslator::translate(
+    Ptr<model::VariableLengthMarkovChain> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/

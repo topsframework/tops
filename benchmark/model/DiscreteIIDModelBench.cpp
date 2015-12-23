@@ -17,10 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
 #include <vector>
 
+// External headers
 #include "benchmark/benchmark.h"
 
+// ToPS headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/Sequence.hpp"
 
@@ -41,6 +44,7 @@ static void BM_DiscreteIIDModelChoose(benchmark::State& state) {
   while (state.KeepRunning())
     model->draw();
 }
+
 BENCHMARK(BM_DiscreteIIDModelChoose)->Range(2, 16);
 
 static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
@@ -54,4 +58,6 @@ static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
     model->standardEvaluator(sequence, 0, state.range_y()-1);
   }
 }
-BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(2, 16, 2, 1024*1024*1024);
+
+BENCHMARK(BM_DiscreteIIDModelEvaluate)
+  ->RangePair(2, 16, 2, 1024 * 1024 * 1024);

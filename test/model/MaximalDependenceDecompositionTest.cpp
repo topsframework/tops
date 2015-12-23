@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -51,24 +52,35 @@ class AMDD : public testing::Test {
 };
 
 TEST_F(AMDD, ShouldEvaluateASymbol) {
-  ASSERT_THAT(mdd->standardEvaluator({0})->evaluateSymbol(0), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1})->evaluateSymbol(0), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({0, 1})->evaluateSymbol(1), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({0, 0})->evaluateSymbol(1), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0})->evaluateSymbol(1), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1})->evaluateSymbol(1), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1})->evaluateSymbol(2), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1, 0})->evaluateSymbol(3), DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({0})->evaluateSymbol(0),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({1})->evaluateSymbol(0),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({0, 1})->evaluateSymbol(1),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({0, 0})->evaluateSymbol(1),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({1, 0})->evaluateSymbol(1),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({1, 1})->evaluateSymbol(1),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1})->evaluateSymbol(2),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1, 0})->evaluateSymbol(3),
+      DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
 TEST_F(AMDD, ShouldEvaluateASequence) {
   ASSERT_THAT(mdd->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-14.0795, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-11.3069, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-8.24662, 1e-4));
 }
 
@@ -82,14 +94,17 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
 
   for (auto& sequence : sequences) {
     unsigned int size = sequence.size();
-    ASSERT_THAT(mdd->standardEvaluator(sequence, true)->evaluateSequence(0, size),
-                DoubleEq(mdd->standardEvaluator(sequence)->evaluateSequence(0, size)));
+    ASSERT_THAT(mdd->standardEvaluator(sequence, true)
+                   ->evaluateSequence(0, size),
+                DoubleEq(mdd->standardEvaluator(sequence)
+                            ->evaluateSequence(0, size)));
   }
 }
 
-TEST_F(AMDD, ShouldChooseSequenceWithSeed42) {
+TEST_F(AMDD, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): implement method
-  ASSERT_THAT(mdd->standardGenerator()->drawSequence(5), ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THAT(mdd->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
 
 TEST(MDD, ShouldBeTrained) {
@@ -107,10 +122,13 @@ TEST(MDD, ShouldBeTrained) {
     MaximalDependenceDecomposition::standard_training_algorithm{},
     4, createConsensusSequence(), createDNAModel(), 2);
 
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-6.45814, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-5.765, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})->evaluateSequence(0, 9),
+  ASSERT_THAT(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})
+                 ->evaluateSequence(0, 9),
               DoubleNear(-6.96784, 1e-4));
 }

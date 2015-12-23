@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -54,22 +55,27 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
       3,
       Sequence{ 1, 0, 1 },
       DiscreteIIDModel::make(
-        std::vector<Probability>{ 0, -std::numeric_limits<double>::infinity()
-      })
-  );
+        std::vector<Probability>{
+          0, -std::numeric_limits<double>::infinity() }));
 };
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})
+                 ->evaluateSequence(0, 8),
               DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})->evaluateSequence(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})
+                 ->evaluateSequence(0, 8),
               DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})->evaluateSequence(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})
+                 ->evaluateSequence(0, 8),
               DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})->evaluateSequence(0, 8),
+  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})
+                 ->evaluateSequence(0, 8),
               DoubleNear(-10.1029, 1e-4));
 }
 
-TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 1, 0}));
+TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition,
+    ShouldDrawSequenceWithDefaultSeed) {
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 1, 0}));
 }

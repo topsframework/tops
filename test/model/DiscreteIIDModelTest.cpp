@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 
 // External headers
@@ -32,11 +33,6 @@
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
 
-// ToPS templates
-#include "model/ProbabilisticModelDecorator.tcc"
-
-#include <iostream>
-
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::Eq;
@@ -44,8 +40,6 @@ using ::testing::ContainerEq;
 
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
-using tops::model::ProbabilisticModelDecorator;
-using tops::model::ProbabilisticModelDecoratorPtr;
 using tops::model::Sequence;
 
 using tops::helper::createLoadedCoinIIDModel;
@@ -79,7 +73,8 @@ TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
     for (auto symbol : data) {
       result += iid->probabilityOf(symbol);
     }
-    ASSERT_THAT(iid->standardEvaluator(data)->evaluateSequence(0, 4), DoubleEq(result));
+    ASSERT_THAT(iid->standardEvaluator(data)->evaluateSequence(0, 4),
+                DoubleEq(result));
   }
 }
 
@@ -93,13 +88,15 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(iid->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-                DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, data.size())));
+    ASSERT_THAT(
+      iid->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
+      DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, data.size())));
   }
 }
 
-TEST_F(ADiscreteIIDModel, ShouldChooseSequenceWithSeed42) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 1, 1}));
+TEST_F(ADiscreteIIDModel, ShouldDrawSequenceWithDefaultSeed) {
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 1, 1}));
 }
 
 TEST_F(ADiscreteIIDModel, ShouldBeSExprSerialized) {
@@ -166,34 +163,40 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithmWithEmptyDataSet) {
                DiscreteIIDModel::maximum_likehood_algorithm{},
                2)->train();
 
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
+  auto infinity = -std::numeric_limits<double>::infinity();
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
 
-TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithmWithEmptyDataSet) {
+TEST(DiscreteIIDModel,
+    ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithmWithEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
                DiscreteIIDModel::smoothed_histogram_burge_algorithm{},
                1.0, 15000)->train();
 
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
+  auto infinity = -std::numeric_limits<double>::infinity();
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
 
-TEST(DiscreteIIDModel, ShouldNotBeTrainedUsingSmoothedHistogramStankeAlgorithmWithAnEmptyDataSet) {
+TEST(DiscreteIIDModel,
+    ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
                DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
                std::vector<unsigned int>{1}, 15000, 8, 0.5)->train();
 
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
+  auto infinity = -std::numeric_limits<double>::infinity();
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
 
 TEST(DiscreteIIDModel,
-    ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithmWithAnEmptyDataSet) {
+ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
                DiscreteIIDModel::smoothed_histogram_kernel_density_algorithm{},
                15000)->train();
 
-  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(-std::numeric_limits<double>::infinity()));
+  auto infinity = -std::numeric_limits<double>::infinity();
+  ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
+  ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }

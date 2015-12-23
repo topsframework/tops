@@ -50,7 +50,7 @@ class SignalDuration : public DurationCrtp<SignalDuration> {
   using Base = DurationCrtp<Self>;
 
   // Constructors
-  SignalDuration(unsigned int duration_size);
+  explicit SignalDuration(unsigned int duration_size);
 
   // Overriden methods
   RangePtr range() const override;

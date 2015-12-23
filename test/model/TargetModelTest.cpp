@@ -43,7 +43,6 @@ class ATargetModel : public testing::Test {
 };
 
 TEST_F(ATargetModel, ShouldHaveAnAlphabetSize) {
-
   ASSERT_THAT(target->alphabetSize(), Eq(2));
 }
 
@@ -53,24 +52,36 @@ TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
 }
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
-  ASSERT_THAT(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3),
-              DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
-              DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
-  ASSERT_THAT(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4),
-              DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3),
+    DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
+
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
+    DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
+
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4),
+    DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
 }
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(target->standardEvaluator({0, 1, 0}, true)->evaluateSequence(0, 3),
-              DoubleEq(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)));
-  ASSERT_THAT(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
-              DoubleEq(target->standardEvaluator({0, 1, 1}, true)->evaluateSequence(0, 3)));
-  ASSERT_THAT(target->standardEvaluator({0, 1, 1, 1}, true)->evaluateSequence(0, 4),
-              DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 0}, true)->evaluateSequence(0, 3),
+    DoubleEq(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)));
+
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
+    DoubleEq(target->standardEvaluator({0, 1, 1}, true)
+                   ->evaluateSequence(0, 3)));
+
+  ASSERT_THAT(
+    target->standardEvaluator({0, 1, 1, 1}, true)->evaluateSequence(0, 4),
+    DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
 }
 
-TEST_F(ATargetModel, ShouldChooseSequenceWithSeed42) {
+TEST_F(ATargetModel, ShouldDrawSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(target->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 0}));
+  ASSERT_THAT(target->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 0, 0}));
 }

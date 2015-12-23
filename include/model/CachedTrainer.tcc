@@ -72,7 +72,7 @@ class CachedTrainer
   std::tuple<Params...> _params;
 
   // Constructors
-  CachedTrainer(Params&&... params)
+  explicit CachedTrainer(Params&&... params)
     : _params(std::forward<Params>(params)...) {
   }
 

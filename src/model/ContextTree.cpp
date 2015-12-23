@@ -183,7 +183,8 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
       s3 = s;
       s3.push_back(l);
 
-      double prob = exp(old->standardEvaluator(s3)->evaluateSymbol(s3.size()-1));
+      double prob
+        = exp(old->standardEvaluator(s3)->evaluateSymbol(s3.size()-1));
 
       probs[l] = log(static_cast<double>((_all_context[i]->getCounter())[l]
                  + pseudocount*prob)/(total + pseudocount));

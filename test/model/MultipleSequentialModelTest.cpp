@@ -55,22 +55,31 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
               DoubleNear(-1.83258, 1e-4));
   ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-4.13517, 1e-4));
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13),
+  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                ->evaluateSequence(0, 13),
               DoubleNear(-18.6201, 1e-4));
 }
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1}, true)->evaluateSequence(0, 3),
-              DoubleNear(mm->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3), 1e-4));
+  ASSERT_THAT(mm->standardEvaluator({1, 0, 1}, true)
+                 ->evaluateSequence(0, 3),
+              DoubleNear(mm->standardEvaluator({1, 0, 1})
+                           ->evaluateSequence(0, 3), 1e-4));
 
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0}, true)->evaluateSequence(0, 4),
-              DoubleNear(mm->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4), 1e-4));
+  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0}, true)
+                ->evaluateSequence(0, 4),
+              DoubleNear(mm->standardEvaluator({1, 0, 1, 0})
+                           ->evaluateSequence(0, 4), 1e-4));
 
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)->evaluateSequence(0, 13),
-              DoubleNear(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})->evaluateSequence(0, 13), 1e-4));
+  ASSERT_THAT(
+    mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
+      ->evaluateSequence(0, 13),
+    DoubleNear(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                 ->evaluateSequence(0, 13), 1e-4));
 }
 
-TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithSeed42) {
+TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(mm->standardGenerator()->drawSequence(5), ContainerEq(Sequence{0, 1, 1, 0, 1}));
+  ASSERT_THAT(mm->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }

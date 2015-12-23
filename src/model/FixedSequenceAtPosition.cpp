@@ -91,7 +91,7 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
                                                  int position,
                                                  Sequence sequence,
                                                  DiscreteIIDModelPtr distr)
-      : ProbabilisticModelDecorator(model),
+      : ProbabilisticModelDecoratorCrtp(model),
         _position(position),
         _sequence(sequence),
         _probabilities(distr) {

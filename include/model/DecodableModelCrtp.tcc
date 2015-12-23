@@ -310,7 +310,8 @@ auto DecodableModelCrtp<Derived>::states() -> std::vector<StatePtr> {
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-auto DecodableModelCrtp<Derived>::states() const -> const std::vector<StatePtr> {
+auto DecodableModelCrtp<Derived>::states() const
+    -> const std::vector<StatePtr> {
   return _states;
 }
 

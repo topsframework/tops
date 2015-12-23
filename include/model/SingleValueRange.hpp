@@ -44,7 +44,7 @@ using SingleValueRangePtr = std::shared_ptr<SingleValueRange>;
 class SingleValueRange : public Range {
  public:
   // Constructors
-  SingleValueRange(unsigned int value);
+  explicit SingleValueRange(unsigned int value);
 
   // Virtual methods
   virtual unsigned int begin();

@@ -20,6 +20,7 @@
 // Standard headers
 #include <map>
 #include <cmath>
+#include <limits>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -140,8 +141,8 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 
 /*===============================  EVALUATOR  ================================*/
 
-void SimilarityBasedSequenceWeighting::initializeCache(CEPtr<Standard> evaluator,
-                                                       unsigned int phase) {
+void SimilarityBasedSequenceWeighting::initializeCache(
+    CEPtr<Standard> evaluator, unsigned int phase) {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size());
 
@@ -156,21 +157,21 @@ void SimilarityBasedSequenceWeighting::initializeCache(CEPtr<Standard> evaluator
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-SimilarityBasedSequenceWeighting::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                                 unsigned int /* pos */,
-                                                 unsigned int /* phase */) const {
+Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
+    SEPtr<Standard> /* evaluator */,
+    unsigned int /* pos */,
+    unsigned int /* phase */) const {
   // TODO(igorbonadio)
   return -std::numeric_limits<double>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
-                                                   unsigned int begin,
-                                                   unsigned int end,
-                                                   unsigned int /* phase */) const {
+Probability SimilarityBasedSequenceWeighting::evaluateSequence(
+    SEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int /* phase */) const {
   if (end > evaluator->sequence().size())
     return -std::numeric_limits<double>::infinity();
   int length = (_counter.begin()->first).size();
@@ -215,11 +216,11 @@ SimilarityBasedSequenceWeighting::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
-                                                   unsigned int begin,
-                                                   unsigned int /* end */,
-                                                   unsigned int /* phase */) const {
+Probability SimilarityBasedSequenceWeighting::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int /* end */,
+    unsigned int /* phase */) const {
   auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
@@ -228,12 +229,12 @@ SimilarityBasedSequenceWeighting::evaluateSequence(CEPtr<Standard> evaluator,
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-SimilarityBasedSequenceWeighting::drawSymbol(SGPtr<Standard> /* generator */,
-                                             unsigned int /* pos */,
-                                             unsigned int /* phase */,
-                                             const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
+    SGPtr<Standard> /* generator */,
+    unsigned int /* pos */,
+    unsigned int /* phase */,
+    const Sequence &/* context */) const {
+  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/

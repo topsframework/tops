@@ -38,8 +38,9 @@ using RangePtr = std::shared_ptr<Range>;
  * @class Range
  * @brief TODO
  */
- class Range {
+class Range {
  public:
+  // Purely virtual methods
   virtual unsigned int begin() = 0;
   virtual unsigned int next() = 0;
   virtual bool end() = 0;

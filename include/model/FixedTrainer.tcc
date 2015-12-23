@@ -95,7 +95,7 @@ class FixedTrainer
   ModelPtr _model;
 
   // Constructors
-  FixedTrainer(ModelPtr model) : _model(std::move(model)) {
+  explicit FixedTrainer(ModelPtr model) : _model(std::move(model)) {
   }
 
   // Overriden methods

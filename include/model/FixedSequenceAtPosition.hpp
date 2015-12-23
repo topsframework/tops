@@ -28,7 +28,7 @@
 #include "model/DiscreteIIDModel.hpp"
 
 // ToPS templates
-#include "model/ProbabilisticModelDecorator.tcc"
+#include "model/ProbabilisticModelDecoratorCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -46,10 +46,10 @@ using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
  * @brief TODO
  */
 class FixedSequenceAtPosition
-    : public ProbabilisticModelDecorator<FixedSequenceAtPosition> {
+    : public ProbabilisticModelDecoratorCrtp<FixedSequenceAtPosition> {
  public:
   // Alias
-  using Base = ProbabilisticModelDecorator<FixedSequenceAtPosition>;
+  using Base = ProbabilisticModelDecoratorCrtp<FixedSequenceAtPosition>;
 
   // Constructors
   FixedSequenceAtPosition(ProbabilisticModelPtr model,

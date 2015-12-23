@@ -18,8 +18,9 @@
 /***********************************************************************/
 
 // Standard headers
-#include <vector>
 #include <cmath>
+#include <limits>
+#include <vector>
 
 // ToPS headers
 #include "model/PhasedRunLengthDistribution.hpp"

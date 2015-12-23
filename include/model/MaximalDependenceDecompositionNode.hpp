@@ -37,7 +37,8 @@ class MaximalDependenceDecompositionNode;
  * @typedef MaximalDependenceDecompositionNodePtr
  * @brief Alias of pointer to MaximalDependenceDecompositionNode.
  */
-using MaximalDependenceDecompositionNodePtr = std::shared_ptr<MaximalDependenceDecompositionNode>;
+using MaximalDependenceDecompositionNodePtr
+  = std::shared_ptr<MaximalDependenceDecompositionNode>;
 
 /**
  * @class MaximalDependenceDecompositionNode
@@ -46,7 +47,8 @@ using MaximalDependenceDecompositionNodePtr = std::shared_ptr<MaximalDependenceD
 class MaximalDependenceDecompositionNode {
  public:
   // Static methods
-  static MaximalDependenceDecompositionNodePtr make(std::string node_name, ProbabilisticModelPtr model, int index);
+  static MaximalDependenceDecompositionNodePtr
+  make(std::string node_name, ProbabilisticModelPtr model, int index);
 
   // Concrete getters
   int getIndex();
@@ -55,7 +57,8 @@ class MaximalDependenceDecompositionNode {
   MaximalDependenceDecompositionNodePtr getRight();
 
   // Concrete setters
-  void setChildern(MaximalDependenceDecompositionNodePtr left, MaximalDependenceDecompositionNodePtr right);
+  void setChildern(MaximalDependenceDecompositionNodePtr left,
+                   MaximalDependenceDecompositionNodePtr right);
   void setChild(MaximalDependenceDecompositionNodePtr child);
 
  private:
@@ -68,7 +71,9 @@ class MaximalDependenceDecompositionNode {
   MaximalDependenceDecompositionNodePtr _right;
 
   // Constructors
-  MaximalDependenceDecompositionNode(std::string node_name, ProbabilisticModelPtr model, int index);
+  MaximalDependenceDecompositionNode(std::string node_name,
+                                     ProbabilisticModelPtr model,
+                                     int index);
 };
 
 }  // namespace model

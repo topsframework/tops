@@ -6,8 +6,8 @@
 # Project settings
 # ==================
 PROJECT         := ToPS
-VERSION         := 1.0.0
-GIT_REMOTE_PATH := git@bitbucket.org:igorbonadio/topspp.git
+VERSION         := 2.0.0-alpha
+GIT_REMOTE_PATH := https://github.com/topsframework/tops-refactoring.git
 
 # Project info
 # ==============
@@ -17,7 +17,7 @@ MAINTEINER_NAME := Ígor Bonadio,\
 MAINTEINER_MAIL := igorbonadio@gmail.com,\
                    renatocordeiroferreira@gmail.com
 SYNOPSIS        := Toolkit of Probabilistic Sequences (ToPS)
-DESCRIPTION     := ToPS is an objected-oriented framework that  \
+DESCRIPTION     := ToPS is an objected-oriented framework that \
                    facilitates the integration of probabilistic \
                    models for sequences over a user defined alphabet.
 

@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <algorithm>
 
@@ -63,7 +64,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -73,7 +74,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -82,7 +83,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -92,7 +93,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -129,7 +130,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity(); // TODO(igorbonadio)
+  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -164,7 +165,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL); // TODO(igorbonadio)
+  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -174,7 +175,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL); // TODO(igorbonadio)
+  return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL);  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -188,7 +189,7 @@ GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
                             Sequence(INVALID_SYMBOL, size));
 }
 
-/*=================================  LABELER  =================================*/
+/*================================  LABELER  =================================*/
 
 void
 GeneralizedHiddenMarkovModel::initializeCache(CLPtr labeler) {
@@ -440,7 +441,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
   }
   return Estimation<Labeling<Sequence>>(
       Labeling<Sequence>(xs, std::move(path)),
-        -std::numeric_limits<double>::infinity()); // TODO(igorbonadio)
+        -std::numeric_limits<double>::infinity());  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/

@@ -67,7 +67,7 @@ class RandomNumberGeneratorAdapter : public RandomNumberGenerator {
   }
 
   // Overriden methods
-  void seed (result_type val = RNG::default_seed) override {
+  void seed(result_type val = RNG::default_seed) override {
     _generator.seed(val);
   }
 
@@ -75,7 +75,7 @@ class RandomNumberGeneratorAdapter : public RandomNumberGenerator {
     return _generator();
   }
 
-  void discard (unsigned long long z) override {
+  void discard(uint64_t z) override {
     _generator.discard(z);
   }
 
@@ -90,7 +90,7 @@ class RandomNumberGeneratorAdapter : public RandomNumberGenerator {
 
   // Constructors
   template<typename... Ts>
-  RandomNumberGeneratorAdapter(Ts... args)
+  explicit RandomNumberGeneratorAdapter(Ts... args)
       : _generator(std::forward<Ts>(args)...) {
   }
 };
