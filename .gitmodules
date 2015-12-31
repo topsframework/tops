@@ -5,3 +5,7 @@
 	path = external/gbenchmark
 	url = https://github.com/google/benchmark.git
 	ignore = dirty
+[submodule "external/gtest"]
+	path = external/gtest
+	url = https://github.com/google/googletest.git
+	ignore = dirty
