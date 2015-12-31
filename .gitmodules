@@ -1,6 +1,6 @@
 [submodule "make"]
-    path = make
-    url = https://github.com/renatocf/make.git
+	path = make
+	url = https://github.com/renatocf/make.git
 [submodule "external/gbenchmark"]
 	path = external/gbenchmark
 	url = https://github.com/google/benchmark.git
