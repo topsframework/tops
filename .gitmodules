@@ -1,7 +1,3 @@
 [submodule "make"]
     path = make
     url = https://github.com/renatocf/make.git
-[submodule "external/gmock"]
-    path = external/gmock
-    url = https://chromium.googlesource.com/external/googlemock.git
-    ignore = dirty
