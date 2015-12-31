@@ -9,7 +9,3 @@
     path = external/gtest
     url = https://chromium.googlesource.com/external/googletest.git
     ignore = dirty
-[submodule "external/gbenchmark"]
-    path = external/gbenchmark
-    url = https://github.com/google/benchmark.git
-    ignore = dirty
