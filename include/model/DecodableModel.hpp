@@ -27,6 +27,7 @@
 // ToPS templates
 #include "model/Labeler.tcc"
 #include "model/Labeling.tcc"
+#include "model/Calculator.tcc"
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
@@ -57,6 +58,9 @@ class DecodableModel : public virtual ProbabilisticModel {
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
   virtual LabelerPtr labeler(
+      const Sequence &sequence, bool cached = false) = 0;
+
+  virtual CalculatorPtr calculator(
       const Sequence &sequence, bool cached = false) = 0;
 };
 

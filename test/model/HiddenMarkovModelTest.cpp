@@ -46,6 +46,7 @@ using tops::model::Sequence;
 using tops::model::Labeling;
 using tops::model::Matrix;
 using tops::model::Labeler;
+using tops::model::Calculator;
 using tops::model::log_sum;
 using tops::model::INVALID_SYMBOL;
 
@@ -182,6 +183,40 @@ TEST_F(AHiddenMarkovModel,
     auto labeling = estimation.estimated();
 
     ASSERT_THAT(labeling.label(), Eq(test[1]));
+  }
+}
+
+TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
+  };
+
+  for (auto test : test_set) {
+    auto calculator = hmm->calculator(test[0]);
+    auto prob_f = calculator->calculate(Calculator::direction::forward);
+    auto prob_b = calculator->calculate(Calculator::direction::backward);
+
+    ASSERT_THAT(prob_b, DoubleNear(prob_f, 1e-4));
+  }
+}
+
+TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilitiesWithCache) {
+  std::vector<std::vector<Sequence>> test_set = {
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
+  };
+
+  for (auto test : test_set) {
+    auto calculator = hmm->calculator(test[0], true);
+    auto prob_f = calculator->calculate(Calculator::direction::forward);
+    auto prob_b = calculator->calculate(Calculator::direction::backward);
+
+    ASSERT_THAT(prob_b, DoubleNear(prob_f, 1e-4));
   }
 }
 

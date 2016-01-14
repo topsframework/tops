@@ -33,6 +33,9 @@
 #include "model/Labeler.tcc"
 #include "model/SimpleLabeler.tcc"
 #include "model/CachedLabeler.tcc"
+#include "model/Calculator.tcc"
+#include "model/SimpleCalculator.tcc"
+#include "model/CachedCalculator.tcc"
 #include "model/ProbabilisticModelCrtp.tcc"
 
 namespace tops {
@@ -86,6 +89,10 @@ class DecodableModelCrtp
 
   using CLPtr = CachedLabelerPtr<Derived>;
 
+  using SCPtr = SimpleCalculatorPtr<Derived>;
+
+  using CCPtr = CachedCalculatorPtr<Derived>;
+
   // Type traits
   using State = typename StateTraits<Derived>::State;
   using StatePtr = std::shared_ptr<State>;
@@ -121,6 +128,9 @@ class DecodableModelCrtp
                       = RNGAdapter<std::mt19937>::make()) override;
 
   LabelerPtr labeler(const Sequence &sequence, bool cached = false) override;
+
+  CalculatorPtr calculator(const Sequence &sequence,
+                           bool cached = false) override;
 
   // Purely virtual methods
   virtual void initializeCache(CEPtr<Labeling> evaluator,
@@ -158,10 +168,14 @@ class DecodableModelCrtp
   virtual Estimation<Labeling<Sequence>>
   labeling(CLPtr labeler, const Labeler::method &method) const = 0;
 
-  virtual double forward(const Sequence &s,
-                         Matrix &alpha) const = 0;
-  virtual double backward(const Sequence &s,
-                          Matrix &beta) const = 0;
+  virtual void initializeCache(CCPtr calculator) = 0;
+
+  virtual Probability
+  calculate(SCPtr calculator, const Calculator::direction &direction) const = 0;
+
+  virtual Probability
+  calculate(CCPtr calculator, const Calculator::direction &direction) const = 0;
+
   virtual void posteriorProbabilities(const Sequence &xs,
                                       Matrix &probabilities) const = 0;
 
@@ -275,6 +289,16 @@ LabelerPtr DecodableModelCrtp<Derived>::labeler(
   if (cached)
     return CachedLabeler<Derived>::make(make_shared(), sequence);
   return SimpleLabeler<Derived>::make(make_shared(), sequence);
+}
+
+/*==============================  CALCULATOR  ================================*/
+
+template<typename Derived>
+CalculatorPtr DecodableModelCrtp<Derived>::calculator(
+    const Standard<Sequence> &sequence, bool cached) {
+  if (cached)
+    return CachedCalculator<Derived>::make(make_shared(), sequence);
+  return SimpleCalculator<Derived>::make(make_shared(), sequence);
 }
 
 /*----------------------------------------------------------------------------*/

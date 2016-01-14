@@ -74,10 +74,9 @@ class CachedCalculator : public SimpleCalculator<Model> {
   }
 
   // Overriden methods
-  Estimation<Labeling<Sequence>>
-  labeling(const Calculator::method& method) const override {
+  Probability calculate(const Calculator::direction& direction) const override {
     lazyInitializeCache();
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+    CALL_MEMBER_FUNCTION_DELEGATOR(calculate, direction);
   }
 
   // Virtual methods
@@ -115,7 +114,7 @@ class CachedCalculator : public SimpleCalculator<Model> {
   }
 
   // Delegators
-  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(calculate, _model)
   GENERATE_MEMBER_FUNCTION_DELEGATOR(initializeCache, _model)
 };
 

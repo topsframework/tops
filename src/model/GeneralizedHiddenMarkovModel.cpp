@@ -232,101 +232,53 @@ GeneralizedHiddenMarkovModel::labeling(SLPtr labeler,
   return Estimation<Labeling<Sequence>>();
 }
 
+/*==============================  CALCULATOR  ================================*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CCPtr calculator) {
+  calculator->cache().observation_evaluators
+    = initializeObservationEvaluators(calculator->sequence(), true);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability GeneralizedHiddenMarkovModel::calculate(
+    SCPtr calculator, const Calculator::direction &direction) const {
+  Matrix probabilities;
+  auto observation_evaluators
+    = initializeObservationEvaluators(calculator->sequence(), false);
+
+  switch (direction) {
+    case Calculator::direction::forward:
+      forward(calculator->sequence(), probabilities, observation_evaluators);
+    case Calculator::direction::backward:
+      backward(calculator->sequence(), probabilities, observation_evaluators);
+  }
+  // TODO(igorbonadio)
+  return -1;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability GeneralizedHiddenMarkovModel::calculate(
+    CCPtr calculator, const Calculator::direction &direction) const {
+  Matrix probabilities;
+
+  switch (direction) {
+    case Calculator::direction::forward:
+      forward(calculator->sequence(),
+              probabilities,
+              calculator->cache().observation_evaluators);
+    case Calculator::direction::backward:
+      backward(calculator->sequence(),
+               probabilities,
+               calculator->cache().observation_evaluators);
+  }
+  // TODO(igorbonadio)
+  return -1;
+}
+
 /*=================================  OTHERS  =================================*/
 
-double GeneralizedHiddenMarkovModel::forward(const Sequence &sequence,
-                                             Matrix &alpha) const {
-  alpha = std::vector<std::vector<double>>(
-    _state_alphabet_size, std::vector<double>(sequence.size()));
-
-  for (unsigned int i = 0; i < sequence.size(); i++) {
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      alpha[k][i] = -std::numeric_limits<double>::infinity();
-      auto range = _states[k]->duration()->range();
-      for (unsigned int d = range->begin();
-           !range->end() && d <= (i + 1);
-           d = range->next()) {
-        if (d > i) {
-          alpha[k][i] = log_sum(alpha[k][i],
-            _initial_probabilities->probabilityOf(k)
-              + _states[k]->duration()->probabilityOfLenght(d)
-              + _states[k]->emission()->standardEvaluator(sequence)
-                ->evaluateSequence(i-d+1, i+1));
-        } else {
-          double sum = -std::numeric_limits<double>::infinity();
-          for (auto p : _states[k]->predecessors()) {
-            sum = log_sum(sum, alpha[p][i-d]
-              + _states[p]->transition()->probabilityOf(k));
-          }
-          alpha[k][i] = log_sum(alpha[k][i],
-            sum + _states[k]->duration()->probabilityOfLenght(d)
-              + _states[k]->emission()->standardEvaluator(sequence)
-                ->evaluateSequence(i-d+1, i+1));
-        }
-      }
-    }
-  }
-
-  double px = -std::numeric_limits<double>::infinity();
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    px = log_sum(px, alpha[k][sequence.size()-1]);
-  }
-
-  return px;
-}
-
-/*----------------------------------------------------------------------------*/
-
-double GeneralizedHiddenMarkovModel::backward(const Sequence &sequence,
-                                              Matrix &beta) const {
-  beta = std::vector<std::vector<double>>(
-    _state_alphabet_size, std::vector<double>(sequence.size()));
-
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    beta[k][sequence.size()-1] = 0.0;
-  }
-
-  for (int i = sequence.size()-2; i >= 0; i--) {
-    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      beta[k][i] = -std::numeric_limits<double>::infinity();
-      for (auto p : _states[k]->successors()) {
-        double sum = -std::numeric_limits<double>::infinity();
-        auto range = _states[p]->duration()->range();
-        for (unsigned int d = range->begin();
-             !range->end() && d < (sequence.size() - i);
-             d = range->next()) {
-          sum = log_sum(sum,
-            _states[p]->duration()->probabilityOfLenght(d)
-              + _states[p]->emission()->standardEvaluator(sequence)
-                ->evaluateSequence(i+1, i+d+1)
-              + beta[p][i+d]);
-        }
-        beta[k][i] = log_sum(beta[k][i],
-                             _states[k]->transition()->probabilityOf(p) + sum);
-      }
-    }
-  }
-
-  double px = -std::numeric_limits<double>::infinity();
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    double sum = -std::numeric_limits<double>::infinity();
-    auto range = _states[k]->duration()->range();
-    for (unsigned int d = range->begin();
-         !range->end() && d <= (sequence.size());
-         d = range->next()) {
-      sum = log_sum(sum,
-        _states[k]->duration()->probabilityOfLenght(d)
-          + _states[k]->emission()->standardEvaluator(sequence)
-            ->evaluateSequence(0, d)
-          + beta[k][d-1]);
-    }
-    px = log_sum(px, _initial_probabilities->probabilityOf(k) + sum);
-  }
-
-  return px;
-}
-
-/*----------------------------------------------------------------------------*/
 
 void GeneralizedHiddenMarkovModel::posteriorProbabilities(
     const Sequence &sequence,
@@ -338,8 +290,11 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
   Matrix alpha;  // forward
   Matrix beta;   // backward
 
-  double full = forward(sequence, alpha);
-  backward(sequence, beta);
+  auto observation_evaluators
+    = initializeObservationEvaluators(sequence, false);
+
+  double full = forward(sequence, alpha, observation_evaluators);
+  backward(sequence, beta, observation_evaluators);
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     for (unsigned int i = 0; i < sequence.size(); i++)
@@ -442,6 +397,100 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
   return Estimation<Labeling<Sequence>>(
       Labeling<Sequence>(xs, std::move(path)),
         -std::numeric_limits<double>::infinity());  // TODO(igorbonadio)
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability GeneralizedHiddenMarkovModel::forward(
+    const Sequence &sequence,
+    Matrix &alpha,
+    std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
+  alpha = std::vector<std::vector<double>>(
+    _state_alphabet_size, std::vector<double>(sequence.size()));
+
+  for (unsigned int i = 0; i < sequence.size(); i++) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      alpha[k][i] = -std::numeric_limits<double>::infinity();
+      auto range = _states[k]->duration()->range();
+      for (unsigned int d = range->begin();
+           !range->end() && d <= (i + 1);
+           d = range->next()) {
+        if (d > i) {
+          alpha[k][i] = log_sum(alpha[k][i],
+            _initial_probabilities->probabilityOf(k)
+              + _states[k]->duration()->probabilityOfLenght(d)
+              + observation_evaluators[k]->evaluateSequence(i-d+1, i+1));
+        } else {
+          double sum = -std::numeric_limits<double>::infinity();
+          for (auto p : _states[k]->predecessors()) {
+            sum = log_sum(sum, alpha[p][i-d]
+              + _states[p]->transition()->probabilityOf(k));
+          }
+          alpha[k][i] = log_sum(alpha[k][i],
+            sum + _states[k]->duration()->probabilityOfLenght(d)
+              + observation_evaluators[k]->evaluateSequence(i-d+1, i+1));
+        }
+      }
+    }
+  }
+
+  double px = -std::numeric_limits<double>::infinity();
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    px = log_sum(px, alpha[k][sequence.size()-1]);
+  }
+
+  return px;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability GeneralizedHiddenMarkovModel::backward(
+    const Sequence &sequence,
+    Matrix &beta,
+    std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
+  beta = std::vector<std::vector<double>>(
+    _state_alphabet_size, std::vector<double>(sequence.size()));
+
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    beta[k][sequence.size()-1] = 0.0;
+  }
+
+  for (int i = sequence.size()-2; i >= 0; i--) {
+    for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+      beta[k][i] = -std::numeric_limits<double>::infinity();
+      for (auto p : _states[k]->successors()) {
+        double sum = -std::numeric_limits<double>::infinity();
+        auto range = _states[p]->duration()->range();
+        for (unsigned int d = range->begin();
+             !range->end() && d < (sequence.size() - i);
+             d = range->next()) {
+          sum = log_sum(sum,
+            _states[p]->duration()->probabilityOfLenght(d)
+              + observation_evaluators[p]->evaluateSequence(i+1, i+d+1)
+              + beta[p][i+d]);
+        }
+        beta[k][i] = log_sum(beta[k][i],
+                             _states[k]->transition()->probabilityOf(p) + sum);
+      }
+    }
+  }
+
+  double px = -std::numeric_limits<double>::infinity();
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    double sum = -std::numeric_limits<double>::infinity();
+    auto range = _states[k]->duration()->range();
+    for (unsigned int d = range->begin();
+         !range->end() && d <= (sequence.size());
+         d = range->next()) {
+      sum = log_sum(sum,
+        _states[k]->duration()->probabilityOfLenght(d)
+          + observation_evaluators[k]->evaluateSequence(0, d)
+          + beta[k][d-1]);
+    }
+    px = log_sum(px, _initial_probabilities->probabilityOf(k) + sum);
+  }
+
+  return px;
 }
 
 /*----------------------------------------------------------------------------*/
