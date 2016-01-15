@@ -69,7 +69,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
 
   // Overriden methods
   Symbol draw(RandomNumberGeneratorPtr rng) const override;
-  double probabilityOf(Symbol s) const override;
+  Probability probabilityOf(Symbol s) const override;
 
  private:
   // Instance variables
@@ -78,7 +78,7 @@ class PhasedRunLengthDistribution : public DiscreteIIDModel {
   int _output_phase;
   int _nphase;
   double _normfactor;
-  std::vector<double> _probabilities;
+  std::vector<Probability> _probabilities;
 
   // Concrete methods
   int mod(int D, int d) const;

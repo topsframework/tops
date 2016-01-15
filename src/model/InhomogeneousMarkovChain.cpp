@@ -49,7 +49,7 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
     return _vlmcs[pos + phase]->standardEvaluator(
              evaluator->sequence())->evaluateSymbol(pos);
   else
-    return -std::numeric_limits<double>::infinity();
+    return -std::numeric_limits<Probability>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/

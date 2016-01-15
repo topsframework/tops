@@ -150,7 +150,7 @@ PhasedInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
                                                  unsigned int begin,
                                                  unsigned int end,
                                                  unsigned int phase) const {
-  double prob = 0;
+  Probability prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluator->evaluateSymbol(i, phase);
   return prob;

@@ -111,7 +111,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
-    double prob = consensus_model
+    Probability prob = consensus_model
       ->standardEvaluator(s)->evaluateSymbol(consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
@@ -350,11 +350,11 @@ Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
 
 /*================================  OTHERS  ==================================*/
 
-double MaximalDependenceDecomposition::_probabilityOf(
+Probability MaximalDependenceDecomposition::_probabilityOf(
     const Sequence & s,
     MaximalDependenceDecompositionNodePtr node,
     std::vector<int> &indexes) const {
-  double p = 0;
+  Probability p = 0;
   if (node->getLeft()) {
     p = node->getModel()
       ->standardEvaluator(s)->evaluateSymbol(node->getIndex());

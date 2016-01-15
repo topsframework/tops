@@ -85,7 +85,7 @@ MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                         unsigned int /* pos */,
                                         unsigned int /* phase */) const {
   // TODO(igorbonadio)
-  return -std::numeric_limits<double>::infinity();
+  return -std::numeric_limits<Probability>::infinity();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -96,9 +96,9 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
                                           unsigned int end,
                                           unsigned int phase) const {
   if (begin > end)
-    return -std::numeric_limits<double>::infinity();
+    return -std::numeric_limits<Probability>::infinity();
 
-  double sum = 0;
+  Probability sum = 0;
   int b = begin;
   int e = 0;
 

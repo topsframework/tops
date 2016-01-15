@@ -76,10 +76,10 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
       Matrix alpha;
       Matrix beta;
 
-      double P = model->forward(observation_training_set[s], alpha);
+      Probability P = model->forward(observation_training_set[s], alpha);
       model->backward(observation_training_set[s], beta);
 
-      double sum = alpha[0][0] + beta[0][0];
+      Probability sum = alpha[0][0] + beta[0][0];
       for (unsigned int i = 1; i < state_alphabet_size; i++)
         sum = log_sum(sum, alpha[i][0] + beta[i][0]);
 
@@ -89,7 +89,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
       for (unsigned int i = 0; i < state_alphabet_size; i++) {
         for (unsigned int j = 0; j < state_alphabet_size; j++) {
           unsigned int t = 0;
-          double sum = -std::numeric_limits<double>::infinity();
+          Probability sum = -std::numeric_limits<Probability>::infinity();
           if (t < observation_training_set[s].size()-1) {
             sum = alpha[i][t] + model->state(i)->transition()->probabilityOf(j)
                 + model->state(j)->emission()->probabilityOf(
@@ -107,7 +107,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
 
         for (unsigned int sigma = 0; sigma < observation_alphabet_size;
             sigma++) {
-          double sum = -std::numeric_limits<double>::infinity();
+          Probability sum = -std::numeric_limits<Probability>::infinity();
           bool first = true;
           for (unsigned int t = 0; t < observation_training_set[s].size();
               t++) {
@@ -235,7 +235,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
+  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -255,7 +255,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return -std::numeric_limits<double>::infinity();  // TODO(igorbonadio)
+  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -267,8 +267,8 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
                                     unsigned int /* phase */) const {
   Matrix alpha;
   forward(evaluator->sequence(), alpha);
-  double sum_end = -std::numeric_limits<double>::infinity();
-  double sum_begin = -std::numeric_limits<double>::infinity();
+  Probability sum_end = -std::numeric_limits<Probability>::infinity();
+  Probability sum_begin = -std::numeric_limits<Probability>::infinity();
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     sum_end = log_sum(sum_end, alpha[k][end-1]);
     if (begin != 0)
@@ -335,7 +335,7 @@ HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
                                     unsigned int begin,
                                     unsigned int end,
                                     unsigned int phase) const {
-  double prob = 0;
+  Probability prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluateSymbol(evaluator, i, phase);
   return prob;
@@ -456,14 +456,14 @@ Probability HiddenMarkovModel::calculate(
 
 void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
                                                Matrix &probabilities) const {
-  probabilities = std::vector<std::vector<double>>(
+  probabilities = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
-      std::vector<double>(sequence.size()));
+      std::vector<Probability>(sequence.size()));
 
   Matrix alpha;  // forward
   Matrix beta;   // backward
 
-  double full = forward(sequence, alpha);
+  Probability full = forward(sequence, alpha);
   backward(sequence, beta);
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
@@ -507,10 +507,10 @@ void HiddenMarkovModel::initializeLabelingPrefixSumArray(
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::viterbi(const Sequence &xs,
                            Matrix &gamma) const {
-  gamma = std::vector<std::vector<double>>(
+  gamma = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
-      std::vector<double>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<double>(xs.size()));
+      std::vector<Probability>(xs.size()));
+  Matrix psi(_state_alphabet_size, std::vector<Probability>(xs.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     gamma[k][0] = _initial_probabilities->probabilityOf(k)
@@ -522,7 +522,7 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
           + _states[0]->transition()->probabilityOf(k);
       psi[k][i+1] = 0;
       for (unsigned int p = 1; p < _state_alphabet_size; p++) {
-        double v = gamma[p][i] + _states[p]->transition()->probabilityOf(k);
+        Probability v = gamma[p][i] + _states[p]->transition()->probabilityOf(k);
         if (gamma[k][i+1] < v) {
           gamma[k][i+1] = v;
           psi[k][i+1] = p;
@@ -534,7 +534,7 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
 
   Sequence ys(xs.size());
   ys[xs.size() - 1] = 0;
-  double max = gamma[0][xs.size() - 1];
+  Probability max = gamma[0][xs.size() - 1];
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     if (max < gamma[k][xs.size() - 1]) {
       max = gamma[k][xs.size() - 1];
@@ -558,7 +558,7 @@ HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
   Sequence path(xs.size());
 
   for (unsigned int i = 0; i < xs.size(); i++) {
-    double max = probabilities[0][i];
+    Probability max = probabilities[0][i];
     path[i] = 0;
     for (unsigned int k = 1; k < _state_alphabet_size; k++) {
       if (probabilities[k][i] > max) {
@@ -580,9 +580,9 @@ HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 
 Probability HiddenMarkovModel::forward(const Sequence &sequence,
                                   Matrix &alpha) const {
-  alpha = std::vector<std::vector<double>>(
+  alpha = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
-      std::vector<double>(sequence.size()));
+      std::vector<Probability>(sequence.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     alpha[k][0] = _initial_probabilities->probabilityOf(k)
@@ -600,7 +600,7 @@ Probability HiddenMarkovModel::forward(const Sequence &sequence,
     }
   }
 
-  double sum =  alpha[0][sequence.size()-1];
+  Probability sum =  alpha[0][sequence.size()-1];
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     sum = log_sum(sum, alpha[k][sequence.size()-1]);
   }
@@ -611,9 +611,9 @@ Probability HiddenMarkovModel::forward(const Sequence &sequence,
 
 Probability HiddenMarkovModel::backward(const Sequence &sequence,
                                    Matrix &beta) const {
-  beta = std::vector<std::vector<double>>(
+  beta = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
-      std::vector<double>(sequence.size()));
+      std::vector<Probability>(sequence.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
     beta[k][sequence.size()-1] = 0.0;
@@ -633,7 +633,7 @@ Probability HiddenMarkovModel::backward(const Sequence &sequence,
     }
   }
 
-  double sum = beta[0][0] + _initial_probabilities->probabilityOf(0)
+  Probability sum = beta[0][0] + _initial_probabilities->probabilityOf(0)
       + _states[0]->emission()->probabilityOf(sequence[0]);
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     sum = log_sum(sum, beta[k][0] + _initial_probabilities->probabilityOf(k)

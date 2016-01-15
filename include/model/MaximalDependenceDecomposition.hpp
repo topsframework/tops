@@ -101,7 +101,7 @@ class MaximalDependenceDecomposition
   MaximalDependenceDecompositionNodePtr _mdd_tree;
   ConsensusSequence _consensus_sequence;
   ProbabilisticModelPtr _consensus_model;
-  std::vector<double> _prefix_sum_array;
+  std::vector<Probability> _prefix_sum_array;
 
   // Static methods
   static MaximalDependenceDecompositionNodePtr trainTree(
@@ -138,7 +138,7 @@ class MaximalDependenceDecomposition
                      ConsensusSequence consensus_sequence);
 
   // Concrete methods
-  double _probabilityOf(const Sequence &s,
+  Probability _probabilityOf(const Sequence &s,
                         MaximalDependenceDecompositionNodePtr node,
                         std::vector<int> &indexes) const;
   void _drawAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;

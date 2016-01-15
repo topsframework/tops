@@ -199,7 +199,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Gets the probability of this model draws the given symbol.
    * @return \f$Pr(s)\f$
    */
-  virtual double probabilityOf(Symbol s) const;
+  virtual Probability probabilityOf(Symbol s) const;
 
   // Concrete methods
 
