@@ -33,7 +33,7 @@ namespace model {
 
 TargetModel::TargetModel(int alphabet_size)
     : DiscreteIIDModel(
-      std::vector<double>(alphabet_size, log(1.0/alphabet_size))) {
+      std::vector<Probability>(alphabet_size, log(1.0/alphabet_size))) {
 }
 
 /*----------------------------------------------------------------------------*/

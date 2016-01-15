@@ -136,9 +136,13 @@ class GeneralizedHiddenMarkovModel
       SLPtr labeler,
       const Labeler::method &method) const override;
 
-  double forward(const Sequence &sequence, Matrix &alpha) const override;
+  void initializeCache(CCPtr calculator) override;
 
-  double backward(const Sequence &sequence, Matrix &beta) const override;
+  Probability calculate(
+      SCPtr calculator, const Calculator::direction &direction) const override;
+
+  Probability calculate(
+      CCPtr calculator, const Calculator::direction &direction) const override;
 
   void posteriorProbabilities(const Sequence &sequence,
                               Matrix &probabilities) const override;
@@ -156,6 +160,16 @@ class GeneralizedHiddenMarkovModel
 
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
+
+  Probability forward(
+      const Sequence &sequence,
+      Matrix &alpha,
+      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
+
+  Probability backward(
+      const Sequence &sequence,
+      Matrix &beta,
+      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
 
   std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
       const Sequence &xs, bool cached) const;

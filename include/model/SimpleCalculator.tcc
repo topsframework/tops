@@ -71,9 +71,8 @@ class SimpleCalculator : public Calculator {
   }
 
   // Overriden methods
-  Estimation<Labeling<Sequence>>
-  labeling(const Calculator::method& method) const override {
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  Probability calculate(const Calculator::direction& direction) const override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(calculate, direction);
   }
 
   Sequence& sequence() override {
@@ -95,7 +94,7 @@ class SimpleCalculator : public Calculator {
   }
 
  private:
-  GENERATE_MEMBER_FUNCTION_DELEGATOR(labeling, _model)
+  GENERATE_MEMBER_FUNCTION_DELEGATOR(calculate, _model)
 };
 
 }  // namespace model

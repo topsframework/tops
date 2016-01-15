@@ -62,6 +62,7 @@ using tops::model::Probability;
 using tops::model::Sequence;
 using tops::model::Matrix;
 using tops::model::Labeler;
+using tops::model::Calculator;
 using tops::model::log_sum;
 using tops::model::Labeling;
 
@@ -231,6 +232,22 @@ TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
   Sequence sequence {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
 
-  ASSERT_THAT(ghmm->forward(sequence, alpha),
-              DoubleNear(ghmm->backward(sequence, beta), 1e-4));
+  auto calculator = ghmm->calculator(sequence);
+
+  ASSERT_THAT(
+    calculator->calculate(Calculator::direction::forward),
+    DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
+}
+
+TEST_F(AGHMM,
+    ReturnsTheSameValueForTheForwardAndBackwardAlgorithmsWithCache) {
+  Matrix alpha, beta;
+  Sequence sequence {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
+
+  auto calculator = ghmm->calculator(sequence, true);
+
+  ASSERT_THAT(
+    calculator->calculate(Calculator::direction::forward),
+    DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
 }

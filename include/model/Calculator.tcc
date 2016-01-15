@@ -24,9 +24,9 @@
 #include <memory>
 
 // ToPS headers
-#include "State.hpp"
-#include "Symbol.hpp"
-#include "Sequence.hpp"
+#include "model/Symbol.hpp"
+#include "model/Sequence.hpp"
+#include "model/Probability.hpp"
 
 namespace tops {
 namespace model {
@@ -57,10 +57,7 @@ class Calculator : public std::enable_shared_from_this<Calculator> {
   enum class direction { forward, backward };
 
   // Purely virtual methods
-  virtual Probability calculate(const method& method) const = 0;
-
-  virtual Probability posteriorProbabilityOf(State state,
-                                             Symbol symbol) const = 0;
+  virtual Probability calculate(const direction& direction) const = 0;
 
   virtual Sequence& sequence() = 0;
   virtual const Sequence& sequence() const = 0;
