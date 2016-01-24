@@ -75,38 +75,10 @@ class DurationState
   DurationPtr _duration;
 };
 
-/*
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- -------------------------------------------------------------------------------
-                                 IMPLEMENTATION
- -------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
-*/
-
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-DurationState<E, T>::DurationState(Id id, EmissionModelPtr emission,
-                                          TransitionModelPtr transition,
-                                          DurationPtr duration)
-    : Base(std::move(id), std::move(emission), std::move(transition)),
-      _duration(std::move(duration)) {
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              VIRTUAL METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-DurationPtr DurationState<E, T>::duration() {
-  return _duration;
-}
-
-/*----------------------------------------------------------------------------*/
-
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_STATE_
+// Implementation header
+#include "model/DurationState.ipp"
+
+#endif  // TOPS_MODEL_DURATION_STATE_

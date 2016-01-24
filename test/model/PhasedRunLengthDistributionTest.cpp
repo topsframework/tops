@@ -26,11 +26,13 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/PhasedRunLengthDistribution.hpp"
 #include "model/Sequence.hpp"
 
-#include "helper/PhasedRunLengthDistribution.hpp"
 #include "helper/Sequence.hpp"
+
+// Tested header
+#include "model/PhasedRunLengthDistribution.hpp"
+#include "helper/PhasedRunLengthDistribution.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

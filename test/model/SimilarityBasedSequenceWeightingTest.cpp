@@ -27,8 +27,10 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/Sequence.hpp"
+
+// Tested header
+#include "model/SimilarityBasedSequenceWeighting.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

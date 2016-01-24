@@ -26,13 +26,15 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/DiscreteIIDModel.hpp"
-#include "model/FixedSequenceAtPosition.hpp"
-#include "model/Probability.hpp"
 #include "model/Sequence.hpp"
+#include "model/Probability.hpp"
+#include "model/FixedSequenceAtPosition.hpp"
 
-#include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
+
+// Tested header
+#include "model/DiscreteIIDModel.hpp"
+#include "helper/DiscreteIIDModel.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

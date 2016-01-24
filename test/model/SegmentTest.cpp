@@ -24,7 +24,7 @@
 // External headers
 #include "gmock/gmock.h"
 
-// ToPS headers
+// Tested header
 #include "model/Segment.hpp"
 
 using ::testing::Eq;

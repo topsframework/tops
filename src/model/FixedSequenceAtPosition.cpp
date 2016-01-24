@@ -20,7 +20,7 @@
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Interface header
 #include "model/FixedSequenceAtPosition.hpp"
 
 namespace tops {

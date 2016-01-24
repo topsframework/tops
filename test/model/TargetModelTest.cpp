@@ -25,8 +25,10 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/TargetModel.hpp"
 #include "model/Sequence.hpp"
+
+// Tested header
+#include "model/TargetModel.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

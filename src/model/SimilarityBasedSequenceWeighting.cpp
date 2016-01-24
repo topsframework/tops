@@ -26,8 +26,10 @@
 #include <sstream>
 
 // ToPS headers
-#include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/Util.hpp"
+
+// Interface header
+#include "model/SimilarityBasedSequenceWeighting.hpp"
 
 namespace tops {
 namespace model {

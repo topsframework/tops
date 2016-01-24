@@ -25,11 +25,13 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/MultipleSequentialModel.hpp"
 #include "model/Sequence.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
+
+// Tested header
+#include "model/MultipleSequentialModel.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

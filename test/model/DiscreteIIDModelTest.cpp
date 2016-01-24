@@ -26,12 +26,14 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/DiscreteIIDModel.hpp"
 #include "model/Sequence.hpp"
 
-#include "helper/DiscreteIIDModel.hpp"
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
+
+// Tested header
+#include "model/DiscreteIIDModel.hpp"
+#include "helper/DiscreteIIDModel.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

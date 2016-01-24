@@ -66,27 +66,10 @@ class SimpleState
                      TransitionModelPtr transition);
 };
 
-/*
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- -------------------------------------------------------------------------------
-                                 IMPLEMENTATION
- -------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
-*/
-
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
-
-template<typename E, typename T>
-SimpleState<E, T>::SimpleState(Id id, EmissionModelPtr emission,
-                                      TransitionModelPtr transition)
-    : Base(std::move(id), std::move(emission), std::move(transition)) {
-}
-
-/*----------------------------------------------------------------------------*/
-
 }  // namespace model
 }  // namespace tops
+
+// Implementation header
+#include "model/SimpleState.ipp"
 
 #endif  // TOPS_MODEL_SIMPLE_STATE_

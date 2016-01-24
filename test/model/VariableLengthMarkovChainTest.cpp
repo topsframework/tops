@@ -25,12 +25,14 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/VariableLengthMarkovChain.hpp"
-#include "model/DiscreteIIDModel.hpp"
 #include "model/Sequence.hpp"
+#include "model/DiscreteIIDModel.hpp"
 
-#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+
+// Tested header
+#include "model/VariableLengthMarkovChain.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

@@ -21,7 +21,7 @@
 #include <vector>
 #include <cstdlib>
 
-// ToPS headers
+// Interface header
 #include "model/ContextTreeNode.hpp"
 
 namespace tops {

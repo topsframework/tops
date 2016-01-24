@@ -25,15 +25,15 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/PhasedInhomogeneousMarkovChain.hpp"
-#include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
-#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
-// ToPS templates
-#include "model/ProbabilisticModelDecoratorCrtp.tcc"
+// Tested header
+#include "model/PhasedInhomogeneousMarkovChain.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

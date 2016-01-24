@@ -19,6 +19,8 @@
 
 // ToPS headers
 #include "model/SingleValueRange.hpp"
+
+// Interface header
 #include "model/GeometricDuration.hpp"
 
 namespace tops {

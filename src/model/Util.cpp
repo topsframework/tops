@@ -21,7 +21,7 @@
 #include <cmath>
 #include <limits>
 
-// ToPS headers
+// Interface header
 #include "model/Util.hpp"
 
 namespace tops {

@@ -51,58 +51,10 @@ class Labeling {
   Target _label;
 };
 
-/*
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- -------------------------------------------------------------------------------
-                                 IMPLEMENTATION
- -------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
-*/
-
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
-
-template<typename Target>
-Labeling<Target>::Labeling(Target observation, Target label)
-    : _observation(std::move(observation)), _label(std::move(label)) {
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
-
-template<typename Target>
-const Target& Labeling<Target>::observation() const {
-  return _observation;
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename Target>
-Target& Labeling<Target>::observation() {
-  return const_cast<Target &>(
-    static_cast<const Labeling *>(this)->observation());
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename Target>
-const Target& Labeling<Target>::label() const {
-  return _label;
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename Target>
-Target& Labeling<Target>::label() {
-  return const_cast<Target &>(
-    static_cast<const Labeling *>(this)->label());
-}
-
-/*----------------------------------------------------------------------------*/
-
 }  // namespace model
 }  // namespace tops
+
+// Implementation header
+#include "model/Labeling.ipp"
 
 #endif  // TOPS_MODEL_LABELING_

@@ -22,7 +22,7 @@
 #include <vector>
 #include <algorithm>
 
-// ToPS headers
+// Interface header
 #include "model/Consensus.hpp"
 
 namespace tops {

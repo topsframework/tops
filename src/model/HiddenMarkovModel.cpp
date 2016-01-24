@@ -24,8 +24,10 @@
 #include <algorithm>
 
 // ToPS headers
-#include "model/HiddenMarkovModel.hpp"
 #include "model/Util.hpp"
+
+// Interface header
+#include "model/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
@@ -522,7 +524,8 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
           + _states[0]->transition()->probabilityOf(k);
       psi[k][i+1] = 0;
       for (unsigned int p = 1; p < _state_alphabet_size; p++) {
-        Probability v = gamma[p][i] + _states[p]->transition()->probabilityOf(k);
+        Probability v
+          = gamma[p][i] + _states[p]->transition()->probabilityOf(k);
         if (gamma[k][i+1] < v) {
           gamma[k][i+1] = v;
           psi[k][i+1] = p;

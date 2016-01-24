@@ -26,20 +26,21 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/GeneralizedHiddenMarkovModel.hpp"
-#include "model/Probability.hpp"
-#include "model/Sequence.hpp"
-#include "model/Matrix.hpp"
 #include "model/Util.hpp"
-
+#include "model/Matrix.hpp"
+#include "model/Sequence.hpp"
+#include "model/Probability.hpp"
 #include "model/SignalDuration.hpp"
 #include "model/ExplicitDuration.hpp"
 #include "model/GeometricDuration.hpp"
 
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
+#include "helper/DiscreteIIDModel.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
+
+// Tested header
+#include "model/GeneralizedHiddenMarkovModel.hpp"
 
 using ::testing::Eq;
 using ::testing::DoubleEq;

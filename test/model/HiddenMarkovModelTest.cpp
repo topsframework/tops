@@ -27,13 +27,15 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/HiddenMarkovModel.hpp"
-#include "model/Sequence.hpp"
 #include "model/Util.hpp"
+#include "model/Sequence.hpp"
 
-#include "helper/HiddenMarkovModel.hpp"
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
+
+// Tested header
+#include "model/HiddenMarkovModel.hpp"
+#include "helper/HiddenMarkovModel.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

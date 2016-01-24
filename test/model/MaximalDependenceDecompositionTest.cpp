@@ -26,11 +26,13 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/MaximalDependenceDecomposition.hpp"
 #include "model/Sequence.hpp"
 
-#include "helper/MaximalDependenceDecomposition.hpp"
 #include "helper/DiscreteIIDModel.hpp"
+
+// Tested header
+#include "model/MaximalDependenceDecomposition.hpp"
+#include "helper/MaximalDependenceDecomposition.hpp"
 
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;

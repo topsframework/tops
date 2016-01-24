@@ -17,15 +17,6 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <limits>
-
-// ToPS headers
-#include "model/SingleValueRange.hpp"
-
-// Interface header
-#include "model/SignalDuration.hpp"
-
 namespace tops {
 namespace model {
 
@@ -33,30 +24,21 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-SignalDuration::SignalDuration(unsigned int duration_size)
-    : _duration_size(duration_size) {
+template<typename E, typename T>
+DurationState<E, T>::DurationState(Id id, EmissionModelPtr emission,
+                                          TransitionModelPtr transition,
+                                          DurationPtr duration)
+    : Base(std::move(id), std::move(emission), std::move(transition)),
+      _duration(std::move(duration)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                              VIRTUAL METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-RangePtr SignalDuration::range() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
-}
-
-/*----------------------------------------------------------------------------*/
-
-unsigned int SignalDuration::maximumSize() const {
-  return _duration_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability SignalDuration::probabilityOfLenght(unsigned int length) const {
-  if (length == _duration_size)
-    return 0.0;
-  return -std::numeric_limits<Probability>::infinity();
+template<typename E, typename T>
+DurationPtr DurationState<E, T>::duration() {
+  return _duration;
 }
 
 /*----------------------------------------------------------------------------*/

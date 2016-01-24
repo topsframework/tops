@@ -24,9 +24,11 @@
 #include <algorithm>
 
 // ToPS headers
-#include "model/GeneralizedHiddenMarkovModel.hpp"
 #include "model/Util.hpp"
 #include "model/Segment.hpp"
+
+// Interface header
+#include "model/GeneralizedHiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {

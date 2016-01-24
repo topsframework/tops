@@ -17,15 +17,6 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <limits>
-
-// ToPS headers
-#include "model/SingleValueRange.hpp"
-
-// Interface header
-#include "model/SignalDuration.hpp"
-
 namespace tops {
 namespace model {
 
@@ -33,30 +24,42 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-SignalDuration::SignalDuration(unsigned int duration_size)
-    : _duration_size(duration_size) {
+template<typename Target, typename Probability>
+Estimation<Target, Probability>::Estimation(Target estimated,
+                                            Probability probability)
+    : _estimated(std::move(estimated)), _probability(std::move(probability)) {
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-RangePtr SignalDuration::range() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
+template<typename Target, typename Probability>
+const Target& Estimation<Target, Probability>::estimated() const {
+  return _estimated;
 }
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int SignalDuration::maximumSize() const {
-  return _duration_size;
+template<typename Target, typename Probability>
+Target& Estimation<Target, Probability>::estimated() {
+  return const_cast<Target &>(
+    static_cast<const Estimation *>(this)->estimated());
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability SignalDuration::probabilityOfLenght(unsigned int length) const {
-  if (length == _duration_size)
-    return 0.0;
-  return -std::numeric_limits<Probability>::infinity();
+template<typename Target, typename Probability>
+const Probability& Estimation<Target, Probability>::probability() const {
+  return _probability;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Target, typename Probability>
+Probability& Estimation<Target, Probability>::probability() {
+  return const_cast<Probability &>(
+    static_cast<const Estimation *>(this)->probability());
 }
 
 /*----------------------------------------------------------------------------*/
