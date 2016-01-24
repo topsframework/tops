@@ -20,6 +20,7 @@
 #ifndef TOPS_HELPER_DISCRETE_IID_MODEL_
 #define TOPS_HELPER_DISCRETE_IID_MODEL_
 
+// Tested header
 #include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
@@ -27,9 +28,9 @@ namespace helper {
 
 tops::model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size);
 
+tops::model::DiscreteIIDModelPtr createDNAIIDModel();
 tops::model::DiscreteIIDModelPtr createFairCoinIIDModel();
 tops::model::DiscreteIIDModelPtr createLoadedCoinIIDModel();
-tops::model::DiscreteIIDModelPtr createDNAModel();
 
 }  // namespace helper
 }  // namespace tops

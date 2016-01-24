@@ -20,12 +20,14 @@
 #ifndef TOPS_HELPER_MAXIMAL_DEPENDENCE_DECOMPOSITION_
 #define TOPS_HELPER_MAXIMAL_DEPENDENCE_DECOMPOSITION_
 
+// Tested header
 #include "model/MaximalDependenceDecomposition.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::MaximalDependenceDecompositionPtr createMDD();
+tops::model::MaximalDependenceDecompositionPtr createSampleMDD();
+
 tops::model::ConsensusSequence createConsensusSequence();
 
 }  // namespace helper

@@ -21,13 +21,19 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/InhomogeneousMarkovChain.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
+
+// Interface header
+#include "helper/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
+
+tops::model::InhomogeneousMarkovChainPtr createRandomIMC(
     int number_of_chains,
     int alphabet_size) {
   std::vector<tops::model::VariableLengthMarkovChainPtr> vlmcs;
@@ -35,6 +41,8 @@ tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(
     vlmcs.push_back(generateRandomVLMC(number_of_chains, alphabet_size));
   return tops::model::InhomogeneousMarkovChain::make(vlmcs);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

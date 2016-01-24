@@ -44,13 +44,13 @@ using tops::model::MaximalDependenceDecompositionPtr;
 using tops::model::Sequence;
 using tops::model::INVALID_SYMBOL;
 
-using tops::helper::createMDD;
-using tops::helper::createDNAModel;
+using tops::helper::createSampleMDD;
+using tops::helper::createDNAIIDModel;
 using tops::helper::createConsensusSequence;
 
 class AMDD : public testing::Test {
  protected:
-  MaximalDependenceDecompositionPtr mdd = createMDD();
+  MaximalDependenceDecompositionPtr mdd = createSampleMDD();
 };
 
 TEST_F(AMDD, ShouldEvaluateASymbol) {
@@ -122,7 +122,7 @@ TEST(MDD, ShouldBeTrained) {
 
   auto mdd = mdd_trainer->train(
     MaximalDependenceDecomposition::standard_training_algorithm{},
-    4, createConsensusSequence(), createDNAModel(), 2);
+    4, createConsensusSequence(), createDNAIIDModel(), 2);
 
   ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
                  ->evaluateSequence(0, 9),

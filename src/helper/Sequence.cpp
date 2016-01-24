@@ -21,11 +21,40 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/Sequence.hpp"
 #include "helper/Random.hpp"
+
+// Interface header
+#include "helper/Sequence.hpp"
 
 namespace tops {
 namespace helper {
+
+/*----------------------------------------------------------------------------*/
+/*                              LOCAL FUNCTIONS                               */
+/*----------------------------------------------------------------------------*/
+
+static void generateAllCombinationsOfSymbolsImpl(
+    unsigned int pos,
+    model::Sequence s,
+    std::vector<model::Sequence> &sequences) {
+  model::Sequence s0 = s;
+  s0[pos] = 0;
+
+  model::Sequence s1 = s;
+  s1[pos] = 1;
+
+  if (pos < s.size() - 1) {
+    generateAllCombinationsOfSymbolsImpl(pos + 1, s0, sequences);
+    generateAllCombinationsOfSymbolsImpl(pos + 1, s1, sequences);
+  } else {
+    sequences.push_back(s0);
+    sequences.push_back(s1);
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
 
 model::Sequence generateRandomSequence(
     unsigned int size, unsigned int alphabet_size) {
@@ -35,6 +64,8 @@ model::Sequence generateRandomSequence(
   }
   return sequence;
 }
+
+/*----------------------------------------------------------------------------*/
 
 model::Sequence sequenceOfLengths() {
   return { 37, 4890, 1665, 81, 4083, 38, 198, 124, 3231, 1317, 96, 7137, 3162,
@@ -140,24 +171,7 @@ model::Sequence sequenceOfLengths() {
            100, 226, 104, 246, 5250 };
 }
 
-static void generateAllCombinationsOfSymbolsImpl(
-    unsigned int pos,
-    model::Sequence s,
-    std::vector<model::Sequence> &sequences) {
-  model::Sequence s0 = s;
-  s0[pos] = 0;
-
-  model::Sequence s1 = s;
-  s1[pos] = 1;
-
-  if (pos < s.size() - 1) {
-    generateAllCombinationsOfSymbolsImpl(pos + 1, s0, sequences);
-    generateAllCombinationsOfSymbolsImpl(pos + 1, s1, sequences);
-  } else {
-    sequences.push_back(s0);
-    sequences.push_back(s1);
-  }
-}
+/*----------------------------------------------------------------------------*/
 
 std::vector<model::Sequence>
 generateAllCombinationsOfSymbols(unsigned int size) {
@@ -166,6 +180,8 @@ generateAllCombinationsOfSymbols(unsigned int size) {
   generateAllCombinationsOfSymbolsImpl(0, s, sequences);
   return sequences;
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

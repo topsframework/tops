@@ -22,13 +22,19 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/HiddenMarkovModel.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"
 
+// Interface header
+#include "helper/HiddenMarkovModel.hpp"
+
 namespace tops {
 namespace helper {
+
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
 
 tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
   std::vector<tops::model::HiddenMarkovModel::StatePtr> states = {
@@ -52,6 +58,8 @@ tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
     2,
     2);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

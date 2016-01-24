@@ -39,17 +39,18 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
 using tops::model::PhasedRunLengthDistribution;
 using tops::model::PhasedRunLengthDistributionPtr;
-using tops::model::Sequence;
 
-using tops::helper::generateRandomSequence;
 using tops::helper::sequenceOfLengths;
-using tops::helper::createLengthDistribution;
+using tops::helper::generateRandomSequence;
+using tops::helper::createSamplePhasedRunLengthDistribution;
 
 class APhasedRunLengthDistribution : public testing::Test {
  protected:
-  PhasedRunLengthDistributionPtr distribution = createLengthDistribution();
+  PhasedRunLengthDistributionPtr distribution
+    = createSamplePhasedRunLengthDistribution();
 };
 
 TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {

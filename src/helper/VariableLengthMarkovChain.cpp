@@ -22,24 +22,30 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Random.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"
 
+// Interface header
+#include "helper/VariableLengthMarkovChain.hpp"
+
 namespace tops {
 namespace helper {
 
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
+
 model::VariableLengthMarkovChainPtr generateRandomVLMC(
-    int number_of_nodes,
-    int alphabet_size) {
+    unsigned int number_of_nodes,
+    unsigned int alphabet_size) {
   auto tree = model::ContextTree::make(alphabet_size);
   auto node = tree->createContext();
   node->setDistribution(generateRandomIIDModel(alphabet_size));
-  for (int i = 1; i < number_of_nodes; i++) {
+  for (unsigned int i = 1; i < number_of_nodes; i++) {
     auto root = node;
-    for (int j = 0; j < alphabet_size; j++) {
+    for (unsigned int j = 0; j < alphabet_size; j++) {
       node = tree->createContext();
       node->setDistribution(generateRandomIIDModel(alphabet_size));
       node->setChild(root, j);
@@ -47,6 +53,25 @@ model::VariableLengthMarkovChainPtr generateRandomVLMC(
   }
   return model::VariableLengthMarkovChain::make(tree);
 }
+
+/*----------------------------------------------------------------------------*/
+
+model::VariableLengthMarkovChainPtr createVLMCMC() {
+  auto tree = model::ContextTree::make(2);
+
+  auto root = tree->createContext();
+  root->setDistribution(model::DiscreteIIDModel::make(
+    std::vector<model::Probability>{ log(0.50), log(0.50) }));
+
+  auto c0 = tree->createContext();
+  root->setChild(c0, 0);
+  c0->setDistribution(model::DiscreteIIDModel::make(
+    std::vector<model::Probability>{ log(0.10), log(0.90) }));
+
+  return model::VariableLengthMarkovChain::make(tree);
+}
+
+/*----------------------------------------------------------------------------*/
 
 model::VariableLengthMarkovChainPtr createMachlerVLMC() {
   auto tree = model::ContextTree::make(2);
@@ -88,20 +113,7 @@ model::VariableLengthMarkovChainPtr createMachlerVLMC() {
   return model::VariableLengthMarkovChain::make(tree);
 }
 
-model::VariableLengthMarkovChainPtr createVLMCMC() {
-  auto tree = model::ContextTree::make(2);
-
-  auto root = tree->createContext();
-  root->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.50), log(0.50) }));
-
-  auto c0 = tree->createContext();
-  root->setChild(c0, 0);
-  c0->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.10), log(0.90) }));
-
-  return model::VariableLengthMarkovChain::make(tree);
-}
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

@@ -41,6 +41,7 @@
 #include "model/ExplicitDuration.hpp"
 #include "model/GeometricDuration.hpp"
 
+// Tested header
 #include "model/Translator.hpp"
 
 namespace tops {

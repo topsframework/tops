@@ -20,18 +20,23 @@
 // Standard headers
 #include <random>
 
-// ToPS headers
+// Interface header
 #include "Random.hpp"
 
 namespace tops {
 namespace helper {
 
-std::default_random_engine generator;
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
 
 int generateRandomInteger(int max) {
+  static std::default_random_engine generator;
   std::uniform_int_distribution<int> distribution(0, max);
   return distribution(generator);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops
