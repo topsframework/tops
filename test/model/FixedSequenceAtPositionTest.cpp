@@ -36,6 +36,10 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -50,6 +54,10 @@ using tops::model::FixedSequenceAtPositionPtr;
 
 using tops::helper::createLoadedCoinIIDModel;
 
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
+
 class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
  protected:
   FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(
@@ -60,6 +68,10 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
         std::vector<Probability>{
           0, -std::numeric_limits<double>::infinity() }));
 };
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
 
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
   ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})
@@ -76,8 +88,12 @@ TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
               DoubleNear(-10.1029, 1e-4));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition,
     ShouldDrawSequenceWithDefaultSeed) {
   ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 1, 0}));
 }
+
+/*----------------------------------------------------------------------------*/

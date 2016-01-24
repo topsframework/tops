@@ -27,13 +27,21 @@
 // Tested header
 #include "model/Segment.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::Sequence;
 using tops::model::Segment;
+using tops::model::Sequence;
+
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
 
 TEST(ASegment, ShouldBeGeneratedBySequences) {
   std::vector<Segment> segments;
@@ -70,3 +78,5 @@ TEST(ASegment, ShouldBeGeneratedBySequences) {
     ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
   }
 }
+
+/*----------------------------------------------------------------------------*/

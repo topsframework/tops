@@ -42,39 +42,48 @@
 // Tested header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::DiscreteIIDModel;
-using tops::model::DiscreteIIDModelPtr;
-using tops::model::GeneralizedHiddenMarkovModel;
-using tops::model::GeneralizedHiddenMarkovModelPtr;
-
-using tops::model::VariableLengthMarkovChain;
-using tops::model::VariableLengthMarkovChainPtr;
-
-using tops::model::SignalDuration;
-using tops::model::ExplicitDuration;
-using tops::model::GeometricDuration;
-
-using tops::model::Probability;
-using tops::model::Sequence;
 using tops::model::Matrix;
 using tops::model::Labeler;
-using tops::model::Calculator;
 using tops::model::log_sum;
 using tops::model::Labeling;
+using tops::model::Sequence;
+using tops::model::Calculator;
+using tops::model::Probability;
+using tops::model::SignalDuration;
+using tops::model::DiscreteIIDModel;
+using tops::model::ExplicitDuration;
+using tops::model::GeometricDuration;
+using tops::model::DiscreteIIDModelPtr;
+using tops::model::VariableLengthMarkovChain;
+using tops::model::GeneralizedHiddenMarkovModel;
+using tops::model::VariableLengthMarkovChainPtr;
+using tops::model::GeneralizedHiddenMarkovModelPtr;
 
-using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
+using tops::helper::createMachlerVLMC;
 using tops::helper::createFairCoinIIDModel;
 using tops::helper::generateAllCombinationsOfSymbols;
 
 using tops::helper::SExprTranslator;
 
+/*----------------------------------------------------------------------------*/
+/*                                  ALIASES                                   */
+/*----------------------------------------------------------------------------*/
+
 using GHMM = GeneralizedHiddenMarkovModel;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class AGHMM : public testing::Test {
  protected:
@@ -135,6 +144,10 @@ class AGHMM : public testing::Test {
   }
 };
 
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AGHMM, ShouldBeSExprSerialized) {
   auto translator = SExprTranslator::make();
   auto serializer = ghmm->serializer(translator);
@@ -156,6 +169,8 @@ TEST_F(AGHMM, ShouldBeSExprSerialized) {
     translator->sexpr());
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AGHMM, ShouldEvaluateSequence) {
   Sequence observation {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
@@ -167,6 +182,8 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
 
   ASSERT_THAT(evaluator->evaluateSequence(0, 21), DoubleNear(-35.4276, 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   Sequence observation {
@@ -183,6 +200,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   ASSERT_THAT(labeling.label(), ContainerEq(label));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
   Sequence observation {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
@@ -197,6 +216,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
 
   ASSERT_THAT(labeling.label(), ContainerEq(label));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   Sequence observation {
@@ -213,6 +234,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   ASSERT_THAT(labeling.label(), ContainerEq(label));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   Sequence observation {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
@@ -228,6 +251,8 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   ASSERT_THAT(labeling.label(), ContainerEq(label));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
   Matrix alpha, beta;
   Sequence sequence {
@@ -239,6 +264,8 @@ TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
     calculator->calculate(Calculator::direction::forward),
     DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AGHMM,
     ReturnsTheSameValueForTheForwardAndBackwardAlgorithmsWithCache) {
@@ -252,3 +279,5 @@ TEST_F(AGHMM,
     calculator->calculate(Calculator::direction::forward),
     DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/

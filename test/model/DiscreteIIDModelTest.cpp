@@ -35,78 +35,36 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
+using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
-using ::testing::Eq;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
-using tops::model::Sequence;
-
-using tops::helper::createLoadedCoinIIDModel;
-using tops::helper::generateRandomSequence;
-using tops::helper::sequenceOfLengths;
 
 using tops::helper::SExprTranslator;
+using tops::helper::sequenceOfLengths;
+using tops::helper::generateRandomSequence;
+using tops::helper::createLoadedCoinIIDModel;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class ADiscreteIIDModel : public testing::Test {
  protected:
   DiscreteIIDModelPtr iid = createLoadedCoinIIDModel();
 };
 
-TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
-  ASSERT_THAT(iid->alphabetSize(), Eq(2));
-}
-
-TEST_F(ADiscreteIIDModel, ShouldEvaluateASingleSymbol) {
-  ASSERT_THAT(iid->probabilityOf(0), DoubleEq(log(0.2)));
-  ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(0.8)));
-}
-
-TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
-  std::vector<Sequence> test_data = {
-    {0, 0, 1, 1},
-    {0, 1, 1, 1},
-    {1, 1, 1, 1}
-  };
-  for (auto data : test_data) {
-    double result = 0.0;
-    for (auto symbol : data) {
-      result += iid->probabilityOf(symbol);
-    }
-    ASSERT_THAT(iid->standardEvaluator(data)->evaluateSequence(0, 4),
-                DoubleEq(result));
-  }
-}
-
-TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
-  auto evaluator = iid->standardEvaluator({0, 1, 0});
-  ASSERT_THAT(evaluator->evaluateSequence(0, 1), DoubleEq(log(0.2)));
-  ASSERT_THAT(evaluator->evaluateSequence(1, 2), DoubleEq(log(0.8)));
-  ASSERT_THAT(evaluator->evaluateSequence(2, 3), DoubleEq(log(0.2)));
-}
-
-TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  for (int i = 1; i < 1000; i++) {
-    auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(
-      iid->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-      DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, data.size())));
-  }
-}
-
-TEST_F(ADiscreteIIDModel, ShouldDrawSequenceWithDefaultSeed) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence{0, 1, 1, 1, 1}));
-}
-
-TEST_F(ADiscreteIIDModel, ShouldBeSExprSerialized) {
-  auto translator = SExprTranslator::make();
-  auto serializer = iid->serializer(translator);
-  serializer->serialize();
-  ASSERT_EQ(translator->sexpr(), "(DiscreteIIDModel: -1.609438 -0.223144)");
-}
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
   std::vector<Sequence> training_set = {
@@ -125,6 +83,8 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
   ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(7.0/20)));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
   iid_trainer->add_training_sequence(sequenceOfLengths());
@@ -135,6 +95,8 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   ASSERT_THAT(iid->probabilityOf(4186), DoubleNear(-9.70443, 1e-04));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.60564, 1e-04));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
@@ -148,6 +110,8 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-9.73428, 1e-04));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
@@ -160,6 +124,8 @@ TEST(DiscreteIIDModel,
   ASSERT_THAT(iid->probabilityOf(3312), DoubleNear(-10.1987, 1e-04));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithmWithEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
                DiscreteIIDModel::maximum_likehood_algorithm{},
@@ -169,6 +135,8 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithmWithEmptyDataSet) {
   ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithmWithEmptyDataSet) {
@@ -181,6 +149,8 @@ TEST(DiscreteIIDModel,
   ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
@@ -192,6 +162,8 @@ TEST(DiscreteIIDModel,
   ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(DiscreteIIDModel,
 ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
@@ -202,3 +174,74 @@ ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithmWithAnEmptyDataSet) {
   ASSERT_THAT(iid->probabilityOf(4186), DoubleEq(infinity));
   ASSERT_THAT(iid->probabilityOf(3312), DoubleEq(infinity));
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldHaveAnAlphabetSize) {
+  ASSERT_THAT(iid->alphabetSize(), Eq(2));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASingleSymbol) {
+  ASSERT_THAT(iid->probabilityOf(0), DoubleEq(log(0.2)));
+  ASSERT_THAT(iid->probabilityOf(1), DoubleEq(log(0.8)));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldHaveEvaluateASequence) {
+  std::vector<Sequence> test_data = {
+    {0, 0, 1, 1},
+    {0, 1, 1, 1},
+    {1, 1, 1, 1}
+  };
+  for (auto data : test_data) {
+    double result = 0.0;
+    for (auto symbol : data) {
+      result += iid->probabilityOf(symbol);
+    }
+    ASSERT_THAT(iid->standardEvaluator(data)->evaluateSequence(0, 4),
+                DoubleEq(result));
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
+  auto evaluator = iid->standardEvaluator({0, 1, 0});
+  ASSERT_THAT(evaluator->evaluateSequence(0, 1), DoubleEq(log(0.2)));
+  ASSERT_THAT(evaluator->evaluateSequence(1, 2), DoubleEq(log(0.8)));
+  ASSERT_THAT(evaluator->evaluateSequence(2, 3), DoubleEq(log(0.2)));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
+  for (int i = 1; i < 1000; i++) {
+    auto data = generateRandomSequence(i, 2);
+    ASSERT_THAT(
+      iid->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
+      DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, data.size())));
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldDrawSequenceWithDefaultSeed) {
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 1, 1}));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ADiscreteIIDModel, ShouldBeSExprSerialized) {
+  auto translator = SExprTranslator::make();
+  auto serializer = iid->serializer(translator);
+  serializer->serialize();
+  ASSERT_EQ(translator->sexpr(), "(DiscreteIIDModel: -1.609438 -0.223144)");
+}
+
+/*----------------------------------------------------------------------------*/

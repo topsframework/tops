@@ -37,30 +37,70 @@
 #include "model/HiddenMarkovModel.hpp"
 #include "helper/HiddenMarkovModel.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
+using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
-using ::testing::Eq;
 using ::testing::ContainerEq;
 
+using tops::model::Matrix;
+using tops::model::log_sum;
+using tops::model::Labeler;
+using tops::model::Labeling;
+using tops::model::Sequence;
+using tops::model::Calculator;
+using tops::model::INVALID_SYMBOL;
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
-using tops::model::Sequence;
-using tops::model::Labeling;
-using tops::model::Matrix;
-using tops::model::Labeler;
-using tops::model::Calculator;
-using tops::model::log_sum;
-using tops::model::INVALID_SYMBOL;
 
+using tops::helper::SExprTranslator;
 using tops::helper::createDishonestCoinCasinoHMM;
 using tops::helper::generateAllCombinationsOfSymbols;
 
-using tops::helper::SExprTranslator;
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class AHiddenMarkovModel : public testing::Test {
  protected:
   HiddenMarkovModelPtr hmm = createDishonestCoinCasinoHMM();
 };
+
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
+
+TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
+  auto hmm_trainer = HiddenMarkovModel::labelingTrainer();
+
+  hmm_trainer->add_training_set({
+    Labeling<Sequence>{ {0, 0, 0, 1, 1},          {1, 1, 1, 1, 1}          },
+    Labeling<Sequence>{ {0, 0, 0, 1, 0, 0, 1, 1}, {0, 1, 1, 0, 0, 0, 1, 1} },
+    Labeling<Sequence>{ {0, 0, 0, 1, 1, 0, 0},    {0, 0, 0, 0, 0, 1, 0}    }
+  });
+
+  auto trained_hmm = hmm_trainer->train(
+    HiddenMarkovModel::maximum_likehood_algorithm{}, 2, 2, 0.1);
+
+  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
+
+  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
+  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
+  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
+  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
+
+  ASSERT_THAT(evaluator00->evaluateSequence(0, 3), DoubleNear(-2.32992, 1e-4));
+  ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-3.20183, 1e-4));
+  ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-4.81600, 1e-4));
+  ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-4.39373, 1e-4));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
   Sequence observation {0, 0, 1};
@@ -73,6 +113,8 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
                        log(0.5) + log(0.8)));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbabilityWithCache) {
   Sequence observation {0, 0, 1};
   Sequence label       {0, 1, 1};
@@ -83,6 +125,8 @@ TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbabilityWithCache) {
                        log(0.3) + log(0.2) +
                        log(0.5) + log(0.8)));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   std::vector<std::vector<Sequence>> test_set = {
@@ -100,6 +144,8 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
   std::vector<std::vector<Sequence>> test_set = {
     {{0}, {0}},
@@ -115,6 +161,8 @@ TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
     ASSERT_THAT(labeling.label(), Eq(test[1]));
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservations) {
   std::vector<Sequence> test_set = {
@@ -152,6 +200,8 @@ TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservations) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel,
     DecodesASequenceOfObservationsUsingThePosteriorProbability) {
   std::vector<std::vector<Sequence>> test_set = {
@@ -169,6 +219,8 @@ TEST_F(AHiddenMarkovModel,
     ASSERT_THAT(labeling.label(), Eq(test[1]));
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel,
     DecodesASequenceOfObservationsUsingThePosteriorProbabilityWithCache) {
@@ -188,6 +240,8 @@ TEST_F(AHiddenMarkovModel,
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
   std::vector<std::vector<Sequence>> test_set = {
     {{0}, {0}},
@@ -205,6 +259,8 @@ TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilitiesWithCache) {
   std::vector<std::vector<Sequence>> test_set = {
     {{0}, {0}},
@@ -221,6 +277,8 @@ TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilitiesWithCache) {
     ASSERT_THAT(prob_b, DoubleNear(prob_f, 1e-4));
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   auto hmm_trainer = HiddenMarkovModel::standardTrainer();
@@ -251,6 +309,8 @@ TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
               DoubleNear(-313.26651, 1e-4));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
   auto translator = SExprTranslator::make();
   auto serializer = hmm->serializer(translator);
@@ -265,36 +325,15 @@ TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
         "(DiscreteIIDModel: -0.693147 -0.693147)))");
 }
 
-TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
-  auto hmm_trainer = HiddenMarkovModel::labelingTrainer();
-
-  hmm_trainer->add_training_set({
-    Labeling<Sequence>{ {0, 0, 0, 1, 1},          {1, 1, 1, 1, 1}          },
-    Labeling<Sequence>{ {0, 0, 0, 1, 0, 0, 1, 1}, {0, 1, 1, 0, 0, 0, 1, 1} },
-    Labeling<Sequence>{ {0, 0, 0, 1, 1, 0, 0},    {0, 0, 0, 0, 0, 1, 0}    }
-  });
-
-  auto trained_hmm = hmm_trainer->train(
-    HiddenMarkovModel::maximum_likehood_algorithm{}, 2, 2, 0.1);
-
-  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
-
-  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
-  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
-  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
-  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
-
-  ASSERT_THAT(evaluator00->evaluateSequence(0, 3), DoubleNear(-2.32992, 1e-4));
-  ASSERT_THAT(evaluator01->evaluateSequence(0, 3), DoubleNear(-3.20183, 1e-4));
-  ASSERT_THAT(evaluator10->evaluateSequence(0, 3), DoubleNear(-4.81600, 1e-4));
-  ASSERT_THAT(evaluator11->evaluateSequence(0, 3), DoubleNear(-4.39373, 1e-4));
-}
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): implement method
   ASSERT_THAT(hmm->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence(5, INVALID_SYMBOL)));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, ShouldChooseLabelingWithSeed42) {
   auto labeling = hmm->labelingGenerator()->drawSequence(5);
@@ -303,3 +342,5 @@ TEST_F(AHiddenMarkovModel, ShouldChooseLabelingWithSeed42) {
   ASSERT_THAT(labeling.label(),
               ContainerEq(Sequence{0, 1, 0, 0, 1}));
 }
+
+/*----------------------------------------------------------------------------*/

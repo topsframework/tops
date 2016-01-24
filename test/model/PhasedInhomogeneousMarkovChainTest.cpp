@@ -35,23 +35,31 @@
 // Tested header
 #include "model/PhasedInhomogeneousMarkovChain.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Sequence;
+using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::PhasedInhomogeneousMarkovChain;
-using tops::model::PhasedInhomogeneousMarkovChainPtr;
 using tops::model::ProbabilisticModelDecoratorCrtp;
+using tops::model::PhasedInhomogeneousMarkovChainPtr;
 using tops::model::ProbabilisticModelDecoratorCrtpPtr;
-using tops::model::ProbabilisticModelPtr;
 
-using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
+using tops::helper::createMachlerVLMC;
 using tops::helper::generateRandomSequence;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class APhasedInhomogeneousMarkovChain : public testing::Test {
  protected:
@@ -62,6 +70,35 @@ class APhasedInhomogeneousMarkovChain : public testing::Test {
                                                 createVLMCMC()});
   }
 };
+
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
+
+TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
+  auto imc_trainer = PhasedInhomogeneousMarkovChain::standardTrainer();
+
+  imc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                 {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                 {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                 {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+
+  auto imc = imc_trainer->train(
+      PhasedInhomogeneousMarkovChain::interpolation_algorithm{},
+      2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
+
+  ASSERT_THAT(imc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
+              DoubleNear(-2.99504, 1e-4));
+  ASSERT_THAT(imc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
+              DoubleNear(-2.99504, 1e-4));
+  ASSERT_THAT(imc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                 ->evaluateSequence(0, 7),
+              DoubleNear(-4.87431, 1e-4));
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
 
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
@@ -80,6 +117,8 @@ TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(APhasedInhomogeneousMarkovChain,
        ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
@@ -90,6 +129,8 @@ TEST_F(APhasedInhomogeneousMarkovChain,
                             ->evaluateSequence(0, data.size())));
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
@@ -112,29 +153,12 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 
-TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
-  auto imc_trainer = PhasedInhomogeneousMarkovChain::standardTrainer();
-
-  imc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                 {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                 {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                 {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
-
-  auto imc = imc_trainer->train(
-      PhasedInhomogeneousMarkovChain::interpolation_algorithm{},
-      2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
-
-  ASSERT_THAT(imc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-              DoubleNear(-2.99504, 1e-4));
-  ASSERT_THAT(imc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
-              DoubleNear(-2.99504, 1e-4));
-  ASSERT_THAT(imc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
-                 ->evaluateSequence(0, 7),
-              DoubleNear(-4.87431, 1e-4));
-}
+/*----------------------------------------------------------------------------*/

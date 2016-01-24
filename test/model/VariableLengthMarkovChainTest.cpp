@@ -34,79 +34,37 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
+using tops::model::DiscreteIIDModel;
+using tops::model::DiscreteIIDModelPtr;
 using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::DiscreteIIDModel;
-using tops::model::DiscreteIIDModelPtr;
-using tops::model::Sequence;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::generateRandomSequence;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class AVLMC : public testing::Test {
  protected:
   VariableLengthMarkovChainPtr vlmc = createMachlerVLMC();
 };
 
-TEST_F(AVLMC, ShouldEvaluateAPosition) {
-  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(1, 2),
-              DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(1, 2),
-              DoubleEq(log(0.20)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(1, 2),
-              DoubleEq(log(0.21)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(1, 2),
-              DoubleEq(log(0.79)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(2, 3),
-              DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(3, 4),
-              DoubleEq(log(0.10)));
-}
-
-TEST_F(AVLMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
-}
-
-TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
-  for (int i = 1; i < 1000; i++) {
-    auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(
-      vlmc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-      DoubleEq(vlmc->standardEvaluator(data)
-                   ->evaluateSequence(0, data.size())));
-  }
-}
-
-TEST_F(AVLMC, ShouldChooseSequenceWithDefaultSeed) {
-  // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(vlmc->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence{0, 1, 1, 0, 1}));
-}
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
 
 TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
   auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
@@ -126,6 +84,8 @@ TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
     vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
     DoubleNear(-4.85203, 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
   auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
@@ -150,6 +110,8 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
     DoubleNear(-7.78482, 1e-4));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
   auto vlmc_trainer = VariableLengthMarkovChain::standardTrainer();
 
@@ -172,3 +134,69 @@ TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
     vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
     DoubleNear(-4.92068, 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AVLMC, ShouldEvaluateAPosition) {
+  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(1, 2),
+              DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(1, 2),
+              DoubleEq(log(0.20)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(1, 2),
+              DoubleEq(log(0.21)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(1, 2),
+              DoubleEq(log(0.79)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(2, 3),
+              DoubleEq(log(0.80)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(3, 4),
+              DoubleEq(log(0.10)));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AVLMC, ShouldEvaluateASequence) {
+  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
+              DoubleEq(log(0.50)));
+  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
+              DoubleEq(log(0.50) + log(0.80)));
+  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
+              DoubleEq(log(0.50) + log(0.20)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
+              DoubleEq(log(0.50) + log(0.21)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
+              DoubleEq(log(0.50) + log(0.79)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
+  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
+              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
+  for (int i = 1; i < 1000; i++) {
+    auto data = generateRandomSequence(i, 2);
+    ASSERT_THAT(
+      vlmc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
+      DoubleEq(vlmc->standardEvaluator(data)
+                   ->evaluateSequence(0, data.size())));
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AVLMC, ShouldChooseSequenceWithDefaultSeed) {
+  // TODO(igorbonadio): check bigger sequence
+  ASSERT_THAT(vlmc->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{0, 1, 1, 0, 1}));
+}
+
+/*----------------------------------------------------------------------------*/

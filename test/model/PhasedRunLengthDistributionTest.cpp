@@ -34,6 +34,10 @@
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "helper/PhasedRunLengthDistribution.hpp"
 
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -47,15 +51,25 @@ using tops::helper::sequenceOfLengths;
 using tops::helper::generateRandomSequence;
 using tops::helper::createSamplePhasedRunLengthDistribution;
 
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
+
 class APhasedRunLengthDistribution : public testing::Test {
  protected:
   PhasedRunLengthDistributionPtr distribution
     = createSamplePhasedRunLengthDistribution();
 };
 
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
 TEST_F(APhasedRunLengthDistribution, ShouldHaveAnAlphabetSize) {
   ASSERT_THAT(distribution->alphabetSize(), Eq(15000));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
   ASSERT_THAT(distribution->probabilityOf(125),
@@ -66,8 +80,12 @@ TEST_F(APhasedRunLengthDistribution, ShouldEvaluateASingleSymbol) {
               DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(APhasedRunLengthDistribution, ShouldDrawSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(distribution->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{5, 2015, 11885, 23, 44}));
 }
+
+/*----------------------------------------------------------------------------*/
