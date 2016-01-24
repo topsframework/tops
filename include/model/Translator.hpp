@@ -21,16 +21,14 @@
 #define TOPS_MODEL_TRANSLATOR_
 
 // ToPS headers
+#include "model/MemberDelegator.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
-
-// ToPS templates
-#include "model/MemberDelegator.tcc"
 
 namespace tops {
 namespace model {
 
-// Forward declaration
+// Forward declarations
 class DiscreteIIDModel;
 class FixedSequenceAtPosition;
 class GeneralizedHiddenMarkovModel;
@@ -51,10 +49,17 @@ class GeometricDuration;
 // Forward declaration
 class Translator;
 
+/**
+ * @typedef TranslatorPtr
+ * @brief Alias of pointer to Translator.
+ */
 // Alias
-using TranslatorPtr
-  = std::shared_ptr<Translator>;
+using TranslatorPtr = std::shared_ptr<Translator>;
 
+/**
+ * @class Translator
+ * @brief TODO
+ */
 class Translator : public std::enable_shared_from_this<Translator> {
  public:
   // Alias

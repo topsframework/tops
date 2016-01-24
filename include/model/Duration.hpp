@@ -25,14 +25,13 @@
 
 // ToPS headers
 #include "model/Range.hpp"
+#include "model/Serializer.hpp"
 #include "model/Probability.hpp"
-
-// ToPS templates
-#include "model/Serializer.tcc"
 
 namespace tops {
 namespace model {
 
+// Forward declaration
 class Duration;
 
 /**

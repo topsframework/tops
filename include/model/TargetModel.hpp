@@ -30,6 +30,7 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class TargetModel;
 
 /**

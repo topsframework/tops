@@ -27,7 +27,7 @@
 namespace tops {
 namespace model {
 
-// Forward declaration
+// Forward declarations
 class HiddenMarkovModel;
 
 class DiscreteIIDModel;

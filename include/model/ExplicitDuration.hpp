@@ -24,10 +24,8 @@
 #include <memory>
 
 // ToPS headers
+#include "model/DurationCrtp.hpp"
 #include "model/ProbabilisticModel.hpp"
-
-// ToPS templates
-#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {

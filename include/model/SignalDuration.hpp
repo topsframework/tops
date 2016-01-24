@@ -23,8 +23,8 @@
 // Standard headers
 #include <memory>
 
-// ToPS templates
-#include "model/DurationCrtp.tcc"
+// ToPS headers
+#include "model/DurationCrtp.hpp"
 
 namespace tops {
 namespace model {

@@ -26,6 +26,7 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class Range;
 
 /**

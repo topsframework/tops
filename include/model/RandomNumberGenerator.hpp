@@ -26,6 +26,7 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class RandomNumberGenerator;
 
 /**
@@ -53,4 +54,4 @@ class RandomNumberGenerator {
 }  // namespace model
 }  // namespace tops
 
-#endif
+#endif  // TOPS_MODEL_RANDOM_NUMBER_GENERATOR_

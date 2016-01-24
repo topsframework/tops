@@ -24,8 +24,8 @@
 #include <memory>
 #include <vector>
 
-// ToPS templates
-#include "model/ProbabilisticModelCrtp.tcc"
+// ToPS headers
+#include "model/ProbabilisticModelCrtp.hpp"
 
 namespace tops {
 namespace model {

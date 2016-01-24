@@ -26,14 +26,12 @@
 
 // ToPS headers
 #include "model/Sequence.hpp"
+#include "model/Standard.hpp"
+#include "model/Evaluator.hpp"
+#include "model/Generator.hpp"
+#include "model/Serializer.hpp"
 #include "model/RandomNumberGenerator.hpp"
-
-// ToPS templates
-#include "model/Standard.tcc"
-#include "model/Evaluator.tcc"
-#include "model/Generator.tcc"
-#include "model/Serializer.tcc"
-#include "model/RandomNumberGeneratorAdapter.tcc"
+#include "model/RandomNumberGeneratorAdapter.hpp"
 
 namespace tops {
 namespace model {
