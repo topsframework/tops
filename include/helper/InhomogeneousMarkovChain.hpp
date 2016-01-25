@@ -20,13 +20,15 @@
 #ifndef TOPS_HELPER_INHOMOGENEOUS_MARKOV_CHAIN_
 #define TOPS_HELPER_INHOMOGENEOUS_MARKOV_CHAIN_
 
+// Tested header
 #include "model/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(int number_of_chains,
-                                                           int alphabet_size);
+tops::model::InhomogeneousMarkovChainPtr generateRandomIMC(
+    unsigned int number_of_chains,
+    unsigned int alphabet_size);
 
 }  // namespace helper
 }  // namespace tops

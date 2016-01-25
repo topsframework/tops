@@ -25,10 +25,8 @@
 #include <memory>
 
 // ToPS headers
+#include "model/DurationCrtp.hpp"
 #include "model/ProbabilisticModel.hpp"
-
-// ToPS templates
-#include "model/DurationCrtp.tcc"
 
 namespace tops {
 namespace model {
@@ -71,4 +69,4 @@ class GeometricDuration : public DurationCrtp<GeometricDuration> {
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL__GEOMETRIC_DURATION_
+#endif  // TOPS_MODEL_GEOMETRIC_DURATION_

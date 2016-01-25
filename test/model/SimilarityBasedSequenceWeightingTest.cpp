@@ -27,18 +27,28 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/Sequence.hpp"
+
+// Tested header
+#include "model/SimilarityBasedSequenceWeighting.hpp"
+
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
+using tops::model::INVALID_SYMBOL;
 using tops::model::SimilarityBasedSequenceWeighting;
 using tops::model::SimilarityBasedSequenceWeightingPtr;
-using tops::model::INVALID_SYMBOL;
-using tops::model::Sequence;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class ASBSW : public testing::Test {
  protected:
@@ -52,61 +62,9 @@ class ASBSW : public testing::Test {
   }
 };
 
-TEST_F(ASBSW, ShouldEvaluateASequence) {
-  ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
-              DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),
-              DoubleNear(-0.405465, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2),
-              DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2),
-              DoubleNear(-1.09861, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-              DoubleNear(-6.90776, 1e-4));
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-                  ->evaluateSequence(0, 13),
-              DoubleNear(-6.90776, 1e-4));
-}
-
-TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(sbsw->standardEvaluator({0}, true)
-                  ->evaluateSequence(0, 1),
-              DoubleNear(sbsw->standardEvaluator({0})
-                             ->evaluateSequence(0, 1), 1e-4));
-
-  ASSERT_THAT(sbsw->standardEvaluator({0, 1}, true)
-                  ->evaluateSequence(0, 2),
-              DoubleNear(sbsw->standardEvaluator({0, 1})
-                             ->evaluateSequence(0, 2), 1e-4));
-
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1}, true)
-                  ->evaluateSequence(0, 3),
-              DoubleNear(sbsw->standardEvaluator({1, 0, 1})
-                             ->evaluateSequence(0, 3), 1e-4));
-
-  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0}, true)
-                  ->evaluateSequence(0, 4),
-              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0})
-                             ->evaluateSequence(0, 4), 1e-4));
-
-  ASSERT_THAT(
-    sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
-        ->evaluateSequence(0, 13),
-    DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-                   ->evaluateSequence(0, 13), 1e-4));
-}
-
-TEST_F(ASBSW, ShouldChooseSequenceWithDefaultSeed) {
-  // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence(5, INVALID_SYMBOL)));
-}
+/*----------------------------------------------------------------------------*/
+/*                                SIMPLE TESTS                                */
+/*----------------------------------------------------------------------------*/
 
 TEST(SBSW, ShouldBeTrained) {
   auto sbsw_trainer = SimilarityBasedSequenceWeighting::standardTrainer();
@@ -141,3 +99,69 @@ TEST(SBSW, ShouldBeTrained) {
                   ->evaluateSequence(0, 13),
               DoubleNear(-7.1323, 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ASBSW, ShouldEvaluateASequence) {
+  ASSERT_THAT(sbsw->standardEvaluator({0})->evaluateSequence(0, 1),
+              DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(sbsw->standardEvaluator({1})->evaluateSequence(0, 1),
+              DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2),
+              DoubleNear(-6.90776, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2),
+              DoubleNear(-0.405465, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2),
+              DoubleNear(-6.90776, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2),
+              DoubleNear(-1.09861, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
+              DoubleNear(-6.90776, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
+              DoubleNear(-6.90776, 1e-4));
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                  ->evaluateSequence(0, 13),
+              DoubleNear(-6.90776, 1e-4));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
+  ASSERT_THAT(sbsw->standardEvaluator({0}, true)
+                  ->evaluateSequence(0, 1),
+              DoubleNear(sbsw->standardEvaluator({0})
+                             ->evaluateSequence(0, 1), 1e-4));
+
+  ASSERT_THAT(sbsw->standardEvaluator({0, 1}, true)
+                  ->evaluateSequence(0, 2),
+              DoubleNear(sbsw->standardEvaluator({0, 1})
+                             ->evaluateSequence(0, 2), 1e-4));
+
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1}, true)
+                  ->evaluateSequence(0, 3),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1})
+                             ->evaluateSequence(0, 3), 1e-4));
+
+  ASSERT_THAT(sbsw->standardEvaluator({1, 0, 1, 0}, true)
+                  ->evaluateSequence(0, 4),
+              DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0})
+                             ->evaluateSequence(0, 4), 1e-4));
+
+  ASSERT_THAT(
+    sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
+        ->evaluateSequence(0, 13),
+    DoubleNear(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+                   ->evaluateSequence(0, 13), 1e-4));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(ASBSW, ShouldChooseSequenceWithDefaultSeed) {
+  // TODO(igorbonadio): check bigger sequence
+  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence(5, INVALID_SYMBOL)));
+}
+
+/*----------------------------------------------------------------------------*/

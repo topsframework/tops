@@ -21,7 +21,7 @@
 #include <cmath>
 #include <vector>
 
-// ToPS headers
+// Interface header
 #include "model/TargetModel.hpp"
 
 namespace tops {

@@ -26,8 +26,10 @@
 #include <algorithm>
 
 // ToPS headers
-#include "MaximalDependenceDecomposition.hpp"
 #include "Util.hpp"
+
+// Interface header
+#include "MaximalDependenceDecomposition.hpp"
 
 namespace tops {
 namespace model {

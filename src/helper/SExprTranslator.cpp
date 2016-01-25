@@ -20,7 +20,7 @@
 // Standard headers
 #include <string>
 
-// ToPS headers
+// Interface header
 #include "helper/SExprTranslator.hpp"
 
 namespace tops {

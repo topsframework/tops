@@ -24,12 +24,10 @@
 #include <memory>
 #include <vector>
 
-// ToPS templates
-#include "model/Labeler.tcc"
-#include "model/Labeling.tcc"
-#include "model/Calculator.tcc"
-
 // ToPS headers
+#include "model/Labeler.hpp"
+#include "model/Labeling.hpp"
+#include "model/Calculator.hpp"
 #include "model/ProbabilisticModel.hpp"
 
 namespace tops {

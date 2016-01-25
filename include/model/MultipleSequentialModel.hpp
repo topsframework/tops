@@ -26,13 +26,12 @@
 
 // ToPS headers
 #include "model/ProbabilisticModel.hpp"
-
-// ToPS templates
-#include "model/ProbabilisticModelCrtp.tcc"
+#include "model/ProbabilisticModelCrtp.hpp"
 
 namespace tops {
 namespace model {
 
+// Forward declaration
 class MultipleSequentialModel;
 
 /**

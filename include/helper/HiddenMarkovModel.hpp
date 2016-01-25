@@ -20,6 +20,7 @@
 #ifndef TOPS_HELPER_HIDDEN_MARKOV_MODEL_
 #define TOPS_HELPER_HIDDEN_MARKOV_MODEL_
 
+// Tested header
 #include "model/HiddenMarkovModel.hpp"
 
 namespace tops {

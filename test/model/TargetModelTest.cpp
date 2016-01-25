@@ -25,31 +25,45 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/TargetModel.hpp"
 #include "model/Sequence.hpp"
 
+// Tested header
+#include "model/TargetModel.hpp"
+
+using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
-using ::testing::Eq;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
 using tops::model::TargetModel;
 using tops::model::TargetModelPtr;
-using tops::model::Sequence;
+
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
 
 class ATargetModel : public testing::Test {
  protected:
   TargetModelPtr target = TargetModel::make(2);
 };
 
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
+
 TEST_F(ATargetModel, ShouldHaveAnAlphabetSize) {
   ASSERT_THAT(target->alphabetSize(), Eq(2));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
   ASSERT_THAT(target->probabilityOf(0), DoubleEq(log(0.5)));
   ASSERT_THAT(target->probabilityOf(1), DoubleEq(log(0.5)));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
   ASSERT_THAT(
@@ -64,6 +78,8 @@ TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
     target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4),
     DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(
@@ -80,8 +96,12 @@ TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
     DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(ATargetModel, ShouldDrawSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(target->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 0}));
 }
+
+/*----------------------------------------------------------------------------*/

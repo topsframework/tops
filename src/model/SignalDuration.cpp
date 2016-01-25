@@ -21,8 +21,10 @@
 #include <limits>
 
 // ToPS headers
-#include "model/SignalDuration.hpp"
 #include "model/SingleValueRange.hpp"
+
+// Interface header
+#include "model/SignalDuration.hpp"
 
 namespace tops {
 namespace model {

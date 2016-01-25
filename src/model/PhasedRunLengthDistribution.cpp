@@ -23,8 +23,10 @@
 #include <vector>
 
 // ToPS headers
-#include "model/PhasedRunLengthDistribution.hpp"
 #include "model/Util.hpp"
+
+// Interface header
+#include "model/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
 namespace model {

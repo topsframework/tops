@@ -20,12 +20,14 @@
 #ifndef TOPS_HELPER_DISCRETE_IID_MODEL_
 #define TOPS_HELPER_DISCRETE_IID_MODEL_
 
+// Tested header
 #include "model/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::PhasedRunLengthDistributionPtr createLengthDistribution();
+tops::model::PhasedRunLengthDistributionPtr
+createSamplePhasedRunLengthDistribution();
 
 }  // namespace helper
 }  // namespace tops

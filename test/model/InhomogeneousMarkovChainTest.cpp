@@ -26,15 +26,19 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/InhomogeneousMarkovChain.hpp"
-#include "model/VariableLengthMarkovChain.hpp"
 #include "model/Sequence.hpp"
+#include "model/VariableLengthMarkovChain.hpp"
+#include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
-#include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/Sequence.hpp"
+#include "helper/VariableLengthMarkovChain.hpp"
 
-// ToPS templates
-#include "model/ProbabilisticModelDecoratorCrtp.tcc"
+// Tested header
+#include "model/InhomogeneousMarkovChain.hpp"
+
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
 
 using ::testing::Eq;
 using ::testing::DoubleEq;
@@ -42,16 +46,20 @@ using ::testing::ContainerEq;
 
 using tops::model::Sequence;
 using tops::model::INVALID_SYMBOL;
-using tops::model::VariableLengthMarkovChain;
-using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::InhomogeneousMarkovChain;
+using tops::model::VariableLengthMarkovChain;
 using tops::model::InhomogeneousMarkovChainPtr;
+using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::ProbabilisticModelDecoratorCrtp;
 using tops::model::ProbabilisticModelDecoratorCrtpPtr;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
 using tops::helper::generateRandomSequence;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class AnInhomogeneousMarkovChain : public testing::Test {
  protected:
@@ -63,6 +71,10 @@ class AnInhomogeneousMarkovChain : public testing::Test {
         createMachlerVLMC(), createVLMCMC() });
   }
 };
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
@@ -81,6 +93,8 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
               DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
@@ -90,6 +104,8 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
                     ->evaluateSequence(0, data.size())));
   }
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
@@ -112,8 +128,12 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
               DoubleEq(-std::numeric_limits<double>::infinity()));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
   ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{ 0, 1, INVALID_SYMBOL,
                                     INVALID_SYMBOL, INVALID_SYMBOL }));
 }
+
+/*----------------------------------------------------------------------------*/

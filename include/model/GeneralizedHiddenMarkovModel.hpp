@@ -26,10 +26,8 @@
 
 // ToPS headers
 #include "model/Matrix.hpp"
-
-// ToPS templates
-#include "model/DurationState.tcc"
-#include "model/DecodableModelCrtp.tcc"
+#include "model/DurationState.hpp"
+#include "model/DecodableModelCrtp.hpp"
 
 namespace tops {
 namespace model {

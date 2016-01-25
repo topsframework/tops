@@ -22,13 +22,20 @@
 #include <vector>
 
 // ToPS headers
-#include "helper/PhasedRunLengthDistribution.hpp"
 #include "helper/Sequence.hpp"
+
+// Interface header
+#include "helper/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
 namespace helper {
 
-tops::model::PhasedRunLengthDistributionPtr createLengthDistribution() {
+/*----------------------------------------------------------------------------*/
+/*                                 FUNCTIONS                                  */
+/*----------------------------------------------------------------------------*/
+
+tops::model::PhasedRunLengthDistributionPtr
+createSamplePhasedRunLengthDistribution() {
   auto iid_trainer = tops::model::DiscreteIIDModel::standardTrainer(
     tops::model::DiscreteIIDModel::smoothed_histogram_burge_algorithm{},
     1.0, 15000);
@@ -37,6 +44,8 @@ tops::model::PhasedRunLengthDistributionPtr createLengthDistribution() {
   return tops::model::PhasedRunLengthDistribution::makeFromDiscreteIIDModel(
     iid_trainer->train(), 12, 0, 1, 3);
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace helper
 }  // namespace tops

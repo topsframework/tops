@@ -20,7 +20,7 @@
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Interface header
 #include "model/Segment.hpp"
 
 namespace tops {

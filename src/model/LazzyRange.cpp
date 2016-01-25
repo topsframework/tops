@@ -17,7 +17,7 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// ToPS headers
+// Interface header
 #include "model/LazzyRange.hpp"
 
 namespace tops {

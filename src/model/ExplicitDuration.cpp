@@ -19,6 +19,8 @@
 
 // ToPS headers
 #include "model/LazzyRange.hpp"
+
+// Interface header
 #include "model/ExplicitDuration.hpp"
 
 namespace tops {

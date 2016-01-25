@@ -26,11 +26,9 @@
 
 // ToPS headers
 #include "model/Matrix.hpp"
+#include "model/SimpleState.hpp"
+#include "model/DecodableModelCrtp.hpp"
 #include "model/HiddenMarkovModelState.hpp"
-
-// ToPS templates
-#include "model/SimpleState.tcc"
-#include "model/DecodableModelCrtp.tcc"
 
 namespace tops {
 namespace model {

@@ -34,6 +34,7 @@
 namespace tops {
 namespace model {
 
+// Forward declaration
 class ContextTree;
 
 /**

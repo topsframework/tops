@@ -20,9 +20,11 @@
 #ifndef TOPS_MODEL_SEQUENCE_
 #define TOPS_MODEL_SEQUENCE_
 
+// Standard headers
 #include <memory>
 #include <vector>
 
+// ToPS headers
 #include "model/Symbol.hpp"
 
 namespace tops {

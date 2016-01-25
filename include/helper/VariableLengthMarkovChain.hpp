@@ -20,17 +20,18 @@
 #ifndef TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
 #define TOPS_HELPER_VARIABLE_LENGTH_MARKOV_CHAIN_
 
+// Tested header
 #include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace helper {
 
 tops::model::VariableLengthMarkovChainPtr generateRandomVLMC(
-    int number_of_nodes,
-    int alphabet_size);
+    unsigned int number_of_nodes,
+    unsigned int alphabet_size);
 
-tops::model::VariableLengthMarkovChainPtr createMachlerVLMC();
 tops::model::VariableLengthMarkovChainPtr createVLMCMC();
+tops::model::VariableLengthMarkovChainPtr createMachlerVLMC();
 
 }  // namespace helper
 }  // namespace tops

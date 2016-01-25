@@ -24,8 +24,10 @@
 #include <cstdlib>
 
 // ToPS headers
-#include "MultipleSequentialModel.hpp"
 #include "Util.hpp"
+
+// Interface header
+#include "MultipleSequentialModel.hpp"
 
 namespace tops {
 namespace model {

@@ -26,9 +26,7 @@
 
 // ToPS headers
 #include "model/DiscreteIIDModel.hpp"
-
-// ToPS templates
-#include "model/ProbabilisticModelDecoratorCrtp.tcc"
+#include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
 namespace tops {
 namespace model {

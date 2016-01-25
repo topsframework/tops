@@ -22,7 +22,7 @@
 #include <limits>
 #include <vector>
 
-// ToPS headers
+// Interface header
 #include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {

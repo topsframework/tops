@@ -25,23 +25,33 @@
 #include "gmock/gmock.h"
 
 // ToPS headers
-#include "model/MultipleSequentialModel.hpp"
 #include "model/Sequence.hpp"
 
 #include "helper/DiscreteIIDModel.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 
+// Tested header
+#include "model/MultipleSequentialModel.hpp"
+
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
+using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
-using ::testing::Eq;
 using ::testing::ContainerEq;
 
+using tops::model::Sequence;
 using tops::model::MultipleSequentialModel;
 using tops::model::MultipleSequentialModelPtr;
-using tops::model::Sequence;
 
-using tops::helper::createLoadedCoinIIDModel;
 using tops::helper::createMachlerVLMC;
+using tops::helper::createLoadedCoinIIDModel;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
 
 class AMultipleSequentialModel : public testing::Test {
  protected:
@@ -49,6 +59,10 @@ class AMultipleSequentialModel : public testing::Test {
     {createLoadedCoinIIDModel(), createMachlerVLMC()},
     {3, 4});
 };
+
+/*----------------------------------------------------------------------------*/
+/*                             TESTS WITH FIXTURE                             */
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
   ASSERT_THAT(mm->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
@@ -59,6 +73,8 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
                 ->evaluateSequence(0, 13),
               DoubleNear(-18.6201, 1e-4));
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(mm->standardEvaluator({1, 0, 1}, true)
@@ -78,8 +94,12 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
                  ->evaluateSequence(0, 13), 1e-4));
 }
 
+/*----------------------------------------------------------------------------*/
+
 TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(mm->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
+
+/*----------------------------------------------------------------------------*/
