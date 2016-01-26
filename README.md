@@ -1,14 +1,14 @@
 [![Tops](https://raw.githubusercontent.com/topsframework/topsframework.github.io/master/tops-cover.png)](http://topsframework.github.io/)
 
 [Website](http://topsframework.github.io/) |
-[Documentation](http://topsframework.github.io/tops-refactoring/doc/api/) |
+[Documentation](http://topsframework.github.io/tops/doc/api/) |
 [Tutorial](http://topsframework.github.io/tutorial.pdf)
 
-[![Build Status](https://img.shields.io/travis/topsframework/tops-refactoring.svg)](https://travis-ci.org/topsframework/tops-refactoring)
-[![Coverage Status](https://img.shields.io/coveralls/topsframework/tops-refactoring.svg)](https://coveralls.io/r/topsframework/tops-refactoring)
-[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/4131.svg)](https://scan.coverity.com/projects/4131)
-[![Release](https://img.shields.io/github/tag/topsframework/tops-refactoring.svg)](https://github.com/topsframework/tops-refactoring/releases/latest)
-[![License](https://img.shields.io/github/license/topsframework/tops-refactoring.svg)](https://github.com/topsframework/tops-refactoring/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/topsframework/tops.svg)](https://travis-ci.org/topsframework/tops)
+[![Coverage Status](https://img.shields.io/coveralls/topsframework/tops.svg)](https://coveralls.io/r/topsframework/tops)
+[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/4131.svg)](https://scan.coverity.com/projects/topsframework-tops)
+[![Release](https://img.shields.io/github/tag/topsframework/tops.svg)](https://github.com/topsframework/tops/releases/latest)
+[![License](https://img.shields.io/github/license/topsframework/tops.svg)](https://github.com/topsframework/tops/blob/master/LICENSE)
 
 ToPS is an objected-oriented framework implemented with C++ which 
 facilitates the integration of probabilistic models for sequences 
@@ -39,7 +39,7 @@ You can download the development version of ToPS by executing the
 command below:
 
 ```bash
-git clone --recursive https://github.com/topsframework/tops-refactoring.git
+git clone --recursive https://github.com/topsframework/tops.git
 ```
 
 Platforms
@@ -63,7 +63,7 @@ Installing ToPS
 1. Download ToPS from GitHub  
 
    ```bash
-   git clone --recursive https://github.com/topsframework/tops-refactoring.git
+   git clone --recursive https://github.com/topsframework/tops.git
    ```
 
    This will create a directory named tops
@@ -71,7 +71,7 @@ Installing ToPS
 2. Go to the tops directory:
 
    ```bash
-   cd tops-refactoring
+   cd tops
    ```
 
 3. Run make
