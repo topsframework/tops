@@ -7,7 +7,7 @@
 # ==================
 PROJECT         := ToPS
 VERSION         := 2.0.0-alpha
-GIT_REMOTE_PATH := https://github.com/topsframework/tops-refactoring.git
+GIT_REMOTE_PATH := https://github.com/topsframework/tops.git
 STD_NAMESPACE   := tops
 
 # Project info

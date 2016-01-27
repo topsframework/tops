@@ -70,7 +70,7 @@ env:
 addons:
   coverity_scan:
     project:
-      name: topsframework/tops-refactoring
+      name: topsframework/tops
       description: Build submitted via Travis CI
     notification_email: renato.cferreira@hotmail.com
     build_command_prepend: make distclean
