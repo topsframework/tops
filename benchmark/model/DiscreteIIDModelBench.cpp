@@ -38,26 +38,92 @@ using tops::helper::generateRandomIIDModel;
 using tops::helper::generateRandomSequence;
 
 static void BM_DiscreteIIDModelChoose(benchmark::State& state) {
-  state.PauseTiming();
   auto model = generateRandomIIDModel(state.range_x());
-  state.ResumeTiming();
   while (state.KeepRunning())
-    model->draw();
+    model->standardGenerator()->drawSequence(10000);
 }
 
-BENCHMARK(BM_DiscreteIIDModelChoose)->Range(2, 16);
+BENCHMARK(BM_DiscreteIIDModelChoose)->Range(32, 512);
+
 
 static void BM_DiscreteIIDModelEvaluate(benchmark::State& state) {
-  state.PauseTiming();
   auto model = generateRandomIIDModel(state.range_x());
-  state.ResumeTiming();
-  while (state.KeepRunning()) {
-    state.PauseTiming();
-    auto sequence = generateRandomSequence(state.range_y(), state.range_x());
-    state.ResumeTiming();
-    model->standardEvaluator(sequence, 0, state.range_y()-1);
-  }
+  auto sequence = generateRandomSequence(state.range_y(), state.range_x());
+  auto evaluator = model->standardEvaluator(sequence);
+  while (state.KeepRunning())
+    evaluator->evaluateSequence(0, state.range_y());
 }
 
-BENCHMARK(BM_DiscreteIIDModelEvaluate)
-  ->RangePair(2, 16, 2, 1024 * 1024 * 1024);
+BENCHMARK(BM_DiscreteIIDModelEvaluate)->RangePair(
+  2, 16, 1024, 16 * 1024 * 1024);
+
+
+static void BM_DiscreteIIDModelEvaluateWithCache(benchmark::State& state) {
+  auto model = generateRandomIIDModel(state.range_x());
+  auto sequence = generateRandomSequence(state.range_y(), state.range_x());
+  auto evaluator = model->standardEvaluator(sequence, true);
+  // it just initialize the cache
+  evaluator->evaluateSequence(0, state.range_y());
+  while (state.KeepRunning())
+    evaluator->evaluateSequence(0, state.range_y());
+}
+
+BENCHMARK(BM_DiscreteIIDModelEvaluateWithCache)->RangePair(
+  2, 16, 1024, 16 * 1024 * 1024);
+
+static void BM_DiscreteIIDModelTrainML(benchmark::State& state) {
+  std::vector<Sequence> training_set;
+  for (int i = 0; i < state.range_y(); i++)
+    training_set.push_back(generateRandomSequence(8*1024, state.range_x()));
+  auto iid_trainer = DiscreteIIDModel::standardTrainer();
+  iid_trainer->add_training_set(std::move(training_set));
+  while (state.KeepRunning())
+    iid_trainer->train(
+      DiscreteIIDModel::maximum_likehood_algorithm{}, state.range_x());
+}
+
+BENCHMARK(BM_DiscreteIIDModelTrainML)->RangePair(2, 16, 512, 8 * 1024);
+
+static void BM_DiscreteIIDModelTrainSmoothedHistogramBurgeAlgorithm(
+    benchmark::State& state) {
+  std::vector<Sequence> training_set;
+  training_set.push_back(generateRandomSequence(state.range_y(), 256));
+  auto iid_trainer = DiscreteIIDModel::standardTrainer();
+  iid_trainer->add_training_set(std::move(training_set));
+  while (state.KeepRunning())
+    iid_trainer->train(
+      DiscreteIIDModel::smoothed_histogram_burge_algorithm{}, 1.0, 15000);
+}
+
+BENCHMARK(BM_DiscreteIIDModelTrainSmoothedHistogramBurgeAlgorithm)->RangePair(
+  2, 16, 512, 8 * 1024);
+
+static void BM_DiscreteIIDModelTrainSmoothedHistogramStankeAlgorithm(
+    benchmark::State& state) {
+  std::vector<Sequence> training_set;
+  training_set.push_back(generateRandomSequence(state.range_y(), 256));
+  auto iid_trainer = DiscreteIIDModel::standardTrainer();
+  iid_trainer->add_training_set(std::move(training_set));
+  while (state.KeepRunning())
+    iid_trainer->train(
+      DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
+      std::vector<unsigned int>{1}, 15000, 8, 0.5);
+}
+
+BENCHMARK(BM_DiscreteIIDModelTrainSmoothedHistogramStankeAlgorithm)->RangePair(
+  2, 16, 512, 8 * 1024);
+
+static void BM_DiscreteIIDModelTrainSmoothedHistogramKernelDensityAlgorithm(
+    benchmark::State& state) {
+  std::vector<Sequence> training_set;
+  training_set.push_back(generateRandomSequence(state.range_y(), 256));
+  auto iid_trainer = DiscreteIIDModel::standardTrainer();
+  iid_trainer->add_training_set(std::move(training_set));
+  while (state.KeepRunning())
+    iid_trainer->train(
+      DiscreteIIDModel::smoothed_histogram_kernel_density_algorithm{}, 15000);
+}
+
+BENCHMARK(
+  BM_DiscreteIIDModelTrainSmoothedHistogramKernelDensityAlgorithm)->RangePair(
+    2, 16, 512, 8 * 1024);
