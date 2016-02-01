@@ -71,16 +71,18 @@
   // Tags
   // Alias
   // Type traits
+  // Enum classes
   // Inner classes
-  // Hidden name method inheritance
+  // Static variables
   // Instance variables
+  // Hidden name inheritance
   // Constructors
   // Static methods
   // Overriden methods
-  // Purely Virtual methods
+  // Purely virtual methods
   // Virtual methods
   // Concrete methods
-  // Instance variables
+  // Destructor
 
 /*
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
