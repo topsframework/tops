@@ -66,9 +66,9 @@ class CachedLabeler : public SimpleLabeler<Model> {
 
   // Overriden methods
   Estimation<Labeling<Sequence>>
-  labeling(const Labeler::method& method) const override {
+  labeling(const Labeler::method& chosen_method) const override {
     lazyInitializeCache();
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, chosen_method);
   }
 
   // Virtual methods

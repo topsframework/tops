@@ -63,8 +63,8 @@ class SimpleLabeler : public Labeler {
 
   // Overriden methods
   Estimation<Labeling<Sequence>>
-  labeling(const Labeler::method& method) const override {
-    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, method);
+  labeling(const Labeler::method& chosen_method) const override {
+    CALL_MEMBER_FUNCTION_DELEGATOR(labeling, chosen_method);
   }
 
   Sequence& sequence() override {
