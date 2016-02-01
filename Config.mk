@@ -47,7 +47,7 @@ LDLIBS          +=
 CPPFLAGS        += # Precompiler Flags
 ASFLAGS         += # Assembly Flags
 CFLAGS          += # C Flags
-CXXFLAGS        += -ansi -Wall -Wextra -Werror -pedantic -O2 -std=c++14
+CXXFLAGS        += -std=c++14 -Wall -Wextra -Werror -pedantic -O2
 LDFLAGS         +=
 
 # Makeball list
