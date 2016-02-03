@@ -42,7 +42,7 @@ public:
 
 private:
   std::string _method_name;
-  std::string _error_message;
+  mutable std::string _error_message;
 
 };
 

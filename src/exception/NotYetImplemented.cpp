@@ -25,12 +25,12 @@ namespace exception {
 
 NotYetImplemented::NotYetImplemented(std::string method_name)
     : Exception(), _method_name(std::move(method_name)) {
-  std::stringstream ss;
-  ss << "The method " << _method_name << " is not yet implemented";
-  _error_message = std::move(ss.str());
 }
 
 const char* NotYetImplemented::what() const throw() {
+  std::stringstream ss;
+  ss << "The method " << _method_name << " is not yet implemented";
+  _error_message = std::move(ss.str());
   return _error_message.c_str();
 }
 
