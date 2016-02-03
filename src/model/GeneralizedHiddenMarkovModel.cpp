@@ -30,6 +30,9 @@
 // Interface header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
+// Exception header
+#include "exception/NotYetImplemented.hpp"
+
 namespace tops {
 namespace model {
 
@@ -57,7 +60,7 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
                                               unsigned int /* phase */) {
-  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -66,7 +69,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -76,7 +79,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -85,7 +88,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -95,7 +98,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -103,16 +106,16 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
                                               unsigned int /* phase */) {
-  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
-  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> /* evaluator */,
+                                             unsigned /* int pos */,
+                                             unsigned /* int phase */) const {
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -132,7 +135,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -167,7 +170,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -177,18 +180,16 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Labeling<Sequence>
 GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
-                                           unsigned int size,
+                                           unsigned int /* size */,
                                            unsigned int /* phase */) const {
-  // TODO(igorbonadio)
-  return Labeling<Sequence>(Sequence(INVALID_SYMBOL, size),
-                            Sequence(INVALID_SYMBOL, size));
+  throw tops::exception::NotYetImplemented(__func__);
 }
 
 /*================================  LABELER  =================================*/

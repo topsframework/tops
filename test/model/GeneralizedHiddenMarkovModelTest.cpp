@@ -42,6 +42,9 @@
 // Tested header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
+// Exception header
+#include "exception/NotYetImplemented.hpp"
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -74,6 +77,8 @@ using tops::helper::createFairCoinIIDModel;
 using tops::helper::generateAllCombinationsOfSymbols;
 
 using tops::helper::SExprTranslator;
+
+using tops::exception::NotYetImplemented;
 
 /*----------------------------------------------------------------------------*/
 /*                                  ALIASES                                   */
@@ -181,6 +186,36 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
     = ghmm->labelingEvaluator(Labeling<Sequence>(observation, label));
 
   ASSERT_THAT(evaluator->evaluateSequence(0, 21), DoubleNear(-35.4276, 1e-4));
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSequence) {
+  Sequence observation {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+
+  auto evaluator = ghmm->standardEvaluator(observation, true);
+
+  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
+
+  evaluator = ghmm->standardEvaluator(observation);
+
+  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSymbol) {
+  Sequence observation {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+
+  auto evaluator = ghmm->standardEvaluator(observation, true);
+
+  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
+
+  evaluator = ghmm->standardEvaluator(observation);
+
+  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
