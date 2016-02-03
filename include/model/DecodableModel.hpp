@@ -60,6 +60,9 @@ class DecodableModel : public virtual ProbabilisticModel {
 
   virtual CalculatorPtr calculator(
       const Sequence &sequence, bool cached = false) = 0;
+
+  // Destructor
+  virtual ~DecodableModel() = default;
 };
 
 }  // namespace model

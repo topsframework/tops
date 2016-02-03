@@ -49,6 +49,9 @@ class RandomNumberGenerator {
   virtual result_type operator()() = 0;
   virtual void discard(uint64_t z) = 0;
   virtual double generateDoubleInUnitInterval() = 0;
+
+  // Destructor
+  virtual ~RandomNumberGenerator() = default;
 };
 
 }  // namespace model

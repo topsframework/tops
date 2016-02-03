@@ -75,6 +75,9 @@ class Trainer
     CALL_STATIC_MEMBER_FUNCTION_DELEGATOR(train, std::forward<Args>(args)...);
   }
 
+  // Destructor
+  virtual ~Trainer() = default;
+
  protected:
   // Purely virtual methods
   virtual bool delegate() const = 0;

@@ -54,6 +54,9 @@ class Calculator : public std::enable_shared_from_this<Calculator> {
 
   virtual Sequence& sequence() = 0;
   virtual const Sequence& sequence() const = 0;
+
+  // Destructor
+  virtual ~Calculator() = default;
 };
 
 }  // namespace model

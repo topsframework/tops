@@ -71,6 +71,9 @@ class State {
   virtual void addSuccessor(Id id) = 0;
   virtual std::vector<Id>& successors() = 0;
   virtual const std::vector<Id>& successors() const = 0;
+
+  // Destructor
+  virtual ~State() = default;
 };
 
 }  // namespace model

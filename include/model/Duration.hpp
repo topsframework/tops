@@ -52,6 +52,9 @@ class Duration {
   virtual RangePtr range() const = 0;
   virtual unsigned int maximumSize() const = 0;
   virtual Probability probabilityOfLenght(unsigned int length) const = 0;
+
+  // Destructor
+  virtual ~Duration() = default;
 };
 
 }  // namespace model

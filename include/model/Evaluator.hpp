@@ -58,6 +58,9 @@ class Evaluator
 
   virtual Decorator<Sequence>& sequence() = 0;
   virtual const Decorator<Sequence>& sequence() const = 0;
+
+  // Destructor
+  virtual ~Evaluator() = default;
 };
 
 }  // namespace model

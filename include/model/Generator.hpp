@@ -59,6 +59,9 @@ class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
                                            unsigned int phase = 0) const = 0;
 
   virtual RandomNumberGeneratorPtr randomNumberGenerator() const = 0;
+
+  // Destructor
+  virtual ~Generator() = default;
 };
 
 }  // namespace model
