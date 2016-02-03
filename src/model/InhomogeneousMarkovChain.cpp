@@ -25,6 +25,9 @@
 #include <limits>
 #include <vector>
 
+// Internal headers
+#include "exception/OutOfRange.hpp"
+
 namespace tops {
 namespace model {
 
@@ -65,8 +68,7 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                ->drawSymbol(pos, phase, context);
   }
 
-  // TODO(igorbonadio): Throw exception!
-  return Standard<Symbol>(INVALID_SYMBOL);
+  throw tops::exception::OutOfRange();
 }
 
 /*----------------------------------------------------------------------------*/
