@@ -34,8 +34,6 @@
 #include "model/ExplicitDuration.hpp"
 #include "model/GeometricDuration.hpp"
 
-#include "exception/NotYetImplemented.hpp"
-
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
 #include "helper/DiscreteIIDModel.hpp"
@@ -69,8 +67,6 @@ using tops::model::VariableLengthMarkovChain;
 using tops::model::GeneralizedHiddenMarkovModel;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
-
-using tops::exception::NotYetImplemented;
 
 using tops::helper::createVLMCMC;
 using tops::helper::createMachlerVLMC;
@@ -185,36 +181,6 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
     = ghmm->labelingEvaluator(Labeling<Sequence>(observation, label));
 
   ASSERT_THAT(evaluator->evaluateSequence(0, 21), DoubleNear(-35.4276, 1e-4));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSequence) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-
-  auto evaluator = ghmm->standardEvaluator(observation, true);
-
-  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
-
-  evaluator = ghmm->standardEvaluator(observation);
-
-  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSymbol) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-
-  auto evaluator = ghmm->standardEvaluator(observation, true);
-
-  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
-
-  evaluator = ghmm->standardEvaluator(observation);
-
-  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/

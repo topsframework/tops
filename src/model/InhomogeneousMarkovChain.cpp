@@ -22,9 +22,6 @@
 #include <limits>
 #include <vector>
 
-// ToPS headers
-#include "exception/OutOfRange.hpp"
-
 // Interface header
 #include "model/InhomogeneousMarkovChain.hpp"
 
@@ -68,7 +65,8 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                ->drawSymbol(pos, phase, context);
   }
 
-  throw exception::OutOfRange();
+  // TODO(igorbonadio): Throw exception!
+  return Standard<Symbol>(INVALID_SYMBOL);
 }
 
 /*----------------------------------------------------------------------------*/

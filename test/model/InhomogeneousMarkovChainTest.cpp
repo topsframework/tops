@@ -30,8 +30,6 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
-#include "exception/OutOfRange.hpp"
-
 #include "helper/Sequence.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 
@@ -54,8 +52,6 @@ using tops::model::InhomogeneousMarkovChainPtr;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::ProbabilisticModelDecoratorCrtp;
 using tops::model::ProbabilisticModelDecoratorCrtpPtr;
-
-using tops::exception::OutOfRange;
 
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
@@ -135,14 +131,9 @@ TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(2),
-              ContainerEq(Sequence{ 0, 1 }));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AnInhomogeneousMarkovChain, ShouldThrowAnOutOfRangeInDrawSymbol) {
-  ASSERT_THROW(imc->standardGenerator()->drawSequence(3), OutOfRange);
+  ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
+              ContainerEq(Sequence{ 0, 1, INVALID_SYMBOL,
+                                    INVALID_SYMBOL, INVALID_SYMBOL }));
 }
 
 /*----------------------------------------------------------------------------*/
