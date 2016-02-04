@@ -17,15 +17,23 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Internal headers
+// Interface header
 #include "NotYetImplemented.hpp"
 
 namespace tops {
 namespace exception {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
 NotYetImplemented::NotYetImplemented(std::string method_name)
     : Exception(), _method_name(std::move(method_name)) {
 }
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 const char* NotYetImplemented::what() const throw() {
   std::stringstream ss;

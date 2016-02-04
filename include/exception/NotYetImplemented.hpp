@@ -36,11 +36,15 @@ namespace exception {
  */
 class NotYetImplemented : public Exception {
 
-public:
+ public:
+  // Constructors
   NotYetImplemented(std::string method_name);
+
+  // Concrete methods
   const char* what() const throw() override;
 
-private:
+ private:
+  // Instance variables
   std::string _method_name;
   mutable std::string _error_message;
 

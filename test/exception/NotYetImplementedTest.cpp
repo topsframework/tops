@@ -20,16 +20,20 @@
 // External headers
 #include "gmock/gmock.h"
 
-// ToPS headers
+// Tested header
 #include "exception/NotYetImplemented.hpp"
 
 using ::testing::Eq;
 
 using tops::exception::NotYetImplemented;
 
+/*----------------------------------------------------------------------------*/
+
 void throwANotYetImplementedException() {
   throw NotYetImplemented(__func__);
 }
+
+/*----------------------------------------------------------------------------*/
 
 TEST(NotYetImplemented, ShouldThrowAMessage) {
   try {
@@ -39,3 +43,5 @@ TEST(NotYetImplemented, ShouldThrowAMessage) {
       "The method throwANotYetImplementedException is not yet implemented");
   }
 }
+
+/*----------------------------------------------------------------------------*/
