@@ -34,6 +34,8 @@
 #include "model/ExplicitDuration.hpp"
 #include "model/GeometricDuration.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
 #include "helper/DiscreteIIDModel.hpp"
@@ -41,9 +43,6 @@
 
 // Tested header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
-
-// Exception header
-#include "exception/NotYetImplemented.hpp"
 
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
@@ -71,14 +70,14 @@ using tops::model::GeneralizedHiddenMarkovModel;
 using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
 
+using tops::exception::NotYetImplemented;
+
 using tops::helper::createVLMCMC;
 using tops::helper::createMachlerVLMC;
 using tops::helper::createFairCoinIIDModel;
 using tops::helper::generateAllCombinationsOfSymbols;
 
 using tops::helper::SExprTranslator;
-
-using tops::exception::NotYetImplemented;
 
 /*----------------------------------------------------------------------------*/
 /*                                  ALIASES                                   */

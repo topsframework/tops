@@ -27,11 +27,10 @@
 #include "model/Util.hpp"
 #include "model/Segment.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 // Interface header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
-
-// Exception header
-#include "exception/NotYetImplemented.hpp"
 
 namespace tops {
 namespace model {
@@ -60,7 +59,7 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
                                               unsigned int /* phase */) {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -69,7 +68,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -79,7 +78,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -88,7 +87,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -98,7 +97,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -106,7 +105,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
                                               unsigned int /* phase */) {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -115,7 +114,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> /* evaluator */,
                                              unsigned /* int pos */,
                                              unsigned /* int phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -135,7 +134,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -170,7 +169,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -180,7 +179,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -189,7 +188,7 @@ Labeling<Sequence>
 GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
                                            unsigned int /* size */,
                                            unsigned int /* phase */) const {
-  throw tops::exception::NotYetImplemented(__func__);
+  throw exception::NotYetImplemented(__func__);
 }
 
 /*================================  LABELER  =================================*/

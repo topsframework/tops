@@ -30,14 +30,13 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
+#include "exception/OutOfRange.hpp"
+
 #include "helper/Sequence.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 
 // Tested header
 #include "model/InhomogeneousMarkovChain.hpp"
-
-// Exception header
-#include "exception/OutOfRange.hpp"
 
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
@@ -56,11 +55,11 @@ using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::ProbabilisticModelDecoratorCrtp;
 using tops::model::ProbabilisticModelDecoratorCrtpPtr;
 
+using tops::exception::OutOfRange;
+
 using tops::helper::createMachlerVLMC;
 using tops::helper::createVLMCMC;
 using tops::helper::generateRandomSequence;
-
-using tops::exception::OutOfRange;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */

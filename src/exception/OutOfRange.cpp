@@ -17,7 +17,7 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Internal headers
+// Interface header
 #include "OutOfRange.hpp"
 
 namespace tops {

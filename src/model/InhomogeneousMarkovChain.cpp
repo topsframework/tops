@@ -22,11 +22,11 @@
 #include <limits>
 #include <vector>
 
+// ToPS headers
+#include "exception/OutOfRange.hpp"
+
 // Interface header
 #include "model/InhomogeneousMarkovChain.hpp"
-
-// Exception header
-#include "exception/OutOfRange.hpp"
 
 namespace tops {
 namespace model {
@@ -68,7 +68,7 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                ->drawSymbol(pos, phase, context);
   }
 
-  throw tops::exception::OutOfRange();
+  throw exception::OutOfRange();
 }
 
 /*----------------------------------------------------------------------------*/
