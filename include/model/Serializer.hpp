@@ -48,6 +48,9 @@ class Serializer : public std::enable_shared_from_this<Serializer> {
   virtual void serialize() = 0;
 
   virtual TranslatorPtr translator() = 0;
+
+  // Destructor
+  virtual ~Serializer() = default;
 };
 
 }  // namespace model

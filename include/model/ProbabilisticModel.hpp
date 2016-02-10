@@ -59,6 +59,9 @@ class ProbabilisticModel {
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
+
+  // Destructor
+  virtual ~ProbabilisticModel() = default;
 };
 
 }  // namespace model

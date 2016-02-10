@@ -45,6 +45,9 @@ class Range {
   virtual unsigned int begin() = 0;
   virtual unsigned int next() = 0;
   virtual bool end() = 0;
+
+  // Destructor
+  virtual ~Range() = default;
 };
 
 }  // namespace model
