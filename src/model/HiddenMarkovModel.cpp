@@ -81,12 +81,14 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
       Probability P = model->forward(observation_training_set[s], alpha);
       model->backward(observation_training_set[s], beta);
 
-      Probability sum = alpha[0][0] + beta[0][0];
-      for (unsigned int i = 1; i < state_alphabet_size; i++)
-        sum = log_sum(sum, alpha[i][0] + beta[i][0]);
+      {
+        Probability sum = alpha[0][0] + beta[0][0];
+        for (unsigned int i = 1; i < state_alphabet_size; i++)
+          sum = log_sum(sum, alpha[i][0] + beta[i][0]);
 
-      for (unsigned int i = 0; i < state_alphabet_size; i++)
-        pi[i] = alpha[i][0] + beta[i][0] - sum;
+        for (unsigned int i = 0; i < state_alphabet_size; i++)
+          pi[i] = alpha[i][0] + beta[i][0] - sum;
+      }
 
       for (unsigned int i = 0; i < state_alphabet_size; i++) {
         for (unsigned int j = 0; j < state_alphabet_size; j++) {

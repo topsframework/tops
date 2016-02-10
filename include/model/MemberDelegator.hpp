@@ -52,7 +52,7 @@ using non_const_return_t = typename non_const_return<T>::type;
 
 template<typename T>
 non_const_return_t<T> non_const_cast(T t) {
-    return (non_const_return_t<T>) t;
+  return static_cast<non_const_return_t<T>>(t);
 }
 
 /*============================================================================*/
@@ -133,7 +133,7 @@ inline auto method##Impl(Args&&... args) const                                 \
 template<typename... Args>                                                     \
 inline auto method##Impl(Args&&... args)                                       \
     -> decltype(this->method(std::forward<Args>(args)...)) {                   \
-  return (non_const_return_t<decltype(this->method(args...))>) (               \
+  return static_cast<non_const_return_t<decltype(this->method(args...))>>(     \
     static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
       std::forward<Args>(args)...));                                           \
 }
@@ -169,8 +169,8 @@ inline auto method##Impl(Args&&... args) const                                 \
 template<typename... Args>                                                     \
 inline auto method##Impl(Args&&... args)                                       \
     -> decltype(this->method(std::forward<Args>(args)...)) {                   \
-  return (non_const_return_t<                                                  \
-            decltype(this->method(std::forward<Args>(args)...))>) (            \
+  return static_cast<non_const_return_t<                                       \
+            decltype(this->method(std::forward<Args>(args)...))>>(             \
     static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
       std::forward<Args>(args)...));                                           \
 }                                                                              \
@@ -182,7 +182,7 @@ inline auto method##Impl() const                                               \
                                                                                \
 inline auto method##Impl()                                                     \
     -> decltype(this->method()) {                                              \
-  return (non_const_return_t<decltype(this->method())>) (                      \
+  return static_cast<non_const_return_t<decltype(this->method())>>(            \
     static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
 }                                                                              \
                                                                                \
@@ -205,7 +205,7 @@ inline constexpr auto method##Alt(_T* = nullptr)                               \
                   >::value                                                     \
                 >::type(),                                                     \
                 non_const_cast(this)->method()) {                              \
-  return (non_const_return_t<decltype(this->method())>) (                      \
+  return static_cast<non_const_return_t<decltype(this->method())>>(            \
     static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
 }                                                                              \
                                                                                \
@@ -226,7 +226,7 @@ inline constexpr auto delegate(_T* = nullptr)                                  \
                     class_of_t<decltype(this)>, void()                         \
                   >::value                                                     \
                 >::type(), bool()) {                                           \
-  return (non_const_return_t<decltype(this->method())>) (                      \
+  return static_cast<non_const_return_t<decltype(this->method())>>(            \
     static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl());     \
 }
 
