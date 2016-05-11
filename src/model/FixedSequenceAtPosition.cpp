@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <vector>
-
 // Interface header
 #include "model/FixedSequenceAtPosition.hpp"
+
+// Standard headers
+#include <vector>
 
 namespace tops {
 namespace model {

@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/DiscreteIIDModel.hpp"
+
 // Standard headers
 #include <map>
 #include <cmath>
@@ -24,9 +27,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
-// Interface header
-#include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {

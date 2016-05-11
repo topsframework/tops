@@ -17,15 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/MaximalDependenceDecomposition.hpp"
+
 // Standard headers
 #include <cmath>
 #include <vector>
 
 // ToPS headers
 #include "helper/DiscreteIIDModel.hpp"
-
-// Interface header
-#include "helper/MaximalDependenceDecomposition.hpp"
 
 namespace tops {
 namespace helper {

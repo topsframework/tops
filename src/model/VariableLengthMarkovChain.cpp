@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/VariableLengthMarkovChain.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
 #include <vector>
-
-// Interface header
-#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {

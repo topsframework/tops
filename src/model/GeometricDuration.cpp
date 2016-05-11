@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// ToPS headers
-#include "model/SingleValueRange.hpp"
-
 // Interface header
 #include "model/GeometricDuration.hpp"
+
+// ToPS headers
+#include "model/SingleValueRange.hpp"
 
 namespace tops {
 namespace model {

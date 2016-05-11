@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/PhasedRunLengthDistribution.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
@@ -24,9 +27,6 @@
 
 // ToPS headers
 #include "model/Util.hpp"
-
-// Interface header
-#include "model/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
 namespace model {

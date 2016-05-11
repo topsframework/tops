@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "MaximalDependenceDecomposition.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
@@ -27,9 +30,6 @@
 
 // ToPS headers
 #include "Util.hpp"
-
-// Interface header
-#include "MaximalDependenceDecomposition.hpp"
 
 namespace tops {
 namespace model {

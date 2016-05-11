@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/Sequence.hpp"
+
 // Standard headers
 #include <vector>
 
 // ToPS headers
 #include "helper/Random.hpp"
-
-// Interface header
-#include "helper/Sequence.hpp"
 
 namespace tops {
 namespace helper {

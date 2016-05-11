@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/SignalDuration.hpp"
+
 // Standard headers
 #include <limits>
 
 // ToPS headers
 #include "model/SingleValueRange.hpp"
-
-// Interface header
-#include "model/SignalDuration.hpp"
 
 namespace tops {
 namespace model {

@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/InhomogeneousMarkovChain.hpp"
+
 // Standard headers
 #include <vector>
 
 // ToPS headers
 #include "helper/VariableLengthMarkovChain.hpp"
-
-// Interface header
-#include "helper/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace helper {

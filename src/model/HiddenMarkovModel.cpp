@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/HiddenMarkovModel.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
@@ -25,9 +28,6 @@
 
 // ToPS headers
 #include "model/Util.hpp"
-
-// Interface header
-#include "model/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {

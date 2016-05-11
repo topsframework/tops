@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "MaximalDependenceDecompositionNode.hpp"
+
 // Standard headers
 #include <cmath>
 #include <string>
 #include <vector>
-
-// Interface header
-#include "MaximalDependenceDecompositionNode.hpp"
 
 namespace tops {
 namespace model {

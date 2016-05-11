@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/SimilarityBasedSequenceWeighting.hpp"
+
 // Standard headers
 #include <map>
 #include <cmath>
@@ -27,9 +30,6 @@
 
 // ToPS headers
 #include "model/Util.hpp"
-
-// Interface header
-#include "model/SimilarityBasedSequenceWeighting.hpp"
 
 namespace tops {
 namespace model {

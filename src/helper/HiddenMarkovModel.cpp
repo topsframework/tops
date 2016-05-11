@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/HiddenMarkovModel.hpp"
+
 // Standard headers
 #include <cmath>
 #include <vector>
@@ -25,9 +28,6 @@
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"
-
-// Interface header
-#include "helper/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace helper {

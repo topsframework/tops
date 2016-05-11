@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "MultipleSequentialModel.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
@@ -25,9 +28,6 @@
 
 // ToPS headers
 #include "Util.hpp"
-
-// Interface header
-#include "MultipleSequentialModel.hpp"
 
 namespace tops {
 namespace model {
