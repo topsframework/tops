@@ -88,7 +88,7 @@ void SExprTranslator::translate(
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(
-    Ptr<model::PhasedInhomogeneousMarkovChain> /* model */) {
+    Ptr<model::PeriodicInhomogeneousMarkovChain> /* model */) {
 }
 
 /*----------------------------------------------------------------------------*/

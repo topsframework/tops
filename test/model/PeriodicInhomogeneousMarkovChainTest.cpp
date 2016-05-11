@@ -33,7 +33,7 @@
 #include "helper/VariableLengthMarkovChain.hpp"
 
 // Tested header
-#include "model/PhasedInhomogeneousMarkovChain.hpp"
+#include "model/PeriodicInhomogeneousMarkovChain.hpp"
 
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
@@ -48,10 +48,10 @@ using tops::model::Sequence;
 using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::PhasedInhomogeneousMarkovChain;
 using tops::model::ProbabilisticModelDecoratorCrtp;
-using tops::model::PhasedInhomogeneousMarkovChainPtr;
+using tops::model::PeriodicInhomogeneousMarkovChain;
 using tops::model::ProbabilisticModelDecoratorCrtpPtr;
+using tops::model::PeriodicInhomogeneousMarkovChainPtr;
 
 using tops::helper::createVLMCMC;
 using tops::helper::createMachlerVLMC;
@@ -61,13 +61,13 @@ using tops::helper::generateRandomSequence;
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-class APhasedInhomogeneousMarkovChain : public testing::Test {
+class APeriodicInhomogeneousMarkovChain : public testing::Test {
  protected:
-  PhasedInhomogeneousMarkovChainPtr imc;
+  PeriodicInhomogeneousMarkovChainPtr imc;
 
   virtual void SetUp() {
-    imc = PhasedInhomogeneousMarkovChain::make({createMachlerVLMC(),
-                                                createVLMCMC()});
+    imc = PeriodicInhomogeneousMarkovChain::make({createMachlerVLMC(),
+                                                  createVLMCMC()});
   }
 };
 
@@ -75,8 +75,8 @@ class APhasedInhomogeneousMarkovChain : public testing::Test {
 /*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
-  auto imc_trainer = PhasedInhomogeneousMarkovChain::standardTrainer();
+TEST(PeriodicInhomogeneousMarkovChain, ShouldBeTrained) {
+  auto imc_trainer = PeriodicInhomogeneousMarkovChain::standardTrainer();
 
   imc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
@@ -84,7 +84,7 @@ TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
 
   auto imc = imc_trainer->train(
-      PhasedInhomogeneousMarkovChain::interpolation_algorithm{},
+      PeriodicInhomogeneousMarkovChain::interpolation_algorithm{},
       2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
 
   ASSERT_THAT(imc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
@@ -100,7 +100,7 @@ TEST(PhasedInhomogeneousMarkovChain, ShouldBeTrained) {
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
+TEST_F(APeriodicInhomogeneousMarkovChain, ShouldEvaluateASequence) {
   ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(imc->standardEvaluator({1})->evaluateSequence(0, 1),
@@ -119,7 +119,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, ShouldEvaluateASequence) {
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APhasedInhomogeneousMarkovChain,
+TEST_F(APeriodicInhomogeneousMarkovChain,
        ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
@@ -132,10 +132,10 @@ TEST_F(APhasedInhomogeneousMarkovChain,
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
+TEST_F(APeriodicInhomogeneousMarkovChain, CanBeDecorated) {
   auto decorated_imc
-    = std::make_shared<
-          ProbabilisticModelDecoratorCrtp<PhasedInhomogeneousMarkovChain>>(imc);
+    = std::make_shared<ProbabilisticModelDecoratorCrtp<
+                        PeriodicInhomogeneousMarkovChain>>(imc);
   ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
   ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
@@ -155,7 +155,7 @@ TEST_F(APhasedInhomogeneousMarkovChain, CanBeDecorated) {
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APhasedInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
+TEST_F(APeriodicInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
   ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
