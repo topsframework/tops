@@ -36,7 +36,7 @@ class Segment {
   Segment(Symbol symbol, int begin, int end);
 
   // Static methods
-  static std::vector<Segment> readSequence(const Sequence &s);
+  static std::vector<Segment> readSequence(const Sequence& s);
 
   // Concrete methods
   Symbol symbol();

@@ -65,7 +65,7 @@ class InhomogeneousMarkovChain
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
   // Virtual methods
   virtual unsigned int maximumTimeValue();

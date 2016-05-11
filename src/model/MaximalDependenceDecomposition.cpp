@@ -92,7 +92,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     std::string node_name,
-    std::vector<Sequence> & sequences,
+    std::vector<Sequence>& sequences,
     unsigned int divmin,
     Sequence selected,
     unsigned int alphabet_size,
@@ -180,7 +180,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
 InhomogeneousMarkovChainPtr
 MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
-    std::vector<Sequence> & sequences,
+    std::vector<Sequence>& sequences,
     unsigned int alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> position_specific_vlmcs;
 
@@ -251,9 +251,9 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
 
 void MaximalDependenceDecomposition::subset(
     int index,
-    std::vector<Sequence> & sequences,
-    std::vector<Sequence> & consensus,
-    std::vector<Sequence> & nonconsensus,
+    std::vector<Sequence>& sequences,
+    std::vector<Sequence>& consensus,
+    std::vector<Sequence>& nonconsensus,
     ConsensusSequence consensus_sequence) {
   for (unsigned int i = 0; i < sequences.size(); i++) {
     if (consensus_sequence[index].is(sequences[i][index])) {
@@ -277,7 +277,7 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 
   if (slen - clen + 1 <= 0) return;
 
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(slen - clen + 1);
 
   auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
@@ -320,7 +320,7 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
     unsigned int begin,
     unsigned int end,
     unsigned int /* phase */) const {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size())
     return -std::numeric_limits<double>::infinity();
   return prefix_sum_array[begin];
@@ -353,9 +353,9 @@ Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
 /*================================  OTHERS  ==================================*/
 
 Probability MaximalDependenceDecomposition::_probabilityOf(
-    const Sequence & s,
+    const Sequence& s,
     MaximalDependenceDecompositionNodePtr node,
-    std::vector<int> &indexes) const {
+    std::vector<int>& indexes) const {
   Probability p = 0;
   if (node->getLeft()) {
     p = node->getModel()
@@ -379,7 +379,7 @@ Probability MaximalDependenceDecomposition::_probabilityOf(
 /*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecomposition::_drawAux(
-    Sequence &s,
+    Sequence& s,
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]

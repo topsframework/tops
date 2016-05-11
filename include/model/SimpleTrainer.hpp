@@ -66,7 +66,7 @@ class SimpleTrainer
   // Overriden methods
   TrainingSet& training_set() override {
     return const_cast<TrainingSet&>(
-      static_cast<const Self *>(this)->training_set());
+      static_cast<const Self*>(this)->training_set());
   }
 
   const TrainingSet& training_set() const override {

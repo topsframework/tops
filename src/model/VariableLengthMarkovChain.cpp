@@ -137,7 +137,7 @@ Standard<Symbol>
 VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
-                                      const Sequence &context) const {
+                                      const Sequence& context) const {
   auto c = _context_tree->getContext(context, pos);
 
   // TODO(igorbonadio): ERROR!

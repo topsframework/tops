@@ -130,12 +130,12 @@ class HiddenMarkovModel
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
@@ -143,40 +143,40 @@ class HiddenMarkovModel
   void initializeCache(CLPtr labeler) override;
   Estimation<Labeling<Sequence>> labeling(
       CLPtr labeler,
-      const Labeler::method &method) const override;
+      const Labeler::method& method) const override;
 
   Estimation<Labeling<Sequence>> labeling(
       SLPtr labeler,
-      const Labeler::method &method) const override;
+      const Labeler::method& method) const override;
 
   void initializeCache(CCPtr calculator) override;
 
   Probability calculate(
-      SCPtr calculator, const Calculator::direction &direction) const override;
+      SCPtr calculator, const Calculator::direction& direction) const override;
 
   Probability calculate(
-      CCPtr calculator, const Calculator::direction &direction) const override;
+      CCPtr calculator, const Calculator::direction& direction) const override;
 
-  void posteriorProbabilities(const Sequence &sequence,
-                              Matrix &probabilities) const override;
+  void posteriorProbabilities(const Sequence& sequence,
+                              Matrix& probabilities) const override;
 
  private:
   // Concrete methods
   Estimation<Labeling<Sequence>>
-  viterbi(const Sequence &xs, Matrix &gamma) const;
+  viterbi(const Sequence& xs, Matrix& gamma) const;
 
   Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
+  posteriorDecoding(const Sequence& xs, Matrix& probabilities) const;
 
-  void initializeStandardPrefixSumArray(const Sequence &sequence,
-                                        Cache &cache);
+  void initializeStandardPrefixSumArray(const Sequence& sequence,
+                                        Cache& cache);
   void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator,
                                         unsigned int phase);
 
-  Probability backward(const Sequence &sequence,
-                       Matrix &beta) const;
-  Probability forward(const Sequence &sequence,
-                      Matrix &alpha) const;
+  Probability backward(const Sequence& sequence,
+                       Matrix& beta) const;
+  Probability forward(const Sequence& sequence,
+                      Matrix& alpha) const;
 };
 
 }  // namespace model

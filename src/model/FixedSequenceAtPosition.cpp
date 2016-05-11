@@ -71,7 +71,7 @@ FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
 
 /*================================  OTHERS  ==================================*/
 
-void FixedSequenceAtPosition::addSequence(Sequence &h) const {
+void FixedSequenceAtPosition::addSequence(Sequence& h) const {
   auto rng = _probabilities->standardGenerator()->randomNumberGenerator();
   if (_probabilities->draw(rng) == 1)
     return;

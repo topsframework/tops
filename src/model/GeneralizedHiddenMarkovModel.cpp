@@ -203,7 +203,7 @@ GeneralizedHiddenMarkovModel::initializeCache(CLPtr labeler) {
 
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::labeling(CLPtr labeler,
-                                       const Labeler::method &method) const {
+                                       const Labeler::method& method) const {
   switch (method) {
     case Labeler::method::bestPath:
       return viterbi(labeler->sequence(), labeler->cache().gamma,
@@ -219,7 +219,7 @@ GeneralizedHiddenMarkovModel::labeling(CLPtr labeler,
 
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::labeling(SLPtr labeler,
-                                       const Labeler::method &method) const {
+                                       const Labeler::method& method) const {
   Matrix probabilities;
   auto observation_evaluators
     = initializeObservationEvaluators(labeler->sequence(), false);
@@ -244,7 +244,7 @@ void GeneralizedHiddenMarkovModel::initializeCache(CCPtr calculator) {
 /*----------------------------------------------------------------------------*/
 
 Probability GeneralizedHiddenMarkovModel::calculate(
-    SCPtr calculator, const Calculator::direction &direction) const {
+    SCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
   auto observation_evaluators
     = initializeObservationEvaluators(calculator->sequence(), false);
@@ -262,7 +262,7 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 /*----------------------------------------------------------------------------*/
 
 Probability GeneralizedHiddenMarkovModel::calculate(
-    CCPtr calculator, const Calculator::direction &direction) const {
+    CCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
 
   switch (direction) {
@@ -283,8 +283,8 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
 
 void GeneralizedHiddenMarkovModel::posteriorProbabilities(
-    const Sequence &sequence,
-    Matrix &probabilities) const {
+    const Sequence& sequence,
+    Matrix& probabilities) const {
   probabilities = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(sequence.size()));
@@ -308,9 +308,9 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
-      const Sequence &xs,
-      Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
+      const Sequence& xs,
+      Matrix& gamma,
+      std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
   gamma = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(xs.size()));
@@ -380,8 +380,8 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>>
-GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                                Matrix &probabilities) const {
+GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
+                                                Matrix& probabilities) const {
   posteriorProbabilities(xs, probabilities);
 
   Sequence path(xs.size());
@@ -404,9 +404,9 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 /*----------------------------------------------------------------------------*/
 
 Probability GeneralizedHiddenMarkovModel::forward(
-    const Sequence &sequence,
-    Matrix &alpha,
-    std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
+    const Sequence& sequence,
+    Matrix& alpha,
+    std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
   alpha = std::vector<std::vector<Probability>>(
     _state_alphabet_size, std::vector<Probability>(sequence.size()));
 
@@ -447,9 +447,9 @@ Probability GeneralizedHiddenMarkovModel::forward(
 /*----------------------------------------------------------------------------*/
 
 Probability GeneralizedHiddenMarkovModel::backward(
-    const Sequence &sequence,
-    Matrix &beta,
-    std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const {
+    const Sequence& sequence,
+    Matrix& beta,
+    std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
   beta = std::vector<std::vector<Probability>>(
     _state_alphabet_size, std::vector<Probability>(sequence.size()));
 
@@ -499,7 +499,7 @@ Probability GeneralizedHiddenMarkovModel::backward(
 
 std::vector<EvaluatorPtr<Standard>>
 GeneralizedHiddenMarkovModel::initializeObservationEvaluators(
-    const Sequence &xs, bool cached) const {
+    const Sequence& xs, bool cached) const {
   std::vector<EvaluatorPtr<Standard>> observation_evaluators;
   for (auto state : _states) {
     observation_evaluators.push_back(

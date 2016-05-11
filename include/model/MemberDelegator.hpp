@@ -91,14 +91,14 @@ struct inject_first_parameter<Ptr, Result(Klass::*)(Args...) const> {
 
 template<typename Func, template<typename...> class Pack,
          typename Ptr, typename... Args, std::size_t... I>
-auto call_helper(const Func &func, const Ptr &ptr, const Pack<Args...> &params,
+auto call_helper(const Func& func, const Ptr& ptr, const Pack<Args...>& params,
                    std::index_sequence<I...>) {
   return func(ptr, std::get<I>(params)...);
 }
 
 template<typename Func, template<typename...> class Pack,
          typename Ptr, typename... Args>
-auto call(const Func &func, const Ptr &ptr, const Pack<Args...> &params) {
+auto call(const Func& func, const Ptr& ptr, const Pack<Args...>& params) {
   return call_helper(func, ptr, params, std::index_sequence_for<Args...>{});
 }
 
@@ -134,7 +134,7 @@ template<typename... Args>                                                     \
 inline auto method##Impl(Args&&... args)                                       \
     -> decltype(this->method(std::forward<Args>(args)...)) {                   \
   return static_cast<non_const_return_t<decltype(this->method(args...))>>(     \
-    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
       std::forward<Args>(args)...));                                           \
 }
 
@@ -171,7 +171,7 @@ inline auto method##Impl(Args&&... args)                                       \
     -> decltype(this->method(std::forward<Args>(args)...)) {                   \
   return static_cast<non_const_return_t<                                       \
             decltype(this->method(std::forward<Args>(args)...))>>(             \
-    static_cast<const class_of_t<decltype(this)> *>(this)->method##Impl(       \
+    static_cast<const class_of_t<decltype(this)>*>(this)->method##Impl(        \
       std::forward<Args>(args)...));                                           \
 }                                                                              \
                                                                                \

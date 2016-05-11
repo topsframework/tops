@@ -65,7 +65,7 @@ class SimpleGenerator : public Generator<Decorator> {
   // Overriden methods
   Decorator<Symbol> drawSymbol(unsigned int pos,
                                unsigned int phase,
-                               const Sequence &context) const override {
+                               const Sequence& context) const override {
     CALL_MEMBER_FUNCTION_DELEGATOR(drawSymbol, pos, phase, context);
   }
 

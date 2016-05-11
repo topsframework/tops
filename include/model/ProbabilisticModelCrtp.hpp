@@ -93,7 +93,7 @@ class ProbabilisticModelCrtp
 
   // Overriden methods
   EvaluatorPtr<Standard>
-  standardEvaluator(const Standard<Sequence> &sequence,
+  standardEvaluator(const Standard<Sequence>& sequence,
                     bool cached = false) override;
 
   GeneratorPtr<Standard>
@@ -110,7 +110,7 @@ class ProbabilisticModelCrtp
   virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
-                                      const Sequence &context) const = 0;
+                                      const Sequence& context) const = 0;
 
   // Virtual methods
   virtual void initializeCache(CEPtr<Standard> evaluator,

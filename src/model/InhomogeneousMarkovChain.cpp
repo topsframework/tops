@@ -58,7 +58,7 @@ Standard<Symbol>
 InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                      unsigned int pos,
                                      unsigned int phase,
-                                     const Sequence &context) const {
+                                     const Sequence& context) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
     return vlmc->standardGenerator(generator->randomNumberGenerator())

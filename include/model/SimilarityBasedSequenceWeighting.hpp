@@ -100,7 +100,7 @@ class SimilarityBasedSequenceWeighting
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
  private:
   // Instance variables
@@ -115,7 +115,7 @@ class SimilarityBasedSequenceWeighting
   static double calculate_normalizer(int skip_length,
                                      int skip_offset,
                                      int max_length,
-                                     std::map<Sequence, double> &counter,
+                                     std::map<Sequence, double>& counter,
                                      int alphabet_size);
 };
 

@@ -148,7 +148,7 @@ MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,
                                           unsigned int phase) const {
-  auto &evaluators = evaluator->cache().evaluators;
+  auto& evaluators = evaluator->cache().evaluators;
   double sum = 0;
   int b = begin;
   int e = 0;
@@ -193,7 +193,7 @@ Standard<Symbol>
 MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
                                     unsigned int pos,
                                     unsigned int phase,
-                                    const Sequence &context) const {
+                                    const Sequence& context) const {
   int index = pos;
   for (unsigned int j = 0; j < _models.size(); j++) {
     index -= _max_length[j];

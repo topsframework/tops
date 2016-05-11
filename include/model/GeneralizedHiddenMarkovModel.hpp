@@ -115,12 +115,12 @@ class GeneralizedHiddenMarkovModel
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
@@ -128,22 +128,22 @@ class GeneralizedHiddenMarkovModel
   void initializeCache(CLPtr labeler) override;
   Estimation<Labeling<Sequence>> labeling(
       CLPtr labeler,
-      const Labeler::method &method) const override;
+      const Labeler::method& method) const override;
 
   Estimation<Labeling<Sequence>> labeling(
       SLPtr labeler,
-      const Labeler::method &method) const override;
+      const Labeler::method& method) const override;
 
   void initializeCache(CCPtr calculator) override;
 
   Probability calculate(
-      SCPtr calculator, const Calculator::direction &direction) const override;
+      SCPtr calculator, const Calculator::direction& direction) const override;
 
   Probability calculate(
-      CCPtr calculator, const Calculator::direction &direction) const override;
+      CCPtr calculator, const Calculator::direction& direction) const override;
 
-  void posteriorProbabilities(const Sequence &sequence,
-                              Matrix &probabilities) const override;
+  void posteriorProbabilities(const Sequence& sequence,
+                              Matrix& probabilities) const override;
 
  protected:
   // Instance variables
@@ -152,25 +152,25 @@ class GeneralizedHiddenMarkovModel
  private:
   // Concrete methods
   Estimation<Labeling<Sequence>> viterbi(
-      const Sequence &xs,
-      Matrix &gamma,
-      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
+      const Sequence& xs,
+      Matrix& gamma,
+      std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const;
 
   Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence &xs, Matrix &probabilities) const;
+  posteriorDecoding(const Sequence& xs, Matrix& probabilities) const;
 
   Probability forward(
-      const Sequence &sequence,
-      Matrix &alpha,
-      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
+      const Sequence& sequence,
+      Matrix& alpha,
+      std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const;
 
   Probability backward(
-      const Sequence &sequence,
-      Matrix &beta,
-      std::vector<EvaluatorPtr<Standard>> &observation_evaluators) const;
+      const Sequence& sequence,
+      Matrix& beta,
+      std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const;
 
   std::vector<EvaluatorPtr<Standard>> initializeObservationEvaluators(
-      const Sequence &xs, bool cached) const;
+      const Sequence& xs, bool cached) const;
 };
 
 }  // namespace model

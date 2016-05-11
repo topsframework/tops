@@ -36,7 +36,7 @@ namespace helper {
 static void generateAllCombinationsOfSymbolsImpl(
     unsigned int pos,
     model::Sequence s,
-    std::vector<model::Sequence> &sequences) {
+    std::vector<model::Sequence>& sequences) {
   model::Sequence s0 = s;
   s0[pos] = 0;
 

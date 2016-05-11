@@ -38,7 +38,7 @@ Segment::Segment(Symbol symbol, int begin, int end)
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-std::vector<Segment> Segment::readSequence(const Sequence &s) {
+std::vector<Segment> Segment::readSequence(const Sequence& s) {
   std::vector<Segment> segments;
   Symbol symbol = s[0];
   int begin = 0;
