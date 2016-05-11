@@ -26,7 +26,7 @@
 #include <vector>
 #include <cstdlib>
 
-// ToPS headers
+// Internal headers
 #include "Util.hpp"
 
 namespace tops {

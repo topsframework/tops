@@ -25,7 +25,7 @@
 #include <typeinfo>
 #include <exception>
 
-// ToPS headers
+// Internal headers
 #include "model/Generator.hpp"
 #include "model/MemberDelegator.hpp"
 

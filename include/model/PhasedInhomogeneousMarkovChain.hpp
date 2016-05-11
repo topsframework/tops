@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Matrix.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/VariableLengthMarkovChain.hpp"

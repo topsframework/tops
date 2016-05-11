@@ -24,7 +24,7 @@
 #include <memory>
 #include <string>
 
-// ToPS headers
+// Internal headers
 #include "model/DiscreteIIDModel.hpp"
 #include "model/FixedSequenceAtPosition.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"

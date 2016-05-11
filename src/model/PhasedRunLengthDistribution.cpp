@@ -25,7 +25,7 @@
 #include <limits>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Util.hpp"
 
 namespace tops {

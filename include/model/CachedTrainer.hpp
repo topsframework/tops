@@ -24,7 +24,7 @@
 #include <tuple>
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/Trainer.hpp"
 
 namespace tops {

@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Sequence.hpp"
 #include "model/ContextTreeNode.hpp"
 

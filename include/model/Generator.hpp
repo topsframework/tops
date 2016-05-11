@@ -24,7 +24,7 @@
 #include <memory>
 #include <exception>
 
-// ToPS headers
+// Internal headers
 #include "Symbol.hpp"
 #include "Sequence.hpp"
 #include "RandomNumberGenerator.hpp"

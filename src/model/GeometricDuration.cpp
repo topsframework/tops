@@ -20,7 +20,7 @@
 // Interface header
 #include "model/GeometricDuration.hpp"
 
-// ToPS headers
+// Internal headers
 #include "model/SingleValueRange.hpp"
 
 namespace tops {

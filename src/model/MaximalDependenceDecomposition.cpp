@@ -28,7 +28,7 @@
 #include <sstream>
 #include <algorithm>
 
-// ToPS headers
+// Internal headers
 #include "Util.hpp"
 
 namespace tops {

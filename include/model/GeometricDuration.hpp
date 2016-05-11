@@ -24,7 +24,7 @@
 #include <cmath>
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/DurationCrtp.hpp"
 #include "model/ProbabilisticModel.hpp"
 

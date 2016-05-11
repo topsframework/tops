@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "Sequence.hpp"
 
 namespace tops {

@@ -24,7 +24,7 @@
 #include <memory>
 #include <random>
 
-// ToPS headers
+// Internal headers
 #include "model/RandomNumberGenerator.hpp"
 
 namespace tops {

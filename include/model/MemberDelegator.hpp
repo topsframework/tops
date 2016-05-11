@@ -20,7 +20,7 @@
 #ifndef TOPS_MODEL_MEMBER_DELEGATOR_
 #define TOPS_MODEL_MEMBER_DELEGATOR_
 
-// ToPS headers
+// Internal headers
 #include "model/MemberDetector.hpp"
 
 namespace tops {

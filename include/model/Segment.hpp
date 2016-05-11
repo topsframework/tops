@@ -23,7 +23,7 @@
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "Symbol.hpp"
 #include "Sequence.hpp"
 

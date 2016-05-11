@@ -23,7 +23,7 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModelCrtp.hpp"
 
 namespace tops {

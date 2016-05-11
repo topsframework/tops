@@ -24,7 +24,7 @@
 #include <memory>
 #include <type_traits>
 
-// ToPS headers
+// Internal headers
 #include "model/Labeling.hpp"
 #include "model/Sequence.hpp"
 #include "model/Estimation.hpp"

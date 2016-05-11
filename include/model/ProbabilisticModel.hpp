@@ -24,7 +24,7 @@
 #include <memory>
 #include <random>
 
-// ToPS headers
+// Internal headers
 #include "model/Sequence.hpp"
 #include "model/Standard.hpp"
 #include "model/Evaluator.hpp"

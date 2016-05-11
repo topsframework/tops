@@ -20,7 +20,7 @@
 #ifndef TOPS_MODEL_TRANSLATOR_
 #define TOPS_MODEL_TRANSLATOR_
 
-// ToPS headers
+// Internal headers
 #include "model/MemberDelegator.hpp"
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"

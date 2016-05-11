@@ -24,7 +24,7 @@
 #include <cmath>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"

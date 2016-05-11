@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Consensus.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/MaximalDependenceDecompositionNode.hpp"

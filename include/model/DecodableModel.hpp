@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Labeler.hpp"
 #include "model/Labeling.hpp"
 #include "model/Calculator.hpp"

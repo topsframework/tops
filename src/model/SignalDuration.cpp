@@ -23,7 +23,7 @@
 // Standard headers
 #include <limits>
 
-// ToPS headers
+// Internal headers
 #include "model/SingleValueRange.hpp"
 
 namespace tops {

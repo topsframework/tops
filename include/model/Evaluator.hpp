@@ -23,7 +23,7 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "Probability.hpp"
 
 namespace tops {

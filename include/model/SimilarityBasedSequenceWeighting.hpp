@@ -25,7 +25,7 @@
 #include <vector>
 #include <map>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModel.hpp"
 #include "model/ProbabilisticModelCrtp.hpp"
 
