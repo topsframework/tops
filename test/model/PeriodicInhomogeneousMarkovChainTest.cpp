@@ -61,13 +61,13 @@ using tops::helper::generateRandomSequence;
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-class APeriodicInhomogeneousMarkovChain : public testing::Test {
+class APeriodicIMC: public testing::Test {
  protected:
-  PeriodicInhomogeneousMarkovChainPtr imc;
+  PeriodicInhomogeneousMarkovChainPtr pimc;
 
   virtual void SetUp() {
-    imc = PeriodicInhomogeneousMarkovChain::make({createMachlerVLMC(),
-                                                  createVLMCMC()});
+    pimc = PeriodicInhomogeneousMarkovChain::make({createMachlerVLMC(),
+                                                   createVLMCMC()});
   }
 };
 
@@ -75,24 +75,24 @@ class APeriodicInhomogeneousMarkovChain : public testing::Test {
 /*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-TEST(PeriodicInhomogeneousMarkovChain, ShouldBeTrained) {
-  auto imc_trainer = PeriodicInhomogeneousMarkovChain::standardTrainer();
+TEST(PeriodicIMC, ShouldBeTrained) {
+  auto pimc_trainer = PeriodicInhomogeneousMarkovChain::standardTrainer();
 
-  imc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                 {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                 {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                 {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+  pimc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+                                  {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
+                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
 
-  auto imc = imc_trainer->train(
+  auto pimc = pimc_trainer->train(
       PeriodicInhomogeneousMarkovChain::interpolation_algorithm{},
       2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
 
-  ASSERT_THAT(imc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
+  ASSERT_THAT(pimc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
               DoubleNear(-2.99504, 1e-4));
-  ASSERT_THAT(imc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
+  ASSERT_THAT(pimc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
               DoubleNear(-2.99504, 1e-4));
-  ASSERT_THAT(imc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
-                 ->evaluateSequence(0, 7),
+  ASSERT_THAT(pimc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                  ->evaluateSequence(0, 7),
               DoubleNear(-4.87431, 1e-4));
 }
 
@@ -100,64 +100,63 @@ TEST(PeriodicInhomogeneousMarkovChain, ShouldBeTrained) {
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APeriodicInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
+TEST_F(APeriodicIMC, ShouldEvaluateASequence) {
+  ASSERT_THAT(pimc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1})->evaluateSequence(0, 1),
+  ASSERT_THAT(pimc->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
+  ASSERT_THAT(pimc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
+  ASSERT_THAT(pimc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
+  ASSERT_THAT(pimc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
+  ASSERT_THAT(pimc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
+  ASSERT_THAT(pimc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APeriodicInhomogeneousMarkovChain,
-       ShouldEvaluateASequenceWithPrefixSumArray) {
+TEST_F(APeriodicIMC, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(imc->standardEvaluator(data, true)
-                   ->evaluateSequence(0, data.size()),
-                DoubleEq(imc->standardEvaluator(data)
-                            ->evaluateSequence(0, data.size())));
+    ASSERT_THAT(pimc->standardEvaluator(data, true)
+                    ->evaluateSequence(0, data.size()),
+                DoubleEq(pimc->standardEvaluator(data)
+                             ->evaluateSequence(0, data.size())));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APeriodicInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc
+TEST_F(APeriodicIMC, CanBeDecorated) {
+  auto decorated_pimc
     = std::make_shared<ProbabilisticModelDecoratorCrtp<
-                        PeriodicInhomogeneousMarkovChain>>(imc);
-  ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
+                        PeriodicInhomogeneousMarkovChain>>(pimc);
+  ASSERT_THAT(decorated_pimc->standardEvaluator({0})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({1})->evaluateSequence(0, 1),
               DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
               DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})
-                           ->evaluateSequence(0, 3),
+  ASSERT_THAT(decorated_pimc->standardEvaluator({1, 0, 1})
+                            ->evaluateSequence(0, 3),
               DoubleEq(log(0.5) + log(0.5) + log(0.80)));
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(APeriodicInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
+TEST_F(APeriodicIMC, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(5),
+  ASSERT_THAT(pimc->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 
