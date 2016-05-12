@@ -23,7 +23,7 @@
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "Symbol.hpp"
 #include "Sequence.hpp"
 
@@ -36,7 +36,7 @@ class Segment {
   Segment(Symbol symbol, int begin, int end);
 
   // Static methods
-  static std::vector<Segment> readSequence(const Sequence &s);
+  static std::vector<Segment> readSequence(const Sequence& s);
 
   // Concrete methods
   Symbol symbol();

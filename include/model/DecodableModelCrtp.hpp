@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/State.hpp"
 #include "model/Labeler.hpp"
 #include "model/Calculator.hpp"
@@ -110,16 +110,16 @@ class DecodableModelCrtp
 
   // Overriden methods
   EvaluatorPtr<Labeling>
-  labelingEvaluator(const Labeling<Sequence> &sequence,
+  labelingEvaluator(const Labeling<Sequence>& sequence,
                     bool cached = false) override;
 
   GeneratorPtr<Labeling>
   labelingGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
 
-  LabelerPtr labeler(const Sequence &sequence, bool cached = false) override;
+  LabelerPtr labeler(const Sequence& sequence, bool cached = false) override;
 
-  CalculatorPtr calculator(const Sequence &sequence,
+  CalculatorPtr calculator(const Sequence& sequence,
                            bool cached = false) override;
 
   // Purely virtual methods
@@ -145,7 +145,7 @@ class DecodableModelCrtp
   virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                                       unsigned int pos,
                                       unsigned int phase,
-                                      const Sequence &context) const = 0;
+                                      const Sequence& context) const = 0;
   virtual Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                           unsigned int size,
                                           unsigned int phase) const = 0;
@@ -153,21 +153,21 @@ class DecodableModelCrtp
   virtual void initializeCache(CLPtr labeler) = 0;
 
   virtual Estimation<Labeling<Sequence>>
-  labeling(SLPtr labeler, const Labeler::method &method) const = 0;
+  labeling(SLPtr labeler, const Labeler::method& method) const = 0;
 
   virtual Estimation<Labeling<Sequence>>
-  labeling(CLPtr labeler, const Labeler::method &method) const = 0;
+  labeling(CLPtr labeler, const Labeler::method& method) const = 0;
 
   virtual void initializeCache(CCPtr calculator) = 0;
 
   virtual Probability
-  calculate(SCPtr calculator, const Calculator::direction &direction) const = 0;
+  calculate(SCPtr calculator, const Calculator::direction& direction) const = 0;
 
   virtual Probability
-  calculate(CCPtr calculator, const Calculator::direction &direction) const = 0;
+  calculate(CCPtr calculator, const Calculator::direction& direction) const = 0;
 
-  virtual void posteriorProbabilities(const Sequence &xs,
-                                      Matrix &probabilities) const = 0;
+  virtual void posteriorProbabilities(const Sequence& xs,
+                                      Matrix& probabilities) const = 0;
 
   // Virtual methods
   unsigned int stateAlphabetSize() const;

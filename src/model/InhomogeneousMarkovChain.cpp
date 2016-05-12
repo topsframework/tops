@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/InhomogeneousMarkovChain.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
 #include <vector>
-
-// Interface header
-#include "model/InhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
@@ -58,7 +58,7 @@ Standard<Symbol>
 InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                      unsigned int pos,
                                      unsigned int phase,
-                                     const Sequence &context) const {
+                                     const Sequence& context) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
     return vlmc->standardGenerator(generator->randomNumberGenerator())

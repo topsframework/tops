@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/Sequence.hpp"
+
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "helper/Random.hpp"
-
-// Interface header
-#include "helper/Sequence.hpp"
 
 namespace tops {
 namespace helper {
@@ -36,7 +36,7 @@ namespace helper {
 static void generateAllCombinationsOfSymbolsImpl(
     unsigned int pos,
     model::Sequence s,
-    std::vector<model::Sequence> &sequences) {
+    std::vector<model::Sequence>& sequences) {
   model::Sequence s0 = s;
   s0[pos] = 0;
 

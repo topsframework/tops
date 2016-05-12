@@ -23,7 +23,7 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModelCrtp.hpp"
 
 namespace tops {
@@ -73,7 +73,7 @@ class ProbabilisticModelDecoratorCrtp
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,

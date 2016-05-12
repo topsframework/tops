@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <vector>
-
 // Interface header
 #include "model/FixedSequenceAtPosition.hpp"
+
+// Standard headers
+#include <vector>
 
 namespace tops {
 namespace model {
@@ -71,7 +71,7 @@ FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
 
 /*================================  OTHERS  ==================================*/
 
-void FixedSequenceAtPosition::addSequence(Sequence &h) const {
+void FixedSequenceAtPosition::addSequence(Sequence& h) const {
   auto rng = _probabilities->standardGenerator()->randomNumberGenerator();
   if (_probabilities->draw(rng) == 1)
     return;

@@ -23,7 +23,7 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/Range.hpp"
 #include "model/Serializer.hpp"
 #include "model/Probability.hpp"

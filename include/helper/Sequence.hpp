@@ -23,7 +23,7 @@
 // Standard headers
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Sequence.hpp"
 
 namespace tops {

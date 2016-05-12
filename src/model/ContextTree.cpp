@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/ContextTree.hpp"
+
 // Standard headers
 #include <set>
 #include <cmath>
 #include <vector>
 #include <cstdlib>
-
-// Interface header
-#include "model/ContextTree.hpp"
 
 namespace tops {
 namespace model {
@@ -49,7 +49,7 @@ ContextTreePtr ContextTree::make(int alphabet_size) {
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-std::vector<ContextTreeNodePtr> & ContextTree::all_context() {
+std::vector<ContextTreeNodePtr>& ContextTree::all_context() {
   return _all_context;
 }
 
@@ -79,7 +79,7 @@ ContextTreeNodePtr ContextTree::getContext(int id) {
 /*----------------------------------------------------------------------------*/
 
 //! get the context for the sequence s[i-1], s[i-2], s[i-3]...
-ContextTreeNodePtr ContextTree::getContext(const Sequence & s, int i) {
+ContextTreeNodePtr ContextTree::getContext(const Sequence& s, int i) {
   ContextTreeNodePtr c = _all_context[0];
   ContextTreeNodePtr p;
   int j;
@@ -197,18 +197,18 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
 
 /*----------------------------------------------------------------------------*/
 
-void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
+void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
                                   int order,
-                                  const std::vector<double> &weights) {
+                                  const std::vector<double>& weights) {
   initializeCounter(sequences, order, 0, weights);
 }
 
 /*----------------------------------------------------------------------------*/
 
-void ContextTree::initializeCounter(const std::vector<Sequence> & sequences,
+void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
                                     int order,
                                     double pseudocounts,
-                                    const std::vector<double> &weights) {
+                                    const std::vector<double>& weights) {
   if (order < 0)
     order = 0;
 
@@ -360,7 +360,7 @@ void ContextTree::pruneTree(double delta) {
 /*----------------------------------------------------------------------------*/
 
 void ContextTree::initializeContextTreeRissanen(
-    const std::vector<Sequence> & sequences) {
+    const std::vector<Sequence>& sequences) {
   ContextTreeNodePtr root = createContext();
   for (int i = 0; i < static_cast<int>(_alphabet_size); i++)
     root->addCount(i);

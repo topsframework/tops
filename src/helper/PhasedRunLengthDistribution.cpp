@@ -17,15 +17,15 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "helper/PhasedRunLengthDistribution.hpp"
+
 // Standard headers
 #include <cmath>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "helper/Sequence.hpp"
-
-// Interface header
-#include "helper/PhasedRunLengthDistribution.hpp"
 
 namespace tops {
 namespace helper {

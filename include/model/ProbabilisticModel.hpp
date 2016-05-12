@@ -24,7 +24,7 @@
 #include <memory>
 #include <random>
 
-// ToPS headers
+// Internal headers
 #include "model/Sequence.hpp"
 #include "model/Standard.hpp"
 #include "model/Evaluator.hpp"
@@ -53,7 +53,7 @@ class ProbabilisticModel {
  public:
   // Purely virtual methods
   virtual EvaluatorPtr<Standard> standardEvaluator(
-      const Standard<Sequence> &sequence, bool cached = false) = 0;
+      const Standard<Sequence>& sequence, bool cached = false) = 0;
 
   virtual GeneratorPtr<Standard> standardGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;

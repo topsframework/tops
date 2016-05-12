@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <vector>
-
 // Interface header
 #include "model/Segment.hpp"
+
+// Standard headers
+#include <vector>
 
 namespace tops {
 namespace model {
@@ -38,7 +38,7 @@ Segment::Segment(Symbol symbol, int begin, int end)
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-std::vector<Segment> Segment::readSequence(const Sequence &s) {
+std::vector<Segment> Segment::readSequence(const Sequence& s) {
   std::vector<Segment> segments;
   Symbol symbol = s[0];
   int begin = 0;

@@ -23,7 +23,7 @@
 // Standard headers
 #include <memory>
 
-// ToPS headers
+// Internal headers
 #include "model/Labeler.hpp"
 #include "model/Sequence.hpp"
 

@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/VariableLengthMarkovChain.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
 #include <vector>
-
-// Interface header
-#include "model/VariableLengthMarkovChain.hpp"
 
 namespace tops {
 namespace model {
@@ -137,7 +137,7 @@ Standard<Symbol>
 VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
-                                      const Sequence &context) const {
+                                      const Sequence& context) const {
   auto c = _context_tree->getContext(context, pos);
 
   // TODO(igorbonadio): ERROR!

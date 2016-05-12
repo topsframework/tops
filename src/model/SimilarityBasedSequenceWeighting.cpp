@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/SimilarityBasedSequenceWeighting.hpp"
+
 // Standard headers
 #include <map>
 #include <cmath>
@@ -25,11 +28,8 @@
 #include <vector>
 #include <sstream>
 
-// ToPS headers
+// Internal headers
 #include "model/Util.hpp"
-
-// Interface header
-#include "model/SimilarityBasedSequenceWeighting.hpp"
 
 namespace tops {
 namespace model {
@@ -105,7 +105,7 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
     int skip_length,
     int skip_offset,
     int max_length,
-    std::map<Sequence, double> & counter,
+    std::map<Sequence, double>& counter,
     int alphabet_size) {
   int npatterns_differ_1 = 0;
   npatterns_differ_1 = (alphabet_size - 1) * (max_length - skip_length);
@@ -145,7 +145,7 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 
 void SimilarityBasedSequenceWeighting::initializeCache(
     CEPtr<Standard> evaluator, unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size());
 
   auto sequence_size = evaluator->sequence().size();
@@ -223,7 +223,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
     unsigned int begin,
     unsigned int /* end */,
     unsigned int /* phase */) const {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
   return -std::numeric_limits<double>::infinity();

@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModel.hpp"
 #include "model/ProbabilisticModelCrtp.hpp"
 
@@ -85,7 +85,7 @@ class MultipleSequentialModel
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
  private:
   // Instance variables

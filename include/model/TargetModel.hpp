@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
@@ -54,7 +54,7 @@ class TargetModel : public DiscreteIIDModel {
                              unsigned int phase) const override;
 
   // Concrete methods
-  DiscreteIIDModelPtr sequenceDistribution(const Sequence &s) const;
+  DiscreteIIDModelPtr sequenceDistribution(const Sequence& s) const;
 
  private:
   // Constructors

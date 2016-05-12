@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModel.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
 
@@ -65,7 +65,7 @@ class InhomogeneousMarkovChain
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
 
   // Virtual methods
   virtual unsigned int maximumTimeValue();

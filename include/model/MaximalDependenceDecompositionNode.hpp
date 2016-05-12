@@ -25,7 +25,7 @@
 #include <vector>
 #include <string>
 
-// ToPS headers
+// Internal headers
 #include "model/ProbabilisticModel.hpp"
 
 namespace tops {

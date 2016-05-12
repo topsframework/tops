@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/PhasedInhomogeneousMarkovChain.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
 #include <vector>
-
-// Interface header
-#include "model/PhasedInhomogeneousMarkovChain.hpp"
 
 namespace tops {
 namespace model {
@@ -116,7 +116,7 @@ PhasedInhomogeneousMarkovChainPtr PhasedInhomogeneousMarkovChain::make(
 
 void PhasedInhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
                                                      unsigned int /* phase */) {
-  auto &prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
+  auto& prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
 
   prefix_sum_matrix.resize(_vlmcs.size());
   for (auto& prefix_sum_array : prefix_sum_matrix)
@@ -163,7 +163,7 @@ PhasedInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
                                                  unsigned int begin,
                                                  unsigned int end,
                                                  unsigned int phase) const {
-  auto &prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
+  auto& prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
   return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
 }
 
@@ -173,7 +173,7 @@ Standard<Symbol>
 PhasedInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                            unsigned int pos,
                                            unsigned int phase,
-                                           const Sequence &context) const {
+                                           const Sequence& context) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
   return vlmc->standardGenerator(generator->randomNumberGenerator())
              ->drawSymbol(pos, phase, context);

@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Standard headers
-#include <string>
-
 // Interface header
 #include "helper/SExprTranslator.hpp"
+
+// Standard headers
+#include <string>
 
 namespace tops {
 namespace helper {

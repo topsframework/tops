@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Consensus.hpp"
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/MaximalDependenceDecompositionNode.hpp"
@@ -92,7 +92,7 @@ class MaximalDependenceDecomposition
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence &context) const override;
+                              const Sequence& context) const override;
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
@@ -114,7 +114,7 @@ class MaximalDependenceDecomposition
 
   static MaximalDependenceDecompositionNodePtr newNode(
       std::string node_name,
-      std::vector<Sequence> & sequences,
+      std::vector<Sequence>& sequences,
       unsigned int divmin,
       Sequence selected,
       unsigned int alphabet_size,
@@ -122,7 +122,7 @@ class MaximalDependenceDecomposition
       ProbabilisticModelPtr consensus_model);
 
   static InhomogeneousMarkovChainPtr trainInhomogeneousMarkovChain(
-      std::vector<Sequence> & sequences,
+      std::vector<Sequence>& sequences,
       unsigned int alphabet_size);
 
   static int getMaximalDependenceIndex(
@@ -133,16 +133,16 @@ class MaximalDependenceDecomposition
       ProbabilisticModelPtr consensus_model);
 
   static void subset(int index,
-                     std::vector<Sequence> & sequences,
-                     std::vector<Sequence> & consensus,
-                     std::vector<Sequence> & nonconsensus,
+                     std::vector<Sequence>& sequences,
+                     std::vector<Sequence>& consensus,
+                     std::vector<Sequence>& nonconsensus,
                      ConsensusSequence consensus_sequence);
 
   // Concrete methods
-  Probability _probabilityOf(const Sequence &s,
+  Probability _probabilityOf(const Sequence& s,
                         MaximalDependenceDecompositionNodePtr node,
-                        std::vector<int> &indexes) const;
-  void _drawAux(Sequence & s, MaximalDependenceDecompositionNodePtr node) const;
+                        std::vector<int>& indexes) const;
+  void _drawAux(Sequence& s, MaximalDependenceDecompositionNodePtr node) const;
 };
 
 }  // namespace model

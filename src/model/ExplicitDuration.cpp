@@ -17,11 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// ToPS headers
-#include "model/LazzyRange.hpp"
-
 // Interface header
 #include "model/ExplicitDuration.hpp"
+
+// Internal headers
+#include "model/LazzyRange.hpp"
 
 namespace tops {
 namespace model {

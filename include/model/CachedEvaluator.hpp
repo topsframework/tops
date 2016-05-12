@@ -24,7 +24,7 @@
 #include <memory>
 #include <type_traits>
 
-// ToPS headers
+// Internal headers
 #include "model/Labeling.hpp"
 #include "model/Sequence.hpp"
 #include "model/Estimation.hpp"
@@ -67,14 +67,14 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
   // Overriden methods
   Probability evaluateSymbol(unsigned int pos,
                              unsigned int phase) const override {
-    const_cast<Self *>(this)->lazyInitializeCache(phase);
+    const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
   Probability evaluateSequence(unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override {
-    const_cast<Self *>(this)->lazyInitializeCache(phase);
+    const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }
 

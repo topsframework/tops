@@ -25,7 +25,7 @@
 #include <memory>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/DiscreteIIDModel.hpp"
 
 namespace tops {

@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/DiscreteIIDModel.hpp"
+
 // Standard headers
 #include <map>
 #include <cmath>
@@ -24,9 +27,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
-// Interface header
-#include "model/DiscreteIIDModel.hpp"
 
 namespace tops {
 namespace model {
@@ -284,9 +284,9 @@ double DiscreteIIDModel::epanechnikov(double x, double h) {
 
 void DiscreteIIDModel::band_den_bin(int n,
                                     int nb,
-                                    double *d,
-                                    const std::vector<double> &x,
-                                    std::vector<double> &cnt) {
+                                    double* d,
+                                    const std::vector<double>& x,
+                                    std::vector<double>& cnt) {
   int   i, j,  nn = n;
   double xmin, xmax, rang, dd;
   for (i = 0; i < nb; i++)
@@ -313,9 +313,9 @@ void DiscreteIIDModel::band_den_bin(int n,
 void DiscreteIIDModel::band_phi6_bin(int n,
                                      int nb,
                                      double d,
-                                     std::vector<double> &x,
+                                     std::vector<double>& x,
                                      double h,
-                                     double *u) {
+                                     double* u) {
   int nn = n, nbin = nb;
   double sum = 0.0;
   for (int i = 0; i < nbin; i++) {
@@ -337,7 +337,7 @@ void DiscreteIIDModel::band_phi4_bin(int n,
                                      double d,
                                      std::vector<double> x,
                                      double h,
-                                     double *u) {
+                                     double* u) {
   int nn = n, nbin = nb;
   double sum = 0.0;
   for (int i = 0; i < nbin; i++) {
@@ -353,7 +353,7 @@ void DiscreteIIDModel::band_phi4_bin(int n,
 
 /*----------------------------------------------------------------------------*/
 
-double DiscreteIIDModel::mean(const std::vector<double> &data) {
+double DiscreteIIDModel::mean(const std::vector<double>& data) {
   double sum = 0.0;
   for (unsigned int i = 0; i < data.size(); i++) {
     sum += data[i];
@@ -363,7 +363,7 @@ double DiscreteIIDModel::mean(const std::vector<double> &data) {
 
 /*----------------------------------------------------------------------------*/
 
-double DiscreteIIDModel::var(const std::vector<double> &data) {
+double DiscreteIIDModel::var(const std::vector<double>& data) {
   double data_mean = mean(data);
   double sum = 0.0;
   for (unsigned int i = 0; i < data.size(); i++) {
@@ -387,7 +387,7 @@ double DiscreteIIDModel::quantile(std::vector<double> data, double q) {
 
 /*----------------------------------------------------------------------------*/
 
-double DiscreteIIDModel::iqr(const std::vector<double> &data) {
+double DiscreteIIDModel::iqr(const std::vector<double>& data) {
   double q1 = quantile(data, 0.25);
   double q2 = quantile(data, 0.75);
   return q2 - q1;
@@ -398,7 +398,7 @@ double DiscreteIIDModel::iqr(const std::vector<double> &data) {
 double DiscreteIIDModel::kernel_density_estimation(
     double x,
     double bw,
-    const std::vector<double> &data) {
+    const std::vector<double>& data) {
   double result = 0.0;
   for (unsigned int i = 0; i < data.size(); i++) {
     double x_xi = static_cast<double>(x) - static_cast<double>(data[i]);
@@ -410,7 +410,7 @@ double DiscreteIIDModel::kernel_density_estimation(
 
 /*----------------------------------------------------------------------------*/
 
-double DiscreteIIDModel::sj_bandwidth(const std::vector<double> &data) {
+double DiscreteIIDModel::sj_bandwidth(const std::vector<double>& data) {
   double n = static_cast<double>(data.size());
   int nb = 1000;
   double d = 1.0;

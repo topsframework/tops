@@ -17,17 +17,17 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/HiddenMarkovModel.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
 #include <vector>
 #include <algorithm>
 
-// ToPS headers
+// Internal headers
 #include "model/Util.hpp"
-
-// Interface header
-#include "model/HiddenMarkovModel.hpp"
 
 namespace tops {
 namespace model {
@@ -317,8 +317,8 @@ HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
                                   unsigned int pos,
                                   unsigned int /* phase */) const {
   Probability transition;
-  const Sequence &observation = evaluator->sequence().observation();
-  const Sequence &label = evaluator->sequence().label();
+  const Sequence& observation = evaluator->sequence().observation();
+  const Sequence& label = evaluator->sequence().label();
 
   if (pos == 0)
     transition = _initial_probabilities
@@ -361,7 +361,7 @@ HiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
 Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
                                                unsigned int pos,
                                                unsigned int /* phase */,
-                                               const Sequence &context) const {
+                                               const Sequence& context) const {
   auto rng = generator->randomNumberGenerator();
   Symbol y = (pos == 0) ? _initial_probabilities->draw(rng)
                         : _states[context[pos-1]]->transition()->draw(rng);
@@ -388,7 +388,7 @@ Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
 
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::labeling(SLPtr labeler,
-                            const Labeler::method &method) const {
+                            const Labeler::method& method) const {
   Matrix probabilities;
   switch (method) {
     case Labeler::method::bestPath:
@@ -403,7 +403,7 @@ HiddenMarkovModel::labeling(SLPtr labeler,
 
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::labeling(CLPtr labeler,
-                            const Labeler::method &method) const {
+                            const Labeler::method& method) const {
   switch (method) {
     case Labeler::method::bestPath:
       return viterbi(labeler->sequence(), labeler->cache().gamma);
@@ -429,7 +429,7 @@ void HiddenMarkovModel::initializeCache(CCPtr /*calculator*/) {
 /*----------------------------------------------------------------------------*/
 
 Probability HiddenMarkovModel::calculate(
-    SCPtr calculator, const Calculator::direction &direction) const {
+    SCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
   switch (direction) {
     case Calculator::direction::forward:
@@ -444,7 +444,7 @@ Probability HiddenMarkovModel::calculate(
 /*----------------------------------------------------------------------------*/
 
 Probability HiddenMarkovModel::calculate(
-    CCPtr calculator, const Calculator::direction &direction) const {
+    CCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
   switch (direction) {
     case Calculator::direction::forward:
@@ -458,8 +458,8 @@ Probability HiddenMarkovModel::calculate(
 
 /*=================================  OTHERS  =================================*/
 
-void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
-                                               Matrix &probabilities) const {
+void HiddenMarkovModel::posteriorProbabilities(const Sequence& sequence,
+                                               Matrix& probabilities) const {
   probabilities = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(sequence.size()));
@@ -480,7 +480,7 @@ void HiddenMarkovModel::posteriorProbabilities(const Sequence &sequence,
 /*----------------------------------------------------------------------------*/
 
 void HiddenMarkovModel::initializeStandardPrefixSumArray(
-    const Sequence &sequence, Cache &cache) {
+    const Sequence& sequence, Cache& cache) {
   cache.prefix_sum_array.resize(sequence.size()+1);
   forward(sequence, cache.alpha);
   cache.prefix_sum_array[0] = 0;
@@ -497,7 +497,7 @@ void HiddenMarkovModel::initializeStandardPrefixSumArray(
 
 void HiddenMarkovModel::initializeLabelingPrefixSumArray(
     CEPtr<Labeling> evaluator, unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().observation().size() + 1);
 
   prefix_sum_array[0] = 0;
@@ -509,8 +509,8 @@ void HiddenMarkovModel::initializeLabelingPrefixSumArray(
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>>
-HiddenMarkovModel::viterbi(const Sequence &xs,
-                           Matrix &gamma) const {
+HiddenMarkovModel::viterbi(const Sequence& xs,
+                           Matrix& gamma) const {
   gamma = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(xs.size()));
@@ -557,8 +557,8 @@ HiddenMarkovModel::viterbi(const Sequence &xs,
 /*----------------------------------------------------------------------------*/
 
 Estimation<Labeling<Sequence>>
-HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
-                                     Matrix &probabilities) const {
+HiddenMarkovModel::posteriorDecoding(const Sequence& xs,
+                                     Matrix& probabilities) const {
   posteriorProbabilities(xs, probabilities);
   Sequence path(xs.size());
 
@@ -583,8 +583,8 @@ HiddenMarkovModel::posteriorDecoding(const Sequence &xs,
 
 /*----------------------------------------------------------------------------*/
 
-Probability HiddenMarkovModel::forward(const Sequence &sequence,
-                                  Matrix &alpha) const {
+Probability HiddenMarkovModel::forward(const Sequence& sequence,
+                                  Matrix& alpha) const {
   alpha = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(sequence.size()));
@@ -614,8 +614,8 @@ Probability HiddenMarkovModel::forward(const Sequence &sequence,
 
 /*----------------------------------------------------------------------------*/
 
-Probability HiddenMarkovModel::backward(const Sequence &sequence,
-                                   Matrix &beta) const {
+Probability HiddenMarkovModel::backward(const Sequence& sequence,
+                                   Matrix& beta) const {
   beta = std::vector<std::vector<Probability>>(
       _state_alphabet_size,
       std::vector<Probability>(sequence.size()));

@@ -17,12 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/Util.hpp"
+
 // Standard headers
 #include <cmath>
 #include <limits>
-
-// Interface header
-#include "model/Util.hpp"
 
 namespace tops {
 namespace model {

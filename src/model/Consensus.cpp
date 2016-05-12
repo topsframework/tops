@@ -17,13 +17,13 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/Consensus.hpp"
+
 // Standard headers
 #include <cmath>
 #include <vector>
 #include <algorithm>
-
-// Interface header
-#include "model/Consensus.hpp"
 
 namespace tops {
 namespace model {

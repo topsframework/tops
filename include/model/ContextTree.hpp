@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-// ToPS headers
+// Internal headers
 #include "model/Sequence.hpp"
 #include "model/ContextTreeNode.hpp"
 
@@ -54,25 +54,25 @@ class ContextTree {
 
   // Concrete methods
   int alphabetSize() const;
-  std::vector<ContextTreeNodePtr> & all_context();
+  std::vector<ContextTreeNodePtr>& all_context();
   ContextTreeNodePtr getRoot() const;
   ContextTreeNodePtr createContext();
   ContextTreeNodePtr getContext(int id);
-  ContextTreeNodePtr getContext(const Sequence & s, int i);
+  ContextTreeNodePtr getContext(const Sequence& s, int i);
   std::set<int> getLevelOneNodes();
   void removeContextNotUsed();
   void normalize();
   void normalize(ProbabilisticModelPtr old, double pseudocount);
-  void initializeCounter(const std::vector<Sequence> &sequences,
+  void initializeCounter(const std::vector<Sequence>& sequences,
                          int order,
-                         const std::vector<double> &weights);
-  void initializeCounter(const std::vector<Sequence> &sequences,
+                         const std::vector<double>& weights);
+  void initializeCounter(const std::vector<Sequence>& sequences,
                          int order,
                          double pseudocounts,
-                         const std::vector<double> &weights);
+                         const std::vector<double>& weights);
   void pruneTree(double delta);
   void pruneTreeSmallSampleSize(int small_);
-  void initializeContextTreeRissanen(const std::vector<Sequence> &sequences);
+  void initializeContextTreeRissanen(const std::vector<Sequence>& sequences);
   int getNumberOfNodes() const;
 
  private:

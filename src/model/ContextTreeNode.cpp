@@ -17,12 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/ContextTreeNode.hpp"
+
 // Standard headers
 #include <vector>
 #include <cstdlib>
-
-// Interface header
-#include "model/ContextTreeNode.hpp"
 
 namespace tops {
 namespace model {

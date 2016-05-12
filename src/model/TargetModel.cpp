@@ -17,12 +17,12 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Interface header
+#include "model/TargetModel.hpp"
+
 // Standard headers
 #include <cmath>
 #include <vector>
-
-// Interface header
-#include "model/TargetModel.hpp"
 
 namespace tops {
 namespace model {
@@ -61,7 +61,7 @@ Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence &s) const {
+DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence& s) const {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
   iid_trainer->add_training_sequence(s);
 
