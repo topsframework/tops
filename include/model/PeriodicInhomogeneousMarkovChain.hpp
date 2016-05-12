@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_
-#define TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_
+#ifndef TOPS_MODEL_PERIODIC_INHOMOGENEOUS_MARKOV_CHAIN_
+#define TOPS_MODEL_PERIODIC_INHOMOGENEOUS_MARKOV_CHAIN_
 
 // Standard headers
 #include <memory>
@@ -33,28 +33,29 @@ namespace tops {
 namespace model {
 
 // Forward declaration
-class PhasedInhomogeneousMarkovChain;
+class PeriodicInhomogeneousMarkovChain;
 
 /**
- * @typedef PhasedInhomogeneousMarkovChainPtr
- * @brief Alias of pointer to PhasedInhomogeneousMarkovChain.
+ * @typedef PeriodicInhomogeneousMarkovChainPtr
+ * @brief Alias of pointer to PeriodicInhomogeneousMarkovChain.
  */
-using PhasedInhomogeneousMarkovChainPtr
-    = std::shared_ptr<PhasedInhomogeneousMarkovChain>;
+using PeriodicInhomogeneousMarkovChainPtr
+    = std::shared_ptr<PeriodicInhomogeneousMarkovChain>;
 
 /**
- * @class PhasedInhomogeneousMarkovChain
+ * @class PeriodicInhomogeneousMarkovChain
  * @brief Class that represents an inhomogeneous Markov chain.
  *
- * A phased inhomogeneous Markov chain is a model which suports different
+ * A periodic inhomogeneous Markov chain is a model which suports different
  * Markov chains per position. Each Markov chain repeats itsealf per
  * phase.
  */
-class PhasedInhomogeneousMarkovChain
-    : public ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain> {
+class PeriodicInhomogeneousMarkovChain
+    : public ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain> {
  public:
   // Inner classes
-  struct Cache : ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>::Cache {
+  struct Cache
+      : ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain>::Cache {
     Matrix prefix_sum_matrix;
   };
 
@@ -62,17 +63,17 @@ class PhasedInhomogeneousMarkovChain
   class interpolation_algorithm {};
 
   // Alias
-  using Base = ProbabilisticModelCrtp<PhasedInhomogeneousMarkovChain>;
+  using Base = ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain>;
 
-  using Self = PhasedInhomogeneousMarkovChain;
-  using SelfPtr = PhasedInhomogeneousMarkovChainPtr;
+  using Self = PeriodicInhomogeneousMarkovChain;
+  using SelfPtr = PeriodicInhomogeneousMarkovChainPtr;
 
   // Constructors
-  PhasedInhomogeneousMarkovChain(
+  PeriodicInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Static methods
-  static PhasedInhomogeneousMarkovChainPtr make(
+  static PeriodicInhomogeneousMarkovChainPtr make(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
@@ -114,4 +115,4 @@ class PhasedInhomogeneousMarkovChain
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_PHASED_INHOMOGENEOUS_MARKOV_CHAIN_
+#endif  // TOPS_MODEL_PERIODIC_INHOMOGENEOUS_MARKOV_CHAIN_

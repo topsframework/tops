@@ -32,7 +32,7 @@
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/MaximalDependenceDecomposition.hpp"
 #include "model/MultipleSequentialModel.hpp"
-#include "model/PhasedInhomogeneousMarkovChain.hpp"
+#include "model/PeriodicInhomogeneousMarkovChain.hpp"
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/TargetModel.hpp"
@@ -77,7 +77,7 @@ class SExprTranslator : public model::Translator {
   void translate(Ptr<model::InhomogeneousMarkovChain> model) override;
   void translate(Ptr<model::MaximalDependenceDecomposition> model) override;
   void translate(Ptr<model::MultipleSequentialModel> model) override;
-  void translate(Ptr<model::PhasedInhomogeneousMarkovChain> model) override;
+  void translate(Ptr<model::PeriodicInhomogeneousMarkovChain> model) override;
   void translate(Ptr<model::PhasedRunLengthDistribution> model) override;
   void translate(Ptr<model::SimilarityBasedSequenceWeighting> model) override;
   void translate(Ptr<model::TargetModel> model) override;
