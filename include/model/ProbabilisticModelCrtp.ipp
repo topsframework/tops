@@ -67,7 +67,7 @@ auto ProbabilisticModelCrtp<Derived>::make(Args&&... args)
 
 template<typename Derived>
 EvaluatorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardEvaluator(
-    const Standard<Sequence> &sequence, bool cached) {
+    const Standard<Sequence>& sequence, bool cached) {
   if (cached)
     return CachedEvaluator<Standard, Derived>::make(make_shared(), sequence);
   return SimpleEvaluator<Standard, Derived>::make(make_shared(), sequence);
@@ -99,7 +99,7 @@ template<typename Derived>
 void
 ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
                                                  unsigned int phase) {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size() + 1);
 
   prefix_sum_array[0] = 0;
@@ -111,12 +111,12 @@ ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Probability
+LogProbability
 ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
                                                   unsigned int begin,
                                                   unsigned int end,
                                                   unsigned int phase) const {
-  Probability prob = 0;
+  LogProbability prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluator->evaluateSymbol(i, phase);
   return prob;
@@ -125,7 +125,7 @@ ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Probability
+LogProbability
 ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
                                                 unsigned int pos,
                                                 unsigned int phase) const {
@@ -135,13 +135,13 @@ ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Probability
+LogProbability
 ProbabilisticModelCrtp<Derived>::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int /* phase */) const {
-  auto &prefix_sum_array = evaluator->cache().prefix_sum_array;
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   return prefix_sum_array[end] - prefix_sum_array[begin];
 }
 
@@ -173,7 +173,7 @@ ProbabilisticModelCrtp<Derived>::serialize(SSPtr serializer) {
 template<typename Derived>
 std::shared_ptr<Derived> ProbabilisticModelCrtp<Derived>::make_shared() {
   return std::static_pointer_cast<Derived>(
-    static_cast<Derived *>(this)->shared_from_this());
+    static_cast<Derived*>(this)->shared_from_this());
 }
 
 /*----------------------------------------------------------------------------*/

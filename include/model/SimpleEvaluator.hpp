@@ -63,14 +63,14 @@ class SimpleEvaluator : public Evaluator<Decorator> {
   }
 
   // Overriden methods
-  Probability evaluateSymbol(unsigned int pos,
-                             unsigned int phase) const override {
+  LogProbability evaluateSymbol(unsigned int pos,
+                                unsigned int phase) const override {
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
-  Probability evaluateSequence(unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override {
+  LogProbability evaluateSequence(unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override {
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }
 

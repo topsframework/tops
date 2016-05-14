@@ -24,42 +24,42 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-template<typename Target, typename Probability>
-Estimation<Target, Probability>::Estimation(Target estimated,
-                                            Probability probability)
-    : _estimated(std::move(estimated)), _probability(std::move(probability)) {
+template<typename Target>
+Estimation<Target>::Estimation(Target estimated,
+                               LogProbability probability)
+    : _estimated(std::move(estimated)), _probability(probability) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-template<typename Target, typename Probability>
-const Target& Estimation<Target, Probability>::estimated() const {
+template<typename Target>
+const Target& Estimation<Target>::estimated() const {
   return _estimated;
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename Target, typename Probability>
-Target& Estimation<Target, Probability>::estimated() {
-  return const_cast<Target &>(
-    static_cast<const Estimation *>(this)->estimated());
+template<typename Target>
+Target& Estimation<Target>::estimated() {
+  return const_cast<Target&>(
+    static_cast<const Estimation*>(this)->estimated());
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename Target, typename Probability>
-const Probability& Estimation<Target, Probability>::probability() const {
+template<typename Target>
+const LogProbability& Estimation<Target>::probability() const {
   return _probability;
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename Target, typename Probability>
-Probability& Estimation<Target, Probability>::probability() {
-  return const_cast<Probability &>(
-    static_cast<const Estimation *>(this)->probability());
+template<typename Target>
+LogProbability& Estimation<Target>::probability() {
+  return const_cast<LogProbability&>(
+    static_cast<const Estimation*>(this)->probability());
 }
 
 /*----------------------------------------------------------------------------*/

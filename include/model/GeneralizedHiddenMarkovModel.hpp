@@ -78,49 +78,49 @@ class GeneralizedHiddenMarkovModel
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSymbol(CEPtr<Standard> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
+  LogProbability evaluateSequence(CEPtr<Standard> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
+  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
   void initializeCache(CEPtr<Labeling> evaluator,
                        unsigned int phase) override;
-  Probability evaluateSymbol(CEPtr<Labeling> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(CEPtr<Labeling> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSymbol(CEPtr<Labeling> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
+  LogProbability evaluateSequence(CEPtr<Labeling> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
-  Probability evaluateSymbol(SEPtr<Labeling> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(SEPtr<Labeling> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSymbol(SEPtr<Labeling> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
+  LogProbability evaluateSequence(SEPtr<Labeling> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
-                              const Sequence& context) const override;
+                                 unsigned int pos,
+                                 unsigned int phase,
+                                 const Sequence& context) const override;
 
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
-                              unsigned int pos,
-                              unsigned int phase,
-                              const Sequence& context) const override;
+                                 unsigned int pos,
+                                 unsigned int phase,
+                                 const Sequence& context) const override;
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,
                                   unsigned int phase) const override;
@@ -136,10 +136,10 @@ class GeneralizedHiddenMarkovModel
 
   void initializeCache(CCPtr calculator) override;
 
-  Probability calculate(
+  LogProbability calculate(
       SCPtr calculator, const Calculator::direction& direction) const override;
 
-  Probability calculate(
+  LogProbability calculate(
       CCPtr calculator, const Calculator::direction& direction) const override;
 
   void posteriorProbabilities(const Sequence& sequence,
@@ -159,12 +159,12 @@ class GeneralizedHiddenMarkovModel
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence& xs, Matrix& probabilities) const;
 
-  Probability forward(
+  LogProbability forward(
       const Sequence& sequence,
       Matrix& alpha,
       std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const;
 
-  Probability backward(
+  LogProbability backward(
       const Sequence& sequence,
       Matrix& beta,
       std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const;

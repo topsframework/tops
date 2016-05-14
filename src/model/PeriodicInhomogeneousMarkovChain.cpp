@@ -135,7 +135,7 @@ void PeriodicInhomogeneousMarkovChain::initializeCache(
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                                  unsigned int pos,
                                                  unsigned int phase) const {
@@ -145,12 +145,12 @@ PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
                                                    unsigned int phase) const {
-  Probability prob = 0;
+  LogProbability prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluator->evaluateSymbol(i, phase);
   return prob;
@@ -158,7 +158,7 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,

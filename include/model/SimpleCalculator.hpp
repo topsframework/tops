@@ -62,7 +62,7 @@ class SimpleCalculator : public Calculator {
   }
 
   // Overriden methods
-  Probability
+  LogProbability
   calculate(const Calculator::direction& chosen_direction) const override {
     CALL_MEMBER_FUNCTION_DELEGATOR(calculate, chosen_direction);
   }

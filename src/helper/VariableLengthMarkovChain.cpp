@@ -61,12 +61,12 @@ model::VariableLengthMarkovChainPtr createVLMCMC() {
 
   auto root = tree->createContext();
   root->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.50), log(0.50) }));
+    std::vector<model::LogProbability>{ log(0.50), log(0.50) }));
 
   auto c0 = tree->createContext();
   root->setChild(c0, 0);
   c0->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.10), log(0.90) }));
+    std::vector<model::LogProbability>{ log(0.10), log(0.90) }));
 
   return model::VariableLengthMarkovChain::make(tree);
 }
@@ -78,37 +78,37 @@ model::VariableLengthMarkovChainPtr createMachlerVLMC() {
 
   auto root = tree->createContext();
   root->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.50), log(0.50) }));
+    std::vector<model::LogProbability>{ log(0.50), log(0.50) }));
 
   auto c0 = tree->createContext();
   root->setChild(c0, 0);
   c0->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.20), log(0.80) }));
+    std::vector<model::LogProbability>{ log(0.20), log(0.80) }));
 
   auto c1 = tree->createContext();
   root->setChild(c1, 1);
   c1->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.21), log(0.79) }));
+    std::vector<model::LogProbability>{ log(0.21), log(0.79) }));
 
   auto c10 = tree->createContext();
   c1->setChild(c10, 0);
   c10->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.22), log(0.78) }));
+    std::vector<model::LogProbability>{ log(0.22), log(0.78) }));
 
   auto c11 = tree->createContext();
   c1->setChild(c11, 1);
   c11->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.25), log(0.75) }));
+    std::vector<model::LogProbability>{ log(0.25), log(0.75) }));
 
   auto c100 = tree->createContext();
   c10->setChild(c100, 0);
   c100->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.30), log(0.70) }));
+    std::vector<model::LogProbability>{ log(0.30), log(0.70) }));
 
   auto c101 = tree->createContext();
   c10->setChild(c101, 1);
   c101->setDistribution(model::DiscreteIIDModel::make(
-    std::vector<model::Probability>{ log(0.10), log(0.90) }));
+    std::vector<model::LogProbability>{ log(0.10), log(0.90) }));
 
   return model::VariableLengthMarkovChain::make(tree);
 }

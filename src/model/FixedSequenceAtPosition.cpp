@@ -32,7 +32,7 @@ namespace model {
 
 /*==============================  EVALUATOR  =================================*/
 
-Probability
+LogProbability
 FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,

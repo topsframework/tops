@@ -65,7 +65,7 @@ class CachedCalculator : public SimpleCalculator<Model> {
   }
 
   // Overriden methods
-  Probability
+  LogProbability
   calculate(const Calculator::direction& chosen_direction) const override {
     lazyInitializeCache();
     CALL_MEMBER_FUNCTION_DELEGATOR(calculate, chosen_direction);

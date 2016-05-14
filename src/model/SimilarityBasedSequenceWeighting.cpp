@@ -159,7 +159,7 @@ void SimilarityBasedSequenceWeighting::initializeCache(
 
 /*----------------------------------------------------------------------------*/
 
-Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
+LogProbability SimilarityBasedSequenceWeighting::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
     unsigned int /* pos */,
     unsigned int /* phase */) const {
@@ -169,7 +169,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
 
 /*----------------------------------------------------------------------------*/
 
-Probability SimilarityBasedSequenceWeighting::evaluateSequence(
+LogProbability SimilarityBasedSequenceWeighting::evaluateSequence(
     SEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
@@ -218,7 +218,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-Probability SimilarityBasedSequenceWeighting::evaluateSequence(
+LogProbability SimilarityBasedSequenceWeighting::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int /* end */,

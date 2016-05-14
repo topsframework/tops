@@ -42,8 +42,7 @@ const Target& Labeling<Target>::observation() const {
 
 template<typename Target>
 Target& Labeling<Target>::observation() {
-  return const_cast<Target &>(
-    static_cast<const Labeling *>(this)->observation());
+  return const_cast<Target&>(static_cast<const Labeling*>(this)->observation());
 }
 
 /*----------------------------------------------------------------------------*/
@@ -57,8 +56,7 @@ const Target& Labeling<Target>::label() const {
 
 template<typename Target>
 Target& Labeling<Target>::label() {
-  return const_cast<Target &>(
-    static_cast<const Labeling *>(this)->label());
+  return const_cast<Target&>(static_cast<const Labeling*>(this)->label());
 }
 
 /*----------------------------------------------------------------------------*/

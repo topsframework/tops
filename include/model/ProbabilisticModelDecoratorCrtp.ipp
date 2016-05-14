@@ -37,7 +37,7 @@ ProbabilisticModelDecoratorCrtp<Derived>::ProbabilisticModelDecoratorCrtp(
 /*===============================  EVALUATOR  ================================*/
 
 template<typename Derived>
-Probability ProbabilisticModelDecoratorCrtp<Derived>::evaluateSymbol(
+LogProbability ProbabilisticModelDecoratorCrtp<Derived>::evaluateSymbol(
     SEPtr<Standard> evaluator,
     unsigned int pos,
     unsigned int phase) const {
@@ -52,7 +52,7 @@ Standard<Symbol> ProbabilisticModelDecoratorCrtp<Derived>::drawSymbol(
     SGPtr<Standard> generator,
     unsigned int pos,
     unsigned int phase,
-    const Sequence &context) const {
+    const Sequence& context) const {
   auto modelGenerator
     = _model->standardGenerator(generator->randomNumberGenerator());
   return modelGenerator->drawSymbol(pos, phase, context);

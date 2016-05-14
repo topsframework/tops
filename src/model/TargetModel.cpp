@@ -33,7 +33,7 @@ namespace model {
 
 TargetModel::TargetModel(int alphabet_size)
     : DiscreteIIDModel(
-      std::vector<Probability>(alphabet_size, log(1.0/alphabet_size))) {
+      std::vector<LogProbability>(alphabet_size, log(1.0/alphabet_size))) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -50,9 +50,9 @@ TargetModelPtr TargetModel::make(int alphabet_size) {
 
 /*===============================  EVALUATOR  ================================*/
 
-Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                        unsigned int pos,
-                                        unsigned int /* phase */) const {
+LogProbability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                           unsigned int pos,
+                                           unsigned int /* phase */) const {
   return sequenceDistribution(evaluator->sequence())
     ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
 }

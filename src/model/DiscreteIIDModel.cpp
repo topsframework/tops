@@ -49,7 +49,7 @@ DiscreteIIDModelPtr
 DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
                         maximum_likehood_algorithm,
                         unsigned int alphabet_size) {
-  std::vector<Probability> log_probabilities(alphabet_size, 0);
+  std::vector<LogProbability> log_probabilities(alphabet_size, 0);
   unsigned int number_of_symbols = 0;
   for (auto sequence : trainer->training_set()) {
     for (auto symbol : sequence) {
@@ -76,7 +76,7 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
       data.push_back(symbol);
 
   if (data.size() == 0)
-    return DiscreteIIDModel::make(std::vector<Probability>{});
+    return DiscreteIIDModel::make(std::vector<LogProbability>{});
 
   std::map<Symbol, double> counter;
   std::map<Symbol, double> sum;
@@ -139,10 +139,10 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
         data.push_back(symbol);
 
   if (data.size() == 0)
-    return DiscreteIIDModel::make(std::vector<Probability>{});
+    return DiscreteIIDModel::make(std::vector<LogProbability>{});
 
   std::map<Symbol, unsigned int> counter;
-  std::vector<Probability> prob(L);
+  std::vector<LogProbability> prob(L);
 
   for (unsigned int i = 0; i < data.size(); i++) {
     if (counter.find(data[i]) == counter.end())
@@ -216,9 +216,9 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
   }
 
   if (data.size() == 0)
-    return DiscreteIIDModel::make(std::vector<Probability>{});
+    return DiscreteIIDModel::make(std::vector<LogProbability>{});
 
-  std::vector<Probability> prob(max_length, 0.0);
+  std::vector<LogProbability> prob(max_length, 0.0);
   double total = 0.0;
 
   double bandwidth = sj_bandwidth(data);
@@ -242,13 +242,13 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
 
 /*----------------------------------------------------------------------------*/
 
-std::vector<Probability> DiscreteIIDModel::normalize(
-    std::vector<Probability> probabilities) {
+std::vector<LogProbability> DiscreteIIDModel::normalize(
+    std::vector<LogProbability> probabilities) {
   double sum = 0;
   for (auto p : probabilities)
     sum += p;
 
-  std::vector<Probability> log_probabilities;
+  std::vector<LogProbability> log_probabilities;
   for (auto p : probabilities)
     log_probabilities.push_back(log(p/sum));
 
@@ -449,9 +449,10 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double>& data) {
 
 /*===============================  EVALUATOR  ================================*/
 
-Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                             unsigned int pos,
-                                             unsigned int /* phase */) const {
+LogProbability
+DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                 unsigned int pos,
+                                 unsigned int /* phase */) const {
   return probabilityOf(evaluator->sequence()[pos]);
 }
 
@@ -481,9 +482,8 @@ Symbol DiscreteIIDModel::draw(RandomNumberGeneratorPtr rng) const {
 
 /*----------------------------------------------------------------------------*/
 
-Probability DiscreteIIDModel::probabilityOf(Symbol s) const {
-  if (s >= _probabilities.size())
-    return -std::numeric_limits<Probability>::infinity();
+LogProbability DiscreteIIDModel::probabilityOf(Symbol s) const {
+  if (s >= _probabilities.size()) return -Infinity;
   return _probabilities[s];
 }
 
@@ -491,7 +491,7 @@ Probability DiscreteIIDModel::probabilityOf(Symbol s) const {
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-std::vector<Probability> DiscreteIIDModel::probabilities() {
+std::vector<LogProbability> DiscreteIIDModel::probabilities() {
   return _probabilities;
 }
 
