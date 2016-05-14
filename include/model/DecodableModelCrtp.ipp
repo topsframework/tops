@@ -77,7 +77,7 @@ DecodableModelCrtp<Derived>::labelingTrainer(Tag, Args&&... args) {
 
 template<typename Derived>
 EvaluatorPtr<Labeling> DecodableModelCrtp<Derived>::labelingEvaluator(
-    const Labeling<Sequence> &sequence, bool cached) {
+    const Labeling<Sequence>& sequence, bool cached) {
   if (cached)
     return CachedEvaluator<Labeling, Derived>::make(make_shared(), sequence);
   return SimpleEvaluator<Labeling, Derived>::make(make_shared(), sequence);
@@ -95,7 +95,7 @@ GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator(
 
 template<typename Derived>
 LabelerPtr DecodableModelCrtp<Derived>::labeler(
-    const Standard<Sequence> &sequence, bool cached) {
+    const Standard<Sequence>& sequence, bool cached) {
   if (cached)
     return CachedLabeler<Derived>::make(make_shared(), sequence);
   return SimpleLabeler<Derived>::make(make_shared(), sequence);
@@ -105,7 +105,7 @@ LabelerPtr DecodableModelCrtp<Derived>::labeler(
 
 template<typename Derived>
 CalculatorPtr DecodableModelCrtp<Derived>::calculator(
-    const Standard<Sequence> &sequence, bool cached) {
+    const Standard<Sequence>& sequence, bool cached) {
   if (cached)
     return CachedCalculator<Derived>::make(make_shared(), sequence);
   return SimpleCalculator<Derived>::make(make_shared(), sequence);
@@ -156,7 +156,7 @@ auto DecodableModelCrtp<Derived>::states() const
 template<typename Derived>
 auto DecodableModelCrtp<Derived>::make_shared() -> DerivedPtr {
   return std::static_pointer_cast<Derived>(
-    static_cast<Derived *>(this)->shared_from_this());
+    static_cast<Derived*>(this)->shared_from_this());
 }
 
 /*----------------------------------------------------------------------------*/
