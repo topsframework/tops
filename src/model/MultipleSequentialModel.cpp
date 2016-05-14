@@ -82,25 +82,23 @@ void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                         unsigned int /* pos */,
                                         unsigned int /* phase */) const {
-  // TODO(igorbonadio)
-  return -std::numeric_limits<Probability>::infinity();
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,
                                           unsigned int phase) const {
-  if (begin > end)
-    return -std::numeric_limits<Probability>::infinity();
+  if (begin > end) return -Infinity;
 
-  Probability sum = 0;
+  LogProbability sum = 0;
   int b = begin;
   int e = 0;
 
@@ -143,7 +141,7 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,

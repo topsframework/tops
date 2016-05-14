@@ -62,40 +62,40 @@ GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
                                              unsigned int pos,
                                              unsigned int phase) const {
@@ -117,7 +117,7 @@ GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
                                                unsigned int begin,
                                                unsigned int end,
@@ -128,21 +128,21 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return -std::numeric_limits<Probability>::infinity();  // TODO(igorbonadio)
+  return -Infinity;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  Probability prob = 0;
+  LogProbability prob = 0;
   auto segments = Segment::readSequence(evaluator->sequence().label());
   for (unsigned int i = 0; i < segments.size(); i++) {
     if (i == 0) {
@@ -243,7 +243,7 @@ void GeneralizedHiddenMarkovModel::initializeCache(CCPtr calculator) {
 
 /*----------------------------------------------------------------------------*/
 
-Probability GeneralizedHiddenMarkovModel::calculate(
+LogProbability GeneralizedHiddenMarkovModel::calculate(
     SCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
   auto observation_evaluators
@@ -261,7 +261,7 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
 /*----------------------------------------------------------------------------*/
 
-Probability GeneralizedHiddenMarkovModel::calculate(
+LogProbability GeneralizedHiddenMarkovModel::calculate(
     CCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
 
@@ -285,9 +285,9 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 void GeneralizedHiddenMarkovModel::posteriorProbabilities(
     const Sequence& sequence,
     Matrix& probabilities) const {
-  probabilities = std::vector<std::vector<Probability>>(
+  probabilities = std::vector<std::vector<LogProbability>>(
       _state_alphabet_size,
-      std::vector<Probability>(sequence.size()));
+      std::vector<LogProbability>(sequence.size()));
 
   Matrix alpha;  // forward
   Matrix beta;   // backward
@@ -295,7 +295,7 @@ void GeneralizedHiddenMarkovModel::posteriorProbabilities(
   auto observation_evaluators
     = initializeObservationEvaluators(sequence, false);
 
-  Probability full = forward(sequence, alpha, observation_evaluators);
+  LogProbability full = forward(sequence, alpha, observation_evaluators);
   backward(sequence, beta, observation_evaluators);
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++)
@@ -311,27 +311,27 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
       const Sequence& xs,
       Matrix& gamma,
       std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
-  gamma = std::vector<std::vector<Probability>>(
+  gamma = std::vector<std::vector<LogProbability>>(
       _state_alphabet_size,
-      std::vector<Probability>(xs.size()));
-  Matrix psi(_state_alphabet_size, std::vector<Probability>(xs.size()));
-  Matrix psilen(_state_alphabet_size, std::vector<Probability>(xs.size()));
+      std::vector<LogProbability>(xs.size()));
+  Matrix psi(_state_alphabet_size, std::vector<LogProbability>(xs.size()));
+  Matrix psilen(_state_alphabet_size, std::vector<LogProbability>(xs.size()));
 
   for (unsigned int i = 0; i < xs.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      gamma[k][i] = -std::numeric_limits<Probability>::infinity();
+      gamma[k][i] = -std::numeric_limits<LogProbability>::infinity();
       auto range = _states[k]->duration()->range();
       for (unsigned int d = range->begin();
            !range->end() && d <= (i + 1);
            d = range->next()) {
         unsigned int pmax = 0;
-        Probability gmax;
+        LogProbability gmax;
         if (d > i) {
           gmax = _initial_probabilities->probabilityOf(k);
         } else {
-          gmax = -std::numeric_limits<Probability>::infinity();
+          gmax = -std::numeric_limits<LogProbability>::infinity();
           for (auto p : _states[k]->predecessors()) {
-            Probability g = gamma[p][i-d]
+            LogProbability g = gamma[p][i-d]
               + _states[p]->transition()->probabilityOf(k);
             if (gmax < g) {
               gmax = g;
@@ -352,7 +352,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
 
   unsigned int L = xs.size() - 1;
   Symbol state = 0;
-  Probability max = gamma[0][L];
+  LogProbability max = gamma[0][L];
   for (unsigned int k = 1; k < _state_alphabet_size; k++) {
     if (max < gamma[k][L]) {
       max = gamma[k][L];
@@ -387,7 +387,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
   Sequence path(xs.size());
 
   for (unsigned int i = 0; i < xs.size(); i++) {
-    Probability max = probabilities[0][i];
+    LogProbability max = probabilities[0][i];
     path[i] = 0;
     for (unsigned int k = 1; k < _state_alphabet_size; k++) {
       if (probabilities[k][i] > max) {
@@ -398,21 +398,21 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
   }
   return Estimation<Labeling<Sequence>>(
       Labeling<Sequence>(xs, std::move(path)),
-        -std::numeric_limits<Probability>::infinity());  // TODO(igorbonadio)
+        -std::numeric_limits<LogProbability>::infinity());  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability GeneralizedHiddenMarkovModel::forward(
+LogProbability GeneralizedHiddenMarkovModel::forward(
     const Sequence& sequence,
     Matrix& alpha,
     std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
-  alpha = std::vector<std::vector<Probability>>(
-    _state_alphabet_size, std::vector<Probability>(sequence.size()));
+  alpha = std::vector<std::vector<LogProbability>>(
+    _state_alphabet_size, std::vector<LogProbability>(sequence.size()));
 
   for (unsigned int i = 0; i < sequence.size(); i++) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      alpha[k][i] = -std::numeric_limits<Probability>::infinity();
+      alpha[k][i] = -Infinity;
       auto range = _states[k]->duration()->range();
       for (unsigned int d = range->begin();
            !range->end() && d <= (i + 1);
@@ -423,7 +423,7 @@ Probability GeneralizedHiddenMarkovModel::forward(
               + _states[k]->duration()->probabilityOfLenght(d)
               + observation_evaluators[k]->evaluateSequence(i-d+1, i+1));
         } else {
-          Probability sum = -std::numeric_limits<Probability>::infinity();
+          LogProbability sum = -Infinity;
           for (auto p : _states[k]->predecessors()) {
             sum = log_sum(sum, alpha[p][i-d]
               + _states[p]->transition()->probabilityOf(k));
@@ -436,7 +436,7 @@ Probability GeneralizedHiddenMarkovModel::forward(
     }
   }
 
-  Probability px = -std::numeric_limits<Probability>::infinity();
+  LogProbability px = -Infinity;
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     px = log_sum(px, alpha[k][sequence.size()-1]);
   }
@@ -446,12 +446,12 @@ Probability GeneralizedHiddenMarkovModel::forward(
 
 /*----------------------------------------------------------------------------*/
 
-Probability GeneralizedHiddenMarkovModel::backward(
+LogProbability GeneralizedHiddenMarkovModel::backward(
     const Sequence& sequence,
     Matrix& beta,
     std::vector<EvaluatorPtr<Standard>>& observation_evaluators) const {
-  beta = std::vector<std::vector<Probability>>(
-    _state_alphabet_size, std::vector<Probability>(sequence.size()));
+  beta = std::vector<std::vector<LogProbability>>(
+    _state_alphabet_size, std::vector<LogProbability>(sequence.size()));
 
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
     beta[k][sequence.size()-1] = 0.0;
@@ -459,9 +459,9 @@ Probability GeneralizedHiddenMarkovModel::backward(
 
   for (int i = sequence.size()-2; i >= 0; i--) {
     for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-      beta[k][i] = -std::numeric_limits<Probability>::infinity();
+      beta[k][i] = -std::numeric_limits<LogProbability>::infinity();
       for (auto p : _states[k]->successors()) {
-        Probability sum = -std::numeric_limits<Probability>::infinity();
+        LogProbability sum = -Infinity;
         auto range = _states[p]->duration()->range();
         for (unsigned int d = range->begin();
              !range->end() && d < (sequence.size() - i);
@@ -477,9 +477,9 @@ Probability GeneralizedHiddenMarkovModel::backward(
     }
   }
 
-  Probability px = -std::numeric_limits<Probability>::infinity();
+  LogProbability px = -Infinity;
   for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    Probability sum = -std::numeric_limits<Probability>::infinity();
+    LogProbability sum = -Infinity;
     auto range = _states[k]->duration()->range();
     for (unsigned int d = range->begin();
          !range->end() && d <= (sequence.size());

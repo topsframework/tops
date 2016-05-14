@@ -126,21 +126,21 @@ class DecodableModelCrtp
   virtual void initializeCache(CEPtr<Labeling> evaluator,
                                unsigned int phase) = 0;
 
-  virtual Probability evaluateSymbol(SEPtr<Labeling> evaluator,
-                                     unsigned int pos,
-                                     unsigned int phase) const = 0;
-  virtual Probability evaluateSequence(SEPtr<Labeling> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const = 0;
+  virtual LogProbability evaluateSymbol(SEPtr<Labeling> evaluator,
+                                        unsigned int pos,
+                                        unsigned int phase) const = 0;
+  virtual LogProbability evaluateSequence(SEPtr<Labeling> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const = 0;
 
-  virtual Probability evaluateSymbol(CEPtr<Labeling> evaluator,
-                                     unsigned int pos,
-                                     unsigned int phase) const = 0;
-  virtual Probability evaluateSequence(CEPtr<Labeling> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const = 0;
+  virtual LogProbability evaluateSymbol(CEPtr<Labeling> evaluator,
+                                        unsigned int pos,
+                                        unsigned int phase) const = 0;
+  virtual LogProbability evaluateSequence(CEPtr<Labeling> evaluator,
+                                          unsigned int begin,
+                                          unsigned int end,
+                                          unsigned int phase) const = 0;
 
   virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                                       unsigned int pos,
@@ -160,10 +160,10 @@ class DecodableModelCrtp
 
   virtual void initializeCache(CCPtr calculator) = 0;
 
-  virtual Probability
+  virtual LogProbability
   calculate(SCPtr calculator, const Calculator::direction& direction) const = 0;
 
-  virtual Probability
+  virtual LogProbability
   calculate(CCPtr calculator, const Calculator::direction& direction) const = 0;
 
   virtual void posteriorProbabilities(const Sequence& xs,

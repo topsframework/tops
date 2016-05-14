@@ -49,9 +49,9 @@ class TargetModel : public DiscreteIIDModel {
   static TargetModelPtr make(int alphabet_size);
 
   // Overriden methods
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
 
   // Concrete methods
   DiscreteIIDModelPtr sequenceDistribution(const Sequence& s) const;

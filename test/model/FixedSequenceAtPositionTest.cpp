@@ -45,8 +45,9 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
+using tops::model::Infinity;
 using tops::model::Sequence;
-using tops::model::Probability;
+using tops::model::LogProbability;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
 using tops::model::FixedSequenceAtPosition;
@@ -64,9 +65,7 @@ class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
       createLoadedCoinIIDModel(),
       3,
       Sequence{ 1, 0, 1 },
-      DiscreteIIDModel::make(
-        std::vector<Probability>{
-          0, -std::numeric_limits<double>::infinity() }));
+      DiscreteIIDModel::make(std::vector<LogProbability>{ 0, -Infinity }));
 };
 
 /*----------------------------------------------------------------------------*/

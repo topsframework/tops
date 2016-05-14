@@ -119,7 +119,7 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                           unsigned int pos,
                                           unsigned int /* phase */) const {

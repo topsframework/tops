@@ -113,7 +113,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
-    Probability prob = consensus_model
+    LogProbability prob = consensus_model
       ->standardEvaluator(s)->evaluateSymbol(consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
@@ -289,7 +289,7 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-Probability MaximalDependenceDecomposition::evaluateSymbol(
+LogProbability MaximalDependenceDecomposition::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
     unsigned int /* pos */,
     unsigned int /* phase */) const {
@@ -299,7 +299,7 @@ Probability MaximalDependenceDecomposition::evaluateSymbol(
 
 /*----------------------------------------------------------------------------*/
 
-Probability MaximalDependenceDecomposition::evaluateSequence(
+LogProbability MaximalDependenceDecomposition::evaluateSequence(
     SEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
@@ -315,7 +315,7 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-Probability MaximalDependenceDecomposition::evaluateSequence(
+LogProbability MaximalDependenceDecomposition::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
@@ -352,11 +352,11 @@ Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
 
 /*================================  OTHERS  ==================================*/
 
-Probability MaximalDependenceDecomposition::_probabilityOf(
+LogProbability MaximalDependenceDecomposition::_probabilityOf(
     const Sequence& s,
     MaximalDependenceDecompositionNodePtr node,
     std::vector<int>& indexes) const {
-  Probability p = 0;
+  LogProbability p = 0;
   if (node->getLeft()) {
     p = node->getModel()
       ->standardEvaluator(s)->evaluateSymbol(node->getIndex());

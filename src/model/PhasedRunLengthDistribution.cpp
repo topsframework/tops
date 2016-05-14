@@ -36,7 +36,7 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 PhasedRunLengthDistribution::PhasedRunLengthDistribution(
-    std::vector<Probability> probabilities,
+    std::vector<LogProbability> probabilities,
     int delta,
     int input_phase,
     int output_phase,
@@ -45,7 +45,7 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
                   _input_phase(input_phase),
                   _output_phase(output_phase),
                   _nphase(nphase) {
-  Probability sum = -std::numeric_limits<Probability>::infinity();
+  LogProbability sum = -Infinity;
   for (int i = 0; i < alphabetSize(); i++) {
     int d = i + _delta;
     if (mod((d + _input_phase-1), _nphase) == _output_phase)
@@ -59,7 +59,7 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
 /*----------------------------------------------------------------------------*/
 
 PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::make(
-    std::vector<Probability> probabilities,
+    std::vector<LogProbability> probabilities,
     int delta,
     int input_phase,
     int output_phase,
@@ -92,11 +92,10 @@ PhasedRunLengthDistributionPtr
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Probability PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
+LogProbability PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   int d = s + _delta;
-  if (mod((d + _input_phase-1), _nphase) != _output_phase)
-    return -std::numeric_limits<Probability>::infinity();
-  Probability result = DiscreteIIDModel::probabilityOf(d);
+  if (mod((d + _input_phase-1), _nphase) != _output_phase) return -Infinity;
+  LogProbability result = DiscreteIIDModel::probabilityOf(d);
   return result-_normfactor;
 }
 

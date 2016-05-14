@@ -52,7 +52,7 @@ unsigned int ExplicitDuration::maximumSize() const {
 
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 ExplicitDuration::probabilityOfLenght(unsigned int length) const {
   return _duration->standardEvaluator(Sequence{length})->evaluateSymbol(0);
 }

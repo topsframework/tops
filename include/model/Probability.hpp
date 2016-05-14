@@ -26,7 +26,9 @@
 namespace tops {
 namespace model {
 
-using Probability = double;
+using LogProbability = double;
+
+const auto Infinity = std::numeric_limits<LogProbability>::infinity();
 
 }  // namespace model
 }  // namespace tops

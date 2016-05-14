@@ -65,15 +65,15 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
   }
 
   // Overriden methods
-  Probability evaluateSymbol(unsigned int pos,
-                             unsigned int phase) const override {
+  LogProbability evaluateSymbol(unsigned int pos,
+                                unsigned int phase) const override {
     const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
-  Probability evaluateSequence(unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override {
+  LogProbability evaluateSequence(unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override {
     const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }

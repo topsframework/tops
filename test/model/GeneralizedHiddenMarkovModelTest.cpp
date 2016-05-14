@@ -57,7 +57,7 @@ using tops::model::log_sum;
 using tops::model::Labeling;
 using tops::model::Sequence;
 using tops::model::Calculator;
-using tops::model::Probability;
+using tops::model::LogProbability;
 using tops::model::SignalDuration;
 using tops::model::DiscreteIIDModel;
 using tops::model::ExplicitDuration;
@@ -90,23 +90,23 @@ class AGHMM : public testing::Test {
   GHMM::StatePtr signal_duration_state
     = GHMM::State::make(
       1, createVLMCMC(),
-      DiscreteIIDModel::make(std::vector<Probability>{
+      DiscreteIIDModel::make(std::vector<LogProbability>{
         log(0.1), -std::numeric_limits<double>::infinity(), log(0.9) }),
       SignalDuration::make(3));
 
   GHMM::StatePtr explicit_duration_state
     = GHMM::State::make(
       2, createFairCoinIIDModel(),
-      DiscreteIIDModel::make(std::vector<Probability>{
+      DiscreteIIDModel::make(std::vector<LogProbability>{
         0, -std::numeric_limits<double>::infinity(),
         -std::numeric_limits<double>::infinity() }),
       ExplicitDuration::make(
-        DiscreteIIDModel::make(std::vector<Probability>{
+        DiscreteIIDModel::make(std::vector<LogProbability>{
           log(0.1), log(0.1), log(0.1), log(0.1),
           log(0.1), log(0.1), log(0.3), log(0.1) })));
 
   DiscreteIIDModelPtr geometric_transition
-    = DiscreteIIDModel::make(std::vector<Probability>{
+    = DiscreteIIDModel::make(std::vector<LogProbability>{
         log(0.3), log(0.3), log(0.4) });
 
   GHMM::StatePtr geometric_duration_state
@@ -120,7 +120,7 @@ class AGHMM : public testing::Test {
         geometric_duration_state,
         signal_duration_state,
         explicit_duration_state },
-      DiscreteIIDModel::make(std::vector<Probability>{
+      DiscreteIIDModel::make(std::vector<LogProbability>{
         0,
         -std::numeric_limits<double>::infinity(),
         -std::numeric_limits<double>::infinity() }),

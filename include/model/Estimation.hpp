@@ -20,35 +20,38 @@
 #ifndef TOPS_MODEL_ESTIMATION_
 #define TOPS_MODEL_ESTIMATION_
 
+// Internal headers
+#include "model/Probability.hpp"
+
 namespace tops {
 namespace model {
 
 // Forward declaration
-template<typename Target, typename Probability>
+template<typename Target>
 class Estimation;
 
 /**
  * @class Estimation
  * @brief TODO
  */
-template<typename Target, typename Probability = double>
+template<typename Target>
 class Estimation {
  public:
   // Constructors
   Estimation() = default;
-  Estimation(Target estimated, Probability probability);
+  Estimation(Target estimated, LogProbability probability);
 
   // Concrete methods
   const Target& estimated() const;
   Target& estimated();
 
-  const Probability& probability() const;
-  Probability& probability();
+  const LogProbability& probability() const;
+  LogProbability& probability();
 
  private:
   // Instance variables
   Target _estimated;
-  Probability _probability;
+  LogProbability _probability;
 };
 
 }  // namespace model

@@ -111,12 +111,12 @@ ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Probability
+LogProbability
 ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
                                                   unsigned int begin,
                                                   unsigned int end,
                                                   unsigned int phase) const {
-  Probability prob = 0;
+  LogProbability prob = 0;
   for (unsigned int i = begin; i < end; i++)
     prob += evaluator->evaluateSymbol(i, phase);
   return prob;
@@ -125,7 +125,7 @@ ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-Probability
+LogProbability
 ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
                                                 unsigned int pos,
                                                 unsigned int phase) const {

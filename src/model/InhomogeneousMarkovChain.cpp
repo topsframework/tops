@@ -41,7 +41,7 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Probability
+LogProbability
 InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                          unsigned int pos,
                                          unsigned int phase) const {
@@ -49,7 +49,7 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
     return _vlmcs[pos + phase]->standardEvaluator(
              evaluator->sequence())->evaluateSymbol(pos);
   else
-    return -std::numeric_limits<Probability>::infinity();
+    return -Infinity;
 }
 
 /*----------------------------------------------------------------------------*/

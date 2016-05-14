@@ -37,7 +37,7 @@ ProbabilisticModelDecoratorCrtp<Derived>::ProbabilisticModelDecoratorCrtp(
 /*===============================  EVALUATOR  ================================*/
 
 template<typename Derived>
-Probability ProbabilisticModelDecoratorCrtp<Derived>::evaluateSymbol(
+LogProbability ProbabilisticModelDecoratorCrtp<Derived>::evaluateSymbol(
     SEPtr<Standard> evaluator,
     unsigned int pos,
     unsigned int phase) const {

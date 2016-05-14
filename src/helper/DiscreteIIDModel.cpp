@@ -37,7 +37,7 @@ namespace helper {
 /*----------------------------------------------------------------------------*/
 
 model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
-  std::vector<model::Probability> counts;
+  std::vector<model::LogProbability> counts;
   for (int i = 0; i < alphabet_size; i++)
     counts.push_back(generateRandomInteger(alphabet_size));
   return model::DiscreteIIDModel::make(counts);
@@ -46,7 +46,7 @@ model::DiscreteIIDModelPtr generateRandomIIDModel(int alphabet_size) {
 /*----------------------------------------------------------------------------*/
 
 model::DiscreteIIDModelPtr createDNAIIDModel() {
-  std::vector<model::Probability> probabilities{
+  std::vector<model::LogProbability> probabilities{
     log(0.1), log(0.3), log(0.4), log(0.2)
   };
   return model::DiscreteIIDModel::make(probabilities);
@@ -55,14 +55,14 @@ model::DiscreteIIDModelPtr createDNAIIDModel() {
 /*----------------------------------------------------------------------------*/
 
 model::DiscreteIIDModelPtr createFairCoinIIDModel() {
-  std::vector<model::Probability> probabilities{ log(0.5), log(0.5) };
+  std::vector<model::LogProbability> probabilities{ log(0.5), log(0.5) };
   return model::DiscreteIIDModel::make(probabilities);
 }
 
 /*----------------------------------------------------------------------------*/
 
 model::DiscreteIIDModelPtr createLoadedCoinIIDModel() {
-  std::vector<model::Probability> probabilities{ log(0.2), log(0.8) };
+  std::vector<model::LogProbability> probabilities{ log(0.2), log(0.8) };
   return model::DiscreteIIDModel::make(probabilities);
 }
 

@@ -69,18 +69,18 @@ class MultipleSequentialModel
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
 
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
+                                unsigned int pos,
+                                unsigned int phase) const override;
+  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+  LogProbability evaluateSequence(CEPtr<Standard> evaluator,
+                                  unsigned int begin,
+                                  unsigned int end,
+                                  unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
