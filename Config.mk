@@ -46,3 +46,4 @@ LDFLAGS         += # Linker Flags
 # ===============
 include conf/googletest.mk
 include conf/googlebenchmark.mk
+include conf/probability.mk
