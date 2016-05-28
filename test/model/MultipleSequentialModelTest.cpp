@@ -33,6 +33,9 @@
 // Tested header
 #include "model/MultipleSequentialModel.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -56,7 +59,7 @@ using tops::helper::createLoadedCoinIIDModel;
 class AMultipleSequentialModel : public testing::Test {
  protected:
   MultipleSequentialModelPtr mm = MultipleSequentialModel::make(
-    {createLoadedCoinIIDModel(), createMachlerVLMC()},
+    { createLoadedCoinIIDModel(), createMachlerVLMC() },
     {3, 4});
 };
 
@@ -65,33 +68,37 @@ class AMultipleSequentialModel : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleNear(-1.83258, 1e-4));
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-              DoubleNear(-4.13517, 1e-4));
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-                ->evaluateSequence(0, 13),
-              DoubleNear(-18.6201, 1e-4));
+  ASSERT_THAT(
+      DOUBLE(mm->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
+      DoubleNear(0.1600002, 1e-4));
+  ASSERT_THAT(
+      DOUBLE(mm->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4)),
+      DoubleNear(0.0159999, 1e-4));
+  ASSERT_THAT(
+      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+               ->evaluateSequence(0, 13)),
+      DoubleNear(8.19206364e-9, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1}, true)
-                 ->evaluateSequence(0, 3),
-              DoubleNear(mm->standardEvaluator({1, 0, 1})
-                           ->evaluateSequence(0, 3), 1e-4));
+  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1}, true)
+                       ->evaluateSequence(0, 3)),
+              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1})
+                                  ->evaluateSequence(0, 3)), 1e-4));
 
-  ASSERT_THAT(mm->standardEvaluator({1, 0, 1, 0}, true)
-                ->evaluateSequence(0, 4),
-              DoubleNear(mm->standardEvaluator({1, 0, 1, 0})
-                           ->evaluateSequence(0, 4), 1e-4));
+  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1, 0}, true)
+                       ->evaluateSequence(0, 4)),
+              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1, 0})
+                                  ->evaluateSequence(0, 4)), 1e-4));
 
   ASSERT_THAT(
-    mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
-      ->evaluateSequence(0, 13),
-    DoubleNear(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-                 ->evaluateSequence(0, 13), 1e-4));
+    DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
+             ->evaluateSequence(0, 13)),
+    DoubleNear(
+      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+               ->evaluateSequence(0, 13)), 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/

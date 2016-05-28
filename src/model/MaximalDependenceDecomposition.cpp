@@ -27,6 +27,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 // Internal headers
 #include "Util.hpp"
@@ -113,7 +114,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
-    LogProbability prob = consensus_model
+    Probability prob = consensus_model
       ->standardEvaluator(s)->evaluateSymbol(consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
@@ -209,6 +210,7 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     ConsensusSequence consensus_sequence,
     unsigned int alphabet_size,
     ProbabilisticModelPtr consensus_model) {
+  // TODO(renatocf): refactor to use 'Probability'
   Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
   double maximal = -std::numeric_limits<double>::infinity();
   double maximal_i = -1;
@@ -289,23 +291,22 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability MaximalDependenceDecomposition::evaluateSymbol(
+Probability MaximalDependenceDecomposition::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
     unsigned int /* pos */,
     unsigned int /* phase */) const {
   // TODO(igorbonadio)
-  return -std::numeric_limits<double>::infinity();
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability MaximalDependenceDecomposition::evaluateSequence(
+Probability MaximalDependenceDecomposition::evaluateSequence(
     SEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int /* phase */) const {
-  if ((end - begin) != _consensus_sequence.size())
-    return -std::numeric_limits<double>::infinity();
+  if ((end - begin) != _consensus_sequence.size()) return 0;
   auto first = evaluator->sequence().begin() + begin;
   auto last = evaluator->sequence().begin() + end;
   Sequence subseq(first, last);
@@ -315,14 +316,13 @@ LogProbability MaximalDependenceDecomposition::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability MaximalDependenceDecomposition::evaluateSequence(
+Probability MaximalDependenceDecomposition::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  if ((end - begin) != _consensus_sequence.size())
-    return -std::numeric_limits<double>::infinity();
+  if ((end - begin) != _consensus_sequence.size()) return 0;
   return prefix_sum_array[begin];
 }
 
@@ -352,24 +352,24 @@ Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
 
 /*================================  OTHERS  ==================================*/
 
-LogProbability MaximalDependenceDecomposition::_probabilityOf(
+Probability MaximalDependenceDecomposition::_probabilityOf(
     const Sequence& s,
     MaximalDependenceDecompositionNodePtr node,
     std::vector<int>& indexes) const {
-  LogProbability p = 0;
+  Probability p = 1;
   if (node->getLeft()) {
     p = node->getModel()
       ->standardEvaluator(s)->evaluateSymbol(node->getIndex());
     indexes.push_back(node->getIndex());
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
-      p += _probabilityOf(s, node->getLeft(), indexes);
+      p *= _probabilityOf(s, node->getLeft(), indexes);
     } else {
-      p += _probabilityOf(s, node->getRight(), indexes);
+      p *= _probabilityOf(s, node->getRight(), indexes);
     }
   } else {  // leaf
     for (unsigned int i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
-        p += node->getModel()->standardEvaluator(s)->evaluateSymbol(i);
+        p *= node->getModel()->standardEvaluator(s)->evaluateSymbol(i);
       }
     }
   }

@@ -20,15 +20,13 @@
 #ifndef TOPS_MODEL_PROBABILITY_
 #define TOPS_MODEL_PROBABILITY_
 
-// Standard headers
-#include <limits>
+// External headers
+#include "probability.hpp"
 
 namespace tops {
 namespace model {
 
-using LogProbability = double;
-
-const auto Infinity = std::numeric_limits<LogProbability>::infinity();
+using Probability = probability::Probability<double, 4>;
 
 }  // namespace model
 }  // namespace tops

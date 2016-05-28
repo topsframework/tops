@@ -36,7 +36,7 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 PhasedRunLengthDistribution::PhasedRunLengthDistribution(
-    std::vector<LogProbability> probabilities,
+    std::vector<Probability> probabilities,
     int delta,
     int input_phase,
     int output_phase,
@@ -45,11 +45,11 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
                   _input_phase(input_phase),
                   _output_phase(output_phase),
                   _nphase(nphase) {
-  LogProbability sum = -Infinity;
+  Probability sum = 0;
   for (int i = 0; i < alphabetSize(); i++) {
     int d = i + _delta;
     if (mod((d + _input_phase-1), _nphase) == _output_phase)
-      sum = log_sum(sum, DiscreteIIDModel::probabilityOf(i));
+      sum += DiscreteIIDModel::probabilityOf(i);
   }
   _normfactor = sum;
 }
@@ -59,7 +59,7 @@ PhasedRunLengthDistribution::PhasedRunLengthDistribution(
 /*----------------------------------------------------------------------------*/
 
 PhasedRunLengthDistributionPtr PhasedRunLengthDistribution::make(
-    std::vector<LogProbability> probabilities,
+    std::vector<Probability> probabilities,
     int delta,
     int input_phase,
     int output_phase,
@@ -92,11 +92,11 @@ PhasedRunLengthDistributionPtr
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-LogProbability PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
+Probability PhasedRunLengthDistribution::probabilityOf(Symbol s) const {
   int d = s + _delta;
-  if (mod((d + _input_phase-1), _nphase) != _output_phase) return -Infinity;
-  LogProbability result = DiscreteIIDModel::probabilityOf(d);
-  return result-_normfactor;
+  if (mod((d + _input_phase-1), _nphase) != _output_phase) return 0;
+  Probability result = DiscreteIIDModel::probabilityOf(d);
+  return result / _normfactor;
 }
 
 /*----------------------------------------------------------------------------*/

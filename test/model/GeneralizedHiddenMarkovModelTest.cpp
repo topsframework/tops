@@ -42,6 +42,9 @@
 // Tested header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -57,7 +60,7 @@ using tops::model::log_sum;
 using tops::model::Labeling;
 using tops::model::Sequence;
 using tops::model::Calculator;
-using tops::model::LogProbability;
+using tops::model::Probability;
 using tops::model::SignalDuration;
 using tops::model::DiscreteIIDModel;
 using tops::model::ExplicitDuration;
@@ -90,24 +93,19 @@ class AGHMM : public testing::Test {
   GHMM::StatePtr signal_duration_state
     = GHMM::State::make(
       1, createVLMCMC(),
-      DiscreteIIDModel::make(std::vector<LogProbability>{
-        log(0.1), -std::numeric_limits<double>::infinity(), log(0.9) }),
+      DiscreteIIDModel::make(std::vector<Probability>{{ 0.1, 0.0, 0.9 }}),
       SignalDuration::make(3));
 
   GHMM::StatePtr explicit_duration_state
     = GHMM::State::make(
       2, createFairCoinIIDModel(),
-      DiscreteIIDModel::make(std::vector<LogProbability>{
-        0, -std::numeric_limits<double>::infinity(),
-        -std::numeric_limits<double>::infinity() }),
+      DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }}),
       ExplicitDuration::make(
-        DiscreteIIDModel::make(std::vector<LogProbability>{
-          log(0.1), log(0.1), log(0.1), log(0.1),
-          log(0.1), log(0.1), log(0.3), log(0.1) })));
+        DiscreteIIDModel::make(std::vector<Probability>{{
+          0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.1 }})));
 
   DiscreteIIDModelPtr geometric_transition
-    = DiscreteIIDModel::make(std::vector<LogProbability>{
-        log(0.3), log(0.3), log(0.4) });
+    = DiscreteIIDModel::make(std::vector<Probability>{{ 0.3, 0.3, 0.4 }});
 
   GHMM::StatePtr geometric_duration_state
     = GHMM::State::make(
@@ -120,10 +118,7 @@ class AGHMM : public testing::Test {
         geometric_duration_state,
         signal_duration_state,
         explicit_duration_state },
-      DiscreteIIDModel::make(std::vector<LogProbability>{
-        0,
-        -std::numeric_limits<double>::infinity(),
-        -std::numeric_limits<double>::infinity() }),
+      DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }}),
       3, 2);
 
   virtual void SetUp() {
@@ -156,22 +151,22 @@ TEST_F(AGHMM, ShouldBeSExprSerialized) {
     "(GeneralizedHiddenMarkovModel: "
       "(GHMM::State: "
         " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: -1.203973 -1.203973 -0.916291) "
+        "(DiscreteIIDModel: 0.300000 0.300000 0.400000) "
         "(GeometricDuration: maximumDuration = 1)) "
       "(GHMM::State: "
         " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: -2.302585 -inf -0.105361) "
+        "(DiscreteIIDModel: 0.100000 0.000000 0.900000) "
         "(SignalDuration: maximumDuration = 3)) "
       "(GHMM::State: "
-        "(DiscreteIIDModel: -0.693147 -0.693147) "
-        "(DiscreteIIDModel: 0.000000 -inf -inf) "
+        "(DiscreteIIDModel: 0.500000 0.500000) "
+        "(DiscreteIIDModel: 1.000000 0.000000 0.000000) "
         "(ExplicitDuration: maximumDuration = 0)))",
     translator->sexpr());
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AGHMM, ShouldEvaluateSequence) {
+TEST_F(AGHMM, ShouldEvaluateASequence) {
   Sequence observation {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
   Sequence label {
@@ -180,7 +175,8 @@ TEST_F(AGHMM, ShouldEvaluateSequence) {
   auto evaluator
     = ghmm->labelingEvaluator(Labeling<Sequence>(observation, label));
 
-  ASSERT_THAT(evaluator->evaluateSequence(0, 21), DoubleNear(-35.4276, 1e-4));
+  ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(0, 21)),
+              DoubleNear(6.29856e-20, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -261,7 +257,7 @@ TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
   auto calculator = ghmm->calculator(sequence);
 
   ASSERT_THAT(
-    calculator->calculate(Calculator::direction::forward),
+    DOUBLE(calculator->calculate(Calculator::direction::forward)),
     DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
 }
 
@@ -276,7 +272,7 @@ TEST_F(AGHMM,
   auto calculator = ghmm->calculator(sequence, true);
 
   ASSERT_THAT(
-    calculator->calculate(Calculator::direction::forward),
+    DOUBLE(calculator->calculate(Calculator::direction::forward)),
     DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
 }
 

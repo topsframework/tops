@@ -26,7 +26,7 @@ namespace model {
 
 template<typename Target>
 Estimation<Target>::Estimation(Target estimated,
-                               LogProbability probability)
+                               Probability probability)
     : _estimated(std::move(estimated)), _probability(probability) {
 }
 
@@ -50,15 +50,15 @@ Target& Estimation<Target>::estimated() {
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-const LogProbability& Estimation<Target>::probability() const {
+const Probability& Estimation<Target>::probability() const {
   return _probability;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-LogProbability& Estimation<Target>::probability() {
-  return const_cast<LogProbability&>(
+Probability& Estimation<Target>::probability() {
+  return const_cast<Probability&>(
     static_cast<const Estimation*>(this)->probability());
 }
 

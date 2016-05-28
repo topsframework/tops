@@ -30,6 +30,13 @@
 // Tested header
 #include "model/TargetModel.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
+/*----------------------------------------------------------------------------*/
+/*                             USING DECLARATIONS                             */
+/*----------------------------------------------------------------------------*/
+
 using ::testing::Eq;
 using ::testing::DoubleEq;
 using ::testing::DoubleNear;
@@ -40,7 +47,7 @@ using tops::model::TargetModel;
 using tops::model::TargetModelPtr;
 
 /*----------------------------------------------------------------------------*/
-/*                             USING DECLARATIONS                             */
+/*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
 class ATargetModel : public testing::Test {
@@ -59,41 +66,46 @@ TEST_F(ATargetModel, ShouldHaveAnAlphabetSize) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
-  ASSERT_THAT(target->probabilityOf(0), DoubleEq(log(0.5)));
-  ASSERT_THAT(target->probabilityOf(1), DoubleEq(log(0.5)));
+  ASSERT_THAT(DOUBLE(target->probabilityOf(0)), DoubleEq(0.5));
+  ASSERT_THAT(DOUBLE(target->probabilityOf(1)), DoubleEq(0.5));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3),
-    DoubleEq(log(2.0/3.0) + log(1.0/3.0) + log(2.0/3.0)));
+    DOUBLE(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)),
+    DoubleEq(2.0/3.0 * 1.0/3.0 * 2.0/3.0));
 
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
-    DoubleEq(log(1.0/3.0) + log(2.0/3.0) + log(2.0/3.0)));
+    DOUBLE(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3)),
+    DoubleEq(1.0/3.0 * 2.0/3.0 * 2.0/3.0));
 
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4),
-    DoubleEq(log(1.0/4.0) + log(3.0/4.0) + log(3.0/4.0) + log(3.0/4.0)));
+    DOUBLE(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)),
+    DoubleEq(1.0/4.0 * 3.0/4.0 * 3.0/4.0 * 3.0/4.0));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 0}, true)->evaluateSequence(0, 3),
-    DoubleEq(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)));
+    DOUBLE(target->standardEvaluator({0, 1, 0}, true)
+                 ->evaluateSequence(0, 3)),
+    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 0})
+                          ->evaluateSequence(0, 3))));
 
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3),
-    DoubleEq(target->standardEvaluator({0, 1, 1}, true)
-                   ->evaluateSequence(0, 3)));
+    DOUBLE(target->standardEvaluator({0, 1, 1})
+                 ->evaluateSequence(0, 3)),
+    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 1}, true)
+                   ->evaluateSequence(0, 3))));
 
   ASSERT_THAT(
-    target->standardEvaluator({0, 1, 1, 1}, true)->evaluateSequence(0, 4),
-    DoubleEq(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)));
+    DOUBLE(target->standardEvaluator({0, 1, 1, 1}, true)
+                 ->evaluateSequence(0, 4)),
+    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 1, 1})
+                          ->evaluateSequence(0, 4))));
 }
 
 /*----------------------------------------------------------------------------*/

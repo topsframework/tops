@@ -36,6 +36,9 @@
 // Tested header
 #include "model/InhomogeneousMarkovChain.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -77,20 +80,20 @@ class AnInhomogeneousMarkovChain : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(imc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0})->evaluateSequence(0, 1)),
+              DoubleEq(0.50));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1})->evaluateSequence(0, 1)),
+              DoubleEq(0.50));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.90));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.10));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
+              DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -98,34 +101,33 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
+    auto size = data.size();
     ASSERT_THAT(
-        imc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-        DoubleEq(imc->standardEvaluator(data)
-                    ->evaluateSequence(0, data.size())));
+        DOUBLE(imc->standardEvaluator(data, true)->evaluateSequence(0, size)),
+        DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, size)));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
-  auto decorated_imc
-    = std::make_shared<
+  auto dimc = std::make_shared<
         ProbabilisticModelDecoratorCrtp<InhomogeneousMarkovChain>>(imc);
-  ASSERT_THAT(decorated_imc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.90)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.10)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.50)));
-  ASSERT_THAT(decorated_imc->standardEvaluator({1, 0, 1})
-                           ->evaluateSequence(0, 3),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0})->evaluateSequence(0, 1)),
+              DoubleEq(0.50));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1})->evaluateSequence(0, 1)),
+              DoubleEq(0.50));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.90));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.10));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
+              DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 0, 1})
+                         ->evaluateSequence(0, 3)),
+              DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/

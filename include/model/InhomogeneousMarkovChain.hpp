@@ -58,9 +58,9 @@ class InhomogeneousMarkovChain
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
   // Overriden methods
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,

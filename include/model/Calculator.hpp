@@ -50,7 +50,7 @@ class Calculator : public std::enable_shared_from_this<Calculator> {
   enum class direction { forward, backward };
 
   // Purely virtual methods
-  virtual LogProbability calculate(const direction& direction) const = 0;
+  virtual Probability calculate(const direction& dir) const = 0;
 
   virtual Sequence& sequence() = 0;
   virtual const Sequence& sequence() const = 0;

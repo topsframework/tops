@@ -140,14 +140,14 @@ void ContextTree::removeContextNotUsed() {
 void ContextTree::normalize() {
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     double total = 0;
-    std::vector<LogProbability> probs(_alphabet_size);
     for (int l = 0; l < static_cast<int>(_alphabet_size); l++)
-      total += static_cast<double>((_all_context[i]->getCounter())[l]);
+      total += _all_context[i]->getCounter()[l];
+
+    std::vector<Probability> probs(_alphabet_size);
     for (int l = 0; l < static_cast<int>(_alphabet_size); l++)
-      probs[l] = log(
-        static_cast<double>((_all_context[i]->getCounter())[l])/total);
-    DiscreteIIDModelPtr distr = DiscreteIIDModel::make(probs);
-    _all_context[i]->setDistribution(distr);
+      probs[l] = _all_context[i]->getCounter()[l]/total;
+
+    _all_context[i]->setDistribution(DiscreteIIDModel::make(probs));
   }
 }
 
@@ -159,7 +159,7 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
   }
   for (int i = 0; i  < static_cast<int>(_all_context.size()); i++) {
     double total = 0;
-    std::vector<LogProbability> probs(_alphabet_size);
+    std::vector<Probability> probs(_alphabet_size);
 
     Sequence s;
     ContextTreeNodePtr current = _all_context[i];
@@ -183,15 +183,14 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
       s3 = s;
       s3.push_back(l);
 
-      LogProbability prob
+      Probability prob
         = old->standardEvaluator(s3)->evaluateSymbol(s3.size()-1);
 
-      probs[l] = log((_all_context[i]->getCounter()[l]
-                      + pseudocount * exp(prob))/(total + pseudocount));
+      probs[l] = (_all_context[i]->getCounter()[l] + pseudocount * prob)
+                  / (total + pseudocount);
     }
 
-    DiscreteIIDModelPtr distr = DiscreteIIDModel::make(probs);
-    _all_context[i]->setDistribution(distr);
+    _all_context[i]->setDistribution(DiscreteIIDModel::make(probs));
   }
 }
 

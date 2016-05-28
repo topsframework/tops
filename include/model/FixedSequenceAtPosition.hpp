@@ -56,10 +56,10 @@ class FixedSequenceAtPosition
                           DiscreteIIDModelPtr distr);
 
   // Overriden methods
-  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                   unsigned int size,

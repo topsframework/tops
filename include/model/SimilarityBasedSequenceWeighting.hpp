@@ -59,43 +59,36 @@ class SimilarityBasedSequenceWeighting
   using SelfPtr = SimilarityBasedSequenceWeightingPtr;
 
   // Constructors
-  SimilarityBasedSequenceWeighting(std::map<Sequence, double> counter,
+  SimilarityBasedSequenceWeighting(std::map<Sequence, unsigned int> counter,
                                    double normalizer,
-                                   int skip_offset,
-                                   int skip_length,
+                                   unsigned int skip_offset,
+                                   unsigned int skip_length,
                                    Sequence skip_sequence);
 
   // Static methods
-  static SimilarityBasedSequenceWeightingPtr make(
-      std::map<Sequence, double> counter,
-      double normalizer,
-      int skip_offset,
-      int skip_length,
-      Sequence skip_sequence);
-
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        standard_training_algorithm,
                        unsigned int alphabet_size,
-                       int skip_offset,
-                       int skip_length,
+                       unsigned int skip_offset,
+                       unsigned int skip_length,
                        Sequence skip_sequence);
 
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
 
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  LogProbability evaluateSequence(CEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
@@ -104,19 +97,19 @@ class SimilarityBasedSequenceWeighting
 
  private:
   // Instance variables
-  Cache _scores;
-  std::map<Sequence, double> _counter;
+  std::map<Sequence, unsigned int> _counter;
   unsigned int _skip_offset;
   unsigned int _skip_length;
   Sequence _skip_sequence;
   double _normalizer;
 
   // Static methods
-  static double calculate_normalizer(int skip_length,
-                                     int skip_offset,
-                                     int max_length,
-                                     std::map<Sequence, double>& counter,
-                                     int alphabet_size);
+  static double
+  calculate_normalizer(unsigned int skip_length,
+                       unsigned int skip_offset,
+                       unsigned int max_length,
+                       const std::map<Sequence, unsigned int>& counter,
+                       unsigned int alphabet_size);
 };
 
 }  // namespace model

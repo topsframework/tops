@@ -32,7 +32,7 @@ namespace model {
 
 /*==============================  EVALUATOR  =================================*/
 
-LogProbability
+Probability
 FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,
@@ -49,9 +49,9 @@ FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
       break;
   }
   if (j != static_cast<int>(_sequence.size()))
-    result += _probabilities->probabilityOf(1);
+    result *= _probabilities->probabilityOf(1);
   else
-    result += _probabilities->probabilityOf(0);
+    result *= _probabilities->probabilityOf(0);
   return result;
 }
 

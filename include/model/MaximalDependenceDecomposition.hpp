@@ -76,18 +76,18 @@ class MaximalDependenceDecomposition
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
 
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  LogProbability evaluateSequence(CEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
@@ -102,7 +102,7 @@ class MaximalDependenceDecomposition
   MaximalDependenceDecompositionNodePtr _mdd_tree;
   ConsensusSequence _consensus_sequence;
   ProbabilisticModelPtr _consensus_model;
-  std::vector<LogProbability> _prefix_sum_array;
+  std::vector<Probability> _prefix_sum_array;
 
   // Static methods
   static MaximalDependenceDecompositionNodePtr trainTree(
@@ -139,9 +139,9 @@ class MaximalDependenceDecomposition
                      ConsensusSequence consensus_sequence);
 
   // Concrete methods
-  LogProbability _probabilityOf(const Sequence& s,
-                        MaximalDependenceDecompositionNodePtr node,
-                        std::vector<int>& indexes) const;
+  Probability _probabilityOf(const Sequence& s,
+                             MaximalDependenceDecompositionNodePtr node,
+                             std::vector<int>& indexes) const;
   void _drawAux(Sequence& s, MaximalDependenceDecompositionNodePtr node) const;
 };
 

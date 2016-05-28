@@ -119,16 +119,16 @@ VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                           unsigned int pos,
                                           unsigned int /* phase */) const {
   ContextTreeNodePtr c = _context_tree->getContext(evaluator->sequence(), pos);
-  if (c == NULL)
-    return -std::numeric_limits<double>::infinity();
-  else
-    return c->getDistribution()->standardEvaluator(
-             evaluator->sequence())->evaluateSymbol(pos);
+
+  if (c == nullptr) return 0;
+  return c->getDistribution()
+          ->standardEvaluator(evaluator->sequence())
+          ->evaluateSymbol(pos);
 }
 
 /*----------------------------------------------------------------------------*/

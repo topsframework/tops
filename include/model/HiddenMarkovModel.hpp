@@ -92,40 +92,40 @@ class HiddenMarkovModel
   // Overriden methods
   void initializeCache(CEPtr<Standard> evaluator,
                        unsigned int phase) override;
-  LogProbability evaluateSymbol(CEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(CEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(SEPtr<Standard> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
 
   void initializeCache(CEPtr<Labeling> evaluator,
                        unsigned int phase) override;
-  LogProbability evaluateSymbol(CEPtr<Labeling> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(CEPtr<Labeling> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(CEPtr<Labeling> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Labeling> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  LogProbability evaluateSymbol(SEPtr<Labeling> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
-  LogProbability evaluateSequence(SEPtr<Labeling> evaluator,
-                                  unsigned int begin,
-                                  unsigned int end,
-                                  unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Labeling> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Labeling> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
@@ -151,11 +151,11 @@ class HiddenMarkovModel
 
   void initializeCache(CCPtr calculator) override;
 
-  LogProbability calculate(
-      SCPtr calculator, const Calculator::direction& direction) const override;
+  Probability calculate(SCPtr calculator,
+                        const Calculator::direction& direction) const override;
 
-  LogProbability calculate(
-      CCPtr calculator, const Calculator::direction& direction) const override;
+  Probability calculate(CCPtr calculator,
+                        const Calculator::direction& direction) const override;
 
   void posteriorProbabilities(const Sequence& sequence,
                               Matrix& probabilities) const override;
@@ -168,15 +168,8 @@ class HiddenMarkovModel
   Estimation<Labeling<Sequence>>
   posteriorDecoding(const Sequence& xs, Matrix& probabilities) const;
 
-  void initializeStandardPrefixSumArray(const Sequence& sequence,
-                                        Cache& cache);
-  void initializeLabelingPrefixSumArray(CEPtr<Labeling> evaluator,
-                                        unsigned int phase);
-
-  LogProbability backward(const Sequence& sequence,
-                          Matrix& beta) const;
-  LogProbability forward(const Sequence& sequence,
-                         Matrix& alpha) const;
+  Probability backward(const Sequence& sequence, Matrix& beta) const;
+  Probability forward(const Sequence& sequence, Matrix& alpha) const;
 };
 
 }  // namespace model

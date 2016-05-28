@@ -34,6 +34,9 @@
 #include "model/MaximalDependenceDecomposition.hpp"
 #include "helper/MaximalDependenceDecomposition.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -80,15 +83,15 @@ TEST(MDD, ShouldBeTrained) {
     MaximalDependenceDecomposition::standard_training_algorithm{},
     4, createConsensusSequence(), createDNAIIDModel(), 2);
 
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-6.45814, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-5.765, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-6.96784, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(0.001567, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(0.003135, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(0.000941, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -98,38 +101,38 @@ TEST(MDD, ShouldBeTrained) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMDD, ShouldEvaluateASymbol) {
-  ASSERT_THAT(mdd->standardEvaluator({0})->evaluateSymbol(0),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1})->evaluateSymbol(0),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({0, 1})->evaluateSymbol(1),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({0, 0})->evaluateSymbol(1),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0})->evaluateSymbol(1),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 1})->evaluateSymbol(1),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1})->evaluateSymbol(2),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 1, 0})->evaluateSymbol(3),
-      DoubleEq(-std::numeric_limits<double>::infinity()));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0})->evaluateSymbol(0)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1})->evaluateSymbol(0)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0, 1})->evaluateSymbol(1)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0, 0})->evaluateSymbol(1)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0})->evaluateSymbol(1)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1})->evaluateSymbol(1)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 1})->evaluateSymbol(2)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 1, 0})->evaluateSymbol(3)),
+              DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMDD, ShouldEvaluateASequence) {
-  ASSERT_THAT(mdd->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-14.0795, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-11.3069, 1e-4));
-  ASSERT_THAT(mdd->standardEvaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})
-                 ->evaluateSequence(0, 9),
-              DoubleNear(-8.24662, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0})->evaluateSequence(0, 1)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(7.67981648e-7, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(0.000012, 1e-4));
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})
+                        ->evaluateSequence(0, 9)),
+              DoubleNear(0.000262, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -144,10 +147,10 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
 
   for (auto& sequence : sequences) {
     unsigned int size = sequence.size();
-    ASSERT_THAT(mdd->standardEvaluator(sequence, true)
-                   ->evaluateSequence(0, size),
-                DoubleEq(mdd->standardEvaluator(sequence)
-                            ->evaluateSequence(0, size)));
+    ASSERT_THAT(DOUBLE(mdd->standardEvaluator(sequence, true)
+                          ->evaluateSequence(0, size)),
+                DoubleEq(DOUBLE(mdd->standardEvaluator(sequence)
+                                   ->evaluateSequence(0, size))));
   }
 }
 
