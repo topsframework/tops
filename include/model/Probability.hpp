@@ -21,7 +21,7 @@
 #define TOPS_MODEL_PROBABILITY_
 
 // External headers
-#include "probability.hpp"
+#include "probability/probability.hpp"
 
 namespace tops {
 namespace model {
