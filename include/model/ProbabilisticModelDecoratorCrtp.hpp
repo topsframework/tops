@@ -75,9 +75,9 @@ class ProbabilisticModelDecoratorCrtp
                               unsigned int phase,
                               const Sequence& context) const override;
 
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
 
  protected:
   // Instance variables

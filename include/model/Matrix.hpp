@@ -23,10 +23,13 @@
 // Standard headers
 #include <vector>
 
+// Internal headers
+#include "model/Probability.hpp"
+
 namespace tops {
 namespace model {
 
-using Matrix = std::vector<std::vector<double>>;
+using Matrix = std::vector<std::vector<Probability>>;
 
 }  // namespace model
 }  // namespace tops

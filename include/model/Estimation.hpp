@@ -39,19 +39,19 @@ class Estimation {
  public:
   // Constructors
   Estimation() = default;
-  Estimation(Target estimated, LogProbability probability);
+  Estimation(Target estimated, Probability probability);
 
   // Concrete methods
   const Target& estimated() const;
   Target& estimated();
 
-  const LogProbability& probability() const;
-  LogProbability& probability();
+  const Probability& probability() const;
+  Probability& probability();
 
  private:
   // Instance variables
   Target _estimated;
-  LogProbability _probability;
+  Probability _probability;
 };
 
 }  // namespace model

@@ -36,6 +36,9 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -45,9 +48,8 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::Infinity;
 using tops::model::Sequence;
-using tops::model::LogProbability;
+using tops::model::Probability;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
 using tops::model::FixedSequenceAtPosition;
@@ -59,37 +61,37 @@ using tops::helper::createLoadedCoinIIDModel;
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-class ADiscreteIIDModelWithFixedSequenceAtPosition : public testing::Test {
+class AFixedSequenceAtPosition : public testing::Test {
  protected:
   FixedSequenceAtPositionPtr iid = FixedSequenceAtPosition::make(
       createLoadedCoinIIDModel(),
       3,
       Sequence{ 1, 0, 1 },
-      DiscreteIIDModel::make(std::vector<LogProbability>{ 0, -Infinity }));
+      DiscreteIIDModel::make(std::vector<Probability>{ 1, 0 }));
 };
 
 /*----------------------------------------------------------------------------*/
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
-TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition, ShouldEvaluateSequence) {
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})
-                 ->evaluateSequence(0, 8),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})
-                 ->evaluateSequence(0, 8),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})
-                 ->evaluateSequence(0, 8),
-              DoubleEq(-std::numeric_limits<double>::infinity()));
-  ASSERT_THAT(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})
-                 ->evaluateSequence(0, 8),
-              DoubleNear(-10.1029, 1e-4));
+TEST_F(AFixedSequenceAtPosition, ShouldEvaluateASequence) {
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})
+                        ->evaluateSequence(0, 8)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})
+                        ->evaluateSequence(0, 8)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})
+                        ->evaluateSequence(0, 8)),
+              DoubleEq(0));
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})
+                        ->evaluateSequence(0, 8)),
+              DoubleNear(0.000041, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(ADiscreteIIDModelWithFixedSequenceAtPosition,
+TEST_F(AFixedSequenceAtPosition,
     ShouldDrawSequenceWithDefaultSeed) {
   ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
               ContainerEq(Sequence{0, 1, 1, 1, 0}));

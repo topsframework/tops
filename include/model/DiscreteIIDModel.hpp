@@ -95,7 +95,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @see trainSmoothedHistogramStanke()
    * @see trainSmoothedHistogramKernelDensity()
    */
-  explicit DiscreteIIDModel(std::vector<LogProbability> probabilities);
+  explicit DiscreteIIDModel(std::vector<Probability> probabilities);
 
   // Static methods
 
@@ -159,8 +159,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
                        smoothed_histogram_kernel_density_algorithm,
                        unsigned int max_length);
 
-  static std::vector<LogProbability> normalize(
-      std::vector<LogProbability> probabilities);
+  static std::vector<Probability> normalize(std::vector<double> probabilities);
 
   // Overriden methods
 
@@ -170,9 +169,9 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * @param pos position within standardEvaluator's sequence to be evaluated
    * @return \f$Pr(s[i])\f$
    */
-  LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                unsigned int pos,
-                                unsigned int phase) const override;
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
 
   /**
    * Draws a new symbol in the ith position.
@@ -199,7 +198,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Gets the probability of this model draws the given symbol.
    * @return \f$Pr(s)\f$
    */
-  virtual LogProbability probabilityOf(Symbol s) const;
+  virtual Probability probabilityOf(Symbol s) const;
 
   // Concrete methods
 
@@ -207,13 +206,13 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    * Gets the probabilities this model draws each symbol.
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
-  std::vector<LogProbability> probabilities();
+  std::vector<Probability> probabilities();
 
   int alphabetSize() const;
 
  private:
   // Instance variables
-  std::vector<LogProbability> _probabilities;
+  std::vector<Probability> _probabilities;
 
   // Static methods
   static double kernel_normal(double x, double h);

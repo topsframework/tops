@@ -53,9 +53,9 @@ unsigned int SignalDuration::maximumSize() const {
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability SignalDuration::probabilityOfLenght(unsigned int length) const {
-  if (length == _duration_size) return 0.0;
-  return -Infinity;
+Probability SignalDuration::probabilityOfLenght(unsigned int length) const {
+  if (length == _duration_size) return 1;
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*/

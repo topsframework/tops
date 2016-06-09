@@ -9,3 +9,7 @@
 	path = external/gtest
 	url = https://github.com/google/googletest.git
 	ignore = dirty
+[submodule "external/probability"]
+	path = external/probability
+	url = https://github.com/renatocf/probability.git
+	ignore = dirty

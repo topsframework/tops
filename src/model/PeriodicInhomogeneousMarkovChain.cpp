@@ -125,46 +125,46 @@ void PeriodicInhomogeneousMarkovChain::initializeCache(
   auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
 
   for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
-    prefix_sum_matrix[t][0] = 0;
-    for (unsigned int i = 0; i < evaluator->sequence().size(); i++) {
+    prefix_sum_matrix[t][0] = 1;
+    for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
       prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i]
-        + evaluateSymbol(simple_evaluator, i, t);
-    }
+        * evaluateSymbol(simple_evaluator, i, t);
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                                  unsigned int pos,
                                                  unsigned int phase) const {
-  return _vlmcs[(pos + phase) % _vlmcs.size()]
-    ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
+  auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
+  return vlmc->standardEvaluator(evaluator->sequence())
+             ->evaluateSymbol(pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
                                                    unsigned int phase) const {
-  LogProbability prob = 0;
+  Probability prob = 1;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluator->evaluateSymbol(i, phase);
+    prob *= evaluator->evaluateSymbol(i, phase);
   return prob;
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
                                                    unsigned int phase) const {
   auto& prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
-  return prefix_sum_matrix[phase][end] - prefix_sum_matrix[phase][begin];
+  return prefix_sum_matrix[phase][end] / prefix_sum_matrix[phase][begin];
 }
 
 /*===============================  GENERATOR  ================================*/

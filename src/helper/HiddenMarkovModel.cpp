@@ -36,25 +36,25 @@ namespace helper {
 /*                                 FUNCTIONS                                  */
 /*----------------------------------------------------------------------------*/
 
-tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
-  std::vector<tops::model::HiddenMarkovModel::StatePtr> states = {
-    tops::model::HiddenMarkovModel::State::make(
+model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
+  std::vector<model::HiddenMarkovModel::StatePtr> states = {
+    model::HiddenMarkovModel::State::make(
       0,
-      tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::LogProbability>{ log(0.5), log(0.5) }),
-      tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::LogProbability>{ log(0.7), log(0.3) })),
-    tops::model::HiddenMarkovModel::State::make(
+      model::DiscreteIIDModel::make(
+        std::vector<model::Probability>{{ 0.5, 0.5 }}),
+      model::DiscreteIIDModel::make(
+        std::vector<model::Probability>{{ 0.7, 0.3 }})),
+    model::HiddenMarkovModel::State::make(
       1,
-      tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::LogProbability>{ log(0.2), log(0.8) }),
-      tops::model::DiscreteIIDModel::make(
-        std::vector<tops::model::LogProbability>{ log(0.5), log(0.5) }))};
+      model::DiscreteIIDModel::make(
+        std::vector<model::Probability>{{ 0.2, 0.8 }}),
+      model::DiscreteIIDModel::make(
+        std::vector<model::Probability>{{ 0.5, 0.5 }}))};
 
-  return tops::model::HiddenMarkovModel::make(
+  return model::HiddenMarkovModel::make(
     states,
-    tops::model::DiscreteIIDModel::make(
-      std::vector<tops::model::LogProbability>{ log(0.9), log(0.1) }),
+    model::DiscreteIIDModel::make(
+      std::vector<model::Probability>{{ 0.9, 0.1 }}),
     2,
     2);
 }

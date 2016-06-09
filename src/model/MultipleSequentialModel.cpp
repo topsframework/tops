@@ -37,8 +37,8 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 MultipleSequentialModel::MultipleSequentialModel(
-std::vector<ProbabilisticModelPtr> models,
-  std::vector<int> max_length)
+    std::vector<ProbabilisticModelPtr> models,
+    std::vector<int> max_length)
     : _models(models), _max_length(max_length) {
   _idx_not_limited = _models.size() - 1;
   int count = 0;
@@ -82,23 +82,23 @@ void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                         unsigned int /* pos */,
                                         unsigned int /* phase */) const {
-  return -Infinity;  // TODO(igorbonadio)
+  return 0;  // TODO(igorbonadio)
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,
                                           unsigned int phase) const {
-  if (begin > end) return -Infinity;
+  if (begin > end) return 0;
 
-  LogProbability sum = 0;
+  Probability product = 1;
   int b = begin;
   int e = 0;
 
@@ -106,17 +106,18 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
     e = b + _max_length[i] - 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size()-1;
-    sum += _models[i]->standardEvaluator(evaluator->sequence())
-      ->evaluateSequence(b, e, phase);
+    product *= _models[i]->standardEvaluator(evaluator->sequence())
+                         ->evaluateSequence(b, e, phase);
     if (e >= static_cast<int>(end))
-      return sum;
+      return product;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       break;
   }
-  int begin_of_not_limited = b;
+
+  unsigned int begin_of_not_limited = b;
   e = end;
   for (unsigned int i = _models.size()-1; i > _idx_not_limited ; i--) {
     b = e - _max_length[i] + 1;
@@ -125,45 +126,50 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += _models[i]->standardEvaluator(evaluator->sequence())
-      ->evaluateSequence(b, e, phase2);
+    product *= _models[i]->standardEvaluator(evaluator->sequence())
+                         ->evaluateSequence(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
+
   int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0)
-    sum += _models[_idx_not_limited]
+    product *= _models[_idx_not_limited]
       ->standardEvaluator(evaluator->sequence())->evaluateSequence(
         begin_of_not_limited, end_of_not_limited, phase);
-  return sum;
+
+  return product;
 }
 
 /*----------------------------------------------------------------------------*/
 
-LogProbability
+Probability
 MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
                                           unsigned int begin,
                                           unsigned int end,
                                           unsigned int phase) const {
   auto& evaluators = evaluator->cache().evaluators;
-  double sum = 0;
+
+  Probability product = 1;
   int b = begin;
   int e = 0;
+
   for (unsigned int i = 0; i < _idx_not_limited; i++) {
     e = b + _max_length[i] - 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size()-1;
-    sum += evaluators[i]->evaluateSequence(b, e, phase);
+    product *= evaluators[i]->evaluateSequence(b, e, phase);
     if (e >= static_cast<int>(end))
-      return sum;
+      return product;
 
     phase = mod(phase + e - b + 1, 3);
     b = e + 1;
     if (e >= static_cast<int>(evaluator->sequence().size()))
       break;
   }
-  int begin_of_not_limited = b;
+
+  unsigned int begin_of_not_limited = b;
   e = end;
   for (unsigned int i = _models.size()-1; i > _idx_not_limited ; i--) {
     b = e - _max_length[i] + 1;
@@ -172,17 +178,19 @@ MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
       phase2 = mod(phase2 -b, 3);
       b  = 0;
     }
-    sum += evaluators[i]->evaluateSequence(b, e, phase2);
+    product *= evaluators[i]->evaluateSequence(b, e, phase2);
     e = b - 1;
     if (e < 0)
       break;
   }
-  int end_of_not_limited = e;
+
+  unsigned int end_of_not_limited = e;
   if (end_of_not_limited - begin_of_not_limited + 1 > 0) {
-    sum += evaluators[_idx_not_limited]->evaluateSequence(
+    product *= evaluators[_idx_not_limited]->evaluateSequence(
         begin_of_not_limited, end_of_not_limited, phase);
   }
-  return sum;
+
+  return product;
 }
 
 /*===============================  GENERATOR  ================================*/

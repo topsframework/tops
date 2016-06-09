@@ -62,7 +62,7 @@ class ProbabilisticModelCrtp
  public:
   // Inner classes
   struct Cache {
-    std::vector<LogProbability> prefix_sum_array;
+    std::vector<Probability> prefix_sum_array;
   };
 
   // Alias
@@ -103,9 +103,9 @@ class ProbabilisticModelCrtp
   SerializerPtr serializer(TranslatorPtr translator) override;
 
   // Purely virtual methods
-  virtual LogProbability evaluateSymbol(SEPtr<Standard> evaluator,
-                                        unsigned int pos,
-                                        unsigned int phase) const = 0;
+  virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const = 0;
 
   virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
@@ -116,18 +116,18 @@ class ProbabilisticModelCrtp
   virtual void initializeCache(CEPtr<Standard> evaluator,
                                unsigned int phase);
 
-  virtual LogProbability evaluateSequence(SEPtr<Standard> evaluator,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const;
+  virtual Probability evaluateSequence(SEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const;
 
-  virtual LogProbability evaluateSymbol(CEPtr<Standard> evaluator,
-                                        unsigned int pos,
-                                        unsigned int phase) const;
-  virtual LogProbability evaluateSequence(CEPtr<Standard> evaluator,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const;
+  virtual Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const;
+  virtual Probability evaluateSequence(CEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const;
 
   virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                           unsigned int size,

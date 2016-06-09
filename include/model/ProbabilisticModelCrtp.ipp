@@ -102,30 +102,30 @@ ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size() + 1);
 
-  prefix_sum_array[0] = 0;
+  prefix_sum_array[0] = 1;
   for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
     prefix_sum_array[i+1]
-      = prefix_sum_array[i] + evaluator->evaluateSymbol(i, phase);
+      = prefix_sum_array[i] * evaluator->evaluateSymbol(i, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-LogProbability
+Probability
 ProbabilisticModelCrtp<Derived>::evaluateSequence(SEPtr<Standard> evaluator,
                                                   unsigned int begin,
                                                   unsigned int end,
                                                   unsigned int phase) const {
-  LogProbability prob = 0;
+  Probability prob = 1;
   for (unsigned int i = begin; i < end; i++)
-    prob += evaluator->evaluateSymbol(i, phase);
+    prob *= evaluator->evaluateSymbol(i, phase);
   return prob;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-LogProbability
+Probability
 ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
                                                 unsigned int pos,
                                                 unsigned int phase) const {
@@ -135,14 +135,14 @@ ProbabilisticModelCrtp<Derived>::evaluateSymbol(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-LogProbability
+Probability
 ProbabilisticModelCrtp<Derived>::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
     unsigned int /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  return prefix_sum_array[end] - prefix_sum_array[begin];
+  return prefix_sum_array[end] / prefix_sum_array[begin];
 }
 
 /*===============================  GENERATOR  ================================*/

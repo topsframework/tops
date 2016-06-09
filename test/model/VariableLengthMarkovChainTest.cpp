@@ -34,6 +34,9 @@
 #include "model/VariableLengthMarkovChain.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
 
+// Macros
+#define DOUBLE(X) static_cast<double>(X)
+
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
@@ -77,12 +80,12 @@ TEST(VLMC, ShouldBeTrainedUsingContextAlgorithm) {
   auto vlmc = vlmc_trainer->train(
     VariableLengthMarkovChain::context_algorithm{}, 2, 0.1);
 
-  ASSERT_THAT(
-    vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-    DoubleNear(-2.77259, 1e-4));
-  ASSERT_THAT(
-    vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
-    DoubleNear(-4.85203, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({1, 0, 1, 0})
+                         ->evaluateSequence(0, 4)),
+              DoubleNear(0.062499, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                         ->evaluateSequence(0, 7)),
+              DoubleNear(0.007812, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -99,15 +102,15 @@ TEST(VLMC, ShouldBeTrainedUsingFixedLengthMarkovChainAlgorithm) {
     VariableLengthMarkovChain::fixed_length_algorithm{},
     2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
 
-  ASSERT_THAT(
-    vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-    DoubleNear(-1.37235, 1e-4));
-  ASSERT_THAT(
-    vlmc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
-    DoubleNear(-5.21625, 1e-4));
-  ASSERT_THAT(
-    vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
-    DoubleNear(-7.78482, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({1, 0, 1, 0})
+                         ->evaluateSequence(0, 4)),
+              DoubleNear(0.253510, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({1, 1, 1, 1})
+                         ->evaluateSequence(0, 4)),
+              DoubleNear(0.005427, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                         ->evaluateSequence(0, 7)),
+              DoubleNear(0.000416, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -124,15 +127,15 @@ TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
     VariableLengthMarkovChain::interpolation_algorithm{},
     std::vector<double>{1.0, 1.0, 1.0, 1.0}, 2, 2, 1.5, nullptr);
 
-  ASSERT_THAT(
-    vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-    DoubleNear(-2.77913, 1e-4));
-  ASSERT_THAT(
-    vlmc->standardEvaluator({1, 1, 1, 1})->evaluateSequence(0, 4),
-    DoubleNear(-3.00795, 1e-4));
-  ASSERT_THAT(
-    vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})->evaluateSequence(0, 7),
-    DoubleNear(-4.92068, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({1, 0, 1, 0})
+                         ->evaluateSequence(0, 4)),
+              DoubleNear(0.062092, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({1, 1, 1, 1})
+                         ->evaluateSequence(0, 4)),
+              DoubleNear(0.049393, 1e-4));
+  ASSERT_THAT(DOUBLE(vlmc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+                         ->evaluateSequence(0, 7)),
+              DoubleNear(0.0072941, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -140,43 +143,59 @@ TEST(VLMC, ShouldBeTrainedUsingInterpolatedMarkovChainAlgorithm) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AVLMC, ShouldEvaluateAPosition) {
-  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(1, 2),
-              DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(1, 2),
-              DoubleEq(log(0.20)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(1, 2),
-              DoubleEq(log(0.21)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(1, 2),
-              DoubleEq(log(0.79)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(2, 3),
-              DoubleEq(log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(3, 4),
-              DoubleEq(log(0.10)));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0})->evaluateSequence(0, 1)),
+    DoubleEq(0.50));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1})->evaluateSequence(0, 1)),
+    DoubleEq(0.50));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0, 1})->evaluateSequence(1, 2)),
+    DoubleEq(0.80));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0, 0})->evaluateSequence(1, 2)),
+    DoubleEq(0.20));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0})->evaluateSequence(1, 2)),
+    DoubleEq(0.21));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 1})->evaluateSequence(1, 2)),
+    DoubleEq(0.79));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(2, 3)),
+    DoubleEq(0.80));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(3, 4)),
+    DoubleEq(0.10));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AVLMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(vlmc->standardEvaluator({0})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({1})->evaluateSequence(0, 1),
-              DoubleEq(log(0.50)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({0, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.20)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.21)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 1})->evaluateSequence(0, 2),
-              DoubleEq(log(0.50) + log(0.79)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80)));
-  ASSERT_THAT(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4),
-              DoubleEq(log(0.50) + log(0.21) + log(0.80) + log(0.10)));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0})->evaluateSequence(0, 1)),
+    DoubleEq(0.50));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1})->evaluateSequence(0, 1)),
+    DoubleEq(0.50));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
+    DoubleEq(0.50 * 0.80));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
+    DoubleEq(0.50 * 0.20));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
+    DoubleEq(0.50 * 0.21));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
+    DoubleEq(0.50 * 0.79));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
+    DoubleEq(0.50 * 0.21 * 0.80));
+  ASSERT_THAT(
+    DOUBLE(vlmc->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4)),
+    DoubleEq(0.50 * 0.21 * 0.80 * 0.10));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -184,10 +203,11 @@ TEST_F(AVLMC, ShouldEvaluateASequence) {
 TEST_F(AVLMC, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
+    auto size = data.size();
     ASSERT_THAT(
-      vlmc->standardEvaluator(data, true)->evaluateSequence(0, data.size()),
-      DoubleEq(vlmc->standardEvaluator(data)
-                   ->evaluateSequence(0, data.size())));
+      DOUBLE(vlmc->standardEvaluator(data, true)->evaluateSequence(0, size)),
+      DoubleEq(DOUBLE(vlmc->standardEvaluator(data)
+                          ->evaluateSequence(0, size))));
   }
 }
 
