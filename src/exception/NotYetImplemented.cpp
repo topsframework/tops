@@ -28,7 +28,7 @@ namespace exception {
 /*----------------------------------------------------------------------------*/
 
 NotYetImplemented::NotYetImplemented(std::string method_name)
-    : Exception(), _method_name(std::move(method_name)) {
+    : Exception(), _method_name(method_name) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ NotYetImplemented::NotYetImplemented(std::string method_name)
 const char* NotYetImplemented::what() const throw() {
   std::stringstream ss;
   ss << "The method " << _method_name << " is not yet implemented";
-  _error_message = std::move(ss.str());
+  _error_message = ss.str();
   return _error_message.c_str();
 }
 
