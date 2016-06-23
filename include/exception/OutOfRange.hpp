@@ -17,10 +17,10 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef EXCEPTION_OUT_OF_RANGE_
-#define EXCEPTION_OUT_OF_RANGE_
+#ifndef TOPS_EXCEPTION_OUT_OF_RANGE_
+#define TOPS_EXCEPTION_OUT_OF_RANGE_
 
-// ToPS headers
+// Internal headers
 #include "exception/Exception.hpp"
 
 namespace tops {
@@ -36,4 +36,4 @@ class OutOfRange : public Exception {
 }  // namespace exception
 }  // namespace tops
 
-#endif  // EXCEPTION_OUT_OF_RANGE_
+#endif  // TOPS_EXCEPTION_OUT_OF_RANGE_

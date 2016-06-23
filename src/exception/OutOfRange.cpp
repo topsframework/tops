@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "OutOfRange.hpp"
+#include "exception/OutOfRange.hpp"
 
 namespace tops {
 namespace exception {

@@ -17,14 +17,14 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef EXCEPTION_NOT_YET_IMPLEMENTED_
-#define EXCEPTION_NOT_YET_IMPLEMENTED_
+#ifndef TOPS_EXCEPTION_NOT_YET_IMPLEMENTED_
+#define TOPS_EXCEPTION_NOT_YET_IMPLEMENTED_
 
 // Standard headers
 #include <string>
 #include <sstream>
 
-// ToPS headers
+// Internal headers
 #include "exception/Exception.hpp"
 
 namespace tops {
@@ -35,10 +35,9 @@ namespace exception {
  * @brief Report a not yet implemented exception
  */
 class NotYetImplemented : public Exception {
-
  public:
   // Constructors
-  NotYetImplemented(std::string method_name);
+  explicit NotYetImplemented(std::string method_name);
 
   // Concrete methods
   const char* what() const throw() override;
@@ -47,10 +46,9 @@ class NotYetImplemented : public Exception {
   // Instance variables
   std::string _method_name;
   mutable std::string _error_message;
-
 };
 
 }  // namespace exception
 }  // namespace tops
 
-#endif  // EXCEPTION_NOT_YET_IMPLEMENTED_
+#endif  // TOPS_EXCEPTION_NOT_YET_IMPLEMENTED_

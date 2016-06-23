@@ -17,8 +17,8 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef EXCEPTION_EXCEPTION_
-#define EXCEPTION_EXCEPTION_
+#ifndef TOPS_EXCEPTION_EXCEPTION_
+#define TOPS_EXCEPTION_EXCEPTION_
 
 // Standard headers
 #include <exception>
@@ -36,4 +36,4 @@ class Exception : public std::exception {
 }  // namespace exception
 }  // namespace tops
 
-#endif  // EXCEPTION_EXCEPTION_
+#endif  // TOPS_EXCEPTION_EXCEPTION_

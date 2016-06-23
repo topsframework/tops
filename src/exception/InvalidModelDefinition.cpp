@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "InvalidModelDefinition.hpp"
+#include "exception/InvalidModelDefinition.hpp"
 
 namespace tops {
 namespace exception {

@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "Exception.hpp"
+#include "exception/Exception.hpp"
 
 namespace tops {
 namespace exception {

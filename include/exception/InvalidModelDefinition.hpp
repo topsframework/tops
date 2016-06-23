@@ -17,10 +17,10 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef EXCEPTION_INVALID_MODEL_DEFINITION_
-#define EXCEPTION_INVALID_MODEL_DEFINITION_
+#ifndef TOPS_EXCEPTION_INVALID_MODEL_DEFINITION_
+#define TOPS_EXCEPTION_INVALID_MODEL_DEFINITION_
 
-// ToPS headers
+// Internal headers
 #include "exception/Exception.hpp"
 
 namespace tops {
@@ -36,4 +36,4 @@ class InvalidModelDefinition : public Exception {
 }  // namespace exception
 }  // namespace tops
 
-#endif  // EXCEPTION_INVALID_MODEL_DEFINITION_
+#endif  // TOPS_EXCEPTION_INVALID_MODEL_DEFINITION_

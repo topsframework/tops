@@ -17,8 +17,11 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <string>
+
 // Interface header
-#include "NotYetImplemented.hpp"
+#include "exception/NotYetImplemented.hpp"
 
 namespace tops {
 namespace exception {
@@ -41,6 +44,8 @@ const char* NotYetImplemented::what() const throw() {
   _error_message = ss.str();
   return _error_message.c_str();
 }
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace exception
 }  // namespace tops
