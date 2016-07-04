@@ -21,7 +21,7 @@
 #include "gmock/gmock.h"
 
 // Tested header
-#include "exception/NotYetImplemented.hpp"
+#include "exception/InvalidModelDefinition.hpp"
 
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
@@ -29,33 +29,34 @@
 
 using ::testing::Eq;
 
-using tops::exception::NotYetImplemented;
+using tops::exception::InvalidModelDefinition;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-void throwANotYetImplementedException() {
-  throw_exception(NotYetImplemented);
+void throwAInvalidModelDefinitionException() {
+  throw_exception(InvalidModelDefinition);
 }
 
 /*----------------------------------------------------------------------------*/
 /*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-TEST(NotYetImplemented, ShouldThrowTheRigthException) {
-  ASSERT_THROW(throwANotYetImplementedException(), NotYetImplemented);
+TEST(InvalidModelDefinition, ShouldThrowTheRigthException) {
+  ASSERT_THROW(throwAInvalidModelDefinitionException(),
+               InvalidModelDefinition);
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST(NotYetImplemented, ShouldHaveTheRigthExceptionMessage) {
+TEST(InvalidModelDefinition, ShouldHaveTheRigthExceptionMessage) {
   try {
-    throwANotYetImplementedException();
-  } catch(NotYetImplemented& e) {
-    ASSERT_STREQ(e.what(), "test/exception/NotYetImplementedTest.cpp:39: "
-                           "throwANotYetImplementedException: "
-                           "Method not implemented");
+    throwAInvalidModelDefinitionException();
+  } catch(InvalidModelDefinition& e) {
+    ASSERT_STREQ(e.what(), "test/exception/InvalidModelDefinitionTest.cpp:39: "
+                           "throwAInvalidModelDefinitionException: "
+                           "Invalid model definition");
   }
 }
 

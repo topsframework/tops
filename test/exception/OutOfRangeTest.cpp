@@ -21,7 +21,7 @@
 #include "gmock/gmock.h"
 
 // Tested header
-#include "exception/NotYetImplemented.hpp"
+#include "exception/OutOfRange.hpp"
 
 /*----------------------------------------------------------------------------*/
 /*                             USING DECLARATIONS                             */
@@ -29,33 +29,33 @@
 
 using ::testing::Eq;
 
-using tops::exception::NotYetImplemented;
+using tops::exception::OutOfRange;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-void throwANotYetImplementedException() {
-  throw_exception(NotYetImplemented);
+void throwAOutOfRangeException() {
+  throw_exception(OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
 /*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-TEST(NotYetImplemented, ShouldThrowTheRigthException) {
-  ASSERT_THROW(throwANotYetImplementedException(), NotYetImplemented);
+TEST(OutOfRange, ShouldThrowTheRigthException) {
+  ASSERT_THROW(throwAOutOfRangeException(), OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST(NotYetImplemented, ShouldHaveTheRigthExceptionMessage) {
+TEST(OutOfRange, ShouldHaveTheRigthExceptionMessage) {
   try {
-    throwANotYetImplementedException();
-  } catch(NotYetImplemented& e) {
-    ASSERT_STREQ(e.what(), "test/exception/NotYetImplementedTest.cpp:39: "
-                           "throwANotYetImplementedException: "
-                           "Method not implemented");
+    throwAOutOfRangeException();
+  } catch(OutOfRange& e) {
+    ASSERT_STREQ(e.what(), "test/exception/OutOfRangeTest.cpp:39: "
+                           "throwAOutOfRangeException: "
+                           "Argument out of range");
   }
 }
 
