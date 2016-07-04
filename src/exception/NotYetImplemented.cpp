@@ -30,19 +30,10 @@ namespace exception {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-NotYetImplemented::NotYetImplemented(std::string method_name)
-    : Exception(), _method_name(method_name) {
-}
-
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
-
-const char* NotYetImplemented::what() const throw() {
-  std::stringstream ss;
-  ss << "The method " << _method_name << " is not yet implemented";
-  _error_message = ss.str();
-  return _error_message.c_str();
+NotYetImplemented::NotYetImplemented(const char* file,
+                                     unsigned int line,
+                                     const char* func)
+    : Exception(file, line, func, "Method not implemented") {
 }
 
 /*----------------------------------------------------------------------------*/

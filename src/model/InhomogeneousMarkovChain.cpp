@@ -68,7 +68,7 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                ->drawSymbol(pos, phase, context);
   }
 
-  throw exception::OutOfRange();
+  throw_exception(OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/

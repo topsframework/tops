@@ -37,15 +37,7 @@ namespace exception {
 class NotYetImplemented : public Exception {
  public:
   // Constructors
-  explicit NotYetImplemented(std::string method_name);
-
-  // Concrete methods
-  const char* what() const throw() override;
-
- private:
-  // Instance variables
-  std::string _method_name;
-  mutable std::string _error_message;
+  NotYetImplemented(const char* file, unsigned int line, const char* func);
 };
 
 }  // namespace exception

@@ -23,5 +23,17 @@
 namespace tops {
 namespace exception {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+OutOfRange::OutOfRange(const char* file,
+                       unsigned int line,
+                       const char* func)
+    : Exception(file, line, func, "Argument out of range") {
+}
+
+/*----------------------------------------------------------------------------*/
+
 }  // namespace exception
 }  // namespace tops

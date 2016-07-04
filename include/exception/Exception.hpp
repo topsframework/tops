@@ -21,7 +21,12 @@
 #define TOPS_EXCEPTION_EXCEPTION_
 
 // Standard headers
+#include <string>
 #include <exception>
+
+// Macros
+#define throw_exception(Exception) \
+  throw tops::exception::Exception(__FILE__, __LINE__, __func__)
 
 namespace tops {
 namespace exception {
@@ -31,6 +36,17 @@ namespace exception {
  * @brief Exceptions base class. All ToPS exceptions should extends this class
  */
 class Exception : public std::exception {
+ public:
+  // Constructors
+  Exception(const char* file, unsigned int line, const char* func,
+            std::string error_message);
+
+  // Overriden methods
+  const char* what() const noexcept final;
+
+ protected:
+  // Instance variables
+  std::string _error_message;
 };
 
 }  // namespace exception

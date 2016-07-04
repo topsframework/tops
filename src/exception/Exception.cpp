@@ -17,11 +17,38 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <sstream>
+
 // Interface header
 #include "exception/Exception.hpp"
 
 namespace tops {
 namespace exception {
+
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+Exception::Exception(const char* file,
+                     unsigned int line,
+                     const char* func,
+                     std::string error_message) {
+  std::stringstream ss;
+  ss << file << ":" << line << ": " << func << ": " << error_message;
+  _error_message = ss.str();
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+// Overriden methods
+const char* Exception::what() const noexcept {
+  return _error_message.c_str();
+}
+
+/*----------------------------------------------------------------------------*/
 
 }  // namespace exception
 }  // namespace tops

@@ -31,6 +31,9 @@ namespace exception {
  * @brief Report an invalid model definition exception
  */
 class InvalidModelDefinition : public Exception {
+ public:
+  // Constructors
+  InvalidModelDefinition(const char* file, unsigned int line, const char* func);
 };
 
 }  // namespace exception

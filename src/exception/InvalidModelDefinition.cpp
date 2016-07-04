@@ -23,5 +23,17 @@
 namespace tops {
 namespace exception {
 
+/*----------------------------------------------------------------------------*/
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+InvalidModelDefinition::InvalidModelDefinition(const char* file,
+                                               unsigned int line,
+                                               const char* func)
+    : Exception(file, line, func, "Invalid model definition") {
+}
+
+/*----------------------------------------------------------------------------*/
+
 }  // namespace exception
 }  // namespace tops
