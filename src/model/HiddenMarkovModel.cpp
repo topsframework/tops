@@ -29,6 +29,8 @@
 // Internal headers
 #include "model/Util.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 namespace tops {
 namespace model {
 
@@ -201,7 +203,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -221,7 +223,7 @@ Probability
 HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                   unsigned int /* pos */,
                                   unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -321,8 +323,7 @@ HiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
                               unsigned int /* pos */,
                               unsigned int /* phase */,
                               const Sequence &/* context */) const {
-  // TODO(igorbonadio)
-  return INVALID_SYMBOL;
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -385,14 +386,14 @@ HiddenMarkovModel::labeling(CLPtr labeler,
 
 /*----------------------------------------------------------------------------*/
 
-void HiddenMarkovModel::initializeCache(CLPtr /*labeler*/) {
-  // TODO(igorbonadio)
+void HiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+  // Postpone initialization to methods
 }
 
 /*==============================  CALCULATOR  ================================*/
 
-void HiddenMarkovModel::initializeCache(CCPtr /*calculator*/) {
-  // TODO(igorbonadio)
+void HiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+  // Postpone initialization to methods
 }
 
 /*----------------------------------------------------------------------------*/
@@ -406,8 +407,8 @@ Probability HiddenMarkovModel::calculate(
     case Calculator::direction::backward:
       return backward(calculator->sequence(), probabilities);
   }
-  // TODO(igorbonadio)
-  return -1;
+
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -421,8 +422,8 @@ Probability HiddenMarkovModel::calculate(
     case Calculator::direction::backward:
       return backward(calculator->sequence(), calculator->cache().beta);
   }
-  // TODO(igorbonadio)
-  return -1;
+
+  return 0;
 }
 
 /*=================================  OTHERS  =================================*/

@@ -17,69 +17,46 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Interface header
-#include "model/InhomogeneousMarkovChain.hpp"
+// External headers
+#include "gmock/gmock.h"
 
-// Standard headers
-#include <cmath>
-#include <limits>
-#include <vector>
-
-// Internal headers
-#include "exception/OutOfRange.hpp"
-
-namespace tops {
-namespace model {
+// Tested header
+#include "exception/NotYetImplemented.hpp"
 
 /*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
+/*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+using ::testing::Eq;
+
+using tops::exception::NotYetImplemented;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
+
+void throwANotYetImplementedException() {
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-Probability
-InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->standardEvaluator(
-             evaluator->sequence())->evaluateSymbol(pos);
-  else
-    return 0;
+TEST(NotYetImplemented, ShouldThrowTheRigthException) {
+  ASSERT_THROW(throwANotYetImplementedException(), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     unsigned int phase,
-                                     const Sequence& context) const {
-  if (pos + phase < _vlmcs.size()) {
-    auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator(generator->randomNumberGenerator())
-               ->drawSymbol(pos, phase, context);
+TEST(NotYetImplemented, ShouldHaveTheRigthExceptionMessage) {
+  try {
+    throwANotYetImplementedException();
+  } catch(NotYetImplemented& e) {
+    ASSERT_STREQ(e.what(), "test/exception/NotYetImplementedTest.cpp:39: "
+                           "throwANotYetImplementedException: "
+                           "Method not implemented");
   }
-
-  throw_exception(OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
-
-/*----------------------------------------------------------------------------*/
-
-}  // namespace model
-}  // namespace tops

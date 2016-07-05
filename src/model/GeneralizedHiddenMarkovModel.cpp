@@ -30,6 +30,8 @@
 #include "model/Util.hpp"
 #include "model/Segment.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 namespace tops {
 namespace model {
 
@@ -57,7 +59,7 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
                                               unsigned int /* phase */) {
-  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -66,7 +68,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -76,7 +78,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -85,7 +87,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -95,7 +97,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
                                                unsigned int /* begin */,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -103,16 +105,16 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
 void
 GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
                                               unsigned int /* phase */) {
-  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
-  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> /* evaluator */,
+                                             unsigned /* int pos */,
+                                             unsigned /* int phase */) const {
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -132,7 +134,7 @@ Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
                                              unsigned int /* pos */,
                                              unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -167,7 +169,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -177,18 +179,16 @@ GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
                                          unsigned int /* pos */,
                                          unsigned int /* phase */,
                                          const Sequence &/* context */) const {
-  return Labeling<Symbol>(INVALID_SYMBOL, INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Labeling<Sequence>
 GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
-                                           unsigned int size,
+                                           unsigned int /* size */,
                                            unsigned int /* phase */) const {
-  // TODO(igorbonadio)
-  return Labeling<Sequence>(Sequence(INVALID_SYMBOL, size),
-                            Sequence(INVALID_SYMBOL, size));
+  throw_exception(NotYetImplemented);
 }
 
 /*================================  LABELER  =================================*/
@@ -251,11 +251,13 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
   switch (direction) {
     case Calculator::direction::forward:
-      forward(calculator->sequence(), probabilities, observation_evaluators);
+      return forward(calculator->sequence(), probabilities,
+                     observation_evaluators);
     case Calculator::direction::backward:
-      backward(calculator->sequence(), probabilities, observation_evaluators);
+      return backward(calculator->sequence(), probabilities,
+                      observation_evaluators);
   }
-  // TODO(igorbonadio)
+
   return 0;
 }
 
@@ -267,15 +269,13 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
   switch (direction) {
     case Calculator::direction::forward:
-      forward(calculator->sequence(),
-              probabilities,
-              calculator->cache().observation_evaluators);
+      return forward(calculator->sequence(), probabilities,
+                     calculator->cache().observation_evaluators);
     case Calculator::direction::backward:
-      backward(calculator->sequence(),
-               probabilities,
-               calculator->cache().observation_evaluators);
+      return backward(calculator->sequence(), probabilities,
+                      calculator->cache().observation_evaluators);
   }
-  // TODO(igorbonadio)
+
   return 0;
 }
 
@@ -393,8 +393,10 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
       }
     }
   }
+
+  // TODO(igorbonadio): calculate joint probability
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), 0);  // TODO(igorbonadio)
+      Labeling<Sequence>(xs, std::move(path)), 0);
 }
 
 /*----------------------------------------------------------------------------*/

@@ -28,6 +28,8 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 #include "helper/DiscreteIIDModel.hpp"
 
 // Tested header
@@ -50,6 +52,8 @@ using tops::model::Sequence;
 using tops::model::INVALID_SYMBOL;
 using tops::model::MaximalDependenceDecomposition;
 using tops::model::MaximalDependenceDecompositionPtr;
+
+using tops::exception::NotYetImplemented;
 
 using tops::helper::createSampleMDD;
 using tops::helper::createDNAIIDModel;
@@ -156,10 +160,8 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AMDD, ShouldChooseSequenceWithDefaultSeed) {
-  // TODO(igorbonadio): implement method
-  ASSERT_THAT(mdd->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence(5, INVALID_SYMBOL)));
+TEST_F(AMDD, ShouldDrawSequenceWithDefaultSeed) {
+  ASSERT_THROW(mdd->standardGenerator()->drawSequence(5), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/

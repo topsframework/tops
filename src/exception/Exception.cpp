@@ -17,69 +17,38 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Interface header
-#include "model/InhomogeneousMarkovChain.hpp"
-
 // Standard headers
-#include <cmath>
-#include <limits>
-#include <vector>
+#include <sstream>
 
-// Internal headers
-#include "exception/OutOfRange.hpp"
+// Interface header
+#include "exception/Exception.hpp"
 
 namespace tops {
-namespace model {
+namespace exception {
 
 /*----------------------------------------------------------------------------*/
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+Exception::Exception(const char* file,
+                     unsigned int line,
+                     const char* func,
+                     std::string error_message) {
+  std::stringstream ss;
+  ss << file << ":" << line << ": " << func << ": " << error_message;
+  _error_message = ss.str();
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Probability
-InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->standardEvaluator(
-             evaluator->sequence())->evaluateSymbol(pos);
-  else
-    return 0;
+// Overriden methods
+const char* Exception::what() const noexcept {
+  return _error_message.c_str();
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     unsigned int phase,
-                                     const Sequence& context) const {
-  if (pos + phase < _vlmcs.size()) {
-    auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator(generator->randomNumberGenerator())
-               ->drawSymbol(pos, phase, context);
-  }
-
-  throw_exception(OutOfRange);
-}
-
-/*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
-
-/*----------------------------------------------------------------------------*/
-
-}  // namespace model
+}  // namespace exception
 }  // namespace tops

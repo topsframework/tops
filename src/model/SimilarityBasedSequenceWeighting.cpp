@@ -31,6 +31,8 @@
 // Internal headers
 #include "model/Util.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 namespace tops {
 namespace model {
 
@@ -147,7 +149,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
     unsigned int /* pos */,
     unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -216,7 +218,7 @@ Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
     unsigned int /* pos */,
     unsigned int /* phase */,
     const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/

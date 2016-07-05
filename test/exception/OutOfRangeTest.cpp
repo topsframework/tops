@@ -17,69 +17,46 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Interface header
-#include "model/InhomogeneousMarkovChain.hpp"
+// External headers
+#include "gmock/gmock.h"
 
-// Standard headers
-#include <cmath>
-#include <limits>
-#include <vector>
-
-// Internal headers
+// Tested header
 #include "exception/OutOfRange.hpp"
 
-namespace tops {
-namespace model {
-
 /*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
+/*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
-}
+using ::testing::Eq;
+
+using tops::exception::OutOfRange;
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-Probability
-InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->standardEvaluator(
-             evaluator->sequence())->evaluateSymbol(pos);
-  else
-    return 0;
-}
-
-/*----------------------------------------------------------------------------*/
-
-Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     unsigned int phase,
-                                     const Sequence& context) const {
-  if (pos + phase < _vlmcs.size()) {
-    auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator(generator->randomNumberGenerator())
-               ->drawSymbol(pos, phase, context);
-  }
-
+void throwAOutOfRangeException() {
   throw_exception(OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
+/*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
+TEST(OutOfRange, ShouldThrowTheRigthException) {
+  ASSERT_THROW(throwAOutOfRangeException(), OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
 
-}  // namespace model
-}  // namespace tops
+TEST(OutOfRange, ShouldHaveTheRigthExceptionMessage) {
+  try {
+    throwAOutOfRangeException();
+  } catch(OutOfRange& e) {
+    ASSERT_STREQ(e.what(), "test/exception/OutOfRangeTest.cpp:39: "
+                           "throwAOutOfRangeException: "
+                           "Argument out of range");
+  }
+}
+
+/*----------------------------------------------------------------------------*/

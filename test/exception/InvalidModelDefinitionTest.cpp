@@ -17,69 +17,47 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Interface header
-#include "model/InhomogeneousMarkovChain.hpp"
+// External headers
+#include "gmock/gmock.h"
 
-// Standard headers
-#include <cmath>
-#include <limits>
-#include <vector>
-
-// Internal headers
-#include "exception/OutOfRange.hpp"
-
-namespace tops {
-namespace model {
+// Tested header
+#include "exception/InvalidModelDefinition.hpp"
 
 /*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
+/*                             USING DECLARATIONS                             */
 /*----------------------------------------------------------------------------*/
 
-InhomogeneousMarkovChain::InhomogeneousMarkovChain(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs)
-    : _vlmcs(vlmcs) {
+using ::testing::Eq;
+
+using tops::exception::InvalidModelDefinition;
+
+/*----------------------------------------------------------------------------*/
+/*                                  FIXTURES                                  */
+/*----------------------------------------------------------------------------*/
+
+void throwAInvalidModelDefinitionException() {
+  throw_exception(InvalidModelDefinition);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
+/*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-Probability
-InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
-  if (pos + phase < _vlmcs.size())
-    return _vlmcs[pos + phase]->standardEvaluator(
-             evaluator->sequence())->evaluateSymbol(pos);
-  else
-    return 0;
+TEST(InvalidModelDefinition, ShouldThrowTheRigthException) {
+  ASSERT_THROW(throwAInvalidModelDefinitionException(),
+               InvalidModelDefinition);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     unsigned int phase,
-                                     const Sequence& context) const {
-  if (pos + phase < _vlmcs.size()) {
-    auto vlmc = _vlmcs[pos + phase];
-    return vlmc->standardGenerator(generator->randomNumberGenerator())
-               ->drawSymbol(pos, phase, context);
+TEST(InvalidModelDefinition, ShouldHaveTheRigthExceptionMessage) {
+  try {
+    throwAInvalidModelDefinitionException();
+  } catch(InvalidModelDefinition& e) {
+    ASSERT_STREQ(e.what(), "test/exception/InvalidModelDefinitionTest.cpp:39: "
+                           "throwAInvalidModelDefinitionException: "
+                           "Invalid model definition");
   }
-
-  throw_exception(OutOfRange);
 }
 
 /*----------------------------------------------------------------------------*/
-/*                             VIRTUAL METHODS                                */
-/*----------------------------------------------------------------------------*/
-
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
-  return _vlmcs.size();
-}
-
-/*----------------------------------------------------------------------------*/
-
-}  // namespace model
-}  // namespace tops

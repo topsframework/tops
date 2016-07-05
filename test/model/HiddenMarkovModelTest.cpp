@@ -30,6 +30,8 @@
 #include "model/Sequence.hpp"
 #include "model/Probability.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
 
@@ -59,6 +61,8 @@ using tops::model::Probability;
 using tops::model::INVALID_SYMBOL;
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
+
+using tops::exception::NotYetImplemented;
 
 using tops::helper::SExprTranslator;
 using tops::helper::createDishonestCoinCasinoHMM;
@@ -335,9 +339,7 @@ TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithDefaultSeed) {
-  // TODO(igorbonadio): implement method
-  ASSERT_THAT(hmm->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THROW(hmm->standardGenerator()->drawSequence(5), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
