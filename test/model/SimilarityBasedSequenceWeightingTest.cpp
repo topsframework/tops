@@ -29,6 +29,8 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 
+#include "exception/NotYetImplemented.hpp"
+
 // Tested header
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 
@@ -48,6 +50,8 @@ using tops::model::Sequence;
 using tops::model::INVALID_SYMBOL;
 using tops::model::SimilarityBasedSequenceWeighting;
 using tops::model::SimilarityBasedSequenceWeightingPtr;
+
+using tops::exception::NotYetImplemented;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
@@ -183,9 +187,7 @@ TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ASBSW, ShouldChooseSequenceWithDefaultSeed) {
-  // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(sbsw->standardGenerator()->drawSequence(5),
-              ContainerEq(Sequence(5, INVALID_SYMBOL)));
+  ASSERT_THROW(sbsw->standardGenerator()->drawSequence(5), NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/

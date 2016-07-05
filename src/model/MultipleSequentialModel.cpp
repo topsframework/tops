@@ -27,7 +27,10 @@
 #include <cstdlib>
 
 // Internal headers
-#include "Util.hpp"
+#include "model/Util.hpp"
+
+#include "exception/NotYetImplemented.hpp"
+#include "exception/InvalidModelDefinition.hpp"
 
 namespace tops {
 namespace model {
@@ -48,10 +51,8 @@ MultipleSequentialModel::MultipleSequentialModel(
       _idx_not_limited = i;
     }
   }
-  if (count > 1) {
-    // TODO(igorbonadio): ERROR: Only one model can has unlimited length
-    exit(-1);
-  }
+  if (count > 1)
+    throw_exception(InvalidModelDefinition);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -86,7 +87,7 @@ Probability
 MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
                                         unsigned int /* pos */,
                                         unsigned int /* phase */) const {
-  return 0;  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/

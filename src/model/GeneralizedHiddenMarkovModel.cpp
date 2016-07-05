@@ -251,11 +251,13 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
   switch (direction) {
     case Calculator::direction::forward:
-      forward(calculator->sequence(), probabilities, observation_evaluators);
+      return forward(calculator->sequence(), probabilities,
+                     observation_evaluators);
     case Calculator::direction::backward:
-      backward(calculator->sequence(), probabilities, observation_evaluators);
+      return backward(calculator->sequence(), probabilities,
+                      observation_evaluators);
   }
-  // TODO(igorbonadio)
+
   return 0;
 }
 
@@ -267,15 +269,13 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 
   switch (direction) {
     case Calculator::direction::forward:
-      forward(calculator->sequence(),
-              probabilities,
-              calculator->cache().observation_evaluators);
+      return forward(calculator->sequence(), probabilities,
+                     calculator->cache().observation_evaluators);
     case Calculator::direction::backward:
-      backward(calculator->sequence(),
-               probabilities,
-               calculator->cache().observation_evaluators);
+      return backward(calculator->sequence(), probabilities,
+                      calculator->cache().observation_evaluators);
   }
-  // TODO(igorbonadio)
+
   return 0;
 }
 
@@ -393,8 +393,10 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
       }
     }
   }
+
+  // TODO(igorbonadio): calculate joint probability
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), 0);  // TODO(igorbonadio)
+      Labeling<Sequence>(xs, std::move(path)), 0);
 }
 
 /*----------------------------------------------------------------------------*/

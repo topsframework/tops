@@ -30,7 +30,9 @@
 #include <iostream>
 
 // Internal headers
-#include "Util.hpp"
+#include "model/Util.hpp"
+
+#include "exception/NotYetImplemented.hpp"
 
 namespace tops {
 namespace model {
@@ -292,11 +294,10 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability MaximalDependenceDecomposition::evaluateSymbol(
-    SEPtr<Standard> /* evaluator */,
-    unsigned int /* pos */,
-    unsigned int /* phase */) const {
-  // TODO(igorbonadio)
-  return 0;
+    SEPtr<Standard> evaluator,
+    unsigned int pos,
+    unsigned int phase) const {
+  return evaluateSequence(evaluator, pos, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -333,17 +334,16 @@ Standard<Symbol> MaximalDependenceDecomposition::drawSymbol(
     unsigned int /* pos */,
     unsigned int /* phase */,
     const Sequence &/* context */) const {
-  return Standard<Symbol>(INVALID_SYMBOL);  // TODO(igorbonadio)
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
     SGPtr<Standard> /* generator */,
-    unsigned int size,
+    unsigned int /* size */,
     unsigned int /* phase */) const {
-  // _drawAux(s, _mdd_tree);
-  return Sequence(size, INVALID_SYMBOL);
+  throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
