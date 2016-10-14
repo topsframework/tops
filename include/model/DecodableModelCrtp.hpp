@@ -109,9 +109,8 @@ class DecodableModelCrtp
   static TrainerPtr<Labeling, Derived> labelingTrainer(Tag, Args&&... args);
 
   // Overriden methods
-  EvaluatorPtr<Labeling>
-  labelingEvaluator(const Labeling<Sequence>& sequence,
-                    bool cached = false) override;
+  EvaluatorPtr<Labeling> labelingEvaluator(const Labeling<Sequence>& sequence,
+                                           bool cached = false) override;
 
   GeneratorPtr<Labeling>
   labelingGenerator(RandomNumberGeneratorPtr rng
@@ -119,7 +118,15 @@ class DecodableModelCrtp
 
   LabelerPtr labeler(const Sequence& sequence, bool cached = false) override;
 
+  LabelerPtr labeler(const Sequence& sequence,
+                     const std::vector<Sequence>& other_sequences,
+                     bool cached = false) override;
+
   CalculatorPtr calculator(const Sequence& sequence,
+                           bool cached = false) override;
+
+  CalculatorPtr calculator(const Sequence& sequence,
+                           const std::vector<Sequence>& other_sequences,
                            bool cached = false) override;
 
   // Purely virtual methods

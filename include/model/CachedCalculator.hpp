@@ -96,6 +96,15 @@ class CachedCalculator : public SimpleCalculator<Model> {
       : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
   }
 
+  CachedCalculator(
+      ModelPtr model,
+      Sequence sequence,
+      std::vector<Sequence> other_sequences,
+      Cache cache = Cache())
+      : Base(std::move(model), std::move(sequence), std::move(other_sequences)),
+        _cache(std::move(cache)) {
+  }
+
  private:
   // Concrete methods
   inline void lazyInitializeCache() const {

@@ -37,10 +37,16 @@ class Labeling {
   // Constructors
   Labeling() = default;
   Labeling(Target observation, Target label);
+  Labeling(Target observation,
+           std::vector<Target> other_observations,
+           Target label);
 
   // Concrete Getters
   const Target& observation() const;
   Target& observation();
+
+  const std::vector<Target>& other_observations() const;
+  std::vector<Target>& other_observations();
 
   const Target& label() const;
   Target& label();
@@ -48,6 +54,7 @@ class Labeling {
  private:
   // Instance variables
   Target _observation;
+  std::vector<Target> _other_observations;
   Target _label;
 };
 

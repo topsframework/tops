@@ -29,6 +29,15 @@ Labeling<Target>::Labeling(Target observation, Target label)
     : _observation(std::move(observation)), _label(std::move(label)) {
 }
 
+template<typename Target>
+Labeling<Target>::Labeling(Target observation,
+                           std::vector<Target> other_observations,
+                           Target label)
+    : _observation(std::move(observation)),
+      _other_observations(other_observations),
+      _label(std::move(label)) {
+}
+
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
@@ -43,6 +52,20 @@ const Target& Labeling<Target>::observation() const {
 template<typename Target>
 Target& Labeling<Target>::observation() {
   return const_cast<Target&>(static_cast<const Labeling*>(this)->observation());
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Target>
+const std::vector<Target>& Labeling<Target>::other_observations() const {
+  return _other_observations;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Target>
+std::vector<Target>& Labeling<Target>::other_observations() {
+  return const_cast<Target&>(static_cast<const Labeling*>(this)->other_observations());
 }
 
 /*----------------------------------------------------------------------------*/
