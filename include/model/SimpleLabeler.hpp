@@ -99,7 +99,7 @@ class SimpleLabeler : public Labeler {
                 std::vector<Sequence> other_sequences)
       : _model(std::move(model)),
         _sequence(std::move(sequence)),
-        _other_sequences(other_sequences) {
+        _other_sequences(std::move(other_sequences)) {
   }
 
  private:
