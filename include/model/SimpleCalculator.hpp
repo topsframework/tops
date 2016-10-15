@@ -74,14 +74,31 @@ class SimpleCalculator : public Calculator {
     return _sequence;
   }
 
+  std::vector<Sequence>& other_sequences() override {
+    return _other_sequences;
+  }
+
+  const std::vector<Sequence>& other_sequences() const override {
+    return _other_sequences;
+  }
+
  protected:
   // Instace variables
   ModelPtr _model;
   Sequence _sequence;
+  std::vector<Sequence> _other_sequences;
 
   // Constructors
   SimpleCalculator(ModelPtr model, Sequence sequence)
       : _model(std::move(model)), _sequence(std::move(sequence)) {
+  }
+
+  SimpleCalculator(ModelPtr model,
+                   Sequence sequence,
+                   std::vector<Sequence> other_sequences)
+      : _model(std::move(model)),
+        _sequence(std::move(sequence)),
+        _other_sequences(std::move(other_sequences)) {
   }
 
  private:

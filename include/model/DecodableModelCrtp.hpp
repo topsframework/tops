@@ -119,7 +119,15 @@ class DecodableModelCrtp
 
   LabelerPtr labeler(const Sequence& sequence, bool cached = false) override;
 
+  LabelerPtr labeler(const Sequence& sequence,
+                     const std::vector<Sequence>& other_sequences,
+                     bool cached = false) override;
+
   CalculatorPtr calculator(const Sequence& sequence,
+                           bool cached = false) override;
+
+  CalculatorPtr calculator(const Sequence& sequence,
+                           const std::vector<Sequence>& other_sequences,
                            bool cached = false) override;
 
   // Purely virtual methods

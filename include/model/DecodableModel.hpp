@@ -50,16 +50,25 @@ class DecodableModel : public virtual ProbabilisticModel {
  public:
   // Purely virtual methods
   virtual EvaluatorPtr<Labeling> labelingEvaluator(
-      const Labeling<Sequence>& sequence, bool cached = false) = 0;
+      const Labeling<Sequence>& sequence,
+      bool cached = false) = 0;
 
   virtual GeneratorPtr<Labeling> labelingGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
-  virtual LabelerPtr labeler(
-      const Sequence& sequence, bool cached = false) = 0;
+  virtual LabelerPtr labeler(const Sequence& sequence,
+                             bool cached = false) = 0;
 
-  virtual CalculatorPtr calculator(
-      const Sequence& sequence, bool cached = false) = 0;
+  virtual LabelerPtr labeler(const Sequence& sequence,
+                             const std::vector<Sequence>& other_sequences,
+                             bool cached = false) = 0;
+
+  virtual CalculatorPtr calculator(const Sequence& sequence,
+                                   bool cached = false) = 0;
+
+  virtual CalculatorPtr calculator(const Sequence& sequence,
+                                   const std::vector<Sequence>& other_sequences,
+                                   bool cached = false) = 0;
 
   // Destructor
   virtual ~DecodableModel() = default;
