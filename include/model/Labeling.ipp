@@ -65,7 +65,8 @@ const std::vector<Target>& Labeling<Target>::other_observations() const {
 
 template<typename Target>
 std::vector<Target>& Labeling<Target>::other_observations() {
-  return const_cast<Target&>(static_cast<const Labeling*>(this)->other_observations());
+  return const_cast<Target&>(
+    static_cast<const Labeling*>(this)->other_observations());
 }
 
 /*----------------------------------------------------------------------------*/
