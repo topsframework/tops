@@ -95,13 +95,13 @@ GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator(
 
 template<typename Derived>
 LabelerPtr DecodableModelCrtp<Derived>::labeler(
-    const Standard<Sequence>& sequence, bool cached) {
+    const Sequence& sequence, bool cached) {
   return labeler(sequence, {}, cached);
 }
 
 template<typename Derived>
 LabelerPtr DecodableModelCrtp<Derived>::labeler(
-    const Standard<Sequence>& sequence,
+    const Sequence& sequence,
     const std::vector<Sequence>& other_sequences, bool cached) {
   if (cached)
     return CachedLabeler<Derived>::make(make_shared(), sequence);
@@ -113,13 +113,13 @@ LabelerPtr DecodableModelCrtp<Derived>::labeler(
 
 template<typename Derived>
 CalculatorPtr DecodableModelCrtp<Derived>::calculator(
-    const Standard<Sequence>& sequence, bool cached) {
+    const Sequence& sequence, bool cached) {
   return calculator(sequence, {}, cached);
 }
 
 template<typename Derived>
 CalculatorPtr DecodableModelCrtp<Derived>::calculator(
-    const Standard<Sequence>& sequence,
+    const Sequence& sequence,
     const std::vector<Sequence>& other_sequences, bool cached) {
   if (cached)
     return CachedCalculator<Derived>::make(make_shared(), sequence);
