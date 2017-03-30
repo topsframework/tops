@@ -179,9 +179,43 @@ HiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
+/*                           (Probabilistic Model)                            */
 /*----------------------------------------------------------------------------*/
 
 /*===============================  EVALUATOR  ================================*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                  unsigned int /* pos */,
+                                  unsigned int /* phase */) const {
+  throw_exception(NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
+                                    unsigned int begin,
+                                    unsigned int end,
+                                    unsigned int /* phase */) const {
+  Matrix alpha;
+  forward(evaluator->sequence(), alpha);
+
+  Probability sum_begin = 0;
+  Probability sum_end = 0;
+
+  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
+    sum_end += alpha[k][end-1];
+    if (begin != 0)
+      sum_begin += alpha[k][begin-1];
+    else
+      sum_begin = 1;
+  }
+
+  return sum_end / sum_begin;
+}
+
+/*----------------------------------------------------------------------------*/
 
 void HiddenMarkovModel::initializeCache(CEPtr<Standard> evaluator,
                                         unsigned int /* phase */) {
@@ -217,37 +251,68 @@ HiddenMarkovModel::evaluateSequence(CEPtr<Standard> evaluator,
          / evaluator->cache().prefix_sum_array[begin];
 }
 
-/*----------------------------------------------------------------------------*/
+/*===============================  GENERATOR  ================================*/
 
-Probability
-HiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                  unsigned int /* pos */,
-                                  unsigned int /* phase */) const {
+Standard<Symbol>
+HiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
+                              unsigned int /* pos */,
+                              unsigned int /* phase */,
+                              const Sequence &/* context */) const {
   throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
+Standard<Sequence>
+HiddenMarkovModel::drawSequence(SGPtr<Standard> /* generator */,
+                                unsigned int /* size */,
+                                unsigned int /* phase */) const {
+  throw_exception(NotYetImplemented);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void HiddenMarkovModel::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
+/*                             (Decodable Model)                              */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                              unsigned int pos,
+                                              unsigned int /* phase */) const {
+  Probability transition;
+  const Sequence& observation = evaluator->sequence().observation();
+  const Sequence& label = evaluator->sequence().label();
+
+  if (pos == 0)
+    transition = _initial_probabilities
+      ->standardEvaluator(label)->evaluateSymbol(0);
+  else
+    transition = _states[label[pos-1]]->transition()
+      ->standardEvaluator(label)->evaluateSymbol(pos);
+
+  return transition
+    * _states[label[pos]]->emission()
+      ->standardEvaluator(observation)->evaluateSymbol(pos);
+}
+
+/*----------------------------------------------------------------------------*/
+
 Probability
-HiddenMarkovModel::evaluateSequence(SEPtr<Standard> evaluator,
+HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
                                     unsigned int begin,
                                     unsigned int end,
-                                    unsigned int /* phase */) const {
-  Matrix alpha;
-  forward(evaluator->sequence(), alpha);
-
-  Probability sum_begin = 0;
-  Probability sum_end = 0;
-
-  for (unsigned int k = 0; k < _state_alphabet_size; k++) {
-    sum_end += alpha[k][end-1];
-    if (begin != 0)
-      sum_begin += alpha[k][begin-1];
-    else
-      sum_begin = 1;
-  }
-
-  return sum_end / sum_begin;
+                                    unsigned int phase) const {
+  Probability prob = 1;
+  for (unsigned int i = begin; i < end; i++)
+    prob *= evaluateSymbol(evaluator, i, phase);
+  return prob;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -282,51 +347,7 @@ Probability HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
          / evaluator->cache().prefix_sum_array[begin];
 }
 
-/*----------------------------------------------------------------------------*/
-
-Probability HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
-                                              unsigned int pos,
-                                              unsigned int /* phase */) const {
-  Probability transition;
-  const Sequence& observation = evaluator->sequence().observation();
-  const Sequence& label = evaluator->sequence().label();
-
-  if (pos == 0)
-    transition = _initial_probabilities
-      ->standardEvaluator(label)->evaluateSymbol(0);
-  else
-    transition = _states[label[pos-1]]->transition()
-      ->standardEvaluator(label)->evaluateSymbol(pos);
-
-  return transition
-    * _states[label[pos]]->emission()
-      ->standardEvaluator(observation)->evaluateSymbol(pos);
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
-                                    unsigned int begin,
-                                    unsigned int end,
-                                    unsigned int phase) const {
-  Probability prob = 1;
-  for (unsigned int i = begin; i < end; i++)
-    prob *= evaluateSymbol(evaluator, i, phase);
-  return prob;
-}
-
 /*===============================  GENERATOR  ================================*/
-
-Standard<Symbol>
-HiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
-                              unsigned int /* pos */,
-                              unsigned int /* phase */,
-                              const Sequence &/* context */) const {
-  throw_exception(NotYetImplemented);
-}
-
-/*----------------------------------------------------------------------------*/
 
 Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
                                                unsigned int pos,
@@ -371,6 +392,12 @@ HiddenMarkovModel::labeling(SLPtr labeler,
 
 /*----------------------------------------------------------------------------*/
 
+void HiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+  // Postpone initialization to methods
+}
+
+/*----------------------------------------------------------------------------*/
+
 Estimation<Labeling<Sequence>>
 HiddenMarkovModel::labeling(CLPtr labeler,
                             const Labeler::method& method) const {
@@ -384,19 +411,7 @@ HiddenMarkovModel::labeling(CLPtr labeler,
   return Estimation<Labeling<Sequence>>();
 }
 
-/*----------------------------------------------------------------------------*/
-
-void HiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
-  // Postpone initialization to methods
-}
-
 /*==============================  CALCULATOR  ================================*/
-
-void HiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
-  // Postpone initialization to methods
-}
-
-/*----------------------------------------------------------------------------*/
 
 Probability HiddenMarkovModel::calculate(
     SCPtr calculator, const Calculator::direction& direction) const {
@@ -409,6 +424,12 @@ Probability HiddenMarkovModel::calculate(
   }
 
   return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+  // Postpone initialization to methods
 }
 
 /*----------------------------------------------------------------------------*/
