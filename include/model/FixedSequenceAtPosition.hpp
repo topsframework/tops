@@ -26,52 +26,84 @@
 
 // Internal headers
 #include "model/DiscreteIIDModel.hpp"
-#include "model/ProbabilisticModelDecoratorCrtp.hpp"
+#include "model/ProbabilisticModelCrtp.hpp"
 
 namespace tops {
 namespace model {
 
+// Forward declarations
 class FixedSequenceAtPosition;
 
 /**
  * @typedef FixedSequenceAtPositionPtr
  * @brief Alias of pointer to FixedSequenceAtPosition.
  */
-using FixedSequenceAtPositionPtr = std::shared_ptr<FixedSequenceAtPosition>;
+using FixedSequenceAtPositionPtr
+  = std::shared_ptr<FixedSequenceAtPosition>;
 
 /**
  * @class FixedSequenceAtPosition
  * @brief TODO
  */
 class FixedSequenceAtPosition
-    : public ProbabilisticModelDecoratorCrtp<FixedSequenceAtPosition> {
+    : public ProbabilisticModelCrtp<FixedSequenceAtPosition> {
  public:
-  // Alias
-  using Base = ProbabilisticModelDecoratorCrtp<FixedSequenceAtPosition>;
+  // Aliases
+  using Self = FixedSequenceAtPosition;
+  using SelfPtr = FixedSequenceAtPositionPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   FixedSequenceAtPosition(ProbabilisticModelPtr model,
                           int position,
                           Sequence sequence,
                           DiscreteIIDModelPtr distr);
 
-  // Overriden methods
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
+
+  // StandardEvaluator
+  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
   Probability evaluateSequence(SEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  // StandardGenerator
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                              unsigned int pos,
+                              unsigned int phase,
+                              const Sequence& context) const override;
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                   unsigned int size,
-                                  unsigned int phase = 0) const override;
+                                  unsigned int phase) const override;
+
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
 
  private:
   // Instance variables
+  ProbabilisticModelPtr _model;
   int _position;
   Sequence _sequence;
   DiscreteIIDModelPtr _probabilities;
 
-  // Concrete methods
+  /*==========================[ CONCRETE METHODS ]============================*/
+
   void addSequence(Sequence& h) const;
 };
 
