@@ -27,16 +27,38 @@ namespace tops {
 namespace model {
 
 /*----------------------------------------------------------------------------*/
-/*                             CONCRETE METHODS                               */
+/*                                CONSTRUCTORS                                */
+/*----------------------------------------------------------------------------*/
+
+FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
+                                                 int position,
+                                                 Sequence sequence,
+                                                 DiscreteIIDModelPtr distr)
+      : _model(model), _position(position), _sequence(sequence),
+        _probabilities(distr) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 /*==============================  EVALUATOR  =================================*/
 
-Probability
-FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const {
+Probability FixedSequenceAtPosition::evaluateSymbol(
+    SEPtr<Standard> evaluator,
+    unsigned int pos,
+    unsigned int phase) const {
+  auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
+  return modelEvaluator->evaluateSymbol(pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability FixedSequenceAtPosition::evaluateSequence(
+    SEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
   auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
   auto result = modelEvaluator->evaluateSequence(begin, end, phase);
 
@@ -55,12 +77,50 @@ FixedSequenceAtPosition::evaluateSequence(SEPtr<Standard> evaluator,
   return result;
 }
 
+/*----------------------------------------------------------------------------*/
+
+void FixedSequenceAtPosition::initializeCache(CEPtr<Standard> evaluator,
+                                              unsigned int phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability FixedSequenceAtPosition::evaluateSymbol(
+    CEPtr<Standard> evaluator,
+    unsigned int pos,
+    unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability FixedSequenceAtPosition::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
 /*==============================  GENERATOR  =================================*/
 
-Standard<Sequence>
-FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
-                                      unsigned int size,
-                                      unsigned int phase) const {
+Standard<Symbol> FixedSequenceAtPosition::drawSymbol(
+    SGPtr<Standard> generator,
+    unsigned int pos,
+    unsigned int phase,
+    const Sequence &context) const {
+  auto modelGenerator
+    = _model->standardGenerator(generator->randomNumberGenerator());
+  return modelGenerator->drawSymbol(pos, phase, context);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> FixedSequenceAtPosition::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
   auto model_generator
     = _model->standardGenerator(generator->randomNumberGenerator());
   auto sequence = model_generator->drawSequence(size, phase);
@@ -69,7 +129,17 @@ FixedSequenceAtPosition::drawSequence(SGPtr<Standard> generator,
   return sequence;
 }
 
-/*================================  OTHERS  ==================================*/
+/*===============================  SERIALIZER  ===============================*/
+
+void FixedSequenceAtPosition::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
+}
+
+/*----------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 void FixedSequenceAtPosition::addSequence(Sequence& h) const {
   auto rng = _probabilities->standardGenerator()->randomNumberGenerator();
@@ -81,20 +151,6 @@ void FixedSequenceAtPosition::addSequence(Sequence& h) const {
        i++) {
     h[i] = _sequence[i-_position];
   }
-}
-
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
-
-FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
-                                                 int position,
-                                                 Sequence sequence,
-                                                 DiscreteIIDModelPtr distr)
-      : ProbabilisticModelDecoratorCrtp(model),
-        _position(position),
-        _sequence(sequence),
-        _probabilities(distr) {
 }
 
 /*----------------------------------------------------------------------------*/
