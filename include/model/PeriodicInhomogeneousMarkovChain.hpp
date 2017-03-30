@@ -53,29 +53,27 @@ using PeriodicInhomogeneousMarkovChainPtr
 class PeriodicInhomogeneousMarkovChain
     : public ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain> {
  public:
-  // Inner classes
-  struct Cache
-      : ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain>::Cache {
-    Matrix prefix_sum_matrix;
-  };
-
   // Tags
   class interpolation_algorithm {};
 
-  // Alias
-  using Base = ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain>;
-
+  // Aliases
   using Self = PeriodicInhomogeneousMarkovChain;
   using SelfPtr = PeriodicInhomogeneousMarkovChainPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  // Inner classes
+  struct Cache : Base::Cache {
+    Matrix prefix_sum_matrix;
+  };
+
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   PeriodicInhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
-  // Static methods
-  static PeriodicInhomogeneousMarkovChainPtr make(
-      std::vector<VariableLengthMarkovChainPtr> vlmcs);
+  /*============================[ STATIC METHODS ]============================*/
 
+  // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        interpolation_algorithm,
                        unsigned int alphabet_size,
@@ -85,10 +83,10 @@ class PeriodicInhomogeneousMarkovChain
                        std::vector<double> weights,
                        ProbabilisticModelPtr apriori);
 
-  // Virtual methods
-  void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
 
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
@@ -97,15 +95,28 @@ class PeriodicInhomogeneousMarkovChain
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
+
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
 
  private:
   // Instance variables
