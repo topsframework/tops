@@ -79,17 +79,16 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   class smoothed_histogram_stanke_algorithm {};
   class smoothed_histogram_kernel_density_algorithm {};
 
-  // Alias
-  using Base = ProbabilisticModelCrtp<DiscreteIIDModel>;
-
+  // Aliases
   using Self = DiscreteIIDModel;
   using SelfPtr = DiscreteIIDModelPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
 
   /**
    * Constructor. You should not call it directly.
-   * @param probabilities probability of each symbol be drawn by this model
+   * @param probabilities Probability of each symbol be drawn by this model
    * @see trainML()
    * @see trainSmoothedHistogramBurge()
    * @see trainSmoothedHistogramStanke()
@@ -97,30 +96,27 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   explicit DiscreteIIDModel(std::vector<Probability> probabilities);
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
+  // Trainer
 
   /**
    * Trains a new discrete iid model using the maximum likelihood method.
-   * @param training_set a list of sequences that will be used to train this model
+   * @param training_set A list of sequences used to train this model
    * @param alphabet_size \f$|X|\f$
-   * @see trainSmoothedHistogramBurge()
-   * @see trainSmoothedHistogramStanke()
-   * @see trainSmoothedHistogramKernelDensity()
-   * @return a trained discrete iid model
+   * @return A trained discrete iid model
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        maximum_likehood_algorithm,
                        unsigned int alphabet_size);
 
   /**
-   * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Burge].
-   * @param training_set a list of sequences that will be used to train this model
+   * Trains a new discrete iid model using the Smoothed Histogram Method
+   * defined by [Burge].
+   * @param training_set A list of sequences used to train this model
    * @param c TODO
    * @param max_length TODO
-   * @see trainML()
-   * @see trainSmoothedHistogramStanke()
-   * @see trainSmoothedHistogramKernelDensity()
-   * @return a trained discrete iid model
+   * @return A trained discrete iid model
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_burge_algorithm,
@@ -128,16 +124,14 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
                        unsigned int max_length);
 
   /**
-   * Trains a new discrete iid model using the Smoothed Histogram Method defined by [Stanke].
-   * @param training_set a list of sequences that will be used to train this model
+   * Trains a new discrete iid model using the Smoothed Histogram Method
+   * defined by [Stanke].
+   * @param training_set A list of sequences used to train this model
    * @param weights a list of weights of each sequence in training_set
    * @param max_length TODO
    * @param m TODO
    * @param slope TODO
-   * @see trainML()
-   * @see trainSmoothedHistogramBurge()
-   * @see trainSmoothedHistogramKernelDensity()
-   * @return a trained discrete iid model
+   * @return A trained discrete iid model
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_stanke_algorithm,
@@ -147,46 +141,61 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
                        double slope);
 
   /**
-   * Trains a new discrete iid model using the Smoothed Histogram Kernel Density Method defined by [Sheather].
-   * @param training_set a list of sequences that will be used to train this model
+   * Trains a new discrete iid model using the Smoothed Histogram Kernel
+   * Density Method defined by [Sheather].
+   * @param training_set A list of sequences used to train this model
    * @param max_length TODO
-   * @see trainML()
-   * @see trainSmoothedHistogramBurge()
-   * @see trainSmoothedHistogramStanke()
-   * @return a trained discrete iid model
+   * @return A trained discrete iid model
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_kernel_density_algorithm,
                        unsigned int max_length);
 
-  static std::vector<Probability> normalize(std::vector<double> probabilities);
-
-  // Overriden methods
+  // Others
 
   /**
-   * Evaluates the given position of a sequence.
-   * @param standardEvaluator standardEvaluator of sequences
-   * @param pos position within standardEvaluator's sequence to be evaluated
-   * @return \f$Pr(s[i])\f$
+   * Normalizes values into probabilities.
+   * @param probabilities A vector of real values
+   * @return A vector of probabilities, normalized accordingly to the mean
    */
+  static std::vector<Probability> normalize(std::vector<double> values);
+
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
+
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
-  /**
-   * Draws a new symbol in the ith position.
-   * @param generator Generator of sequences
-   * @param pos position of a symbol to be generated
-   * @param phase phase of a symbol to be generated
-   * @param context context to be considered in symbol generation
-   * @return \f$x,\ x \in X\f$
-   */
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
 
-  // Virtual methods
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
+
+  /*===========================[ VIRTUAL METHODS ]============================*/
 
   /**
    * Draws a new symbol.
@@ -195,26 +204,32 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   virtual Symbol draw(RandomNumberGeneratorPtr rng) const;
 
   /**
-   * Gets the probability of this model draws the given symbol.
+   * Gets the probability of this model drawing a given symbol.
    * @return \f$Pr(s)\f$
    */
   virtual Probability probabilityOf(Symbol s) const;
 
-  // Concrete methods
+  /*==========================[ CONCRETE METHODS ]============================*/
 
   /**
-   * Gets the probabilities this model draws each symbol.
+   * Gets a vector with probabilities of this model drawing each symbol
+   * of its alphabet.
    * @return \f$\{Pr(x)\},\ x \in X\f$
    */
   std::vector<Probability> probabilities();
 
+  /**
+   * Gets the model's alphabet size.
+   * @return \f$|X|\f$
+   */
   int alphabetSize() const;
 
  private:
   // Instance variables
   std::vector<Probability> _probabilities;
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
   static double kernel_normal(double x, double h);
   static double epanechnikov(double x, double h);
   static void band_den_bin(int n,
