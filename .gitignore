@@ -17,6 +17,8 @@ coverage/
 *.a
 *.dll
 *.so
+*.pdf
+*.svg
 
 # Make auxiliars
 #=================
@@ -37,3 +39,4 @@ doc/Doxyfile.mk
 #=====================
 *.swp
 *.swo
+
