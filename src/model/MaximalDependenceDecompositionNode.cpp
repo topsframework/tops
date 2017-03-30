@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "MaximalDependenceDecompositionNode.hpp"
+#include "model/MaximalDependenceDecompositionNode.hpp"
 
 // Standard headers
 #include <cmath>
