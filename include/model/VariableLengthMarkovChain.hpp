@@ -56,18 +56,18 @@ class VariableLengthMarkovChain
   class fixed_length_algorithm {};
   class interpolation_algorithm {};
 
-  // Alias
-  using Base = ProbabilisticModelCrtp<VariableLengthMarkovChain>;
-
+  // Aliases
   using Self = VariableLengthMarkovChain;
   using SelfPtr = VariableLengthMarkovChainPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   explicit VariableLengthMarkovChain(ContextTreePtr context_tree);
 
-  // Static methods
-  static VariableLengthMarkovChainPtr make(ContextTreePtr context_tree);
+  /*============================[ STATIC METHODS ]============================*/
 
+  // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        context_algorithm,
                        unsigned int alphabet_size,
@@ -89,15 +89,40 @@ class VariableLengthMarkovChain
                        double pseudo_counts,
                        ProbabilisticModelPtr apriori);
 
-  // Overriden methods
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
+
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
+
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
 
  private:
   // Instance variables

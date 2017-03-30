@@ -92,7 +92,7 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
                                  ProbabilisticModelPtr apriori) {
   auto tree = ContextTree::make(alphabet_size);
 
-  if (apriori != NULL) {
+  if (apriori != nullptr) {
     tree->initializeCounter(trainer->training_set(),
                             order, 0, weights);
     tree->pruneTreeSmallSampleSize(400);
@@ -107,17 +107,11 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
   return VariableLengthMarkovChain::make(tree);
 }
 
-/*=================================  OTHERS  =================================*/
-
-VariableLengthMarkovChainPtr VariableLengthMarkovChain::make(
-    ContextTreePtr context_tree) {
-  return VariableLengthMarkovChainPtr(
-    new VariableLengthMarkovChain(context_tree));
-}
-
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
 
 Probability
 VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
@@ -133,6 +127,42 @@ VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
+Probability VariableLengthMarkovChain::evaluateSequence(
+    SEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void VariableLengthMarkovChain::initializeCache(CEPtr<Standard> evaluator,
+                                                unsigned int phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+VariableLengthMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
+                                          unsigned int pos,
+                                          unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability VariableLengthMarkovChain::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
 Standard<Symbol>
 VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
@@ -146,6 +176,21 @@ VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
   return c->getDistribution()
           ->standardGenerator(generator->randomNumberGenerator())
           ->drawSymbol(pos, phase, context);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> VariableLengthMarkovChain::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void VariableLengthMarkovChain::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/
