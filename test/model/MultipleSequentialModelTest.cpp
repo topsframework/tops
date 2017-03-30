@@ -46,6 +46,7 @@ using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Sequence;
+using tops::model::ProbabilisticModelPtr;
 using tops::model::MultipleSequentialModel;
 using tops::model::MultipleSequentialModelPtr;
 
@@ -59,8 +60,9 @@ using tops::helper::createLoadedCoinIIDModel;
 class AMultipleSequentialModel : public testing::Test {
  protected:
   MultipleSequentialModelPtr mm = MultipleSequentialModel::make(
-    { createLoadedCoinIIDModel(), createMachlerVLMC() },
-    {3, 4});
+    std::vector<ProbabilisticModelPtr>{
+      createLoadedCoinIIDModel(), createMachlerVLMC() },
+    std::vector<int>{3, 4});
 };
 
 /*----------------------------------------------------------------------------*/
