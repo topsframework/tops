@@ -48,20 +48,43 @@ using DecodableModelPtr = std::shared_ptr<DecodableModel>;
  */
 class DecodableModel : public virtual ProbabilisticModel {
  public:
-  // Purely virtual methods
+  /*========================[ PURELY VIRTUAL METHODS ]========================*/
+
+  /**
+   * Factory of Simple/Cached Evaluators for labeled sequences.
+   * @param sequence Labeled sequence to be evaluated
+   * @param cached Type of Evaluator (Simple or Cached)
+   * @return New instance of EvaluatorPtr<Labeling>
+   */
   virtual EvaluatorPtr<Labeling> labelingEvaluator(
       const Labeling<Sequence>& sequence, bool cached = false) = 0;
 
+  /**
+   * Factory of Simple Generators for labeled sequences.
+   * @param rng Random Number Generator
+   * @return New instance of EvaluatorPtr<Labeling>
+   */
   virtual GeneratorPtr<Labeling> labelingGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
+  /**
+   * Factory of Simple Labelers
+   * @param sequence Input sequence to be labeled
+   * @return New instance of LabelerPtr
+   */
   virtual LabelerPtr labeler(
       const Sequence& sequence, bool cached = false) = 0;
 
+  /**
+   * Factory of Simple Calculators
+   * @param sequence Input sequence that will be used for calculations
+   * @return New instance of CalculatorPtr
+   */
   virtual CalculatorPtr calculator(
       const Sequence& sequence, bool cached = false) = 0;
 
-  // Destructor
+  /*==============================[ DESTRUCTOR ]==============================*/
+
   virtual ~DecodableModel() = default;
 };
 

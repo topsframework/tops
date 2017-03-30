@@ -154,7 +154,7 @@ auto DecodableModelCrtp<Derived>::states() const
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-auto DecodableModelCrtp<Derived>::make_shared() -> DerivedPtr {
+std::shared_ptr<Derived> DecodableModelCrtp<Derived>::make_shared() {
   return std::static_pointer_cast<Derived>(
     static_cast<Derived*>(this)->shared_from_this());
 }
