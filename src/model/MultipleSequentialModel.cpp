@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "MultipleSequentialModel.hpp"
+#include "model/MultipleSequentialModel.hpp"
 
 // Standard headers
 #include <cmath>
@@ -56,32 +56,10 @@ MultipleSequentialModel::MultipleSequentialModel(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-MultipleSequentialModelPtr MultipleSequentialModel::make(
-      std::vector<ProbabilisticModelPtr> models,
-      std::vector<int> max_length) {
-  return MultipleSequentialModelPtr(
-    new MultipleSequentialModel(models, max_length));
-}
-
-/*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 /*===============================  EVALUATOR  ================================*/
-
-void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
-                                              unsigned int /* phase */) {
-  evaluator->cache().evaluators.resize(_models.size());
-
-  for (unsigned int i = 0; i < _models.size(); i++)
-    evaluator->cache().evaluators[i]
-      = _models[i]->standardEvaluator(evaluator->sequence(), true);
-}
-
-/*----------------------------------------------------------------------------*/
 
 Probability
 MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
@@ -141,6 +119,26 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
         begin_of_not_limited, end_of_not_limited, phase);
 
   return product;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
+                                              unsigned int /* phase */) {
+  evaluator->cache().evaluators.resize(_models.size());
+
+  for (unsigned int i = 0; i < _models.size(); i++)
+    evaluator->cache().evaluators[i]
+      = _models[i]->standardEvaluator(evaluator->sequence(), true);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+MultipleSequentialModel::evaluateSymbol(CEPtr<Standard> evaluator,
+                                        unsigned int pos,
+                                        unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -210,6 +208,21 @@ MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
   }
   return _models.back()->standardGenerator(generator->randomNumberGenerator())
                        ->drawSymbol(pos, phase, context);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> MultipleSequentialModel::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void MultipleSequentialModel::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/
