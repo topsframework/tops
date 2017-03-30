@@ -129,22 +129,6 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 
 /*===============================  EVALUATOR  ================================*/
 
-void SimilarityBasedSequenceWeighting::initializeCache(
-    CEPtr<Standard> evaluator, unsigned int phase) {
-  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  prefix_sum_array.resize(evaluator->sequence().size());
-
-  auto sequence_size = evaluator->sequence().size();
-  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
-
-  for (unsigned int i = 0; i < sequence_size; i++)  {
-    prefix_sum_array[i]
-      = evaluateSequence(simple_evaluator, i, sequence_size, phase);
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
 Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
     unsigned int /* pos */,
@@ -200,6 +184,31 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
+void SimilarityBasedSequenceWeighting::initializeCache(
+    CEPtr<Standard> evaluator, unsigned int phase) {
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(evaluator->sequence().size());
+
+  auto sequence_size = evaluator->sequence().size();
+  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+
+  for (unsigned int i = 0; i < sequence_size; i++)  {
+    prefix_sum_array[i]
+      = evaluateSequence(simple_evaluator, i, sequence_size, phase);
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
+    CEPtr<Standard> evaluator,
+    unsigned int pos,
+    unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
 Probability SimilarityBasedSequenceWeighting::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
@@ -219,6 +228,21 @@ Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
     unsigned int /* phase */,
     const Sequence &/* context */) const {
   throw_exception(NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> SimilarityBasedSequenceWeighting::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void SimilarityBasedSequenceWeighting::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/
