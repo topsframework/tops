@@ -52,20 +52,22 @@ class SimilarityBasedSequenceWeighting
   // Tags
   class standard_training_algorithm {};
 
-  // Alias
-  using Base = ProbabilisticModelCrtp<SimilarityBasedSequenceWeighting>;
-
+  // Aliases
   using Self = SimilarityBasedSequenceWeighting;
   using SelfPtr = SimilarityBasedSequenceWeightingPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   SimilarityBasedSequenceWeighting(std::map<Sequence, unsigned int> counter,
                                    double normalizer,
                                    unsigned int skip_offset,
                                    unsigned int skip_length,
                                    Sequence skip_sequence);
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
+  // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        standard_training_algorithm,
                        unsigned int alphabet_size,
@@ -73,10 +75,10 @@ class SimilarityBasedSequenceWeighting
                        unsigned int skip_length,
                        Sequence skip_sequence);
 
-  // Overriden methods
-  void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
 
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
@@ -85,15 +87,28 @@ class SimilarityBasedSequenceWeighting
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
+
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
 
  private:
   // Instance variables
@@ -103,7 +118,8 @@ class SimilarityBasedSequenceWeighting
   Sequence _skip_sequence;
   double _normalizer;
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
   static double
   calculate_normalizer(unsigned int skip_length,
                        unsigned int skip_offset,
