@@ -27,7 +27,6 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
 #include "helper/Sequence.hpp"
 #include "helper/VariableLengthMarkovChain.hpp"
@@ -51,9 +50,7 @@ using tops::model::Sequence;
 using tops::model::ProbabilisticModelPtr;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::ProbabilisticModelDecoratorCrtp;
 using tops::model::PeriodicInhomogeneousMarkovChain;
-using tops::model::ProbabilisticModelDecoratorCrtpPtr;
 using tops::model::PeriodicInhomogeneousMarkovChainPtr;
 
 using tops::helper::createVLMCMC;
@@ -69,8 +66,9 @@ class APeriodicIMC: public testing::Test {
   PeriodicInhomogeneousMarkovChainPtr pimc;
 
   virtual void SetUp() {
-    pimc = PeriodicInhomogeneousMarkovChain::make({createMachlerVLMC(),
-                                                   createVLMCMC()});
+    pimc = PeriodicInhomogeneousMarkovChain::make(
+      std::vector<VariableLengthMarkovChainPtr>{
+        createMachlerVLMC(), createVLMCMC()});
   }
 };
 
@@ -133,28 +131,6 @@ TEST_F(APeriodicIMC, ShouldEvaluateASequenceWithPrefixSumArray) {
                 DoubleEq(DOUBLE(pimc->standardEvaluator(data)
                                     ->evaluateSequence(0, data.size()))));
   }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(APeriodicIMC, CanBeDecorated) {
-  auto dpimc = std::make_shared<ProbabilisticModelDecoratorCrtp<
-                                  PeriodicInhomogeneousMarkovChain>>(pimc);
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({0})->evaluateSequence(0, 1)),
-              DoubleEq(0.5));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({1})->evaluateSequence(0, 1)),
-              DoubleEq(0.5));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.9));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.1));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.5));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.5));
-  ASSERT_THAT(DOUBLE(dpimc->standardEvaluator({1, 0, 1})
-                          ->evaluateSequence(0, 3)),
-              DoubleEq(0.5 * 0.5 * 0.8));
 }
 
 /*----------------------------------------------------------------------------*/
