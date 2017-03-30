@@ -99,14 +99,18 @@ LabelerPtr DecodableModelCrtp<Derived>::labeler(
   return labeler(sequence, {}, cached);
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Derived>
 LabelerPtr DecodableModelCrtp<Derived>::labeler(
     const Sequence& sequence,
-    const std::vector<Sequence>& other_sequences, bool cached) {
-  if (cached)
-    return CachedLabeler<Derived>::make(make_shared(), sequence);
-  return SimpleLabeler<Derived>::make(make_shared(),
-                                      sequence, other_sequences);
+    const std::vector<Sequence>& other_sequences,
+    bool cached) {
+  using SL = SimpleLabeler<Derived>;
+  using CL = CachedLabeler<Derived>;
+
+  return cached ? CL::make(make_shared(), sequence, other_sequences)
+                : SL::make(make_shared(), sequence, other_sequences);
 }
 
 /*==============================  CALCULATOR  ================================*/
@@ -117,14 +121,18 @@ CalculatorPtr DecodableModelCrtp<Derived>::calculator(
   return calculator(sequence, {}, cached);
 }
 
+/*----------------------------------------------------------------------------*/
+
 template<typename Derived>
 CalculatorPtr DecodableModelCrtp<Derived>::calculator(
     const Sequence& sequence,
-    const std::vector<Sequence>& other_sequences, bool cached) {
-  if (cached)
-    return CachedCalculator<Derived>::make(make_shared(), sequence);
-  return SimpleCalculator<Derived>::make(make_shared(),
-                                         sequence, other_sequences);
+    const std::vector<Sequence>& other_sequences,
+    bool cached) {
+  using SC = SimpleCalculator<Derived>;
+  using CC = CachedCalculator<Derived>;
+
+  return cached ? CC::make(make_shared(), sequence, other_sequences)
+                : SC::make(make_shared(), sequence, other_sequences);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -170,7 +178,7 @@ auto DecodableModelCrtp<Derived>::states() const
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-auto DecodableModelCrtp<Derived>::make_shared() -> DerivedPtr {
+std::shared_ptr<Derived> DecodableModelCrtp<Derived>::make_shared() {
   return std::static_pointer_cast<Derived>(
     static_cast<Derived*>(this)->shared_from_this());
 }

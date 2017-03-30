@@ -48,7 +48,7 @@ class ProbabilisticModelCrtp;
  * @brief Alias of pointer to ProbabilisticModelCrtp.
  */
 template<typename Derived>
-using ProbabilisticModelPtrCrtp
+using ProbabilisticModelCrtpPtr
   = std::shared_ptr<ProbabilisticModelCrtp<Derived>>;
 
 /**
@@ -65,13 +65,14 @@ class ProbabilisticModelCrtp
     std::vector<Probability> prefix_sum_array;
   };
 
-  // Alias
+  // Aliases
   using Base = void;
+  using Self = ProbabilisticModelCrtp<Derived>;
+  using SelfPtr = ProbabilisticModelCrtpPtr<Derived>;
   using DerivedPtr = std::shared_ptr<Derived>;
 
   template<template<typename Target> class Decorator>
   using SEPtr = SimpleEvaluatorPtr<Decorator, Derived>;
-
   template<template<typename Target> class Decorator>
   using CEPtr = CachedEvaluatorPtr<Decorator, Derived>;
 
@@ -80,18 +81,48 @@ class ProbabilisticModelCrtp
 
   using SSPtr = SimpleSerializerPtr<Derived>;
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
+  // Factories
+
+  /**
+   * Make a std::shared_ptr<Derived>.
+   * @param args Any arguments, forwared to Derived's constructor
+   * @return New instance of new std::shared_ptr<Derived>
+   */
   template<typename... Args>
   static DerivedPtr make(Args&&... args);
 
+  // Trainer
+
+  /**
+   * Factory of Simple Trainers for non-supervised learning
+   * of Derived's parameters.
+   * @return New instance of TrainerPtr<Standard, Derived>
+   */
   static TrainerPtr<Standard, Derived> standardTrainer();
 
+  /**
+   * Factory of Fixed Trainers for non-supervised learning
+   * of Derived's parameters.
+   * @param model Trained model with predefined parameters
+   * @return New instance of TrainerPtr<Standard, Derived>
+   */
   static TrainerPtr<Standard, Derived> standardTrainer(DerivedPtr model);
 
+  /**
+   * Factory of Cached Trainers for non-supervised learning
+   * of Derived's parameters.
+   * @param tag Tag representing the training algorithm
+   * @param params Parameters for the training algorithn chosen
+   * @return New instance of TrainerPtr<Standard, Derived>
+   */
   template<typename Tag, typename... Args>
   static TrainerPtr<Standard, Derived> standardTrainer(Tag, Args&&... args);
 
-  // Overriden methods
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
+
   EvaluatorPtr<Standard>
   standardEvaluator(const Standard<Sequence>& sequence,
                     bool cached = false) override;
@@ -102,38 +133,108 @@ class ProbabilisticModelCrtp
 
   SerializerPtr serializer(TranslatorPtr translator) override;
 
-  // Purely virtual methods
+  /*========================[ PURELY VIRTUAL METHODS ]========================*/
+
+  // SimpleEvaluator
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a symbol of a SimpleEvaluator's standard sequence (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param pos Position within the full sequence
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[pos])\f$
+   */
   virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
                                      unsigned int pos,
                                      unsigned int phase) const = 0;
 
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a subsequence of a SimpleEvaluator's sequence (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param begin Position of the beginning of the subsequence
+   * @param end Position of the end of the subsequence, minus 1
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
+  virtual Probability evaluateSequence(SEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const = 0;
+
+  // CachedEvaluator
+
+  /**
+   * Lazily initializes the cache of a CachedEvaluator.
+   * @param evaluator Instance of CachedEvaluator
+   * @param phase Phase of the full sequence
+   */
+  virtual void initializeCache(CEPtr<Standard> evaluator,
+                               unsigned int phase) = 0;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a symbol of a CachedEvaluator's sequence (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param pos Position within the full sequence
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[pos])\f$
+   */
+  virtual Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                                     unsigned int pos,
+                                     unsigned int phase) const = 0;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a subsequence of a CachedEvaluator's sequence (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param begin Position of the beginning of the subsequence
+   * @param end Position of the end of the subsequence, minus 1
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
+  virtual Probability evaluateSequence(CEPtr<Standard> evaluator,
+                                       unsigned int begin,
+                                       unsigned int end,
+                                       unsigned int phase) const = 0;
+
+  // SimpleGenerator
+
+  /**
+   * Draws (given the trained model, randomly choose) a symbol
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Position of the symbol to be generated
+   * @param phase Phase of the sequence in wich the symbol belongs
+   * @param context Context to be considered when generating the symbol
+   * @return \f$x,\ x \in X\f$
+   */
   virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                                       unsigned int pos,
                                       unsigned int phase,
                                       const Sequence& context) const = 0;
 
-  // Virtual methods
-  virtual void initializeCache(CEPtr<Standard> evaluator,
-                               unsigned int phase);
-
-  virtual Probability evaluateSequence(SEPtr<Standard> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const;
-
-  virtual Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                                     unsigned int pos,
-                                     unsigned int phase) const;
-  virtual Probability evaluateSequence(CEPtr<Standard> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const;
-
+  /**
+   * Draws (given the trained model, randomly choose) a sequence
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Size of the sequence to be generated
+   * @param phase Phase of the sequence to be generated
+   * @return \f$x,\ x \in X\f$
+   */
   virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
                                           unsigned int size,
-                                          unsigned int phase) const;
+                                          unsigned int phase) const = 0;
 
-  virtual void serialize(SSPtr serializer);
+  // SimpleSerializer
+
+  /**
+   * Serializes (given the trained model, save its parameters
+   * in the disk using some file format) with a SimpleSerializer.
+   * @param serializer Instance of SimpleSerializer
+   */
+  virtual void serialize(SSPtr serializer) = 0;
 
  private:
   // Concrete methods
