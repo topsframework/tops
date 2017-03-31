@@ -18,6 +18,7 @@
 /***********************************************************************/
 
 // Standard headers
+#include <string>
 #include <sstream>
 
 // Interface header

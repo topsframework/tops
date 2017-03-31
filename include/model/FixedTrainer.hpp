@@ -22,6 +22,7 @@
 
 // Standard headers
 #include <memory>
+#include <utility>
 
 // Internal headers
 #include "model/Trainer.hpp"

@@ -20,6 +20,10 @@
 // Interface header
 #include "model/ExplicitDuration.hpp"
 
+// Standard headers
+#include <memory>
+#include <utility>
+
 // Internal headers
 #include "model/LazzyRange.hpp"
 

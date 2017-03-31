@@ -20,6 +20,9 @@
 #ifndef TOPS_MODEL_TRANSLATOR_
 #define TOPS_MODEL_TRANSLATOR_
 
+// Standard headers
+#include <memory>
+
 // Internal headers
 #include "model/MemberDelegator.hpp"
 #include "model/HiddenMarkovModelState.hpp"
