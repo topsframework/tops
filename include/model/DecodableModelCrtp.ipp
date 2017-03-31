@@ -18,7 +18,9 @@
 /***********************************************************************/
 
 // Standard headers
+#include <memory>
 #include <vector>
+#include <utility>
 
 namespace tops {
 namespace model {

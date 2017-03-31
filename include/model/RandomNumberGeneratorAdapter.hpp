@@ -23,6 +23,7 @@
 // Standard headers
 #include <memory>
 #include <random>
+#include <utility>
 
 // Internal headers
 #include "model/RandomNumberGenerator.hpp"

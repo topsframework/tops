@@ -22,6 +22,7 @@
 
 // Standard headers
 #include <memory>
+#include <utility>
 #include <typeinfo>
 #include <exception>
 

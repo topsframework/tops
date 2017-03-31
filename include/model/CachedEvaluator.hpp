@@ -22,7 +22,7 @@
 
 // Standard headers
 #include <memory>
-#include <type_traits>
+#include <utility>
 
 // Internal headers
 #include "model/Labeling.hpp"

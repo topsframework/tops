@@ -24,6 +24,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <utility>
 
 // Internal headers
 #include "model/ProbabilisticModel.hpp"

@@ -17,6 +17,9 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
+// Standard headers
+#include <utility>
+
 namespace tops {
 namespace model {
 

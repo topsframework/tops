@@ -41,7 +41,7 @@ class MaximalDependenceDecomposition;
  * @brief Alias of pointer to MaximalDependenceDecomposition.
  */
 using MaximalDependenceDecompositionPtr
- = std::shared_ptr<MaximalDependenceDecomposition>;
+  = std::shared_ptr<MaximalDependenceDecomposition>;
 
 /**
  * @class MaximalDependenceDecomposition

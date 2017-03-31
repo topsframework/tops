@@ -23,6 +23,7 @@
 // Standard headers
 #include <memory>
 #include <vector>
+#include <utility>
 
 // Internal headers
 #include "model/Sequence.hpp"

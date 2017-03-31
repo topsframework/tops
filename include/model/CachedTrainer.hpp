@@ -23,6 +23,7 @@
 // Standard headers
 #include <tuple>
 #include <memory>
+#include <utility>
 
 // Internal headers
 #include "model/Trainer.hpp"

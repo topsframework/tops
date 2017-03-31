@@ -21,9 +21,10 @@
 #define TOPS_MODEL_SIMILARITY_BASED_SEQUENCE_WEIGHTING_
 
 // Standard headers
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
+#include <utility>
 
 // Internal headers
 #include "model/ProbabilisticModel.hpp"
