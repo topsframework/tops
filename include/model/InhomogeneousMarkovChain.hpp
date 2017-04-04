@@ -50,24 +50,53 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 class InhomogeneousMarkovChain
     : public ProbabilisticModelCrtp<InhomogeneousMarkovChain> {
  public:
-  // Alias
-  using Base = ProbabilisticModelCrtp<InhomogeneousMarkovChain>;
+  // Aliases
+  using Self = InhomogeneousMarkovChain;
+  using SelfPtr = InhomogeneousMarkovChainPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   explicit InhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
 
-  // Overriden methods
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
+
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
+  Probability evaluateSequence(SEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const override;
+
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
 
-  // Virtual methods
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
+
+  /*===========================[ VIRTUAL METHODS ]============================*/
+
   virtual unsigned int maximumTimeValue();
 
  protected:

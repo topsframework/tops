@@ -51,16 +51,34 @@ using ProbabilisticModelPtr = std::shared_ptr<ProbabilisticModel>;
  */
 class ProbabilisticModel {
  public:
-  // Purely virtual methods
+  /*========================[ PURELY VIRTUAL METHODS ]========================*/
+
+  /**
+   * Factory of Simple/Cached Evaluators.
+   * @param sequence Sequence to be evaluated
+   * @param cached Type of Evaluator (Simple or Cached)
+   * @return New instance of EvaluatorPtr<Standard>
+   */
   virtual EvaluatorPtr<Standard> standardEvaluator(
       const Standard<Sequence>& sequence, bool cached = false) = 0;
 
+  /**
+   * Factory of Simple Generators.
+   * @param rng Random Number Generator
+   * @return New instance of EvaluatorPtr<Standard>
+   */
   virtual GeneratorPtr<Standard> standardGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
+  /**
+   * Factory of Simple Serializers.
+   * @param translator Visitor that serializes the files
+   * @return New instance of SerializerPtr
+   */
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
-  // Destructor
+  /*==============================[ DESTRUCTOR ]==============================*/
+
   virtual ~ProbabilisticModel() = default;
 };
 

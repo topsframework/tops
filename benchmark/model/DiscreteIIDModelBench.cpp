@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <vector>
+#include <utility>
 
 // External headers
 #include "benchmark/benchmark.h"

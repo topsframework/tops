@@ -20,6 +20,9 @@
 #ifndef TOPS_MODEL_MEMBER_DELEGATOR_
 #define TOPS_MODEL_MEMBER_DELEGATOR_
 
+// Standard headers
+#include <utility>
+
 // Internal headers
 #include "model/MemberDetector.hpp"
 

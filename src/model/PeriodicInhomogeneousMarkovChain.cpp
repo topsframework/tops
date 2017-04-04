@@ -100,19 +100,35 @@ PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
   return PeriodicInhomogeneousMarkovChain::make(vlmcs);
 }
 
-/*=================================  OTHERS  =================================*/
-
-PeriodicInhomogeneousMarkovChainPtr PeriodicInhomogeneousMarkovChain::make(
-    std::vector<VariableLengthMarkovChainPtr> vlmcs) {
-  return PeriodicInhomogeneousMarkovChainPtr(
-    new PeriodicInhomogeneousMarkovChain(vlmcs));
-}
-
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 /*===============================  EVALUATOR  ================================*/
+
+Probability
+PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+                                                 unsigned int pos,
+                                                 unsigned int phase) const {
+  auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
+  return vlmc->standardEvaluator(evaluator->sequence())
+             ->evaluateSymbol(pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
+                                                   unsigned int begin,
+                                                   unsigned int end,
+                                                   unsigned int phase) const {
+  Probability prob = 1;
+  for (unsigned int i = begin; i < end; i++)
+    prob *= evaluator->evaluateSymbol(i, phase);
+  return prob;
+}
+
+/*----------------------------------------------------------------------------*/
 
 void PeriodicInhomogeneousMarkovChain::initializeCache(
     CEPtr<Standard> evaluator, unsigned int /* phase */) {
@@ -135,25 +151,10 @@ void PeriodicInhomogeneousMarkovChain::initializeCache(
 /*----------------------------------------------------------------------------*/
 
 Probability
-PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+PeriodicInhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
                                                  unsigned int pos,
                                                  unsigned int phase) const {
-  auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
-  return vlmc->standardEvaluator(evaluator->sequence())
-             ->evaluateSymbol(pos, phase);
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability
-PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
-                                                   unsigned int begin,
-                                                   unsigned int end,
-                                                   unsigned int phase) const {
-  Probability prob = 1;
-  for (unsigned int i = begin; i < end; i++)
-    prob *= evaluator->evaluateSymbol(i, phase);
-  return prob;
+  return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -180,6 +181,19 @@ PeriodicInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 }
 
 /*----------------------------------------------------------------------------*/
+
+Standard<Sequence> PeriodicInhomogeneousMarkovChain::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void PeriodicInhomogeneousMarkovChain::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
+}
 
 }  // namespace model
 }  // namespace tops

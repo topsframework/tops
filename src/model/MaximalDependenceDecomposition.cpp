@@ -18,7 +18,7 @@
 /***********************************************************************/
 
 // Interface header
-#include "MaximalDependenceDecomposition.hpp"
+#include "model/MaximalDependenceDecomposition.hpp"
 
 // Standard headers
 #include <cmath>
@@ -274,25 +274,6 @@ void MaximalDependenceDecomposition::subset(
 
 /*==============================  EVALUATOR  =================================*/
 
-void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
-                                                     unsigned int phase) {
-  int slen = evaluator->sequence().size();
-  int clen = _consensus_sequence.size();
-
-  if (slen - clen + 1 <= 0) return;
-
-  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  prefix_sum_array.resize(slen - clen + 1);
-
-  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
-
-  for (int i = 0; i < slen - clen + 1; i++)
-    prefix_sum_array[i]
-      = evaluateSequence(simple_evaluator, i, i + clen, phase);
-}
-
-/*----------------------------------------------------------------------------*/
-
 Probability MaximalDependenceDecomposition::evaluateSymbol(
     SEPtr<Standard> evaluator,
     unsigned int pos,
@@ -313,6 +294,34 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
   Sequence subseq(first, last);
   std::vector<int> indexes;
   return _probabilityOf(subseq, _mdd_tree, indexes);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
+                                                     unsigned int phase) {
+  int slen = evaluator->sequence().size();
+  int clen = _consensus_sequence.size();
+
+  if (slen - clen + 1 <= 0) return;
+
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(slen - clen + 1);
+
+  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+
+  for (int i = 0; i < slen - clen + 1; i++)
+    prefix_sum_array[i]
+      = evaluateSequence(simple_evaluator, i, i + clen, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability MaximalDependenceDecomposition::evaluateSymbol(
+    CEPtr<Standard> evaluator,
+    unsigned int pos,
+    unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -344,6 +353,12 @@ Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
     unsigned int /* size */,
     unsigned int /* phase */) const {
   throw_exception(NotYetImplemented);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void MaximalDependenceDecomposition::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/

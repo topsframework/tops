@@ -44,6 +44,8 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  EVALUATOR  ================================*/
+
 Probability
 InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                          unsigned int pos,
@@ -57,6 +59,42 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 
 /*----------------------------------------------------------------------------*/
 
+Probability InhomogeneousMarkovChain::evaluateSequence(
+    SEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
+                                               unsigned int phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
+                                         unsigned int pos,
+                                         unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability InhomogeneousMarkovChain::evaluateSequence(
+    CEPtr<Standard> evaluator,
+    unsigned int begin,
+    unsigned int end,
+    unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
 Standard<Symbol>
 InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
                                      unsigned int pos,
@@ -69,6 +107,21 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
   }
 
   throw_exception(OutOfRange);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> InhomogeneousMarkovChain::drawSequence(
+    SGPtr<Standard> generator,
+    unsigned int size,
+    unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void InhomogeneousMarkovChain::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/

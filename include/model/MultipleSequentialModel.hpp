@@ -48,27 +48,25 @@ using MultipleSequentialModelPtr
 class MultipleSequentialModel
     : public ProbabilisticModelCrtp<MultipleSequentialModel> {
  public:
+  // Aliases
+  using Self = MultipleSequentialModel;
+  using SelfPtr = MultipleSequentialModelPtr;
+  using Base = ProbabilisticModelCrtp<Self>;
+
   // Inner classes
-  struct Cache : ProbabilisticModelCrtp<MultipleSequentialModel>::Cache {
+  struct Cache : Base::Cache {
     std::vector<EvaluatorPtr<Standard>> evaluators;
   };
 
-  // Alias
-  using Base = ProbabilisticModelCrtp<MultipleSequentialModel>;
+  /*=============================[ CONSTRUCTORS ]=============================*/
 
-  // Constructors
   MultipleSequentialModel(std::vector<ProbabilisticModelPtr> models,
                           std::vector<int> max_length);
 
-  // Static methods
-  static MultipleSequentialModelPtr make(
-      std::vector<ProbabilisticModelPtr> models,
-      std::vector<int> max_length);
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
 
-  // Overriden methods
-  void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
-
+  // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
@@ -77,15 +75,28 @@ class MultipleSequentialModel
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
                               const Sequence& context) const override;
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const override;
+
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
 
  private:
   // Instance variables

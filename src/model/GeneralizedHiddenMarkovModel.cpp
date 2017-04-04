@@ -24,6 +24,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <utility>
 #include <algorithm>
 
 // Internal headers
@@ -52,13 +53,32 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
+/*                           (Probabilistic Model)                            */
 /*----------------------------------------------------------------------------*/
 
 /*===============================  EVALUATOR  ================================*/
 
-void
-GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Standard> /* evaluator */,
-                                              unsigned int /* phase */) {
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
+                                             unsigned int /* pos */,
+                                             unsigned int /* phase */) const {
+  throw_exception(NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
+                                               unsigned int /* begin */,
+                                               unsigned int /* end */,
+                                               unsigned int /* phase */) const {
+  throw_exception(NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(
+    CEPtr<Standard> /* evaluator */, unsigned int /* phase */) {
   throw_exception(NotYetImplemented);
 }
 
@@ -81,54 +101,37 @@ GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Standard> /* evaluator */,
   throw_exception(NotYetImplemented);
 }
 
-/*----------------------------------------------------------------------------*/
+/*===============================  GENERATOR  ================================*/
 
-Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                             unsigned int /* pos */,
-                                             unsigned int /* phase */) const {
+Standard<Symbol>
+GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
+                                         unsigned int /* pos */,
+                                         unsigned int /* phase */,
+                                         const Sequence &/* context */) const {
   throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Standard> /* evaluator */,
-                                               unsigned int /* begin */,
-                                               unsigned int /* end */,
-                                               unsigned int /* phase */) const {
+Standard<Sequence>
+GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Standard> /* generator */,
+                                           unsigned int /* size */,
+                                           unsigned int /* phase */) const {
   throw_exception(NotYetImplemented);
 }
 
-/*----------------------------------------------------------------------------*/
+/*================================  LABELER  =================================*/
 
-void
-GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> /* evaluator */,
-                                              unsigned int /* phase */) {
-  throw_exception(NotYetImplemented);
+void GeneralizedHiddenMarkovModel::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/
-
-Probability
-GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> /* evaluator */,
-                                             unsigned /* int pos */,
-                                             unsigned /* int phase */) const {
-  throw_exception(NotYetImplemented);
-}
-
+/*                             OVERRIDEN METHODS                              */
+/*                             (Decodable Model)                              */
 /*----------------------------------------------------------------------------*/
 
-Probability
-GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
-  return evaluateSequence(
-    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
-}
-
-/*----------------------------------------------------------------------------*/
+/*===============================  EVALUATOR  ================================*/
 
 Probability
 GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> /* evaluator */,
@@ -162,17 +165,34 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
   return prob;
 }
 
-/*===============================  GENERATOR  ================================*/
+/*----------------------------------------------------------------------------*/
 
-Standard<Symbol>
-GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Standard> /* generator */,
-                                         unsigned int /* pos */,
-                                         unsigned int /* phase */,
-                                         const Sequence &/* context */) const {
+void GeneralizedHiddenMarkovModel::initializeCache(
+    CEPtr<Labeling> /* evaluator */, unsigned int /* phase */) {
   throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> /* evaluator */,
+                                             unsigned /* int pos */,
+                                             unsigned /* int phase */) const {
+  throw_exception(NotYetImplemented);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
+  return evaluateSequence(
+    static_cast<SEPtr<Labeling>>(evaluator), begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
 
 Labeling<Symbol>
 GeneralizedHiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
@@ -193,14 +213,6 @@ GeneralizedHiddenMarkovModel::drawSequence(SGPtr<Labeling> /* generator */,
 
 /*================================  LABELER  =================================*/
 
-void
-GeneralizedHiddenMarkovModel::initializeCache(CLPtr labeler) {
-  labeler->cache().observation_evaluators
-    = initializeObservationEvaluators(labeler->sequence(), true);
-}
-
-/*----------------------------------------------------------------------------*/
-
 Estimation<Labeling<Sequence>>
 GeneralizedHiddenMarkovModel::labeling(CLPtr labeler,
                                        const Labeler::method& method) const {
@@ -213,6 +225,13 @@ GeneralizedHiddenMarkovModel::labeling(CLPtr labeler,
                                labeler->cache().posterior_decoding);
   }
   return Estimation<Labeling<Sequence>>();
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CLPtr labeler) {
+  labeler->cache().observation_evaluators
+    = initializeObservationEvaluators(labeler->sequence(), true);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -236,13 +255,6 @@ GeneralizedHiddenMarkovModel::labeling(SLPtr labeler,
 
 /*==============================  CALCULATOR  ================================*/
 
-void GeneralizedHiddenMarkovModel::initializeCache(CCPtr calculator) {
-  calculator->cache().observation_evaluators
-    = initializeObservationEvaluators(calculator->sequence(), true);
-}
-
-/*----------------------------------------------------------------------------*/
-
 Probability GeneralizedHiddenMarkovModel::calculate(
     SCPtr calculator, const Calculator::direction& direction) const {
   Matrix probabilities;
@@ -259,6 +271,13 @@ Probability GeneralizedHiddenMarkovModel::calculate(
   }
 
   return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CCPtr calculator) {
+  calculator->cache().observation_evaluators
+    = initializeObservationEvaluators(calculator->sequence(), true);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -280,7 +299,6 @@ Probability GeneralizedHiddenMarkovModel::calculate(
 }
 
 /*=================================  OTHERS  =================================*/
-
 
 void GeneralizedHiddenMarkovModel::posteriorProbabilities(
     const Sequence& sequence,

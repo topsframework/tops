@@ -53,18 +53,20 @@ class MaximalDependenceDecomposition
   // Tags
   class standard_training_algorithm {};
 
-  // Alias
+  // Aliases
   using Base = ProbabilisticModelCrtp<MaximalDependenceDecomposition>;
-
   using Self = MaximalDependenceDecomposition;
   using SelfPtr = MaximalDependenceDecompositionPtr;
 
-  // Constructors
+  /*=============================[ CONSTRUCTORS ]=============================*/
+
   MaximalDependenceDecomposition(ConsensusSequence consensus_sequence,
                                  ProbabilisticModelPtr consensus_model,
                                  MaximalDependenceDecompositionNodePtr tree);
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
+  // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        standard_training_algorithm,
                        unsigned int alphabet_size,
@@ -72,10 +74,10 @@ class MaximalDependenceDecomposition
                        ProbabilisticModelPtr consensus_model,
                        unsigned int minimum_subset);
 
-  // Overriden methods
-  void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
+  /*-------------------------( Probabilistic Model )--------------------------*/
 
+  // SimpleEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
                              unsigned int phase) const override;
@@ -84,11 +86,18 @@ class MaximalDependenceDecomposition
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // CachedEvaluator
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase) override;
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
                                unsigned int phase) const override;
 
+  // SimpleGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
                               unsigned int pos,
                               unsigned int phase,
@@ -97,6 +106,9 @@ class MaximalDependenceDecomposition
                                   unsigned int size,
                                   unsigned int phase) const override;
 
+  // SimpleSerializer
+  void serialize(SSPtr serializer) override;
+
  private:
   // Instance variables
   MaximalDependenceDecompositionNodePtr _mdd_tree;
@@ -104,7 +116,8 @@ class MaximalDependenceDecomposition
   ProbabilisticModelPtr _consensus_model;
   std::vector<Probability> _prefix_sum_array;
 
-  // Static methods
+  /*============================[ STATIC METHODS ]============================*/
+
   static MaximalDependenceDecompositionNodePtr trainTree(
       std::vector<Sequence> training_set,
       int divmin,
@@ -138,10 +151,12 @@ class MaximalDependenceDecomposition
                      std::vector<Sequence>& nonconsensus,
                      ConsensusSequence consensus_sequence);
 
-  // Concrete methods
+  /*==========================[ CONCRETE METHODS ]============================*/
+
   Probability _probabilityOf(const Sequence& s,
                              MaximalDependenceDecompositionNodePtr node,
                              std::vector<int>& indexes) const;
+
   void _drawAux(Sequence& s, MaximalDependenceDecompositionNodePtr node) const;
 };
 

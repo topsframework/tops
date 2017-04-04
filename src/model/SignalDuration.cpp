@@ -22,6 +22,7 @@
 
 // Standard headers
 #include <limits>
+#include <memory>
 
 // Internal headers
 #include "model/SingleValueRange.hpp"

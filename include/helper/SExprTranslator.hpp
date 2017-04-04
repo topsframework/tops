@@ -23,6 +23,7 @@
 // Standard headers
 #include <memory>
 #include <string>
+#include <utility>
 
 // Internal headers
 #include "model/DiscreteIIDModel.hpp"

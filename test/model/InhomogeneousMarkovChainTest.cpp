@@ -28,7 +28,6 @@
 // ToPS headers
 #include "model/Sequence.hpp"
 #include "model/VariableLengthMarkovChain.hpp"
-#include "model/ProbabilisticModelDecoratorCrtp.hpp"
 
 #include "exception/OutOfRange.hpp"
 
@@ -55,8 +54,6 @@ using tops::model::InhomogeneousMarkovChain;
 using tops::model::VariableLengthMarkovChain;
 using tops::model::InhomogeneousMarkovChainPtr;
 using tops::model::VariableLengthMarkovChainPtr;
-using tops::model::ProbabilisticModelDecoratorCrtp;
-using tops::model::ProbabilisticModelDecoratorCrtpPtr;
 
 using tops::exception::OutOfRange;
 
@@ -110,28 +107,6 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
         DOUBLE(imc->standardEvaluator(data, true)->evaluateSequence(0, size)),
         DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, size)));
   }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AnInhomogeneousMarkovChain, CanBeDecorated) {
-  auto dimc = std::make_shared<
-        ProbabilisticModelDecoratorCrtp<InhomogeneousMarkovChain>>(imc);
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0})->evaluateSequence(0, 1)),
-              DoubleEq(0.50));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1})->evaluateSequence(0, 1)),
-              DoubleEq(0.50));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.90));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.10));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.50));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.50));
-  ASSERT_THAT(DOUBLE(dimc->standardEvaluator({1, 0, 1})
-                         ->evaluateSequence(0, 3)),
-              DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/

@@ -18,7 +18,8 @@
 /***********************************************************************/
 
 // Standard headers
-#include <math.h>
+#include <cmath>
+#include <string>
 #include <vector>
 
 // External headers

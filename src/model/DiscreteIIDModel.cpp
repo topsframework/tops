@@ -450,21 +450,67 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double>& data) {
 
 /*===============================  EVALUATOR  ================================*/
 
-Probability
-DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                 unsigned int pos,
-                                 unsigned int /* phase */) const {
+Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
+                                             unsigned int pos,
+                                             unsigned int /* phase */) const {
   return probabilityOf(evaluator->sequence()[pos]);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability DiscreteIIDModel::evaluateSequence(SEPtr<Standard> evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void DiscreteIIDModel::initializeCache(CEPtr<Standard> evaluator,
+                                       unsigned int phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability DiscreteIIDModel::evaluateSymbol(CEPtr<Standard> evaluator,
+                                             unsigned int pos,
+                                             unsigned int phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability DiscreteIIDModel::evaluateSequence(CEPtr<Standard> evaluator,
+                                               unsigned int begin,
+                                               unsigned int end,
+                                               unsigned int phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-DiscreteIIDModel::drawSymbol(SGPtr<Standard> generator,
-                             unsigned int /* pos */,
-                             unsigned int /* phase */,
-                             const Sequence &/* context */) const {
+Standard<Symbol> DiscreteIIDModel::drawSymbol(
+    SGPtr<Standard> generator,
+    unsigned int /* pos */,
+    unsigned int /* phase */,
+    const Sequence &/* context */) const {
   return draw(generator->randomNumberGenerator());
+}
+
+/*----------------------------------------------------------------------------*/
+
+Standard<Sequence> DiscreteIIDModel::drawSequence(SGPtr<Standard> generator,
+                                                  unsigned int size,
+                                                  unsigned int phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*===============================  SERIALIZER  ===============================*/
+
+void DiscreteIIDModel::serialize(SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
 /*----------------------------------------------------------------------------*/
