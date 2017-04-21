@@ -94,52 +94,70 @@ using GHMM = GeneralizedHiddenMarkovModel;
 
 class AGHMM : public testing::Test {
  protected:
-  GHMM::StatePtr signal_duration_state
-    = GHMM::State::make(
-      1, createVLMCMC(),
-      DiscreteIIDModel::make(std::vector<Probability>{{ 0.1, 0.0, 0.9 }}),
-      SignalDuration::make(3));
-
-  GHMM::StatePtr explicit_duration_state
-    = GHMM::State::make(
-      2, createFairCoinIIDModel(),
-      DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }}),
-      ExplicitDuration::make(
-        DiscreteIIDModel::make(std::vector<Probability>{{
-          0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.1 }})));
-
   DiscreteIIDModelPtr geometric_transition
     = DiscreteIIDModel::make(std::vector<Probability>{{ 0.3, 0.3, 0.4 }});
 
-  GHMM::StatePtr geometric_duration_state
-    = GHMM::State::make(
-      0, createMachlerVLMC(), geometric_transition,
-      GeometricDuration::make(0, geometric_transition));
+  DiscreteIIDModelPtr signal_transition
+    = DiscreteIIDModel::make(std::vector<Probability>{{ 0.1, 0.0, 0.9 }});
+
+  DiscreteIIDModelPtr explicit_transition
+    = DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }});
+
+  DiscreteIIDModelPtr explicit_duration
+    = DiscreteIIDModel::make(
+        std::vector<Probability>{{ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.1 }});
+
+  std::vector<GHMM::StatePtr> states {
+    GHMM::State::make( // Geometric duration state
+      /* id         */ 0,
+      /* emission   */ createMachlerVLMC(),
+      /* transition */ geometric_transition,
+      /* duration   */ GeometricDuration::make(0, geometric_transition)),
+
+    GHMM::State::make( // Signal duration state
+      /* id         */ 1,
+      /* emission   */ createVLMCMC(),
+      /* transition */ signal_transition,
+      /* duration   */ SignalDuration::make(3)),
+
+    GHMM::State::make( // Explicit duration state
+      /* id         */ 2,
+      /* emission   */ createFairCoinIIDModel(),
+      /* transition */ explicit_transition,
+      /* duration   */ ExplicitDuration::make(explicit_duration)),
+  };
+
+  DiscreteIIDModelPtr initial_probabilities
+    = DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }});
 
   GeneralizedHiddenMarkovModelPtr ghmm
-    = GeneralizedHiddenMarkovModel::make(
-      std::vector<GeneralizedHiddenMarkovModel::StatePtr>{
-        geometric_duration_state,
-        signal_duration_state,
-        explicit_duration_state },
-      DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }}),
-      3, 2);
+    = GeneralizedHiddenMarkovModel::make(states, initial_probabilities, 3, 2);
 
   virtual void SetUp() {
-    geometric_duration_state->addSuccessor(0);
-    geometric_duration_state->addSuccessor(1);
-    geometric_duration_state->addSuccessor(2);
-    geometric_duration_state->addPredecessor(0);
-    geometric_duration_state->addPredecessor(1);
-    geometric_duration_state->addPredecessor(2);
+    //  .-.
+    //  | v
+    //  (0) <--> (2)
+    //   ^        ^
+    //    `.    .´
+    //      v .´
+    //      (1)
+    //
+    // Graph of states
 
-    signal_duration_state->addSuccessor(0);
-    signal_duration_state->addSuccessor(2);
-    signal_duration_state->addPredecessor(0);
+    states[0]->addSuccessor(0);
+    states[0]->addSuccessor(1);
+    states[0]->addSuccessor(2);
+    states[0]->addPredecessor(0);
+    states[0]->addPredecessor(1);
+    states[0]->addPredecessor(2);
 
-    explicit_duration_state->addSuccessor(0);
-    explicit_duration_state->addPredecessor(0);
-    explicit_duration_state->addPredecessor(1);
+    states[1]->addSuccessor(0);
+    states[1]->addSuccessor(2);
+    states[1]->addPredecessor(0);
+
+    states[2]->addSuccessor(0);
+    states[2]->addPredecessor(0);
+    states[2]->addPredecessor(1);
   }
 };
 
