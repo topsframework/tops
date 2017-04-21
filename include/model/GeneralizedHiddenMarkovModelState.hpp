@@ -33,7 +33,7 @@ class GeneralizedHiddenMarkovModel;
 class DiscreteIIDModel;
 class ProbabilisticModel;
 template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class DurationState;
+template<typename Emission, typename Transition> class SimpleState;
 
 /**
  * @typedef StateTraits
@@ -42,7 +42,7 @@ template<typename Emission, typename Transition> class DurationState;
 template<>
 struct StateTraits<GeneralizedHiddenMarkovModel> {
   using State
-    = tops::model::DurationState<ProbabilisticModel, DiscreteIIDModel>;
+    = tops::model::SimpleState<ProbabilisticModel, DiscreteIIDModel>;
 };
 
 }  // namespace model

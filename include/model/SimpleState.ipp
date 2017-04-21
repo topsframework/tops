@@ -29,8 +29,19 @@ namespace model {
 
 template<typename E, typename T>
 SimpleState<E, T>::SimpleState(Id id, EmissionModelPtr emission,
+                                      TransitionModelPtr transition,
+                                      DurationPtr duration)
+    : Base(std::move(id), std::move(emission), std::move(transition),
+      std::move(duration)) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T>
+SimpleState<E, T>::SimpleState(Id id, EmissionModelPtr emission,
                                       TransitionModelPtr transition)
-    : Base(std::move(id), std::move(emission), std::move(transition)) {
+    : Base(std::move(id), std::move(emission), std::move(transition),
+      GeometricDuration::make(id, transition)) {
 }
 
 /*----------------------------------------------------------------------------*/

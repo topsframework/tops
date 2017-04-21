@@ -25,6 +25,7 @@
 #include <vector>
 
 // Internal headers
+#include "model/Duration.hpp"
 #include "model/Serializer.hpp"
 
 namespace tops {
@@ -63,6 +64,7 @@ class State {
   virtual Id id() const = 0;
   virtual EmissionModelPtr emission() = 0;
   virtual TransitionModelPtr transition() = 0;
+  virtual DurationPtr duration() = 0;
 
   virtual void addPredecessor(Id id) = 0;
   virtual std::vector<Id>& predecessors() = 0;

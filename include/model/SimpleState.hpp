@@ -26,6 +26,7 @@
 
 // Internal headers
 #include "model/StateCrtp.hpp"
+#include "model/GeometricDuration.hpp"
 
 namespace tops {
 namespace model {
@@ -64,6 +65,10 @@ class SimpleState
   // Constructors
   SimpleState(Id id, EmissionModelPtr emission,
                      TransitionModelPtr transition);
+
+  SimpleState(Id id, EmissionModelPtr emission,
+                     TransitionModelPtr transition,
+                     DurationPtr duration);
 };
 
 }  // namespace model

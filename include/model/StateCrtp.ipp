@@ -31,10 +31,12 @@ namespace model {
 
 template<typename E, typename T, typename D>
 StateCrtp<E, T, D>::StateCrtp(Id id, EmissionModelPtr emission,
-                                     TransitionModelPtr transition)
+                                     TransitionModelPtr transition,
+                                     DurationPtr duration)
     : _id(std::move(id)),
       _emission(std::move(emission)),
-      _transition(std::move(transition)) {
+      _transition(std::move(transition)),
+      _duration(std::move(duration)) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -77,6 +79,13 @@ auto StateCrtp<E, T, D>::emission() -> EmissionModelPtr {
 template<typename E, typename T, typename D>
 auto StateCrtp<E, T, D>::transition() -> TransitionModelPtr {
   return _transition;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+auto StateCrtp<E, T, D>::duration() -> DurationPtr {
+  return _duration;
 }
 
 /*----------------------------------------------------------------------------*/

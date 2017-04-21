@@ -27,7 +27,7 @@
 
 // Internal headers
 #include "model/Matrix.hpp"
-#include "model/DurationState.hpp"
+#include "model/SimpleState.hpp"
 #include "model/DecodableModelCrtp.hpp"
 
 namespace tops {

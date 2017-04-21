@@ -54,9 +54,10 @@ class StateCrtp
       public virtual State<EmissionModel, TransitionModel> {
  public:
   // Alias
+  using Base = State<EmissionModel, TransitionModel>;
+
   using Self = StateCrtp<EmissionModel, TransitionModel, Derived>;
   using SelfPtr = std::shared_ptr<Self>;
-  using Base = void;
 
   using DerivedPtr = std::shared_ptr<Derived>;
 
@@ -76,6 +77,7 @@ class StateCrtp
   Id id() const override;
   EmissionModelPtr emission() override;
   TransitionModelPtr transition() override;
+  DurationPtr duration() override;
 
   void addPredecessor(Id id) override;
   std::vector<Id>& predecessors() override;
@@ -91,12 +93,14 @@ class StateCrtp
  protected:
   // Constructors
   StateCrtp(Id id, EmissionModelPtr emission,
-                   TransitionModelPtr transition);
+                   TransitionModelPtr transition,
+                   DurationPtr duration);
 
   // Instance variables
   Id _id;
   EmissionModelPtr _emission;
   TransitionModelPtr _transition;
+  DurationPtr _duration;
   std::vector<Id> _predecessors;
   std::vector<Id> _successors;
 
