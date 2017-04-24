@@ -102,7 +102,6 @@ class MultipleSequentialModel
   // Instance variables
   std::vector<ProbabilisticModelPtr> _models;
   std::vector<int> _max_length;
-  unsigned int _idx_not_limited;
 };
 
 }  // namespace model

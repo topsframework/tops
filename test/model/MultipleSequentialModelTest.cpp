@@ -71,36 +71,18 @@ class AMultipleSequentialModel : public testing::Test {
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
   ASSERT_THAT(
-      DOUBLE(mm->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
-      DoubleNear(0.1600002, 1e-4));
-  ASSERT_THAT(
-      DOUBLE(mm->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4)),
-      DoubleNear(0.0159999, 1e-4));
-  ASSERT_THAT(
-      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-               ->evaluateSequence(0, 13)),
-      DoubleNear(8.19206364e-9, 1e-4));
+      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0})
+               ->evaluateSequence(0, 7)),
+      DoubleNear(0.0001024, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1}, true)
-                       ->evaluateSequence(0, 3)),
-              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1})
-                                  ->evaluateSequence(0, 3)), 1e-4));
-
-  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1, 0}, true)
-                       ->evaluateSequence(0, 4)),
-              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1, 0})
-                                  ->evaluateSequence(0, 4)), 1e-4));
-
-  ASSERT_THAT(
-    DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
-             ->evaluateSequence(0, 13)),
-    DoubleNear(
-      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-               ->evaluateSequence(0, 13)), 1e-4));
+  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0}, true)
+                       ->evaluateSequence(0, 7)),
+              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0})
+                                  ->evaluateSequence(0, 7)), 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/
