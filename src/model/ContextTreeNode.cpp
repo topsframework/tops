@@ -23,6 +23,7 @@
 // Standard headers
 #include <vector>
 #include <cstdlib>
+#include <iostream>
 
 namespace tops {
 namespace model {
@@ -52,6 +53,23 @@ ContextTreeNodePtr ContextTreeNode::make(int alphabet_size) {
 
 /*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+void ContextTreeNode::print(unsigned int i) {
+  for (auto j = 0u; j < i; j++)
+    std::cout << "  ";
+  std::cout << "(" << id() << "): ";
+  for (auto c : _counter) {
+    std::cout << c << "  ";
+  }
+  std::cout << std::endl;
+  if (!isLeaf()) {
+    for (auto c : _child) {
+      c->print(i+1);
+    }
+  }
+}
+
 /*----------------------------------------------------------------------------*/
 
 int ContextTreeNode::alphabet_size() const {
