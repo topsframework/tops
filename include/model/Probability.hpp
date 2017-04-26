@@ -27,6 +27,7 @@ namespace tops {
 namespace model {
 
 using Probability = probability::Probability<double, 4>;
+using Probabilities = std::vector<Probability>;
 
 }  // namespace model
 }  // namespace tops

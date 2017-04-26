@@ -30,7 +30,8 @@
 namespace tops {
 namespace model {
 
-typedef std::vector<Symbol> Sequence;
+using Sequence = std::vector<Symbol>;
+using Sequences = std::vector<Sequence>;
 
 }  // namespace model
 }  // namespace tops
