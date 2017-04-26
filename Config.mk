@@ -36,7 +36,7 @@ LDLIBS          += # Linker paths
 # Flags
 # =======
 CPPFLAGS        += # Precompiler Flags
-CXXFLAGS        += -std=c++14 \
+CXXFLAGS        += -std=c++1z \
                    -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast \
                    -Wcast-align -Wmissing-include-dirs -Wredundant-decls \
                    -Werror -O2
