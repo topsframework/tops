@@ -26,39 +26,53 @@
 
 // Internal headers
 #include "model/StateCrtp.hpp"
-#include "model/GeometricDuration.hpp"
 
 namespace tops {
 namespace model {
 
 // Forward declaration
-template<typename EmissionModel, typename TransitionModel>
+template<typename EmissionModel, typename TransitionModel,
+         std::size_t dimensions, bool... gaps>
 class SimpleState;
 
 /**
  * @typedef SimpleStatePtr
  * @brief Alias of pointer to SimpleState.
  */
-template<typename EmissionModel, typename TransitionModel>
+template<typename EmissionModel, typename TransitionModel,
+         std::size_t dimensions, bool... gaps>
 using SimpleStatePtr
-  = std::shared_ptr<SimpleState<EmissionModel, TransitionModel>>;
+  = std::shared_ptr<SimpleState<EmissionModel, TransitionModel,
+                                dimensions, gaps...>>;
 
 /**
  * @class SimpleState
  * @brief TODO
  */
-template<typename EmissionModel, typename TransitionModel>
+template<typename EmissionModel, typename TransitionModel,
+         std::size_t dimensions, bool... gaps>
 class SimpleState
     : public StateCrtp<EmissionModel, TransitionModel,
-                       SimpleState<EmissionModel, TransitionModel>> {
+                       SimpleState<EmissionModel, TransitionModel,
+                                   dimensions, gaps...>> {
  public:
+  // Assertions
+  static_assert(dimensions >= 1,
+      "Minimal dimension accepted is 1");
+  static_assert(sizeof...(gaps) == dimensions,
+      "Number of gaps is not the same of the indicated dimension");
+
   // Alias
-  using Self = SimpleState<EmissionModel, TransitionModel>;
+  using Self = SimpleState<EmissionModel, TransitionModel,
+                           dimensions, gaps...>;
   using SelfPtr = std::shared_ptr<Self>;
 
   using Base = StateCrtp<EmissionModel, TransitionModel, Self>;
 
   using Id = typename Base::Id;
+  using Position = typename Base::Position;
+  using Dimension = typename Base::Dimension;
+
   using EmissionModelPtr = typename Base::EmissionModelPtr;
   using TransitionModelPtr = typename Base::TransitionModelPtr;
 
@@ -69,6 +83,15 @@ class SimpleState
   SimpleState(Id id, EmissionModelPtr emission,
                      TransitionModelPtr transition,
                      DurationPtr duration);
+
+  // Overriden methods
+  bool hasGap(Dimension dim) const override;
+  bool isSilent() const override;
+
+  Position delta(Dimension dim) const override;
+
+ private:
+  std::vector<bool> _gaps;
 };
 
 }  // namespace model

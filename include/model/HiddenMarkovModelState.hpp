@@ -31,8 +31,11 @@ namespace model {
 class HiddenMarkovModel;
 
 class DiscreteIIDModel;
+using IID = DiscreteIIDModel;
+
 template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+template<typename EmissionModel, typename TransitionModel,
+         std::size_t dimension, bool... gaps> class SimpleState;
 
 /**
  * @typedef StateTraits
@@ -40,7 +43,7 @@ template<typename Emission, typename Transition> class SimpleState;
  */
 template<>
 struct StateTraits<HiddenMarkovModel> {
-  using State = tops::model::SimpleState<DiscreteIIDModel, DiscreteIIDModel>;
+  using State = SimpleState<IID, IID, 1, false>;
 };
 
 }  // namespace model

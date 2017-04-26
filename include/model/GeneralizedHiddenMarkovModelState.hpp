@@ -30,10 +30,15 @@ namespace model {
 // Forward declarations
 class GeneralizedHiddenMarkovModel;
 
-class DiscreteIIDModel;
 class ProbabilisticModel;
+using Model = ProbabilisticModel;
+
+class DiscreteIIDModel;
+using IID = DiscreteIIDModel;
+
 template<typename Model> struct StateTraits;
-template<typename Emission, typename Transition> class SimpleState;
+template<typename EmissionModel, typename TransitionModel,
+         std::size_t dimension, bool... gaps> class SimpleState;
 
 /**
  * @typedef StateTraits
@@ -41,8 +46,7 @@ template<typename Emission, typename Transition> class SimpleState;
  */
 template<>
 struct StateTraits<GeneralizedHiddenMarkovModel> {
-  using State
-    = tops::model::SimpleState<ProbabilisticModel, DiscreteIIDModel>;
+  using State = SimpleState<Model, IID, 1, false>;
 };
 
 }  // namespace model

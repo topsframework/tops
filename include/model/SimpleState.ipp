@@ -20,6 +20,9 @@
 // Standard headers
 #include <utility>
 
+// Internal headers
+#include "model/GeometricDuration.hpp"
+
 namespace tops {
 namespace model {
 
@@ -27,21 +30,43 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T>
-SimpleState<E, T>::SimpleState(Id id, EmissionModelPtr emission,
-                                      TransitionModelPtr transition,
-                                      DurationPtr duration)
+template<typename E, typename T, std::size_t d, bool... gaps>
+SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
+                                                  TransitionModelPtr transition,
+                                                  DurationPtr duration)
     : Base(std::move(id), std::move(emission), std::move(transition),
-      std::move(duration)) {
+      std::move(duration)), _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T>
-SimpleState<E, T>::SimpleState(Id id, EmissionModelPtr emission,
-                                      TransitionModelPtr transition)
+template<typename E, typename T, std::size_t d, bool... gaps>
+SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
+                                                  TransitionModelPtr transition)
     : Base(std::move(id), std::move(emission), std::move(transition),
-      GeometricDuration::make(id, transition)) {
+      GeometricDuration::make(id, transition)), _gaps{ gaps... } {
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, std::size_t d, bool... gaps>
+bool SimpleState<E, T, d, gaps...>::isSilent() const {
+  return (... && gaps);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, std::size_t d, bool... gaps>
+bool SimpleState<E, T, d, gaps...>::hasGap(Dimension dim) const {
+  return _gaps.at(dim - 1);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, std::size_t d, bool... gaps>
+auto SimpleState<E, T, d, gaps...>::delta(Dimension dim) const
+    -> Position {
+  return hasGap(dim) ? 0 : 1;
 }
 
 /*----------------------------------------------------------------------------*/

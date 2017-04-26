@@ -55,13 +55,14 @@ class StateCrtp
  public:
   // Alias
   using Base = State<EmissionModel, TransitionModel>;
-
   using Self = StateCrtp<EmissionModel, TransitionModel, Derived>;
   using SelfPtr = std::shared_ptr<Self>;
-
   using DerivedPtr = std::shared_ptr<Derived>;
 
-  using Id = unsigned int;
+  using Id = typename Base::Id;
+  using Position = typename Base::Position;
+  using Dimension = typename Base::Dimension;
+
   using EmissionModelPtr = std::shared_ptr<EmissionModel>;
   using TransitionModelPtr = std::shared_ptr<TransitionModel>;
 
@@ -98,9 +99,11 @@ class StateCrtp
 
   // Instance variables
   Id _id;
+
   EmissionModelPtr _emission;
   TransitionModelPtr _transition;
   DurationPtr _duration;
+
   std::vector<Id> _predecessors;
   std::vector<Id> _successors;
 

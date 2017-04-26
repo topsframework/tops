@@ -23,9 +23,12 @@
 // Standard headers
 #include <memory>
 #include <vector>
+#include <utility>
 
 // Internal headers
+#include "model/Matrix.hpp"
 #include "model/Duration.hpp"
+#include "model/Sequence.hpp"
 #include "model/Serializer.hpp"
 
 namespace tops {
@@ -54,7 +57,10 @@ class State {
   using Self = State<EmissionModel, TransitionModel>;
   using SelfPtr = std::shared_ptr<Self>;
 
-  using Id = unsigned int;
+  using Id = std::size_t;
+  using Position = std::size_t;
+  using Dimension = std::size_t;
+
   using EmissionModelPtr = std::shared_ptr<EmissionModel>;
   using TransitionModelPtr = std::shared_ptr<TransitionModel>;
 
@@ -73,6 +79,11 @@ class State {
   virtual void addSuccessor(Id id) = 0;
   virtual std::vector<Id>& successors() = 0;
   virtual const std::vector<Id>& successors() const = 0;
+
+  virtual bool hasGap(Dimension dim) const = 0;
+  virtual bool isSilent() const = 0;
+
+  virtual Position delta(Dimension dim) const = 0;
 
   // Destructor
   virtual ~State() = default;
