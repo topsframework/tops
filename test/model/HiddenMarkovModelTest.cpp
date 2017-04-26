@@ -330,10 +330,12 @@ TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
     Eq("(HiddenMarkovModel: "
          "(HMM::State: "
            "(DiscreteIIDModel: 0.500000 0.500000) "
-           "(DiscreteIIDModel: 0.700000 0.300000)) "
+           "(DiscreteIIDModel: 0.700000 0.300000) "
+           "(GeometricDuration: maximumDuration = 1)) "
          "(HMM::State: "
            "(DiscreteIIDModel: 0.200000 0.800000) "
-           "(DiscreteIIDModel: 0.500000 0.500000)))"));
+           "(DiscreteIIDModel: 0.500000 0.500000) "
+           "(GeometricDuration: maximumDuration = 1)))"));
 }
 
 /*----------------------------------------------------------------------------*/

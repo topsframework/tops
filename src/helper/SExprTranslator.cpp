@@ -121,6 +121,8 @@ void SExprTranslator::translate(Ptr<model::HiddenMarkovModel::State> state) {
   state->emission()->serializer(make_shared())->serialize();
   _sexpr += " ";
   state->transition()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->duration()->serializer(make_shared())->serialize();
   _sexpr += ")";
 }
 
