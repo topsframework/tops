@@ -33,6 +33,7 @@
 #include "model/InhomogeneousMarkovChain.hpp"
 #include "model/MaximalDependenceDecomposition.hpp"
 #include "model/MultipleSequentialModel.hpp"
+#include "model/PairHiddenMarkovModel.hpp"
 #include "model/PeriodicInhomogeneousMarkovChain.hpp"
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/SimilarityBasedSequenceWeighting.hpp"
@@ -86,6 +87,8 @@ class SExprTranslator : public model::Translator {
 
   void translate(
     Ptr<typename model::HiddenMarkovModel::State> state) override;
+  void translate(
+    Ptr<typename model::PairHiddenMarkovModel::State> state) override;
   void translate(
     Ptr<typename model::GeneralizedHiddenMarkovModel::State> state) override;
 

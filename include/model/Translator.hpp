@@ -26,6 +26,7 @@
 // Internal headers
 #include "model/MemberDelegator.hpp"
 #include "model/HiddenMarkovModelState.hpp"
+#include "model/PairHiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
 
 namespace tops {
@@ -70,6 +71,7 @@ class Translator : public std::enable_shared_from_this<Translator> {
   using Ptr = std::shared_ptr<T>;
 
   using HMM = HiddenMarkovModel;
+  using PHMM = PairHiddenMarkovModel;
   using GHMM = GeneralizedHiddenMarkovModel;
 
   // Purely virtual functions
@@ -88,6 +90,7 @@ class Translator : public std::enable_shared_from_this<Translator> {
 
   virtual void translate(Ptr<typename StateTraits<HMM>::State> state) = 0;
   virtual void translate(Ptr<typename StateTraits<GHMM>::State> state) = 0;
+  virtual void translate(Ptr<typename StateTraits<PHMM>::State> state) = 0;
 
   virtual void translate(Ptr<SignalDuration> duration) = 0;
   virtual void translate(Ptr<ExplicitDuration> duration) = 0;

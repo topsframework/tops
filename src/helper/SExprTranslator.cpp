@@ -129,6 +129,19 @@ void SExprTranslator::translate(Ptr<model::HiddenMarkovModel::State> state) {
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(
+    Ptr<model::PairHiddenMarkovModel::State> state) {
+  _sexpr += "(PHMM::State: ";
+  state->emission()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->transition()->serializer(make_shared())->serialize();
+  _sexpr += " ";
+  state->duration()->serializer(make_shared())->serialize();
+  _sexpr += ")";
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(
     Ptr<model::GeneralizedHiddenMarkovModel::State> state) {
   _sexpr += "(GHMM::State: ";
   state->emission()->serializer(make_shared())->serialize();
