@@ -29,7 +29,9 @@
 namespace tops {
 namespace model {
 
-using Matrix = std::vector<std::vector<Probability>>;
+using Matrix = std::vector<Probabilities>;
+
+using Cube = std::vector<Matrix>;
 
 }  // namespace model
 }  // namespace tops
