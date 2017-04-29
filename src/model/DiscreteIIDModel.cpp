@@ -535,6 +535,13 @@ Probability DiscreteIIDModel::probabilityOf(Symbol s) const {
 }
 
 /*----------------------------------------------------------------------------*/
+
+Probability DiscreteIIDModel::probabilityOf(Symbol s1, Symbol s2) const {
+  if (s1 >= _probabilities.size() || s2 >= _probabilities.size()) return 0;
+  return _probabilities[s1] * _probabilities[s2];
+}
+
+/*----------------------------------------------------------------------------*/
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
