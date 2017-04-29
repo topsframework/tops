@@ -359,7 +359,7 @@ Labeling<Symbol> HiddenMarkovModel::drawSymbol(SGPtr<Labeling> generator,
                         : _states[context[pos-1]]->transition()->draw(rng);
   Symbol x = _states[y]->emission()->draw(rng);
 
-  return Labeling<Symbol>(x, y);
+  return Labeling<Symbol>(x, Sequence{y});
 }
 
 /*----------------------------------------------------------------------------*/
@@ -371,7 +371,7 @@ Labeling<Sequence> HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
   for (unsigned int i = 0; i < size; i++) {
     auto symbol_labeling = drawSymbol(generator, i, phase, y);
     x.push_back(symbol_labeling.observation());
-    y.push_back(symbol_labeling.label());
+    y.push_back(symbol_labeling.label().back());
   }
   return Labeling<Sequence>(x, y);
 }

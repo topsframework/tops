@@ -28,14 +28,14 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-Labeling<Target>::Labeling(Target observation, Target label)
+Labeling<Target>::Labeling(Target observation, Sequence label)
     : _observation(std::move(observation)), _label(std::move(label)) {
 }
 
 template<typename Target>
 Labeling<Target>::Labeling(Target observation,
                            std::vector<Target> other_observations,
-                           Target label)
+                           Sequence label)
     : _observation(std::move(observation)),
       _other_observations(other_observations),
       _label(std::move(label)) {
@@ -75,15 +75,15 @@ std::vector<Target>& Labeling<Target>::other_observations() {
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-const Target& Labeling<Target>::label() const {
+const Sequence& Labeling<Target>::label() const {
   return _label;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Target>
-Target& Labeling<Target>::label() {
-  return const_cast<Target&>(static_cast<const Labeling*>(this)->label());
+Sequence& Labeling<Target>::label() {
+  return const_cast<Sequence&>(static_cast<const Labeling*>(this)->label());
 }
 
 /*----------------------------------------------------------------------------*/

@@ -20,6 +20,9 @@
 #ifndef TOPS_MODEL_LABELING_
 #define TOPS_MODEL_LABELING_
 
+// Internal headers
+#include "model/Sequence.hpp"
+
 namespace tops {
 namespace model {
 
@@ -36,10 +39,10 @@ class Labeling {
  public:
   // Constructors
   Labeling() = default;
-  Labeling(Target observation, Target label);
+  Labeling(Target observation, Sequence label);
   Labeling(Target observation,
            std::vector<Target> other_observations,
-           Target label);
+           Sequence label);
 
   // Concrete Getters
   const Target& observation() const;
@@ -48,14 +51,14 @@ class Labeling {
   const std::vector<Target>& other_observations() const;
   std::vector<Target>& other_observations();
 
-  const Target& label() const;
-  Target& label();
+  const Sequence& label() const;
+  Sequence& label();
 
  private:
   // Instance variables
   Target _observation;
   std::vector<Target> _other_observations;
-  Target _label;
+  Sequence _label;
 };
 
 }  // namespace model
