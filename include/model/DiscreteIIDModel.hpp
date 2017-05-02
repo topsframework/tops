@@ -96,6 +96,16 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   explicit DiscreteIIDModel(std::vector<Probability> probabilities);
 
+  /**
+   * Constructor. You should not call it directly.
+   * @param probabilities Probability of each symbol be drawn by this model
+   * @see trainML()
+   * @see trainSmoothedHistogramBurge()
+   * @see trainSmoothedHistogramStanke()
+   * @see trainSmoothedHistogramKernelDensity()
+   */
+  explicit DiscreteIIDModel(std::vector<Probabilities> probabilities);
+
   /*============================[ STATIC METHODS ]============================*/
 
   // Trainer
@@ -233,6 +243,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
  private:
   // Instance variables
   std::vector<Probability> _probabilities;
+  std::size_t _alphabet_size;
 
   /*============================[ STATIC METHODS ]============================*/
 

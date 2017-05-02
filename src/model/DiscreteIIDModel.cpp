@@ -37,7 +37,19 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 DiscreteIIDModel::DiscreteIIDModel(std::vector<Probability> probabilities)
-    : _probabilities(probabilities) {
+    : _probabilities(probabilities), _alphabet_size(probabilities.size()) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+DiscreteIIDModel::DiscreteIIDModel(std::vector<Probabilities> probabilities)
+    : _probabilities(probabilities.size() * probabilities.size()),
+      _alphabet_size(probabilities.size()) {
+  for (unsigned int i = 0; i < probabilities.size(); i++) {
+    for (unsigned int j = 0; j < probabilities[i].size(); j++) {
+      _probabilities[i * _alphabet_size + j] = probabilities[i][j];
+    }
+  }
 }
 
 /*----------------------------------------------------------------------------*/
@@ -537,8 +549,8 @@ Probability DiscreteIIDModel::probabilityOf(Symbol s) const {
 /*----------------------------------------------------------------------------*/
 
 Probability DiscreteIIDModel::probabilityOf(Symbol s1, Symbol s2) const {
-  if (s1 >= _probabilities.size() || s2 >= _probabilities.size()) return 0;
-  return _probabilities[s1] * _probabilities[s2];
+  if (s1 >= _alphabet_size || s2 >= _alphabet_size) return 0;
+  return _probabilities[s1*_alphabet_size + s2];
 }
 
 /*----------------------------------------------------------------------------*/
