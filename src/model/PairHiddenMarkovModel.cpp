@@ -34,8 +34,8 @@ namespace model {
 
 PairHiddenMarkovModel::PairHiddenMarkovModel(
     std::vector<StatePtr> states,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size)
+    std::size_t state_alphabet_size,
+    std::size_t observation_alphabet_size)
     : _states(std::move(states)),
       _state_alphabet_size(std::move(state_alphabet_size)),
       _observation_alphabet_size(std::move(observation_alphabet_size)) {

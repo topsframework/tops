@@ -51,7 +51,7 @@ using PairHiddenMarkovModelPtr = std::shared_ptr<PairHiddenMarkovModel>;
  */
 class PairHiddenMarkovModel {
  public:
-  // Alias
+  // Aliases
   using Self = PairHiddenMarkovModel;
   using SelfPtr = PairHiddenMarkovModelPtr;
   using Base = void;
@@ -69,8 +69,8 @@ class PairHiddenMarkovModel {
   /*=============================[ CONSTRUCTORS ]=============================*/
 
   PairHiddenMarkovModel(std::vector<StatePtr> states,
-                        unsigned int state_alphabet_size,
-                        unsigned int observation_alphabet_size);
+                        std::size_t state_alphabet_size,
+                        std::size_t observation_alphabet_size);
 
   /*==========================[ CONCRETE METHODS ]============================*/
 
@@ -92,8 +92,8 @@ class PairHiddenMarkovModel {
  protected:
   // Instance variables
   std::vector<StatePtr> _states;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
+  std::size_t _state_alphabet_size;
+  std::size_t _observation_alphabet_size;
 };
 
 }  // namespace model
