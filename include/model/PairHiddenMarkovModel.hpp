@@ -89,6 +89,14 @@ class PairHiddenMarkovModel {
   void posteriorProbabilities(const Alignment& sequences,
                               Cube& probabilities) const;
 
+  std::size_t stateAlphabetSize() const;
+  std::size_t observationAlphabetSize() const;
+
+  StatePtr state(typename State::Id id);
+
+  std::vector<StatePtr> states();
+  const std::vector<StatePtr> states() const;
+
  protected:
   // Instance variables
   std::vector<StatePtr> _states;

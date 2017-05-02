@@ -367,5 +367,37 @@ void PairHiddenMarkovModel::posteriorProbabilities(const Alignment& sequences,
   }
 }
 
+/*----------------------------------------------------------------------------*/
+
+std::size_t PairHiddenMarkovModel::stateAlphabetSize() const {
+  return _state_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+std::size_t PairHiddenMarkovModel::observationAlphabetSize() const {
+  return _observation_alphabet_size;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto PairHiddenMarkovModel::state(typename State::Id id) -> StatePtr {
+  return _states[id];
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto PairHiddenMarkovModel::states() -> std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
+
+auto PairHiddenMarkovModel::states() const -> const std::vector<StatePtr> {
+  return _states;
+}
+
+/*----------------------------------------------------------------------------*/
+
 }  // namespace model
 }  // namespace tops
