@@ -83,7 +83,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
       }
 
       Matrix A(state_alphabet_size,
-               std::vector<Probability>(observation_alphabet_size));
+               std::vector<Probability>(state_alphabet_size));
       for (size_t i = 0; i < state_alphabet_size; i++)
         for (size_t j = 0; j < state_alphabet_size; j++)
           for (size_t t = 0; t < training_sequence.size()-1; t++)
@@ -94,7 +94,7 @@ HiddenMarkovModel::train(TrainerPtr<Standard, Self> trainer,
               * beta[j][t+1];
 
       Matrix E(state_alphabet_size,
-               std::vector<Probability>(state_alphabet_size));
+               std::vector<Probability>(observation_alphabet_size));
       for (size_t i = 0; i < state_alphabet_size; i++)
         for (size_t sigma = 0; sigma < observation_alphabet_size; sigma++)
           for (size_t t = 0; t < training_sequence.size(); t++)
