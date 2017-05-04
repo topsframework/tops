@@ -25,6 +25,7 @@
 #include <cmath>
 #include <vector>
 #include <cstdlib>
+#include <iostream>
 
 namespace tops {
 namespace model {
@@ -144,8 +145,9 @@ void ContextTree::normalize() {
       total += _all_context[i]->getCounter()[l];
 
     std::vector<Probability> probs(_alphabet_size);
-    for (int l = 0; l < static_cast<int>(_alphabet_size); l++)
+    for (int l = 0; l < static_cast<int>(_alphabet_size); l++) {
       probs[l] = _all_context[i]->getCounter()[l]/total;
+    }
 
     _all_context[i]->setDistribution(DiscreteIIDModel::make(probs));
   }

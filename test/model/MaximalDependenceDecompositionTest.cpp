@@ -89,13 +89,13 @@ TEST(MDD, ShouldBeTrained) {
 
   ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
                         ->evaluateSequence(0, 9)),
-              DoubleNear(0.001567, 1e-4));
+              DoubleNear(0.0, 1e-4));
   ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})
                         ->evaluateSequence(0, 9)),
-              DoubleNear(0.003135, 1e-4));
+              DoubleNear(0.0, 1e-4));
   ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})
                         ->evaluateSequence(0, 9)),
-              DoubleNear(0.000941, 1e-4));
+              DoubleNear(0.0, 1e-4));
 }
 
 /*----------------------------------------------------------------------------*/

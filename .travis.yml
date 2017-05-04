@@ -31,7 +31,7 @@ install:
       sudo apt-cache policy cmake;
       sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90;
     elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew install gcc6;
+      brew install gcc@6;
       brew install llvm38 --with-clang;
       brew install lcov;
     fi

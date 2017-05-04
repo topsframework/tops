@@ -110,9 +110,8 @@ Probability
 PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
                                                  unsigned int pos,
                                                  unsigned int phase) const {
-  auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
-  return vlmc->standardEvaluator(evaluator->sequence())
-             ->evaluateSymbol(pos, phase);
+  return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
+                      ->evaluateSymbol(pos);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -122,9 +121,12 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
                                                    unsigned int phase) const {
+  auto t = phase;
   Probability prob = 1;
-  for (unsigned int i = begin; i < end; i++)
-    prob *= evaluator->evaluateSymbol(i, phase);
+  for (unsigned int i = begin; i < end; i++) {
+    prob *= evaluator->evaluateSymbol(i, t);
+    t = (t + 1) % (_vlmcs.size());
+  }
   return prob;
 }
 
@@ -132,19 +134,15 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
 
 void PeriodicInhomogeneousMarkovChain::initializeCache(
     CEPtr<Standard> evaluator, unsigned int /* phase */) {
-  auto& prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
-
-  prefix_sum_matrix.resize(_vlmcs.size());
-  for (auto& prefix_sum_array : prefix_sum_matrix)
-    prefix_sum_array.resize(evaluator->sequence().size() + 1);
-
-  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
-
-  for (unsigned int t = 0; t < _vlmcs.size() ; t++) {
-    prefix_sum_matrix[t][0] = 1;
-    for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
-      prefix_sum_matrix[t][i+1] = prefix_sum_matrix[t][i]
-        * evaluateSymbol(simple_evaluator, i, t);
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(_vlmcs.size());
+  for (auto k = 0u; k < _vlmcs.size(); k++) {
+    prefix_sum_array[k].resize(evaluator->sequence().size() + 1);
+    prefix_sum_array[k][0] = 1.0;
+    for (auto i = 0u; i < evaluator->sequence().size(); i++) {
+      auto phase = (i + k) % _vlmcs.size();
+      prefix_sum_array[k][i + 1] = prefix_sum_array[k][i] * evaluator->evaluateSymbol(i, phase);
+    }
   }
 }
 
@@ -164,8 +162,15 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
                                                    unsigned int begin,
                                                    unsigned int end,
                                                    unsigned int phase) const {
-  auto& prefix_sum_matrix = evaluator->cache().prefix_sum_matrix;
-  return prefix_sum_matrix[phase][end] / prefix_sum_matrix[phase][begin];
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+
+  auto p = begin % _vlmcs.size();
+  auto k = 0u;
+  while (((p + k) % _vlmcs.size()) != phase)
+    k++;
+  p = k;
+
+  return prefix_sum_array[p][end] / prefix_sum_array[p][begin];
 }
 
 /*===============================  GENERATOR  ================================*/

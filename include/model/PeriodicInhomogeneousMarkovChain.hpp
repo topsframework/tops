@@ -53,6 +53,11 @@ using PeriodicInhomogeneousMarkovChainPtr
 class PeriodicInhomogeneousMarkovChain
     : public ProbabilisticModelCrtp<PeriodicInhomogeneousMarkovChain> {
  public:
+  // Inner classes
+  struct Cache {
+    std::vector<std::vector<Probability>> prefix_sum_array;
+  };
+
   // Tags
   class interpolation_algorithm {};
 
@@ -60,11 +65,6 @@ class PeriodicInhomogeneousMarkovChain
   using Self = PeriodicInhomogeneousMarkovChain;
   using SelfPtr = PeriodicInhomogeneousMarkovChainPtr;
   using Base = ProbabilisticModelCrtp<Self>;
-
-  // Inner classes
-  struct Cache : Base::Cache {
-    Matrix prefix_sum_matrix;
-  };
 
   /*=============================[ CONSTRUCTORS ]=============================*/
 

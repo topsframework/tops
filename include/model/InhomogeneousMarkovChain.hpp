@@ -50,6 +50,14 @@ using InhomogeneousMarkovChainPtr = std::shared_ptr<InhomogeneousMarkovChain>;
 class InhomogeneousMarkovChain
     : public ProbabilisticModelCrtp<InhomogeneousMarkovChain> {
  public:
+  // Inner classes
+  struct Cache {
+    std::vector<std::vector<Probability>> prefix_sum_array;
+  };
+
+  // Tags
+  class wam_algorithm {};
+
   // Aliases
   using Self = InhomogeneousMarkovChain;
   using SelfPtr = InhomogeneousMarkovChainPtr;
@@ -59,6 +67,21 @@ class InhomogeneousMarkovChain
 
   explicit InhomogeneousMarkovChain(
       std::vector<VariableLengthMarkovChainPtr> vlmcs);
+
+  /*============================[ STATIC METHODS ]============================*/
+
+  // Trainer
+  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+                       wam_algorithm,
+                       unsigned int alphabet_size,
+                       unsigned int order,
+                       unsigned int length,
+                       unsigned int offset,
+                       unsigned int vicinity_length,
+                       double pseudo_counts,
+                       Sequence fixed_sequence,
+                       unsigned int fixed_sequence_position,
+                       std::vector<double> weights);
 
   /*==========================[ OVERRIDEN METHODS ]===========================*/
   /*-------------------------( Probabilistic Model )--------------------------*/
