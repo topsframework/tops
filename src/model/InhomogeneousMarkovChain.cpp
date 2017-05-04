@@ -24,6 +24,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <iostream>
 
 // Internal headers
 #include "exception/OutOfRange.hpp"
@@ -117,7 +118,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
 
     if(fixseq && (fixed_pos <= static_cast<int>(i)) && (static_cast<unsigned long>(i) <= (fixed_pos + fixed.size() - 1))){
       ContextTreePtr tree = ContextTree::make(alphabet_size);
-      tree->initializeCounter(positionalSample, o, 0, w);
+      tree->initializeCounter(positionalSample, o, pseudo_counts, w);
       tree->normalize();
       positional_distribution[i] = VariableLengthMarkovChain::make(tree);
     } else {
