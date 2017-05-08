@@ -74,20 +74,9 @@ class PairHiddenMarkovModel {
 
   /*==========================[ CONCRETE METHODS ]============================*/
 
-  // Labeler's helpers
-  Estimation<Labeling<Alignment>>
-  viterbi(const Alignment& sequences, Cube& gammas) const;
 
-  Estimation<Labeling<Alignment>>
-  posteriorDecoding(const Alignment& sequences, Cube& probabilities) const;
 
-  // Calculator's helpers
-  Probability forward(const Alignment& sequences, Cube& alphas) const;
-  Probability backward(const Alignment& sequences, Cube& betas) const;
 
-  // Others
-  void posteriorProbabilities(const Alignment& sequences,
-                              Cube& probabilities) const;
 
   std::size_t stateAlphabetSize() const;
   std::size_t observationAlphabetSize() const;
@@ -96,6 +85,20 @@ class PairHiddenMarkovModel {
 
   std::vector<StatePtr> states();
   const std::vector<StatePtr> states() const;
+
+  // Labeler's implementations
+  Estimation<Labeling<Sequences>>
+  viterbi(const Sequences& sequences, Cube& gammas) const;
+
+  Estimation<Labeling<Sequences>>
+  posteriorDecoding(const Sequences& sequences, Cube& probabilities) const;
+
+  void posteriorProbabilities(const Sequences& sequences,
+                              Cube& probabilities) const;
+
+  // Calculator's implementations
+  Probability forward(const Sequences& sequences, Cube& alphas) const;
+  Probability backward(const Sequences& sequences, Cube& betas) const;
 
  protected:
   // Instance variables

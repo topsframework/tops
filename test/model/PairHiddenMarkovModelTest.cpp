@@ -55,7 +55,7 @@ using ::testing::ContainerEq;
 using tops::model::Cube;
 using tops::model::Labeling;
 using tops::model::Sequence;
-using tops::model::Alignment;
+using tops::model::Sequences;
 using tops::model::Estimation;
 using tops::model::PairHiddenMarkovModel;
 using tops::model::PairHiddenMarkovModelPtr;
@@ -78,14 +78,14 @@ class APairHiddenMarkovModel : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
-  std::vector<Alignment> tests = {
+  std::vector<Sequences> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
     {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
   };
 
-  std::vector<Estimation<Labeling<Alignment>>> expected_results = {
+  std::vector<Estimation<Labeling<Sequences>>> expected_results = {
     { { tests[0], {0, 1, 4} }, 0.0 },
     { { tests[1], {0, 1, 4} }, 0.0 },
     { { tests[2], {0, 1, 1, 1, 4} }, 0.0 },
@@ -108,14 +108,14 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
-  std::vector<Alignment> tests = {
+  std::vector<Sequences> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
     {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
   };
 
-  std::vector<Estimation<Labeling<Alignment>>> expected_results = {
+  std::vector<Estimation<Labeling<Sequences>>> expected_results = {
     { { tests[0], {0, 1, 4} }, 0.0 },
     { { tests[1], {0, 1, 4} }, 0.0 },
     { { tests[2], {0, 1, 1, 1, 4} }, 0.0 },
@@ -138,7 +138,7 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
-  std::vector<Alignment> tests = {
+  std::vector<Sequences> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},

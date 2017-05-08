@@ -42,21 +42,23 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 }
 
 /*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Alignment>>
-PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
+Estimation<Labeling<Sequences>>
+PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
   Symbol gap = _observation_alphabet_size;
 
   typename State::Id begin_id = 0;
   typename State::Id end_id = _state_alphabet_size-1;
 
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
-      std::vector<std::vector<unsigned int>>(sequences.first.size() + 2,
-        std::vector<unsigned int>(sequences.second.size() + 2, begin_id)));
+      std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
+        std::vector<unsigned int>(sequences[1].size() + 2, begin_id)));
 
   gammas = Cube(_state_alphabet_size,
-      Matrix(sequences.first.size() + 2,
-        std::vector<Probability>(sequences.second.size() + 2)));
+      Matrix(sequences[0].size() + 2,
+        std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
   for (const auto& state : _states) {
@@ -65,13 +67,13 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
     gammas[state->id()][1][1]
       = _states[begin_id]->transition()->probabilityOf(state->id())
       * state->emission()->probabilityOf(
-          state->hasGap(1) ? gap : sequences.first[0],
-          state->hasGap(2) ? gap : sequences.second[0]);
+          state->hasGap(1) ? gap : sequences[0][0],
+          state->hasGap(2) ? gap : sequences[1][0]);
   }
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences.first.size(); i++) {
-    for (unsigned int j = 1; j <= sequences.second.size(); j++) {
+  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
       if (i == 1 && j == 1) continue;
 
       for (const auto& state : _states) {
@@ -95,8 +97,8 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
 
         gammas[state->id()][i][j]
           *= state->emission()->probabilityOf(
-              state->hasGap(1) ? gap : sequences.first[i-1],
-              state->hasGap(2) ? gap : sequences.second[j-1]);
+              state->hasGap(1) ? gap : sequences[0][i-1],
+              state->hasGap(2) ? gap : sequences[1][j-1]);
       }
     }
   }
@@ -105,7 +107,7 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
   Probability max_probability;
   typename State::Id max_id = begin_id;
   for (auto p : _states[end_id]->predecessors()) {
-    Probability v = gammas[p][sequences.first.size()][sequences.second.size()]
+    Probability v = gammas[p][sequences[0].size()][sequences[1].size()]
       * _states[p]->transition()->probabilityOf(end_id);
 
     if (v > max_probability) {
@@ -116,7 +118,7 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
 
   // Trace back
   std::vector<std::size_t> idxs {
-    0, sequences.first.size(), sequences.second.size() };
+    0, sequences[0].size(), sequences[1].size() };
 
   Sequence path, al1, al2;
   typename State::Id best_id = max_id;
@@ -125,8 +127,8 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
   while (best_id != begin_id) {
     path.push_back(best_id);
 
-    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences.first[idxs[1]-1]);
-    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences.second[idxs[2]-1]);
+    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences[0][idxs[1]-1]);
+    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences[1][idxs[2]-1]);
 
     best_id = psi[best_id][idxs[1]][idxs[2]];
 
@@ -139,14 +141,14 @@ PairHiddenMarkovModel::viterbi(const Alignment& sequences, Cube& gammas) const {
   std::reverse(al1.begin(), al1.end());
   std::reverse(al2.begin(), al2.end());
 
-  return Estimation<Labeling<Alignment>>(
-      Labeling<Alignment>(Alignment{ al1, al2 }, path), max_probability);
+  return Estimation<Labeling<Sequences>>(
+      Labeling<Sequences>(Sequences{ al1, al2 }, path), max_probability);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Alignment>>
-PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
+Estimation<Labeling<Sequences>>
+PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
                                          Cube& probabilities) const {
   Symbol gap = _observation_alphabet_size;
 
@@ -154,15 +156,15 @@ PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
   typename State::Id end_id = _state_alphabet_size-1;
 
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
-      std::vector<std::vector<unsigned int>>(sequences.first.size() + 2,
-        std::vector<unsigned int>(sequences.second.size() + 2, begin_id)));
+      std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
+        std::vector<unsigned int>(sequences[1].size() + 2, begin_id)));
 
   // Initialization
   posteriorProbabilities(sequences, probabilities);
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences.first.size(); i++) {
-    for (unsigned int j = 1; j <= sequences.second.size(); j++) {
+  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
       if (i == 1 && j == 1) continue;
 
       for (const auto& state : _states) {
@@ -191,7 +193,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
   Probability max_probability;
   typename State::Id max_id = begin_id;
   for (auto p : _states[end_id]->predecessors()) {
-    Probability v = probabilities[p][sequences.first.size()][sequences.second.size()];
+    Probability v = probabilities[p][sequences[0].size()][sequences[1].size()];
 
     if (v > max_probability) {
       max_probability = v;
@@ -201,7 +203,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
 
   // Trace back
   std::vector<std::size_t> idxs {
-    0, sequences.first.size(), sequences.second.size() };
+    0, sequences[0].size(), sequences[1].size() };
 
   Sequence path, al1, al2;
   typename State::Id best_id = max_id;
@@ -210,8 +212,8 @@ PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
   while (best_id != begin_id) {
     path.push_back(best_id);
 
-    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences.first[idxs[1]-1]);
-    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences.second[idxs[2]-1]);
+    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences[0][idxs[1]-1]);
+    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences[1][idxs[2]-1]);
 
     best_id = psi[best_id][idxs[1]][idxs[2]];
 
@@ -224,13 +226,13 @@ PairHiddenMarkovModel::posteriorDecoding(const Alignment& sequences,
   std::reverse(al1.begin(), al1.end());
   std::reverse(al2.begin(), al2.end());
 
-  return Estimation<Labeling<Alignment>>(
-      Labeling<Alignment>(Alignment{ al1, al2 }, path), max_probability);
+  return Estimation<Labeling<Sequences>>(
+      Labeling<Sequences>(Sequences{ al1, al2 }, path), max_probability);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
+Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
                                            Cube& alphas) const {
   Symbol gap = _observation_alphabet_size;
 
@@ -238,8 +240,8 @@ Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
   typename State::Id end_id = _state_alphabet_size-1;
 
   alphas = Cube(_state_alphabet_size,
-      Matrix(sequences.first.size() + 2,
-        std::vector<Probability>(sequences.second.size() + 2)));
+      Matrix(sequences[0].size() + 2,
+        std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
   for (const auto& state : _states) {
@@ -248,13 +250,13 @@ Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
     alphas[state->id()][1][1]
       = _states[begin_id]->transition()->probabilityOf(state->id())
       * state->emission()->probabilityOf(
-          state->hasGap(1) ? gap : sequences.first[0],
-          state->hasGap(2) ? gap : sequences.second[0]);
+          state->hasGap(1) ? gap : sequences[0][0],
+          state->hasGap(2) ? gap : sequences[1][0]);
   }
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences.first.size(); i++) {
-    for (unsigned int j = 1; j <= sequences.second.size(); j++) {
+  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
       if (i == 1 && j == 1) continue;
 
       for (const auto& state : _states) {
@@ -268,8 +270,8 @@ Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
 
         alphas[state->id()][i][j]
           *= state->emission()->probabilityOf(
-              state->hasGap(1) ? gap : sequences.first[i-1],
-              state->hasGap(2) ? gap : sequences.second[j-1]);
+              state->hasGap(1) ? gap : sequences[0][i-1],
+              state->hasGap(2) ? gap : sequences[1][j-1]);
       }
     }
   }
@@ -277,7 +279,7 @@ Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
   // Termination
   Probability sum;
   for (auto p : _states[end_id]->predecessors())
-    sum += alphas[p][sequences.first.size()][sequences.second.size()]
+    sum += alphas[p][sequences[0].size()][sequences[1].size()]
       * _states[p]->transition()->probabilityOf(end_id);
 
   return sum;
@@ -285,7 +287,7 @@ Probability PairHiddenMarkovModel::forward(const Alignment& sequences,
 
 /*----------------------------------------------------------------------------*/
 
-Probability PairHiddenMarkovModel::backward(const Alignment& sequences,
+Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
                                             Cube& betas) const {
   Symbol gap = _observation_alphabet_size;
 
@@ -293,21 +295,21 @@ Probability PairHiddenMarkovModel::backward(const Alignment& sequences,
   typename State::Id end_id = _state_alphabet_size-1;
 
   betas = Cube(_state_alphabet_size,
-      Matrix(sequences.first.size() + 2,
-        std::vector<Probability>(sequences.second.size() + 2)));
+      Matrix(sequences[0].size() + 2,
+        std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
   for (const auto& state : _states) {
     if (state->isSilent()) continue;
 
-    betas[state->id()][sequences.first.size()][sequences.second.size()]
+    betas[state->id()][sequences[0].size()][sequences[1].size()]
       = state->transition()->probabilityOf(end_id);
   }
 
   // Recursion
-  for (unsigned int i = sequences.first.size(); i >= 1; i--) {
-    for (unsigned int j = sequences.second.size(); j >= 1; j--) {
-      if (i == sequences.first.size() && j == sequences.second.size()) continue;
+  for (unsigned int i = sequences[0].size(); i >= 1; i--) {
+    for (unsigned int j = sequences[1].size(); j >= 1; j--) {
+      if (i == sequences[0].size() && j == sequences[1].size()) continue;
 
       for (const auto& state : _states) {
         if (state->isSilent()) continue;
@@ -316,8 +318,8 @@ Probability PairHiddenMarkovModel::backward(const Alignment& sequences,
           betas[state->id()][i][j]
             += betas[s][i + _states[s]->delta(1)][j + _states[s]->delta(2)]
             * _states[s]->emission()->probabilityOf(
-                _states[s]->hasGap(1) ? gap : sequences.first[i-1],
-                _states[s]->hasGap(2) ? gap : sequences.second[j-1])
+                _states[s]->hasGap(1) ? gap : sequences[0][i-1],
+                _states[s]->hasGap(2) ? gap : sequences[1][j-1])
             * state->transition()->probabilityOf(s);
         }
       }
@@ -331,8 +333,8 @@ Probability PairHiddenMarkovModel::backward(const Alignment& sequences,
 
     sum += betas[s][1][1]
         * _states[s]->emission()->probabilityOf(
-            _states[s]->hasGap(1) ? gap : sequences.first[0],
-            _states[s]->hasGap(2) ? gap : sequences.second[0])
+            _states[s]->hasGap(1) ? gap : sequences[0][0],
+            _states[s]->hasGap(2) ? gap : sequences[1][0])
         * _states[begin_id]->transition()->probabilityOf(s);
   }
 
@@ -341,11 +343,11 @@ Probability PairHiddenMarkovModel::backward(const Alignment& sequences,
 
 /*----------------------------------------------------------------------------*/
 
-void PairHiddenMarkovModel::posteriorProbabilities(const Alignment& sequences,
+void PairHiddenMarkovModel::posteriorProbabilities(const Sequences& sequences,
                                                    Cube& probabilities) const {
   probabilities = Cube(_state_alphabet_size,
-      Matrix(sequences.first.size() + 2,
-        std::vector<Probability>(sequences.second.size() + 2)));
+      Matrix(sequences[0].size() + 2,
+        std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
   Cube alphas;  // forward
@@ -355,8 +357,8 @@ void PairHiddenMarkovModel::posteriorProbabilities(const Alignment& sequences,
   backward(sequences, betas);
 
   // Calculation
-  for (unsigned int i = 1; i <= sequences.first.size(); i++) {
-    for (unsigned int j = 1; j <= sequences.second.size(); j++) {
+  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         if (state->isSilent()) continue;
 

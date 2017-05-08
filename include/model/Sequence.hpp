@@ -33,9 +33,6 @@ namespace model {
 using Sequence = std::vector<Symbol>;
 using Sequences = std::vector<Sequence>;
 
-using Alignment = std::pair<Sequence, Sequence>;
-using Alignments = std::vector<Alignment>;
-
 }  // namespace model
 }  // namespace tops
 
