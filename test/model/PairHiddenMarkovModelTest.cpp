@@ -98,9 +98,9 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
 
     /**/ std::cerr << "prob: " << estimation.probability() << std::endl;
 
-    ASSERT_THAT(estimation.estimated().observation(),
+    EXPECT_THAT(estimation.estimated().observation(),
         Eq(expected_results[i].estimated().observation()));
-    ASSERT_THAT(estimation.estimated().label(),
+    EXPECT_THAT(estimation.estimated().label(),
         Eq(expected_results[i].estimated().label()));
   }
 }
@@ -128,9 +128,9 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
 
     /**/ std::cerr << "prob: " << estimation.probability() << std::endl;
 
-    ASSERT_THAT(estimation.estimated().observation(),
+    EXPECT_THAT(estimation.estimated().observation(),
         Eq(expected_results[i].estimated().observation()));
-    ASSERT_THAT(estimation.estimated().label(),
+    EXPECT_THAT(estimation.estimated().label(),
         Eq(expected_results[i].estimated().label()));
   }
 }
@@ -153,6 +153,6 @@ TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
     /**/ std::cerr << "prob_f: " << prob_f << " log: " << prob_f.data() << std::endl;
     /**/ std::cerr << "prob_b: " << prob_b << " log: " << prob_b.data() << std::endl;
 
-    ASSERT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
+    EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
   }
 }
