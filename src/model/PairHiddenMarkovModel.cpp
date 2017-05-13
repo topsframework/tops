@@ -47,21 +47,16 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 
 Estimation<Labeling<Sequences>>
 PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
-  Symbol gap = _observation_alphabet_size;
-
-  typename State::Id begin_id = 0;
-  typename State::Id end_id = _state_alphabet_size-1;
-
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
       std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
-        std::vector<unsigned int>(sequences[1].size() + 2, begin_id)));
+        std::vector<unsigned int>(sequences[1].size() + 2, _begin_id)));
 
   gammas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  gammas[begin_id][0][0] = 1;
+  gammas[_begin_id][0][0] = 1;
 
   // Recursion
   for (unsigned int i = 0; i <= sequences[0].size(); i++) {
@@ -82,15 +77,15 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
 
         gammas[state->id()][i][j]
           *= state->emission()->probabilityOf(
-              state->hasGap(1) ? gap : sequences[0][i-1],
-              state->hasGap(2) ? gap : sequences[1][j-1]);
+              state->hasGap(1) ? _gap : sequences[0][i-1],
+              state->hasGap(2) ? _gap : sequences[1][j-1]);
       }
     }
   }
 
   // Termination
-  Probability max_probability = gammas[end_id][sequences[0].size()][sequences[1].size()];
-  typename State::Id max_id = psi[end_id][sequences[0].size()][sequences[1].size()];
+  Probability max_probability = gammas[_end_id][sequences[0].size()][sequences[1].size()];
+  typename State::Id max_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
 
   // Trace back
   std::vector<std::size_t> idxs {
@@ -99,19 +94,19 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
   Sequence path, al1, al2;
   typename State::Id best_id = max_id;
 
-  path.push_back(end_id);
-  while (best_id != begin_id) {
+  path.push_back(_end_id);
+  while (best_id != _begin_id) {
     path.push_back(best_id);
 
-    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences[0][idxs[1]-1]);
-    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences[1][idxs[2]-1]);
+    al1.push_back(_states[best_id]->hasGap(1) ? _gap : sequences[0][idxs[1]-1]);
+    al2.push_back(_states[best_id]->hasGap(2) ? _gap : sequences[1][idxs[2]-1]);
 
     best_id = psi[best_id][idxs[1]][idxs[2]];
 
     if (!_states[best_id]->hasGap(1)) idxs[1]--;
     if (!_states[best_id]->hasGap(2)) idxs[2]--;
   }
-  path.push_back(begin_id);
+  path.push_back(_begin_id);
 
   std::reverse(path.begin(), path.end());
   std::reverse(al1.begin(), al1.end());
@@ -126,14 +121,9 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
 Estimation<Labeling<Sequences>>
 PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
                                          Cube& probabilities) const {
-  Symbol gap = _observation_alphabet_size;
-
-  typename State::Id begin_id = 0;
-  typename State::Id end_id = _state_alphabet_size-1;
-
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
       std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
-        std::vector<unsigned int>(sequences[1].size() + 2, begin_id)));
+        std::vector<unsigned int>(sequences[1].size() + 2, _begin_id)));
 
   // Initialization
   posteriorProbabilities(sequences, probabilities);
@@ -147,7 +137,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
         if (state->isSilent()) continue;
 
         Probability max_probability;
-        typename State::Id max_id = begin_id;
+        typename State::Id max_id = _begin_id;
 
         for(auto p : state->predecessors()) {
           Probability v = probabilities[p][i - state->delta(1)][j - state->delta(2)]
@@ -167,8 +157,8 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
 
   // Termination
   Probability max_probability;
-  typename State::Id max_id = begin_id;
-  for (auto p : _states[end_id]->predecessors()) {
+  typename State::Id max_id = _begin_id;
+  for (auto p : _states[_end_id]->predecessors()) {
     Probability v = probabilities[p][sequences[0].size()][sequences[1].size()];
 
     if (v > max_probability) {
@@ -184,19 +174,19 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
   Sequence path, al1, al2;
   typename State::Id best_id = max_id;
 
-  path.push_back(end_id);
-  while (best_id != begin_id) {
+  path.push_back(_end_id);
+  while (best_id != _begin_id) {
     path.push_back(best_id);
 
-    al1.push_back(_states[best_id]->hasGap(1) ? gap : sequences[0][idxs[1]-1]);
-    al2.push_back(_states[best_id]->hasGap(2) ? gap : sequences[1][idxs[2]-1]);
+    al1.push_back(_states[best_id]->hasGap(1) ? _gap : sequences[0][idxs[1]-1]);
+    al2.push_back(_states[best_id]->hasGap(2) ? _gap : sequences[1][idxs[2]-1]);
 
     best_id = psi[best_id][idxs[1]][idxs[2]];
 
     if (!_states[best_id]->hasGap(1)) idxs[1]--;
     if (!_states[best_id]->hasGap(2)) idxs[2]--;
   }
-  path.push_back(begin_id);
+  path.push_back(_begin_id);
 
   std::reverse(path.begin(), path.end());
   std::reverse(al1.begin(), al1.end());
@@ -210,17 +200,12 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
 
 Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
                                            Cube& alphas) const {
-  Symbol gap = _observation_alphabet_size;
-
-  typename State::Id begin_id = 0;
-  typename State::Id end_id = _state_alphabet_size-1;
-
   alphas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  alphas[begin_id][0][0] = 1;
+  alphas[_begin_id][0][0] = 1;
 
   // Recursion
   for (unsigned int i = 0; i <= sequences[0].size(); i++) {
@@ -237,31 +222,26 @@ Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
 
         alphas[state->id()][i][j]
           *= state->emission()->probabilityOf(
-              state->hasGap(1) ? gap : sequences[0][i-1],
-              state->hasGap(2) ? gap : sequences[1][j-1]);
+              state->hasGap(1) ? _gap : sequences[0][i-1],
+              state->hasGap(2) ? _gap : sequences[1][j-1]);
       }
     }
   }
 
   // Termination
-  return alphas[end_id][sequences[0].size()][sequences[1].size()];
+  return alphas[_end_id][sequences[0].size()][sequences[1].size()];
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
                                             Cube& betas) const {
-  Symbol gap = _observation_alphabet_size;
-
-  typename State::Id begin_id = 0;
-  typename State::Id end_id = _state_alphabet_size-1;
-
   betas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  betas[end_id][sequences[0].size()+1][sequences[1].size()+1] = 1;
+  betas[_end_id][sequences[0].size()+1][sequences[1].size()+1] = 1;
 
   // Recursion
   for (unsigned int i = sequences[0].size()+1; i >= 1; i--) {
@@ -274,8 +254,8 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
           betas[state->id()][i][j]
             += betas[s][i + _states[s]->delta(1)][j + _states[s]->delta(2)]
             * _states[s]->emission()->probabilityOf(
-                _states[s]->hasGap(1) ? gap : sequences[0][i-1],
-                _states[s]->hasGap(2) ? gap : sequences[1][j-1])
+                _states[s]->hasGap(1) ? _gap : sequences[0][i-1],
+                _states[s]->hasGap(2) ? _gap : sequences[1][j-1])
             * state->transition()->probabilityOf(s);
         }
       }
@@ -283,7 +263,7 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
   }
 
   // Termination
-  return betas[begin_id][1][1];
+  return betas[_begin_id][1][1];
 }
 
 /*----------------------------------------------------------------------------*/

@@ -105,6 +105,11 @@ class PairHiddenMarkovModel {
   std::vector<StatePtr> _states;
   std::size_t _state_alphabet_size;
   std::size_t _observation_alphabet_size;
+
+  Symbol _gap = _observation_alphabet_size;
+
+  typename State::Id _begin_id = 0;
+  typename State::Id _end_id = _state_alphabet_size-1;
 };
 
 }  // namespace model
