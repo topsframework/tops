@@ -61,39 +61,24 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  for (const auto& state : _states) {
-    if (state->isSilent()) continue;
-
-    gammas[state->id()][1][1]
-      = _states[begin_id]->transition()->probabilityOf(state->id())
-      * state->emission()->probabilityOf(
-          state->hasGap(1) ? gap : sequences[0][0],
-          state->hasGap(2) ? gap : sequences[1][0]);
-  }
+  gammas[begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
-      if (i == 1 && j == 1) continue;
-
+  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
-        if (state->isSilent()) continue;
-
-        Probability max_probability;
-        typename State::Id max_id = begin_id;
+        if (!state->hasGap(1) && i == 0) continue;
+        if (!state->hasGap(2) && j == 0) continue;
 
         for(auto p : state->predecessors()) {
           Probability v = gammas[p][i - state->delta(1)][j - state->delta(2)]
             * _states[p]->transition()->probabilityOf(state->id());
 
-          if (v > max_probability) {
-             max_probability = v;
-             max_id = p;
+          if (v > gammas[state->id()][i][j]) {
+             gammas[state->id()][i][j] = v;
+             psi[state->id()][i][j] = p;
           }
         }
-
-        gammas[state->id()][i][j] = max_probability;
-        psi[state->id()][i][j] = max_id;
 
         gammas[state->id()][i][j]
           *= state->emission()->probabilityOf(
@@ -104,17 +89,8 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
   }
 
   // Termination
-  Probability max_probability;
-  typename State::Id max_id = begin_id;
-  for (auto p : _states[end_id]->predecessors()) {
-    Probability v = gammas[p][sequences[0].size()][sequences[1].size()]
-      * _states[p]->transition()->probabilityOf(end_id);
-
-    if (v > max_probability) {
-      max_probability = v;
-      max_id = p;
-    }
-  }
+  Probability max_probability = gammas[end_id][sequences[0].size()][sequences[1].size()];
+  typename State::Id max_id = psi[end_id][sequences[0].size()][sequences[1].size()];
 
   // Trace back
   std::vector<std::size_t> idxs {
@@ -244,25 +220,16 @@ Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  for (const auto& state : _states) {
-    if (state->isSilent()) continue;
-
-    alphas[state->id()][1][1]
-      = _states[begin_id]->transition()->probabilityOf(state->id())
-      * state->emission()->probabilityOf(
-          state->hasGap(1) ? gap : sequences[0][0],
-          state->hasGap(2) ? gap : sequences[1][0]);
-  }
+  alphas[begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
-      if (i == 1 && j == 1) continue;
-
+  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
-        if (state->isSilent()) continue;
+        if (!state->hasGap(1) && i == 0) continue;
+        if (!state->hasGap(2) && j == 0) continue;
 
-        for(auto p : state->predecessors()) {
+        for (auto p : state->predecessors()) {
           alphas[state->id()][i][j]
             += alphas[p][i - state->delta(1)][j - state->delta(2)]
             * _states[p]->transition()->probabilityOf(state->id());
@@ -277,12 +244,7 @@ Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
   }
 
   // Termination
-  Probability sum;
-  for (auto p : _states[end_id]->predecessors())
-    sum += alphas[p][sequences[0].size()][sequences[1].size()]
-      * _states[p]->transition()->probabilityOf(end_id);
-
-  return sum;
+  return alphas[end_id][sequences[0].size()][sequences[1].size()];
 }
 
 /*----------------------------------------------------------------------------*/
@@ -299,22 +261,16 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
         std::vector<Probability>(sequences[1].size() + 2)));
 
   // Initialization
-  for (const auto& state : _states) {
-    if (state->isSilent()) continue;
-
-    betas[state->id()][sequences[0].size()][sequences[1].size()]
-      = state->transition()->probabilityOf(end_id);
-  }
+  betas[end_id][sequences[0].size()+1][sequences[1].size()+1] = 1;
 
   // Recursion
-  for (unsigned int i = sequences[0].size(); i >= 1; i--) {
-    for (unsigned int j = sequences[1].size(); j >= 1; j--) {
-      if (i == sequences[0].size() && j == sequences[1].size()) continue;
-
+  for (unsigned int i = sequences[0].size()+1; i >= 1; i--) {
+    for (unsigned int j = sequences[1].size()+1; j >= 1; j--) {
       for (const auto& state : _states) {
-        if (state->isSilent()) continue;
-
         for(auto s : state->successors()) {
+          if (!_states[s]->hasGap(1) && i == sequences[0].size()+1) continue;
+          if (!_states[s]->hasGap(2) && j == sequences[1].size()+1) continue;
+
           betas[state->id()][i][j]
             += betas[s][i + _states[s]->delta(1)][j + _states[s]->delta(2)]
             * _states[s]->emission()->probabilityOf(
@@ -327,18 +283,7 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
   }
 
   // Termination
-  Probability sum;
-  for (auto s : _states[begin_id]->successors()) {
-    if (_states[s]->isSilent()) continue;
-
-    sum += betas[s][1][1]
-        * _states[s]->emission()->probabilityOf(
-            _states[s]->hasGap(1) ? gap : sequences[0][0],
-            _states[s]->hasGap(2) ? gap : sequences[1][0])
-        * _states[begin_id]->transition()->probabilityOf(s);
-  }
-
-  return sum;
+  return betas[begin_id][1][1];
 }
 
 /*----------------------------------------------------------------------------*/
