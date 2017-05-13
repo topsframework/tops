@@ -77,6 +77,28 @@ class APairHiddenMarkovModel : public testing::Test {
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
+TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
+  std::vector<Sequences> tests = {
+    {{0}, {0}},
+    {{1}, {0}},
+    {{0, 0, 0}, {0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
+  };
+
+  for (unsigned int i = 0; i < tests.size(); i++) {
+    Cube alphas, betas;
+    auto prob_f = phmm->forward(tests[i], alphas);
+    auto prob_b = phmm->backward(tests[i], betas);
+
+    /**/ std::cerr << "prob_f: " << prob_f << " log: " << prob_f.data() << std::endl;
+    /**/ std::cerr << "prob_b: " << prob_b << " log: " << prob_b.data() << std::endl;
+
+    EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
 TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
   std::vector<Sequences> tests = {
     {{0}, {0}},
@@ -136,23 +158,3 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
 }
 
 /*----------------------------------------------------------------------------*/
-
-TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
-  std::vector<Sequences> tests = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
-  };
-
-  for (unsigned int i = 0; i < tests.size(); i++) {
-    Cube alphas, betas;
-    auto prob_f = phmm->forward(tests[i], alphas);
-    auto prob_b = phmm->backward(tests[i], betas);
-
-    /**/ std::cerr << "prob_f: " << prob_f << " log: " << prob_f.data() << std::endl;
-    /**/ std::cerr << "prob_b: " << prob_b << " log: " << prob_b.data() << std::endl;
-
-    EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
-  }
-}
