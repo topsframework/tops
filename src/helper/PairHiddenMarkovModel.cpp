@@ -64,37 +64,73 @@ model::PairHiddenMarkovModelPtr createGlobalAlignmentPairHMM() {
   Probability delta = 0.2, epsilon = 0.2, tau = 0.1;
   typename model::PairHiddenMarkovModel::State::Id B = 0, M = 1, X = 2, Y = 3, E = 4;
 
-  auto emission = std::vector<Probabilities>{
-    Probabilities{ 0.4 * 0.4, 0.4 * 0.4, 0.2 * 0.4 },
-    Probabilities{ 0.4 * 0.4, 0.4 * 0.4, 0.2 * 0.4 },
-    Probabilities{ 0.4 * 0.2, 0.4 * 0.2, 0.2 * 0.2 }
+  std::vector<std::vector<Probabilities>> emissions {
+    {
+       /*  B  */ /*  0  */ /*  1  */ /* gaṕ */
+       /*  0  */{   0.0   ,   0.0   ,   0.0   },
+       /*  1  */{   0.0   ,   0.0   ,   0.0   },
+       /* gaṕ */{   0.0   ,   0.0   ,   1.0   },
+    },
+    {
+       /*  M  */ /*  0  */ /*  1  */ /* gaṕ */
+       /*  0  */{   0.4   ,   0.1   ,   0.0   },
+       /*  1  */{   0.1   ,   0.4   ,   0.0   },
+       /* gaṕ */{   0.0   ,   0.0   ,   0.0   },
+    },
+    {
+       /*  X  */ /*  0  */ /*  1  */ /* gaṕ */
+       /*  0  */{   0.0   ,   0.0   ,   0.0   },
+       /*  1  */{   0.0   ,   0.0   ,   0.0   },
+       /* gaṕ */{   0.5   ,   0.5   ,   0.0   },
+    },
+    {
+       /*  Y  */ /*  0  */ /*  1  */ /* gaṕ */
+       /*  0  */{   0.0   ,   0.0   ,   0.5   },
+       /*  1  */{   0.0   ,   0.0   ,   0.5   },
+       /* gaṕ */{   0.0   ,   0.0   ,   0.0   },
+    },
+    {
+       /*  E  */ /*  0  */ /*  1  */ /* gaṕ */
+       /*  0  */{   0.0   ,   0.0   ,   0.0   },
+       /*  1  */{   0.0   ,   0.0   ,   0.0   },
+       /* gaṕ */{   0.0   ,   0.0   ,   1.0   },
+    },
+  };
+
+  std::vector<Probabilities> transitions {
+              /* B */ /*     M     */ /*  X  */ /*  Y  */ /* E */
+    /* B */ {   0.0  , 1-2*delta-tau ,  delta  ,  delta  ,  tau   },
+    /* M */ {   0.0  , 1-2*delta-tau ,  delta  ,  delta  ,  tau   },
+    /* X */ {   0.0  , 1-epsilon-tau , epsilon ,   0.0   ,  tau   },
+    /* Y */ {   0.0  , 1-epsilon-tau ,   0.0   , epsilon ,  tau   },
+    /* E */ {   0.0  ,      0.0      ,   0.0   ,   0.0   ,  1.0   },
   };
 
   std::vector<model::PairHiddenMarkovModel::StatePtr> states = {
-    model::PairHiddenMarkovModel::SilentState::make(  // B
+    model::PairHiddenMarkovModel::SilentState::make(
       /* id         */ B,
-      /* emission   */ IID::make(emission),
-      /* transition */ IID::make(Probabilities{{ 0.0, 1-2*delta-tau, delta, delta, tau }})),
+      /* emission   */ IID::make(emissions[B]),
+      /* transition */ IID::make(transitions[B])),
 
-    model::PairHiddenMarkovModel::MatchState::make(   // M
+    model::PairHiddenMarkovModel::MatchState::make(
       /* id         */ M,
-      /* emission   */ IID::make(emission),
-      /* transition */ IID::make(Probabilities{{ 0.0, 1-2*delta-tau, delta, delta, tau }})),
+      /* emission   */ IID::make(emissions[M]),
+      /* transition */ IID::make(transitions[M])),
 
-    model::PairHiddenMarkovModel::Gap2State::make(    // X
+    model::PairHiddenMarkovModel::Gap1State::make(
       /* id         */ X,
-      /* emission   */ IID::make(emission),
-      /* transition */ IID::make(Probabilities{{ 0.0, 1-epsilon-tau, epsilon, 0.0, tau }})),
+      /* emission   */ IID::make(emissions[X]),
+      /* transition */ IID::make(transitions[X])),
 
-    model::PairHiddenMarkovModel::Gap1State::make(    // Y
+    model::PairHiddenMarkovModel::Gap2State::make(
       /* id         */ Y,
-      /* emission   */ IID::make(emission),
-      /* transition */ IID::make(Probabilities{{ 0.0, 1-epsilon-tau, 0.0, epsilon, tau }})),
+      /* emission   */ IID::make(emissions[Y]),
+      /* transition */ IID::make(transitions[Y])),
 
-    model::PairHiddenMarkovModel::SilentState::make(  // E
+    model::PairHiddenMarkovModel::SilentState::make(
       /* id         */ E,
-      /* emission   */ IID::make(emission),
-      /* transition */ IID::make(Probabilities{{ 0.0, 0.0, 0.0, 0.0, 1.0 }}))
+      /* emission   */ IID::make(emissions[E]),
+      /* transition */ IID::make(transitions[E]))
   };
 
   states[B]->addSuccessor(M);
