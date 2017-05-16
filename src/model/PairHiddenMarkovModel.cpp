@@ -45,13 +45,13 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequences>>
-PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
+typename PairHiddenMarkovModel::LabelerReturn
+PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
       std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
         std::vector<unsigned int>(sequences[1].size() + 2, _begin_id)));
 
-  gammas = Cube(_state_alphabet_size,
+  auto gammas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
@@ -112,29 +112,24 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences, Cube& gammas) const {
   std::reverse(al1.begin(), al1.end());
   std::reverse(al2.begin(), al2.end());
 
-  return Estimation<Labeling<Sequences>>(
-      Labeling<Sequences>(Sequences{ al1, al2 }, path), max_probability);
+  return { max_probability, path, Sequences{ al1, al2 }, gammas };
 }
 
 /*----------------------------------------------------------------------------*/
 
-Estimation<Labeling<Sequences>>
-PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
-                                         Cube& probabilities) const {
+typename PairHiddenMarkovModel::LabelerReturn
+PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   auto psi = std::vector<std::vector<std::vector<unsigned int>>>(_state_alphabet_size,
       std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
         std::vector<unsigned int>(sequences[1].size() + 2, _begin_id)));
 
-  probabilities = Cube(_state_alphabet_size,
+  auto probabilities = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
 	// Preprocessment
-  Cube alphas;  // forward
-  Cube betas;   // backward
-
-  Probability full = forward(sequences, alphas);
-  backward(sequences, betas);
+  auto [ full, alphas ] = forward(sequences);
+  auto [ _, betas ] = backward(sequences);
 
   // Initialization
   probabilities[_begin_id][0][0] = 1;
@@ -192,15 +187,14 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
   std::reverse(al1.begin(), al1.end());
   std::reverse(al2.begin(), al2.end());
 
-  return Estimation<Labeling<Sequences>>(
-      Labeling<Sequences>(Sequences{ al1, al2 }, path), max_probability);
+  return { max_probability, path, Sequences{ al1, al2 }, probabilities };
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
-                                           Cube& alphas) const {
-  alphas = Cube(_state_alphabet_size,
+typename PairHiddenMarkovModel::CalculatorReturn
+PairHiddenMarkovModel::forward(const Sequences& sequences) const {
+  auto alphas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
@@ -229,14 +223,16 @@ Probability PairHiddenMarkovModel::forward(const Sequences& sequences,
   }
 
   // Termination
-  return alphas[_end_id][sequences[0].size()][sequences[1].size()];
+  Probability full = alphas[_end_id][sequences[0].size()][sequences[1].size()];
+
+  return { full, alphas };
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
-                                            Cube& betas) const {
-  betas = Cube(_state_alphabet_size,
+typename PairHiddenMarkovModel::CalculatorReturn
+PairHiddenMarkovModel::backward(const Sequences& sequences) const {
+  auto betas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
@@ -263,7 +259,9 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
   }
 
   // Termination
-  return betas[_begin_id][1][1];
+  Probability full = betas[_begin_id][1][1];
+
+  return { full, betas };
 }
 
 /*----------------------------------------------------------------------------*/

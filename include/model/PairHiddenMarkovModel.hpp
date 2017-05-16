@@ -57,6 +57,19 @@ class PairHiddenMarkovModel {
   using Base = void;
   // using Cache = Base::Cache;
 
+  // Inner structs
+  struct LabelerReturn {
+    Probability estimation;
+    Sequence label;
+    Sequences alignment;
+    Cube matrix;
+  };
+
+  struct CalculatorReturn {
+    Probability estimation;
+    Cube matrix;
+  };
+
   // Type traits
   using State = typename StateTraits<Self>::State;
   using StatePtr = std::shared_ptr<State>;
@@ -74,10 +87,6 @@ class PairHiddenMarkovModel {
 
   /*==========================[ CONCRETE METHODS ]============================*/
 
-
-
-
-
   std::size_t stateAlphabetSize() const;
   std::size_t observationAlphabetSize() const;
 
@@ -87,18 +96,12 @@ class PairHiddenMarkovModel {
   const std::vector<StatePtr> states() const;
 
   // Labeler's implementations
-  Estimation<Labeling<Sequences>>
-  viterbi(const Sequences& sequences, Cube& gammas) const;
-
-  Estimation<Labeling<Sequences>>
-  posteriorDecoding(const Sequences& sequences, Cube& probabilities) const;
-
-  void posteriorProbabilities(const Sequences& sequences,
-                              Cube& probabilities) const;
+  LabelerReturn viterbi(const Sequences& sequences) const;
+  LabelerReturn posteriorDecoding(const Sequences& sequences) const;
 
   // Calculator's implementations
-  Probability forward(const Sequences& sequences, Cube& alphas) const;
-  Probability backward(const Sequences& sequences, Cube& betas) const;
+  CalculatorReturn forward(const Sequences& sequences) const;
+  CalculatorReturn backward(const Sequences& sequences) const;
 
  protected:
   // Instance variables

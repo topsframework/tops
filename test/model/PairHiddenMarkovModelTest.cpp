@@ -53,10 +53,8 @@ using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Cube;
-using tops::model::Labeling;
 using tops::model::Sequence;
 using tops::model::Sequences;
-using tops::model::Estimation;
 using tops::model::PairHiddenMarkovModel;
 using tops::model::PairHiddenMarkovModelPtr;
 
@@ -86,12 +84,11 @@ TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
   };
 
   for (unsigned int i = 0; i < tests.size(); i++) {
-    Cube alphas, betas;
-    auto prob_f = phmm->forward(tests[i], alphas);
-    auto prob_b = phmm->backward(tests[i], betas);
+    auto [ prob_f, alphas ] = phmm->forward(tests[i]);
+    auto [ prob_b, betas ] = phmm->backward(tests[i]);
 
-    /**/ std::cerr << "prob_f: " << prob_f << " log: " << prob_f.data() << std::endl;
-    /**/ std::cerr << "prob_b: " << prob_b << " log: " << prob_b.data() << std::endl;
+    /**/ std::cerr << "prob_f: " << prob_f << std::endl;
+    /**/ std::cerr << "prob_b: " << prob_b << std::endl;
 
     EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
   }
@@ -104,26 +101,25 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
+    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<Estimation<Labeling<Sequences>>> expected_results = {
-    { { tests[0], {0, 1, 4} }, 0.0 },
-    { { tests[1], {0, 1, 4} }, 0.0 },
-    { { tests[2], {0, 1, 1, 1, 4} }, 0.0 },
-    { { tests[3], {0, 1, 1, 1, 1, 1, 1, 4} }, 0.0 }
+  std::vector<PairHiddenMarkovModel::LabelerReturn> expected = {
+    { 0.02   , {0, 1, 4}                , tests[0], {} },
+    { 0.005  , {0, 1, 4}                , tests[1], {} },
+    { 0.0008 , {0, 1, 1, 1, 4}          , tests[2], {} },
+    { 6.4e-6 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
   for (unsigned int i = 0; i < tests.size(); i++) {
-    Cube gammas;
-    auto estimation = phmm->viterbi(tests[i], gammas);
+    auto [ estimation, label, alignment, _ ] = phmm->viterbi(tests[i]);
 
-    /**/ std::cerr << "prob: " << estimation.probability() << std::endl;
+    /**/ std::cerr << "prob: " << estimation << std::endl;
 
-    EXPECT_THAT(estimation.estimated().observation(),
-        Eq(expected_results[i].estimated().observation()));
-    EXPECT_THAT(estimation.estimated().label(),
-        Eq(expected_results[i].estimated().label()));
+    EXPECT_THAT(label, Eq(expected[i].label));
+    EXPECT_THAT(alignment, Eq(expected[i].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[i].estimation), 1e-8));
   }
 }
 
@@ -134,26 +130,25 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
+    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<Estimation<Labeling<Sequences>>> expected_results = {
-    { { tests[0], {0, 1, 4} }, 0.0 },
-    { { tests[1], {0, 1, 4} }, 0.0 },
-    { { tests[2], {0, 1, 1, 1, 4} }, 0.0 },
-    { { tests[3], {0, 1, 1, 1, 1, 1, 1, 4} }, 0.0 }
+  std::vector<PairHiddenMarkovModel::LabelerReturn> expected = {
+    { 0.2        , {0, 1, 4}                , tests[0], {} },
+    { 0.05       , {0, 1, 4}                , tests[1], {} },
+    { 0.00495957 , {0, 1, 1, 1, 4}          , tests[2], {} },
+    { 6.0023e-06 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
   for (unsigned int i = 0; i < tests.size(); i++) {
-    Cube probabilities;
-    auto estimation = phmm->posteriorDecoding(tests[i], probabilities);
+    auto [ estimation, label, alignment, _ ] = phmm->posteriorDecoding(tests[i]);
 
-    /**/ std::cerr << "prob: " << estimation.probability() << std::endl;
+    /**/ std::cerr << "prob: " << estimation << std::endl;
 
-    EXPECT_THAT(estimation.estimated().observation(),
-        Eq(expected_results[i].estimated().observation()));
-    EXPECT_THAT(estimation.estimated().label(),
-        Eq(expected_results[i].estimated().label()));
+    EXPECT_THAT(label, Eq(expected[i].label));
+    EXPECT_THAT(alignment, Eq(expected[i].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[i].estimation), 1e-8));
   }
 }
 
