@@ -125,47 +125,47 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences,
       std::vector<std::vector<unsigned int>>(sequences[0].size() + 2,
         std::vector<unsigned int>(sequences[1].size() + 2, _begin_id)));
 
+  probabilities = Cube(_state_alphabet_size,
+      Matrix(sequences[0].size() + 2,
+        std::vector<Probability>(sequences[1].size() + 2)));
+
+	// Preprocessment
+  Cube alphas;  // forward
+  Cube betas;   // backward
+
+  Probability full = forward(sequences, alphas);
+  backward(sequences, betas);
+
   // Initialization
-  posteriorProbabilities(sequences, probabilities);
+  probabilities[_begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
-      if (i == 1 && j == 1) continue;
-
+  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
+    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
-        if (state->isSilent()) continue;
-
-        Probability max_probability;
-        typename State::Id max_id = _begin_id;
+        if (!state->hasGap(1) && i == 0) continue;
+        if (!state->hasGap(2) && j == 0) continue;
 
         for(auto p : state->predecessors()) {
-          Probability v = probabilities[p][i - state->delta(1)][j - state->delta(2)]
-            * probabilities[state->id()][i][j];
+          Probability v
+            = probabilities[p][i - state->delta(1)][j - state->delta(2)];
 
-          if (v > max_probability) {
-            max_probability = v;
-            max_id = p;
+          if (v > probabilities[state->id()][i][j]) {
+            probabilities[state->id()][i][j] = v;
+            psi[state->id()][i][j] = p;
           }
         }
 
-        probabilities[state->id()][i][j] = max_probability;
-        psi[state->id()][i][j] = max_id;
+				if (!state->isSilent())
+					probabilities[state->id()][i][j]
+						*= ((alphas[state->id()][i][j] * betas[state->id()][i][j]) / full);
       }
     }
   }
 
   // Termination
-  Probability max_probability;
-  typename State::Id max_id = _begin_id;
-  for (auto p : _states[_end_id]->predecessors()) {
-    Probability v = probabilities[p][sequences[0].size()][sequences[1].size()];
-
-    if (v > max_probability) {
-      max_probability = v;
-      max_id = p;
-    }
-  }
+  Probability max_probability = probabilities[_end_id][sequences[0].size()][sequences[1].size()];
+  typename State::Id max_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
 
   // Trace back
   std::vector<std::size_t> idxs {
@@ -264,34 +264,6 @@ Probability PairHiddenMarkovModel::backward(const Sequences& sequences,
 
   // Termination
   return betas[_begin_id][1][1];
-}
-
-/*----------------------------------------------------------------------------*/
-
-void PairHiddenMarkovModel::posteriorProbabilities(const Sequences& sequences,
-                                                   Cube& probabilities) const {
-  probabilities = Cube(_state_alphabet_size,
-      Matrix(sequences[0].size() + 2,
-        std::vector<Probability>(sequences[1].size() + 2)));
-
-  // Initialization
-  Cube alphas;  // forward
-  Cube betas;   // backward
-
-  Probability full = forward(sequences, alphas);
-  backward(sequences, betas);
-
-  // Calculation
-  for (unsigned int i = 1; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 1; j <= sequences[1].size(); j++) {
-      for (const auto& state : _states) {
-        if (state->isSilent()) continue;
-
-        probabilities[state->id()][i][j]
-          = (alphas[state->id()][i][j] * betas[state->id()][i][j]) / full;
-      }
-    }
-  }
 }
 
 /*----------------------------------------------------------------------------*/
