@@ -58,7 +58,7 @@ bool SimpleState<E, T, d, gaps...>::isSilent() const {
 
 template<typename E, typename T, std::size_t d, bool... gaps>
 bool SimpleState<E, T, d, gaps...>::hasGap(Dimension dim) const {
-  return _gaps.at(dim - 1);
+  return _gaps.at(dim);
 }
 
 /*----------------------------------------------------------------------------*/
