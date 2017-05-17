@@ -70,6 +70,11 @@ class PairHiddenMarkovModel {
     Cube matrix;
   };
 
+  struct TraceBackReturn {
+    Sequence label;
+    Sequences alignment;
+  };
+
   // Type traits
   using State = typename StateTraits<Self>::State;
   using StatePtr = std::shared_ptr<State>;
@@ -102,6 +107,10 @@ class PairHiddenMarkovModel {
   // Calculator's implementations
   CalculatorReturn forward(const Sequences& sequences) const;
   CalculatorReturn backward(const Sequences& sequences) const;
+
+  // Helpers
+  TraceBackReturn traceBack(const Sequences& sequences,
+                            const MultiArray<typename State::Id, 3>& psi) const;
 
  protected:
   // Instance variables

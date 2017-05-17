@@ -84,35 +84,10 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   }
 
   // Termination
-  Probability max_probability = gammas[_end_id][sequences[0].size()][sequences[1].size()];
-  typename State::Id max_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
+  auto max = gammas[_end_id][sequences[0].size()][sequences[1].size()];
+  auto [ label, alignment ] = traceBack(sequences, psi);
 
-  // Trace back
-  std::vector<std::size_t> idxs {
-    sequences[0].size(), sequences[1].size() };
-
-  Sequence path, al1, al2;
-  typename State::Id best_id = max_id;
-
-  path.push_back(_end_id);
-  while (best_id != _begin_id) {
-    path.push_back(best_id);
-
-    al1.push_back(_states[best_id]->hasGap(0) ? _gap : sequences[0][idxs[0]-1]);
-    al2.push_back(_states[best_id]->hasGap(1) ? _gap : sequences[1][idxs[1]-1]);
-
-    best_id = psi[best_id][idxs[0]][idxs[1]];
-
-    if (!_states[best_id]->hasGap(0)) idxs[0]--;
-    if (!_states[best_id]->hasGap(1)) idxs[1]--;
-  }
-  path.push_back(_begin_id);
-
-  std::reverse(path.begin(), path.end());
-  std::reverse(al1.begin(), al1.end());
-  std::reverse(al2.begin(), al2.end());
-
-  return { max_probability, path, Sequences{ al1, al2 }, gammas };
+  return { max, label, alignment, gammas };
 }
 
 /*----------------------------------------------------------------------------*/
@@ -159,35 +134,10 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   }
 
   // Termination
-  Probability max_probability = probabilities[_end_id][sequences[0].size()][sequences[1].size()];
-  typename State::Id max_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
+  auto max = probabilities[_end_id][sequences[0].size()][sequences[1].size()];
+  auto [ label, alignment ] = traceBack(sequences, psi);
 
-  // Trace back
-  std::vector<std::size_t> idxs {
-    sequences[0].size(), sequences[1].size() };
-
-  Sequence path, al1, al2;
-  typename State::Id best_id = max_id;
-
-  path.push_back(_end_id);
-  while (best_id != _begin_id) {
-    path.push_back(best_id);
-
-    al1.push_back(_states[best_id]->hasGap(0) ? _gap : sequences[0][idxs[0]-1]);
-    al2.push_back(_states[best_id]->hasGap(1) ? _gap : sequences[1][idxs[1]-1]);
-
-    best_id = psi[best_id][idxs[0]][idxs[1]];
-
-    if (!_states[best_id]->hasGap(0)) idxs[0]--;
-    if (!_states[best_id]->hasGap(1)) idxs[1]--;
-  }
-  path.push_back(_begin_id);
-
-  std::reverse(path.begin(), path.end());
-  std::reverse(al1.begin(), al1.end());
-  std::reverse(al2.begin(), al2.end());
-
-  return { max_probability, path, Sequences{ al1, al2 }, probabilities };
+  return { max, label, alignment, probabilities };
 }
 
 /*----------------------------------------------------------------------------*/
@@ -262,6 +212,45 @@ PairHiddenMarkovModel::backward(const Sequences& sequences) const {
   Probability full = betas[_begin_id][1][1];
 
   return { full, betas };
+}
+
+/*----------------------------------------------------------------------------*/
+
+typename PairHiddenMarkovModel::TraceBackReturn
+PairHiddenMarkovModel::traceBack(
+    const Sequences& sequences,
+    const MultiArray<typename State::Id, 3>& psi) const {
+  Sequence label;
+  Sequences alignment(2);
+
+  // Initialization
+  auto best_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
+
+  std::vector<std::size_t> idxs { sequences[0].size(), sequences[1].size() };
+
+  // Iteration
+  label.push_back(_end_id);
+  while (best_id != _begin_id) {
+    label.push_back(best_id);
+
+    alignment[0].push_back(
+        _states[best_id]->hasGap(0) ? _gap : sequences[0][idxs[0]-1]);
+    alignment[1].push_back(
+        _states[best_id]->hasGap(1) ? _gap : sequences[1][idxs[1]-1]);
+
+    best_id = psi[best_id][idxs[0]][idxs[1]];
+
+    if (!_states[best_id]->hasGap(0)) idxs[0]--;
+    if (!_states[best_id]->hasGap(1)) idxs[1]--;
+  }
+  label.push_back(_begin_id);
+
+  // Termination
+  std::reverse(label.begin(), label.end());
+  std::reverse(alignment[0].begin(), alignment[0].end());
+  std::reverse(alignment[1].begin(), alignment[1].end());
+
+  return { label, alignment };
 }
 
 /*----------------------------------------------------------------------------*/
