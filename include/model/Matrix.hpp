@@ -29,9 +29,16 @@
 namespace tops {
 namespace model {
 
-using Matrix = std::vector<Probabilities>;
+template<typename T, std::size_t N>
+struct Nest : Nest<std::vector<T>, N-1> {};
+template<typename T>
+struct Nest<T, 0> { using type = T; };
 
-using Cube = std::vector<Matrix>;
+template<typename T, std::size_t N>
+using MultiArray = typename Nest<T, N>::type;
+
+using Matrix = MultiArray<Probability, 2>;
+using Cube = MultiArray<Probability, 3>;
 
 }  // namespace model
 }  // namespace tops

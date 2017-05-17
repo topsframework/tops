@@ -47,9 +47,9 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
-  auto psi = std::vector<std::vector<std::vector<typename State::Id>>>(_state_alphabet_size,
-      std::vector<std::vector<typename State::Id>>(sequences[0].size() + 2,
-        std::vector<typename State::Id>(sequences[1].size() + 2, _begin_id)));
+  auto psi = MultiArray<typename State::Id, 3>(_state_alphabet_size,
+      MultiArray<typename State::Id, 2>(sequences[0].size() + 2,
+        MultiArray<typename State::Id, 1>(sequences[1].size() + 2, _begin_id)));
 
   auto gammas = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
@@ -119,9 +119,9 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
-  auto psi = std::vector<std::vector<std::vector<typename State::Id>>>(_state_alphabet_size,
-      std::vector<std::vector<typename State::Id>>(sequences[0].size() + 2,
-        std::vector<typename State::Id>(sequences[1].size() + 2, _begin_id)));
+  auto psi = MultiArray<typename State::Id, 3>(_state_alphabet_size,
+      MultiArray<typename State::Id, 2>(sequences[0].size() + 2,
+        MultiArray<typename State::Id, 1>(sequences[1].size() + 2, _begin_id)));
 
   auto probabilities = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
