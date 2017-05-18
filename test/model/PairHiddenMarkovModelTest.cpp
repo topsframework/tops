@@ -30,6 +30,7 @@
 #include "model/Util.hpp"
 #include "model/Sequence.hpp"
 #include "model/Probability.hpp"
+#include "model/RandomNumberGeneratorAdapter.hpp"
 
 #include "exception/NotYetImplemented.hpp"
 
@@ -57,6 +58,7 @@ using tops::model::Sequence;
 using tops::model::Sequences;
 using tops::model::PairHiddenMarkovModel;
 using tops::model::PairHiddenMarkovModelPtr;
+using tops::model::RandomNumberGeneratorAdapter;
 
 using tops::exception::NotYetImplemented;
 
@@ -149,6 +151,32 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
     EXPECT_THAT(alignment, Eq(expected[i].alignment));
     EXPECT_THAT(DOUBLE(estimation),
         DoubleNear(DOUBLE(expected[i].estimation), 1e-8));
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+TEST_F(APairHiddenMarkovModel, ShouldDrawLabeledSequenceWithDefaultSeed) {
+  std::vector<std::size_t> tests = {
+    0, 1, 2, 3, 4, 5
+  };
+
+  std::vector<PairHiddenMarkovModel::GeneratorReturn<Sequence>> expected = {
+    { { 0, 4                }, { {               }, {               } } },
+    { { 0, 1, 4             }, { { 1             }, { 1             } } },
+    { { 0, 1, 1, 4          }, { { 1, 1          }, { 0, 1          } } },
+    { { 0, 3, 1, 1, 4       }, { { 1, 1, 0       }, { 2, 1, 0       } } },
+    { { 0, 1, 3, 3, 1, 4    }, { { 1, 1, 0, 1    }, { 1, 2, 2, 1    } } },
+    { { 0, 1, 1, 1, 3, 3, 4 }, { { 1, 0, 0, 0, 0 }, { 1, 1, 0, 2, 2 } } },
+  };
+
+  auto rng = RandomNumberGeneratorAdapter<std::mt19937>::make();
+
+  for (unsigned int i = 0; i < tests.size(); i++) {
+    auto [ label, alignment ] = phmm->drawSequence(rng, tests[i]);
+
+    EXPECT_THAT(label, ContainerEq(expected[i].label));
+    EXPECT_THAT(alignment, ContainerEq(expected[i].alignment));
   }
 }
 

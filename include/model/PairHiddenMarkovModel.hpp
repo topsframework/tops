@@ -58,6 +58,12 @@ class PairHiddenMarkovModel {
   // using Cache = Base::Cache;
 
   // Inner structs
+  template<typename Target>
+  struct GeneratorReturn {
+    Target label;
+    std::vector<Target> alignment;
+  };
+
   struct LabelerReturn {
     Probability estimation;
     Sequence label;
@@ -99,6 +105,13 @@ class PairHiddenMarkovModel {
 
   std::vector<StatePtr> states();
   const std::vector<StatePtr> states() const;
+
+  // Generator's implementations
+  GeneratorReturn<Symbol> drawSymbol(RandomNumberGeneratorPtr rng,
+                                     std::size_t pos,
+                                     const Sequence& context) const;
+  GeneratorReturn<Sequence> drawSequence(RandomNumberGeneratorPtr rng,
+                                         std::size_t size) const;
 
   // Labeler's implementations
   LabelerReturn viterbi(const Sequences& sequences) const;

@@ -45,6 +45,45 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+typename PairHiddenMarkovModel::GeneratorReturn<Symbol>
+PairHiddenMarkovModel::drawSymbol(RandomNumberGeneratorPtr rng,
+                                  std::size_t pos,
+                                  const Sequence& context) const {
+  assert(context.size() > 0 && context[0] == _begin_id);
+
+  Symbol label = _states[context[pos-1]]->transition()->draw(rng);
+  Symbols alignment = _states[label]->emission()->drawPair(rng);
+
+  return { label, alignment };
+}
+
+/*----------------------------------------------------------------------------*/
+
+typename PairHiddenMarkovModel::GeneratorReturn<Sequence>
+PairHiddenMarkovModel::drawSequence(RandomNumberGeneratorPtr rng,
+                                    std::size_t size) const {
+  Sequences alignment(2);
+  Sequence label;
+
+  label.push_back(_begin_id);
+  for (std::size_t i = 1; i <= size; i++) {
+    auto [ y, xs ] = drawSymbol(rng, i, label);
+
+    // Keep trying to emit the right number of symbols
+    if (y == _end_id) { i--; continue; }
+
+    label.push_back(y);
+
+    alignment[0].push_back(xs[0]);
+    alignment[1].push_back(xs[1]);
+  }
+  label.push_back(_end_id);
+
+  return { label, alignment };
+}
+
+/*----------------------------------------------------------------------------*/
+
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   auto psi = MultiArray<typename State::Id, 3>(_state_alphabet_size,
