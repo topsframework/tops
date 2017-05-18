@@ -102,7 +102,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
-	// Preprocessment
+  // Preprocessment
   auto [ full, alphas ] = forward(sequences);
   auto [ _, betas ] = backward(sequences);
 
@@ -126,9 +126,9 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
           }
         }
 
-				if (!state->isSilent())
-					probabilities[state->id()][i][j]
-						*= ((alphas[state->id()][i][j] * betas[state->id()][i][j]) / full);
+        if (!state->isSilent())
+          probabilities[state->id()][i][j]
+            *= ((alphas[state->id()][i][j] * betas[state->id()][i][j]) / full);
       }
     }
   }
