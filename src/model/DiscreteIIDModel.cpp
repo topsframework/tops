@@ -541,6 +541,15 @@ Symbol DiscreteIIDModel::draw(RandomNumberGeneratorPtr rng) const {
 
 /*----------------------------------------------------------------------------*/
 
+Symbols DiscreteIIDModel::drawPair(RandomNumberGeneratorPtr rng) const {
+  Symbol symbol = draw(rng);
+  Symbol first = symbol / _alphabet_size;
+  Symbol second = symbol % _alphabet_size;
+  return { first, second };
+}
+
+/*----------------------------------------------------------------------------*/
+
 Probability DiscreteIIDModel::probabilityOf(Symbol s) const {
   if (s >= _probabilities.size()) return 0;
   return _probabilities[s];

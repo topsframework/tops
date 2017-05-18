@@ -214,6 +214,12 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   virtual Symbol draw(RandomNumberGeneratorPtr rng) const;
 
   /**
+   * Draws a new pair of symbols.
+   * @return \f$(x_1, x_2),\ x_1, x_2 \in X\f$
+   */
+  virtual Symbols drawPair(RandomNumberGeneratorPtr rng) const;
+
+  /**
    * Gets the probability of this model drawing a given symbol.
    * @return \f$Pr(s)\f$
    */
