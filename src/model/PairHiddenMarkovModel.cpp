@@ -98,7 +98,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
       MultiArray<typename State::Id, 2>(sequences[0].size() + 2,
         MultiArray<typename State::Id, 1>(sequences[1].size() + 2, _begin_id)));
 
-  auto probabilities = Cube(_state_alphabet_size,
+  auto posteriors = Cube(_state_alphabet_size,
       Matrix(sequences[0].size() + 2,
         std::vector<Probability>(sequences[1].size() + 2)));
 
@@ -107,7 +107,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   auto [ _, betas ] = backward(sequences);
 
   // Initialization
-  probabilities[_begin_id][0][0] = 1;
+  posteriors[_begin_id][0][0] = 1;
 
   // Recursion
   for (unsigned int i = 0; i <= sequences[0].size(); i++) {
@@ -118,26 +118,26 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
 
         for(auto p : state->predecessors()) {
           Probability v
-            = probabilities[p][i - state->delta(0)][j - state->delta(1)];
+            = posteriors[p][i - state->delta(0)][j - state->delta(1)];
 
-          if (v > probabilities[state->id()][i][j]) {
-            probabilities[state->id()][i][j] = v;
+          if (v > posteriors[state->id()][i][j]) {
+            posteriors[state->id()][i][j] = v;
             psi[state->id()][i][j] = p;
           }
         }
 
         if (!state->isSilent())
-          probabilities[state->id()][i][j]
+          posteriors[state->id()][i][j]
             *= ((alphas[state->id()][i][j] * betas[state->id()][i][j]) / full);
       }
     }
   }
 
   // Termination
-  auto max = probabilities[_end_id][sequences[0].size()][sequences[1].size()];
+  auto max = posteriors[_end_id][sequences[0].size()][sequences[1].size()];
   auto [ label, alignment ] = traceBack(sequences, psi);
 
-  return { max, label, alignment, probabilities };
+  return { max, label, alignment, posteriors };
 }
 
 /*----------------------------------------------------------------------------*/
