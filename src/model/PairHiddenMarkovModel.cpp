@@ -98,8 +98,8 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   gammas[_begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
+  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
@@ -149,8 +149,8 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   posteriors[_begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
+  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
@@ -191,8 +191,8 @@ PairHiddenMarkovModel::forward(const Sequences& sequences) const {
   alphas[_begin_id][0][0] = 1;
 
   // Recursion
-  for (unsigned int i = 0; i <= sequences[0].size(); i++) {
-    for (unsigned int j = 0; j <= sequences[1].size(); j++) {
+  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
@@ -229,8 +229,8 @@ PairHiddenMarkovModel::backward(const Sequences& sequences) const {
   betas[_end_id][sequences[0].size()+1][sequences[1].size()+1] = 1;
 
   // Recursion
-  for (unsigned int i = sequences[0].size()+1; i >= 1; i--) {
-    for (unsigned int j = sequences[1].size()+1; j >= 1; j--) {
+  for (std::size_t i = sequences[0].size()+1; i >= 1; i--) {
+    for (std::size_t j = sequences[1].size()+1; j >= 1; j--) {
       for (const auto& state : _states) {
         for(auto s : state->successors()) {
           if (!_states[s]->hasGap(0) && i == sequences[0].size()+1) continue;
