@@ -44,7 +44,7 @@ template<typename EmissionModel, typename TransitionModel,
  */
 template<>
 struct StateTraits<PairHiddenMarkovModel> {
-  using State = State<IID, IID>;
+  using State = tops::model::State<IID, IID>;
 
   using MatchState  = SimpleState<IID, IID, 2, false, false >;
   using Gap1State   = SimpleState<IID, IID, 2, true,  false >;
