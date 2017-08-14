@@ -46,10 +46,10 @@ template<>
 struct StateTraits<PairHiddenMarkovModel> {
   using State = tops::model::State<IID, IID>;
 
-  using MatchState  = SimpleState<IID, IID, 2, false, false >;
-  using Gap1State   = SimpleState<IID, IID, 2, true,  false >;
-  using Gap2State   = SimpleState<IID, IID, 2, false, true  >;
-  using SilentState = SimpleState<IID, IID, 2, true,  true  >;
+  using MatchState  = SimpleState<IID, IID, 2, false, false>;
+  using Gap1State   = SimpleState<IID, IID, 2, true , false>;
+  using Gap2State   = SimpleState<IID, IID, 2, false, true >;
+  using SilentState = SimpleState<IID, IID, 2, true , true >;
 };
 
 }  // namespace model
