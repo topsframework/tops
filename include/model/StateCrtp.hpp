@@ -76,9 +76,15 @@ class StateCrtp
   SerializerPtr serializer(TranslatorPtr translator) override;
 
   Id id() const override;
+
   EmissionModelPtr emission() override;
+  void emission(EmissionModelPtr ptr) override;
+
   TransitionModelPtr transition() override;
+  void transition(TransitionModelPtr ptr) override;
+
   DurationPtr duration() override;
+  void duration(DurationPtr ptr) override;
 
   void addPredecessor(Id id) override;
   std::vector<Id>& predecessors() override;

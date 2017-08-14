@@ -77,6 +77,13 @@ auto StateCrtp<E, T, D>::emission() -> EmissionModelPtr {
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
+void StateCrtp<E, T, D>::emission(EmissionModelPtr ptr) {
+  _emission = ptr;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
 auto StateCrtp<E, T, D>::transition() -> TransitionModelPtr {
   return _transition;
 }
@@ -84,8 +91,22 @@ auto StateCrtp<E, T, D>::transition() -> TransitionModelPtr {
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
+void StateCrtp<E, T, D>::transition(TransitionModelPtr ptr) {
+  _transition = ptr;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
 auto StateCrtp<E, T, D>::duration() -> DurationPtr {
   return _duration;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+void StateCrtp<E, T, D>::duration(DurationPtr ptr) {
+  _duration = ptr;
 }
 
 /*----------------------------------------------------------------------------*/

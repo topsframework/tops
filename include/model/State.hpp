@@ -68,9 +68,15 @@ class State {
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
   virtual Id id() const = 0;
+
   virtual EmissionModelPtr emission() = 0;
+  virtual void emission(EmissionModelPtr ptr) = 0;
+
   virtual TransitionModelPtr transition() = 0;
+  virtual void transition(TransitionModelPtr ptr) = 0;
+
   virtual DurationPtr duration() = 0;
+  virtual void duration(DurationPtr ptr) = 0;
 
   virtual void addPredecessor(Id id) = 0;
   virtual std::vector<Id>& predecessors() = 0;
