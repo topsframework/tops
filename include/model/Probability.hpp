@@ -20,13 +20,19 @@
 #ifndef TOPS_MODEL_PROBABILITY_
 #define TOPS_MODEL_PROBABILITY_
 
+// Standard headers
+#include <vector>
+
 // External headers
 #include "probability/probability.hpp"
 
 namespace tops {
 namespace model {
 
-using Probability = probability::Probability<double, 4>;
+using Expectation = probability::LogFloatingPoint<double, 8>;
+using Expectations = std::vector<Expectation>;
+
+using Probability = probability::Probability<double, 8>;
 using Probabilities = std::vector<Probability>;
 
 }  // namespace model
