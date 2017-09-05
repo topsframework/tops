@@ -82,17 +82,17 @@ TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}}
+    {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}},
   };
 
-  for (unsigned int i = 0; i < tests.size(); i++) {
-    auto [ prob_f, alphas ] = phmm->forward(tests[i]);
-    auto [ prob_b, betas ] = phmm->backward(tests[i]);
+  for (const auto& test : tests) {
+    auto [ prob_f, alphas ] = phmm->forward(test);
+    auto [ prob_b, betas ] = phmm->backward(test);
 
     /**/ std::cerr << "prob_f: " << prob_f << std::endl;
     /**/ std::cerr << "prob_b: " << prob_b << std::endl;
 
-    EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-4));
+    EXPECT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-7));
   }
 }
 
@@ -113,15 +113,15 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
     { 6.4e-6 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
-  for (unsigned int i = 0; i < tests.size(); i++) {
-    auto [ estimation, label, alignment, _ ] = phmm->viterbi(tests[i]);
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = phmm->viterbi(tests[t]);
 
     /**/ std::cerr << "prob: " << estimation << std::endl;
 
-    EXPECT_THAT(label, Eq(expected[i].label));
-    EXPECT_THAT(alignment, Eq(expected[i].alignment));
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
     EXPECT_THAT(DOUBLE(estimation),
-        DoubleNear(DOUBLE(expected[i].estimation), 1e-8));
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-7));
   }
 }
 
@@ -142,15 +142,15 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
     { 0.0216255 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
-  for (unsigned int i = 0; i < tests.size(); i++) {
-    auto [ estimation, label, alignment, _ ] = phmm->posteriorDecoding(tests[i]);
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = phmm->posteriorDecoding(tests[t]);
 
     /**/ std::cerr << "prob: " << estimation << std::endl;
 
-    EXPECT_THAT(label, Eq(expected[i].label));
-    EXPECT_THAT(alignment, Eq(expected[i].alignment));
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
     EXPECT_THAT(DOUBLE(estimation),
-        DoubleNear(DOUBLE(expected[i].estimation), 1e-8));
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-7));
   }
 }
 
