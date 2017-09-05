@@ -88,6 +88,18 @@ void SExprTranslator::translate(
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(
+    Ptr<model::PairHiddenMarkovModel> model) {
+  _sexpr += "(PairHiddenMarkovModel: ";
+  for (const auto& state : model->states()) {
+    state->serializer(make_shared())->serialize();
+    _sexpr += " ";
+  }
+  _sexpr[_sexpr.size()-1] =  ')';
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(
     Ptr<model::PeriodicInhomogeneousMarkovChain> /* model */) {
 }
 

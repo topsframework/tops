@@ -40,6 +40,7 @@ class HiddenMarkovModel;
 class InhomogeneousMarkovChain;
 class MaximalDependenceDecomposition;
 class MultipleSequentialModel;
+class PairHiddenMarkovModel;
 class PeriodicInhomogeneousMarkovChain;
 class PhasedRunLengthDistribution;
 class SimilarityBasedSequenceWeighting;
@@ -82,6 +83,7 @@ class Translator : public std::enable_shared_from_this<Translator> {
   virtual void translate(Ptr<InhomogeneousMarkovChain> model) = 0;
   virtual void translate(Ptr<MaximalDependenceDecomposition> model) = 0;
   virtual void translate(Ptr<MultipleSequentialModel> model) = 0;
+  virtual void translate(Ptr<PairHiddenMarkovModel> model) = 0;
   virtual void translate(Ptr<PeriodicInhomogeneousMarkovChain> model) = 0;
   virtual void translate(Ptr<PhasedRunLengthDistribution> model) = 0;
   virtual void translate(Ptr<SimilarityBasedSequenceWeighting> model) = 0;

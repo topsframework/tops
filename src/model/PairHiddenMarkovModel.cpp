@@ -45,6 +45,14 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
+/*===============================  SERIALIZER  ===============================*/
+
+void PairHiddenMarkovModel::serialize(SSPtr serializer) {
+  serializer->translator()->translate(this->shared_from_this());
+}
+
+/*=================================  OTHERS  =================================*/
+
 typename PairHiddenMarkovModel::GeneratorReturn<Symbol>
 PairHiddenMarkovModel::drawSymbol(RandomNumberGeneratorPtr rng,
                                   std::size_t pos,
