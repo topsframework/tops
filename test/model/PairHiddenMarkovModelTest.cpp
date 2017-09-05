@@ -136,10 +136,10 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
   };
 
   std::vector<PairHiddenMarkovModel::LabelerReturn> expected = {
-    { 0.2        , {0, 1, 4}                , tests[0], {} },
-    { 0.05       , {0, 1, 4}                , tests[1], {} },
-    { 0.00495957 , {0, 1, 1, 1, 4}          , tests[2], {} },
-    { 6.0023e-06 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
+    { 1.0       , {0, 1, 4}                , tests[0], {} },
+    { 1.0       , {0, 1, 4}                , tests[1], {} },
+    { 0.418035  , {0, 1, 1, 1, 4}          , tests[2], {} },
+    { 0.0216255 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
   for (unsigned int i = 0; i < tests.size(); i++) {
