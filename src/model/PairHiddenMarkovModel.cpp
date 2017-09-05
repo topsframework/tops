@@ -20,13 +20,40 @@
 // Interface header
 #include "model/PairHiddenMarkovModel.hpp"
 
+#include "helper/SExprTranslator.hpp"
+
 // Standard headers
+#include <utility>
 #include <iomanip>
 #include <utility>
 #include <iostream>
 
+// Macros
+#define UNUSED(var) do { (void) sizeof(var); } while(false)
+
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
+/*                              LOCAL FUNCTIONS                               */
+/*----------------------------------------------------------------------------*/
+
+namespace {
+
+template<std::size_t N>
+MultiArray<Probability, N> convert(const MultiArray<Expectation, N>& base) {
+  MultiArray<Probability, N> converted;
+  for (const auto& sub_base : base)
+    converted.push_back(convert<N-1>(sub_base));
+  return converted;
+}
+
+template<>
+MultiArray<Probability, 0> convert<0>(const MultiArray<Expectation, 0>& base) {
+  return Probability{ base };
+}
+
+}  // namespace
 
 /*----------------------------------------------------------------------------*/
 /*                               CONSTRUCTORS                                 */
@@ -39,6 +66,136 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
     : _states(std::move(states)),
       _state_alphabet_size(std::move(state_alphabet_size)),
       _observation_alphabet_size(std::move(observation_alphabet_size)) {
+}
+
+/*----------------------------------------------------------------------------*/
+/*                               STATIC METHODS                               */
+/*----------------------------------------------------------------------------*/
+
+/*================================  TRAINER  =================================*/
+
+PairHiddenMarkovModelPtr
+PairHiddenMarkovModel::train(TrainerPtr<Alignment, Self> trainer,
+                             baum_welch_algorithm,
+                             PairHiddenMarkovModelPtr initial_model,
+                             std::size_t max_iterations,
+                             Probability diff_threshold) {
+  auto model = std::make_shared<PairHiddenMarkovModel>(*initial_model);
+
+  Symbol gap = model->observationAlphabetSize();
+
+  std::pair<Expectation, Expectation> lasts;
+  for (std::size_t iteration = 0; iteration < max_iterations; iteration++) {
+    // Matrix for expectations of transitions
+    auto A = MultiArray<Expectation, 2>(model->stateAlphabetSize(),
+        MultiArray<Expectation, 1>(model->stateAlphabetSize()));
+
+    // Matrix for expectations of emissions
+    auto E = MultiArray<Expectation, 3>(model->stateAlphabetSize(),
+        MultiArray<Expectation, 2>(model->observationAlphabetSize()+1,
+          MultiArray<Expectation, 1>(model->observationAlphabetSize()+1)));
+
+    Expectation last;
+    for (const auto& sequences : trainer->training_set()) {
+      // Forward and backward values
+      auto [ full, alphas ] = model->forward(sequences);
+      auto [ _, betas ] = model->backward(sequences);
+
+      UNUSED(_);  // A hack while we don't have pattern matching in C++
+
+      last += full;
+
+      // Add contribution of the given sequences to matrix A
+      for (size_t i = 0; i <= sequences[0].size(); i++) {
+        for (size_t j = 0; j <= sequences[1].size(); j++) {
+          for (const auto& state : model->states()) {
+            for (auto s : state->successors()) {
+              auto successor = model->state(s);
+
+              if (!successor->hasGap(0) && i == sequences[0].size()) continue;
+              if (!successor->hasGap(1) && j == sequences[1].size()) continue;
+
+              A[state->id()][s] += alphas[state->id()][i][j]
+                * state->transition()->probabilityOf(s)
+                * successor->emission()->probabilityOf(
+                    successor->hasGap(0) ? gap : sequences[0][i],
+                    successor->hasGap(1) ? gap : sequences[1][j])
+                * betas[s][i + successor->delta(0)][j + successor->delta(1)]
+                / full;
+            }
+          }
+        }
+      }
+
+      // Add contribution of the given sequences to matrix E
+      for (size_t i = 0; i <= sequences[0].size(); i++) {
+        for (size_t j = 0; j <= sequences[1].size(); j++) {
+          for (const auto& state : model->states()) {
+            if (!state->hasGap(0) && i == sequences[0].size()) continue;
+            if (!state->hasGap(1) && j == sequences[1].size()) continue;
+
+            auto s0 = state->hasGap(0) ? gap : sequences[0][i];
+            auto s1 = state->hasGap(1) ? gap : sequences[1][j];
+
+            E[state->id()][s0][s1]
+              += alphas[state->id()][i + state->delta(0)][j + state->delta(1)]
+               * betas[state->id()][i + state->delta(0)][j + state->delta(1)]
+               / full;
+          }
+        }
+      }
+    }
+
+    // "Pseudo-counter" to avoid divided-by-zero error when
+    // some combination of emission symbol does not appear
+    const Expectation min
+      = std::numeric_limits<Expectation::value_type>::epsilon();
+
+    // Sum all expectancies for each state 'k' to normalize
+    std::vector<Expectation> sumA(model->stateAlphabetSize());
+    std::vector<Expectation> sumE(model->stateAlphabetSize());
+    for (const auto& state : model->states()) {
+      auto k = state->id();
+
+      sumA[k] = std::accumulate(A[k].begin(), A[k].end(), min);
+      sumE[k] = std::accumulate(E[k].begin(), E[k].end(), min,
+          [] (Expectation& a, const Expectations& b) {
+            return std::accumulate(b.begin(), b.end(), a);
+          });
+    }
+
+    // Replace states in the model
+    for (auto& state : model->states()) {
+      if (state->isSilent()) continue;
+
+      auto k = state->id();
+
+      // Normalize the expectancies in A to probabilities
+      for (auto s : state->successors())
+        A[k][s] /= sumA[k];
+
+      // Normalize the expectancies in E to probabilities
+      for (size_t i = 0; i < model->observationAlphabetSize()+1; i++)
+        for (size_t j = 0; j < model->observationAlphabetSize()+1; j++)
+          E[k][i][j] /= sumE[k];
+
+      // Replace the transition and emission of each state
+      state->transition(DiscreteIIDModel::make(convert<1>(A[k])));
+      state->emission(DiscreteIIDModel::make(convert<2>(E[k])));
+    }
+
+    // Store last expectancies of alignment
+    lasts = std::make_pair(last, lasts.first);
+
+    // Difference between expectancies
+    Probability diff = lasts.second > lasts.first ?
+      lasts.second - lasts.first : lasts.first - lasts.second;
+
+    // Finish if expectancies do not change
+    if (diff < diff_threshold) break;
+  }
+
+  return model;
 }
 
 /*----------------------------------------------------------------------------*/
