@@ -701,6 +701,7 @@ std::vector<Probability> *cria_vetor_transicao(std::vector<unsigned int> vetor_i
    }
 
    for(unsigned int i = 0; i < vetor_indices.size(); i++){
+     retorno->erase(retorno->begin() + vetor_indices.at(i));
      retorno->insert(retorno->begin() + vetor_indices.at(i),
      vetor_probabilidades.at(i));
    }
