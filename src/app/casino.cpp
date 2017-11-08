@@ -817,23 +817,35 @@ int main() {
 
   std::cerr << "done!" << std::endl;
 
-  DiscreteIIDModelPtr fair_geometric_transition
-      = DiscreteIIDModel::make(std::vector<Probability>{{ 0.9, 0.1}});
+  //Transitions probabilities
+  auto fair_probabilities = vector<Probability>{{0.9, 0.1}};
+  auto fair_probabilities_indices = vector<unsigned int>{0, 1};
+  auto indexed_fair_probabilities = cria_vetor_transicao(
+    fair_probabilities_indices, fair_probabilities);
 
+    DiscreteIIDModelPtr fair_geometric_transition
+      = DiscreteIIDModel::make(*indexed_fair_probabilities);
+
+  auto loaded_probabilities = vector<Probability>{{0.1, 0.9}};
+  auto loaded_probabilities_indices = vector<unsigned int>{0, 1};
+  auto indexed_loaded_probabilities = cria_vetor_transicao(
+     loaded_probabilities_indices, loaded_probabilities);
+
+     DiscreteIIDModelPtr loaded_geometric_transition
+    = DiscreteIIDModel::make(*indexed_loaded_probabilities);
+
+  //Emissions probabilities
   DiscreteIIDModelPtr fair_emission
     = DiscreteIIDModel::make(std::vector<Probability>{{
       0.166666666, 0.166666666, 0.166666666,
        0.166666666, 0.166666666, 0.166666666}});
-
-  DiscreteIIDModelPtr loaded_geometric_transition
-    = DiscreteIIDModel::make(std::vector<Probability>{{ 0.1, 0.9}});
 
   DiscreteIIDModelPtr loaded_emission
   = DiscreteIIDModel::make(std::vector<Probability>{{
      0.5, 0.1, 0.1,
       0.1, 0.1, 0.1}});
 
-
+  //States definitions
   GHMM::StatePtr fair_state //um modelo qq
     = GHMM::State::make(
       0, fair_emission, //prob de emissão
@@ -848,6 +860,7 @@ int main() {
         , loaded_geometric_transition)); //prob de duração geo
 
   //junta tudo
+  //GHMM definition
   GeneralizedHiddenMarkovModelPtr ghmm
     = GeneralizedHiddenMarkovModel::make(
       std::vector<GeneralizedHiddenMarkovModel::StatePtr>{
@@ -857,6 +870,7 @@ int main() {
       2, //numero de estados
        6); //cardinalidade do alfabeto de observacoes
 
+  //GHMM graph conection
   loaded_state->addSuccessor(0);
   loaded_state->addSuccessor(1);
   loaded_state->addPredecessor(0);
