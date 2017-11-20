@@ -26,45 +26,18 @@
 namespace tops {
 namespace model {
 
-// Forward declaration
-template<typename Target>
-class Labeling;
-
 /**
- * @class Labeling
+ * @struct Labeling
  * @brief TODO
  */
 template<typename Target>
-class Labeling {
- public:
-  // Constructors
-  Labeling() = default;
-  Labeling(Target observation, Sequence label);
-  Labeling(Target observation,
-           std::vector<Target> other_observations,
-           Sequence label);
-
-  // Concrete Getters
-  const Target& observation() const;
-  Target& observation();
-
-  const std::vector<Target>& other_observations() const;
-  std::vector<Target>& other_observations();
-
-  const Sequence& label() const;
-  Sequence& label();
-
- private:
-  // Instance variables
-  Target _observation;
-  std::vector<Target> _other_observations;
-  Sequence _label;
+struct Labeling {
+  Target observation;
+  std::vector<Target> other_observations;
+  Sequence label;
 };
 
 }  // namespace model
 }  // namespace tops
-
-// Implementation header
-#include "model/Labeling.ipp"
 
 #endif  // TOPS_MODEL_LABELING_

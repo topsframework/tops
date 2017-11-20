@@ -32,31 +32,201 @@
 namespace tops {
 namespace helper {
 
+using IID = model::DiscreteIIDModel;
+using Probability = model::Probability;
+using Probabilities = std::vector<Probability>;
+
 /*----------------------------------------------------------------------------*/
 /*                                 FUNCTIONS                                  */
 /*----------------------------------------------------------------------------*/
 
 model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM() {
-  std::vector<model::HiddenMarkovModel::StatePtr> states = {
-    model::HiddenMarkovModel::State::make(
-      0,
-      model::DiscreteIIDModel::make(
-        std::vector<model::Probability>{{ 0.5, 0.5 }}),
-      model::DiscreteIIDModel::make(
-        std::vector<model::Probability>{{ 0.7, 0.3 }})),
-    model::HiddenMarkovModel::State::make(
-      1,
-      model::DiscreteIIDModel::make(
-        std::vector<model::Probability>{{ 0.2, 0.8 }}),
-      model::DiscreteIIDModel::make(
-        std::vector<model::Probability>{{ 0.5, 0.5 }}))};
+  /*
+   *                τ
+   *  .---------------------------.
+   *  |           1-σ-τ           |
+   *  |            ...            |
+   *  |   (1-τ)/2  \ v     τ      |
+   *  | .--------->(H)----------. |
+   *  |/           | ^           vv
+   * (B)         σ | | σ         (E)
+   *   \           v |           ^
+   *    `--------->(D)----------'
+   *      (1-τ)/2  / ^     τ
+   *               '''
+   *              1-σ-τ
+   */
 
-  return model::HiddenMarkovModel::make(
-    states,
-    model::DiscreteIIDModel::make(
-      std::vector<model::Probability>{{ 0.9, 0.1 }}),
-    2,
-    2);
+  Probability sigma = 0.7, tau = 0.1;
+  typename model::HiddenMarkovModel::State::Id B = 0, H = 1, D = 2, E = 3;
+
+  std::vector<Probabilities> emissions {
+    {
+      /*  B  */ /*  0  */ /*  1  */ /* gap */
+               {   0.0   ,   0.0   ,   1.0   },
+    },
+    {
+      /*  H  */ /*  0  */ /*  1  */ /* gap */
+               {   0.5   ,   0.5   ,   0.0   },
+    },
+    {
+      /*  D  */ /*  0  */ /*  1  */ /* gap */
+               {   0.2   ,   0.8   ,   0.0   },
+    },
+    {
+      /*  E  */ /*  0  */ /*  1  */ /* gap */
+               {   0.0   ,   0.0   ,   1.0   },
+    },
+  };
+
+  std::vector<Probabilities> transitions {
+              /* B */ /*    H    */ /*    D    */ /* E */
+    /* B */ {   0.0  ,  (1-tau)/2  ,  (1-tau)/2  ,  tau   },
+    /* H */ {   0.0  ,    sigma    , 1-sigma-tau ,  tau   },
+    /* D */ {   0.0  , 1-sigma-tau ,    sigma    ,  tau   },
+    /* E */ {   0.0  ,     0.0     ,     0.0     ,  1.0   },
+  };
+
+  std::vector<model::HiddenMarkovModel::StatePtr> states = {
+    model::HiddenMarkovModel::SilentState::make(
+      /* id         */ B,
+      /* emission   */ IID::make(emissions[B]),
+      /* transition */ IID::make(transitions[B])),
+
+    model::HiddenMarkovModel::MatchState::make(
+      /* id         */ H,
+      /* emission   */ IID::make(emissions[H]),
+      /* transition */ IID::make(transitions[H])),
+
+    model::HiddenMarkovModel::MatchState::make(
+      /* id         */ D,
+      /* emission   */ IID::make(emissions[D]),
+      /* transition */ IID::make(transitions[D])),
+
+    model::HiddenMarkovModel::SilentState::make(
+      /* id         */ E,
+      /* emission   */ IID::make(emissions[E]),
+      /* transition */ IID::make(transitions[E]))
+  };
+
+  states[B]->addSuccessor(H);
+  states[B]->addSuccessor(D);
+  states[B]->addSuccessor(E);
+
+  states[H]->addPredecessor(B);
+  states[H]->addPredecessor(H);
+  states[H]->addPredecessor(D);
+  states[H]->addSuccessor(H);
+  states[H]->addSuccessor(D);
+  states[H]->addSuccessor(E);
+
+  states[D]->addPredecessor(B);
+  states[D]->addPredecessor(H);
+  states[D]->addPredecessor(D);
+  states[D]->addSuccessor(H);
+  states[D]->addSuccessor(D);
+  states[D]->addSuccessor(E);
+
+  states[E]->addPredecessor(B);
+  states[E]->addPredecessor(H);
+  states[E]->addPredecessor(D);
+
+  return std::make_shared<model::HiddenMarkovModel>(states, 4, 2);
+}
+
+/*----------------------------------------------------------------------------*/
+
+model::HiddenMarkovModelPtr createUntrainedDishonestCoinCasinoHMM() {
+  /*
+   *                τ
+   *  .---------------------------.
+   *  |           1-σ-τ           |
+   *  |            ...            |
+   *  |   (1-τ)/2  \ v     τ      |
+   *  | .--------->(H)----------. |
+   *  |/           | ^           vv
+   * (B)         σ | | σ         (E)
+   *   \           v |           ^
+   *    `--------->(D)----------'
+   *      (1-τ)/2  / ^     τ
+   *               '''
+   *              1-σ-τ
+   */
+
+  typename model::HiddenMarkovModel::State::Id B = 0, H = 1, D = 2, E = 3;
+
+  std::vector<Probabilities> emissions {
+    {
+      /*  B  */ /*  0  */ /*  1  */ /* gap */
+               {   0.0   ,   0.0   ,   1.0   },
+    },
+    {
+      /*  H  */ /*  0  */ /*  1  */ /* gap */
+               {   0.5   ,   0.5   ,   0.0   },
+    },
+    {
+      /*  D  */ /*  0  */ /*  1  */ /* gap */
+               {   0.5   ,   0.5   ,   0.0   },
+    },
+    {
+      /*  E  */ /*  0  */ /*  1  */ /* gap */
+               {   0.0   ,   0.0   ,   1.0   },
+    },
+  };
+
+  std::vector<Probabilities> transitions {
+             /* B */ /* H */ /* D */ /* E */
+    /* B */ {  0.0  , 1.0/3 , 1.0/3 , 1.0/3 },
+    /* H */ {  0.0  , 1.0/3 , 1.0/3 , 1.0/3 },
+    /* D */ {  0.0  , 1.0/3 , 1.0/3 , 1.0/3 },
+    /* E */ {  0.0  ,  0.0  ,  0.0  ,  1.0  },
+  };
+
+  std::vector<model::HiddenMarkovModel::StatePtr> states = {
+    model::HiddenMarkovModel::SilentState::make(
+      /* id         */ B,
+      /* emission   */ IID::make(emissions[B]),
+      /* transition */ IID::make(transitions[B])),
+
+    model::HiddenMarkovModel::MatchState::make(
+      /* id         */ H,
+      /* emission   */ IID::make(emissions[H]),
+      /* transition */ IID::make(transitions[H])),
+
+    model::HiddenMarkovModel::MatchState::make(
+      /* id         */ D,
+      /* emission   */ IID::make(emissions[D]),
+      /* transition */ IID::make(transitions[D])),
+
+    model::HiddenMarkovModel::SilentState::make(
+      /* id         */ E,
+      /* emission   */ IID::make(emissions[E]),
+      /* transition */ IID::make(transitions[E]))
+  };
+
+  states[B]->addSuccessor(H);
+  states[B]->addSuccessor(D);
+  states[B]->addSuccessor(E);
+
+  states[H]->addPredecessor(B);
+  states[H]->addPredecessor(H);
+  states[H]->addPredecessor(D);
+  states[H]->addSuccessor(H);
+  states[H]->addSuccessor(D);
+  states[H]->addSuccessor(E);
+
+  states[D]->addPredecessor(B);
+  states[D]->addPredecessor(H);
+  states[D]->addPredecessor(D);
+  states[D]->addSuccessor(H);
+  states[D]->addSuccessor(D);
+  states[D]->addSuccessor(E);
+
+  states[E]->addPredecessor(B);
+  states[E]->addPredecessor(H);
+  states[E]->addPredecessor(D);
+
+  return std::make_shared<model::HiddenMarkovModel>(states, 4, 2);
 }
 
 /*----------------------------------------------------------------------------*/

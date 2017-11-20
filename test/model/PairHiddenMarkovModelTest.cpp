@@ -53,7 +53,6 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::Cube;
 using tops::model::Sequence;
 using tops::model::Sequences;
 using tops::model::PairHiddenMarkovModel;
@@ -195,35 +194,35 @@ TEST(PairHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
 
   ASSERT_THAT(translator->sexpr(),
     Eq("(PairHiddenMarkovModel: "
-         "(PHMM::State: "
+         "(State: "
            "(DiscreteIIDModel: "
              "0.000000 0.000000 0.000000 0.000000 "
              "0.000000 0.000000 0.000000 0.000000 1.000000) "
            "(DiscreteIIDModel: "
              "0.000000 0.250000 0.250000 0.250000 0.250000) "
            "(GeometricDuration: maximumDuration = 1)) "
-         "(PHMM::State: "
+         "(State: "
            "(DiscreteIIDModel: "
              "0.376958 0.138085 0.000000 0.082481 "
              "0.402476 0.000000 0.000000 0.000000 0.000000) "
            "(DiscreteIIDModel: "
              "0.000000 0.497789 0.102690 0.115955 0.283566) "
            "(GeometricDuration: maximumDuration = 1)) "
-         "(PHMM::State: "
+         "(State: "
            "(DiscreteIIDModel: "
              "0.000000 0.000000 0.000000 0.000000 "
              "0.000000 0.000000 0.631537 0.368463 0.000000) "
            "(DiscreteIIDModel: "
              "0.000000 0.615244 0.277717 0.000000 0.107039) "
            "(GeometricDuration: maximumDuration = 1)) "
-         "(PHMM::State: "
+         "(State: "
            "(DiscreteIIDModel: "
              "0.000000 0.000000 0.562184 0.000000 "
              "0.000000 0.437816 0.000000 0.000000 0.000000) "
            "(DiscreteIIDModel: "
              "0.000000 0.763364 0.000000 0.220713 0.015923) "
            "(GeometricDuration: maximumDuration = 1)) "
-         "(PHMM::State: "
+         "(State: "
            "(DiscreteIIDModel: "
              "0.000000 0.000000 0.000000 0.000000 "
              "0.000000 0.000000 0.000000 0.000000 1.000000) "

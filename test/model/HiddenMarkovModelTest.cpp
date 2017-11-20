@@ -21,6 +21,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <iomanip>
 
 // External headers
 #include "gmock/gmock.h"
@@ -29,6 +30,7 @@
 #include "model/Util.hpp"
 #include "model/Sequence.hpp"
 #include "model/Probability.hpp"
+#include "model/RandomNumberGeneratorAdapter.hpp"
 
 #include "exception/NotYetImplemented.hpp"
 
@@ -51,22 +53,16 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::Matrix;
-using tops::model::log_sum;
-using tops::model::Labeler;
-using tops::model::Labeling;
 using tops::model::Sequence;
-using tops::model::Calculator;
-using tops::model::Probability;
-using tops::model::INVALID_SYMBOL;
+using tops::model::Sequences;
 using tops::model::HiddenMarkovModel;
 using tops::model::HiddenMarkovModelPtr;
+using tops::model::RandomNumberGeneratorAdapter;
 
 using tops::exception::NotYetImplemented;
 
-using tops::helper::SExprTranslator;
 using tops::helper::createDishonestCoinCasinoHMM;
-using tops::helper::generateAllCombinationsOfSymbols;
+using tops::helper::createUntrainedDishonestCoinCasinoHMM;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
@@ -81,277 +77,396 @@ class AHiddenMarkovModel : public testing::Test {
 /*                                SIMPLE TESTS                                */
 /*----------------------------------------------------------------------------*/
 
-TEST(HiddenMarkovModel, ShouldBeTrainedUsingMLAlgorithm) {
-  auto hmm_trainer = HiddenMarkovModel::labelingTrainer();
+TEST(HiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
+  auto hmm_trainer = HiddenMarkovModel::unsupervisedTrainer();
 
   hmm_trainer->add_training_set({
-    Labeling<Sequence>{ {0, 0, 0, 1, 1},          {1, 1, 1, 1, 1}          },
-    Labeling<Sequence>{ {0, 0, 0, 1, 0, 0, 1, 1}, {0, 1, 1, 0, 0, 0, 1, 1} },
-    Labeling<Sequence>{ {0, 0, 0, 1, 1, 0, 0},    {0, 0, 0, 0, 0, 1, 0}    }
+    // Sequences with size 4 to 6 generated with default seed
+    // Empty spaces indicate gaps in the sequence
+
+    { { 1, 1, 1, 1, } },  // { 0, 1, 1, 1, 2, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 1, 1, 1, 2, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 0, 1, 0, 1, } },  // { 0, 1, 2, 2, 1, 3, }
+    { { 1, 0, 0, 0, } },  // { 0, 2, 1, 1, 1, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 1, 0, 1, } },  // { 0, 1, 1, 1, 1, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 2, 1, 1, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 0, 1, 1, 1, } },  // { 0, 1, 1, 2, 2, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 2, 1, 1, 1, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 1, 2, 2, 1, 3, }
+    { { 1, 0, 0, 1, } },  // { 0, 1, 1, 1, 1, 3, }
+    { { 0, 1, 0, 1, } },  // { 0, 1, 1, 1, 1, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 2, 1, 2, 2, 3, }
+    { { 0, 1, 0, 1, } },  // { 0, 1, 2, 2, 2, 3, }
+    { { 0, 0, 1, 1, } },  // { 0, 1, 1, 2, 2, 3, }
+    { { 0, 1, 0, 0, } },  // { 0, 1, 1, 1, 1, 3, }
+    { { 0, 1, 1, 0, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 0, 1, 0, } },  // { 0, 1, 1, 2, 2, 3, }
+    { { 1, 0, 1, 1, } },  // { 0, 2, 1, 2, 1, 3, }
+    { { 1, 1, 1, 0, } },  // { 0, 2, 2, 2, 1, 3, }
+    { { 0, 0, 1, 1, } },  // { 0, 1, 2, 2, 2, 3, }
+    { { 0, 1, 0, 1, } },  // { 0, 2, 2, 2, 2, 3, }
+    { { 1, 0, 0, 1, } },  // { 0, 2, 1, 1, 1, 3, }
+    { { 1, 1, 1, 1, } },  // { 0, 1, 2, 1, 2, 3, }
+    { { 0, 1, 0, 0, } },  // { 0, 1, 2, 2, 1, 3, }
+    { { 0, 1, 1, 1, } },  // { 0, 1, 1, 1, 1, 3, }
+    { { 0, 1, 1, 1, } },  // { 0, 1, 1, 1, 1, 3, }
+
+    { { 0, 1, 1, 1, 0, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 1, 2, 2, 3, }
+    { { 1, 0, 1, 1, 0, } },  // { 0, 1, 1, 1, 2, 1, 3, }
+    { { 1, 1, 1, 1, 0, } },  // { 0, 1, 1, 2, 2, 1, 3, }
+    { { 1, 1, 1, 0, 1, } },  // { 0, 1, 1, 2, 2, 2, 3, }
+    { { 0, 1, 0, 1, 1, } },  // { 0, 1, 2, 2, 2, 2, 3, }
+    { { 0, 0, 1, 0, 0, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 0, 1, 1, 1, 1, } },  // { 0, 1, 1, 2, 2, 1, 3, }
+    { { 0, 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 2, 3, }
+    { { 1, 0, 1, 1, 1, } },  // { 0, 1, 1, 2, 2, 2, 3, }
+    { { 0, 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 2, 3, }
+    { { 0, 1, 0, 1, 0, } },  // { 0, 1, 2, 2, 2, 1, 3, }
+    { { 1, 0, 0, 1, 0, } },  // { 0, 2, 2, 1, 1, 1, 3, }
+    { { 1, 1, 1, 0, 0, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 1, 1, 0, 1, 1, } },  // { 0, 2, 2, 2, 2, 2, 3, }
+    { { 1, 0, 1, 1, 1, } },  // { 0, 1, 1, 1, 2, 2, 3, }
+    { { 1, 0, 1, 1, 0, } },  // { 0, 1, 2, 2, 1, 2, 3, }
+    { { 1, 0, 1, 1, 0, } },  // { 0, 2, 2, 1, 1, 2, 3, }
+    { { 0, 0, 0, 1, 1, } },  // { 0, 1, 1, 1, 2, 2, 3, }
+    { { 1, 1, 0, 0, 1, } },  // { 0, 1, 2, 2, 2, 2, 3, }
+    { { 1, 1, 1, 0, 0, } },  // { 0, 2, 2, 2, 1, 1, 3, }
+    { { 1, 1, 1, 0, 0, } },  // { 0, 2, 2, 2, 2, 2, 3, }
+    { { 1, 1, 1, 1, 0, } },  // { 0, 1, 2, 2, 2, 1, 3, }
+    { { 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 2, 1, 1, 3, }
+    { { 1, 1, 1, 0, 1, } },  // { 0, 2, 2, 1, 1, 1, 3, }
+    { { 0, 1, 1, 0, 1, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 1, 0, 0, 0, 0, } },  // { 0, 2, 1, 1, 1, 1, 3, }
+    { { 0, 1, 0, 0, 0, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 1, 0, 0, 1, 1, } },  // { 0, 2, 1, 1, 1, 2, 3, }
+    { { 1, 0, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 1, 3, }
+    { { 0, 0, 1, 1, 0, } },  // { 0, 1, 1, 1, 1, 1, 3, }
+    { { 0, 1, 1, 0, 1, } },  // { 0, 1, 1, 1, 1, 2, 3, }
+
+    { { 1, 1, 1, 1, 0, 1, } },  // { 0, 1, 2, 2, 1, 1, 1, 3, }
+    { { 1, 1, 0, 0, 0, 0, } },  // { 0, 2, 1, 1, 1, 1, 1, 3, }
+    { { 0, 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 2, 2, 1, 2, 3, }
+    { { 1, 0, 1, 0, 1, 0, } },  // { 0, 2, 2, 1, 1, 1, 1, 3, }
+    { { 0, 1, 0, 1, 0, 1, } },  // { 0, 1, 2, 1, 2, 1, 2, 3, }
+    { { 1, 0, 0, 1, 1, 0, } },  // { 0, 2, 2, 2, 2, 2, 1, 3, }
+    { { 1, 1, 0, 0, 1, 1, } },  // { 0, 2, 2, 2, 1, 2, 2, 3, }
+    { { 0, 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 1, 1, 1, 2, 3, }
+    { { 1, 0, 0, 1, 1, 1, } },  // { 0, 1, 1, 1, 2, 2, 2, 3, }
+    { { 1, 1, 1, 1, 0, 1, } },  // { 0, 2, 2, 2, 2, 1, 1, 3, }
+    { { 1, 1, 0, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 1, 2, 3, }
+    { { 1, 1, 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 2, 1, 3, }
+    { { 1, 1, 0, 0, 1, 1, } },  // { 0, 1, 1, 1, 1, 1, 1, 3, }
+    { { 1, 1, 0, 0, 1, 0, } },  // { 0, 1, 2, 1, 1, 1, 2, 3, }
+    { { 0, 1, 0, 0, 1, 0, } },  // { 0, 1, 1, 1, 1, 1, 1, 3, }
+    { { 1, 1, 1, 1, 1, 1, } },  // { 0, 2, 2, 1, 2, 2, 2, 3, }
+    { { 1, 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 2, 1, 1, 2, 3, }
+    { { 0, 0, 1, 0, 0, 0, } },  // { 0, 1, 1, 1, 1, 1, 1, 3, }
+    { { 1, 1, 1, 1, 1, 0, } },  // { 0, 2, 1, 2, 2, 2, 1, 3, }
+    { { 1, 1, 1, 1, 0, 1, } },  // { 0, 2, 2, 2, 2, 2, 2, 3, }
+    { { 0, 1, 1, 1, 1, 1, } },  // { 0, 1, 1, 1, 2, 2, 2, 3, }
+    { { 1, 1, 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 1, 1, 1, 3, }
+    { { 1, 0, 1, 0, 0, 0, } },  // { 0, 2, 2, 2, 2, 1, 1, 3, }
+    { { 1, 0, 0, 1, 1, 0, } },  // { 0, 2, 2, 2, 2, 2, 2, 3, }
+    { { 0, 1, 1, 1, 1, 1, } },  // { 0, 1, 2, 2, 2, 1, 1, 3, }
+    { { 1, 1, 1, 0, 0, 1, } },  // { 0, 2, 2, 2, 2, 1, 1, 3, }
+    { { 1, 1, 1, 1, 1, 0, } },  // { 0, 2, 2, 2, 2, 2, 1, 3, }
+    { { 0, 1, 1, 0, 0, 0, } },  // { 0, 2, 2, 1, 1, 1, 1, 3, }
+    { { 1, 1, 1, 0, 1, 0, } },  // { 0, 1, 1, 2, 2, 2, 2, 3, }
+    { { 0, 1, 1, 1, 1, 1, } },  // { 0, 2, 2, 2, 2, 2, 2, 3, }
+    { { 1, 1, 0, 0, 1, 1, } },  // { 0, 1, 2, 2, 2, 2, 2, 3, }
+    { { 0, 1, 0, 1, 0, 0, } },  // { 0, 1, 1, 1, 1, 1, 1, 3, }
   });
 
   auto trained_hmm = hmm_trainer->train(
-    HiddenMarkovModel::maximum_likehood_algorithm{}, 2, 2, 0.1);
+    HiddenMarkovModel::baum_welch_algorithm{},
+    createUntrainedDishonestCoinCasinoHMM(), 1000, 1e-7);
 
-  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
+  auto translator = tops::helper::SExprTranslator::make();
+  auto serializer = trained_hmm->serializer(translator);
+  serializer->serialize();
 
-  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
-  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
-  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
-  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
+  ASSERT_THAT(translator->sexpr(),
+    Eq("(HiddenMarkovModel: "
+         "(State: "
+           "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
+           "(DiscreteIIDModel: 0.000000 0.333333 0.333333 0.333333) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.358333 0.641667 0.000000) "
+           "(DiscreteIIDModel: 0.000000 0.400000 0.400000 0.200000) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.358333 0.641667 0.000000) "
+           "(DiscreteIIDModel: 0.000000 0.400000 0.400000 0.200000) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
+           "(DiscreteIIDModel: 0.000000 0.000000 0.000000 1.000000) "
+           "(GeometricDuration: maximumDuration = 1)))"));
 
-  ASSERT_THAT(DOUBLE(evaluator00->evaluateSequence(0, 3)),
-              DoubleNear(0.097303, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator01->evaluateSequence(0, 3)),
-              DoubleNear(0.040688, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator10->evaluateSequence(0, 3)),
-              DoubleNear(0.008099, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator11->evaluateSequence(0, 3)),
-              DoubleNear(0.012354, 1e-4));
+}
+
+TEST(HiddenMarkovModel, ShouldBeTrainedUsingMaximumLikelihoodAlgorithm) {
+  auto hmm_trainer = HiddenMarkovModel::supervisedTrainer();
+
+  hmm_trainer->add_training_set({
+    // Sequences with size 4 to 6 generated with default seed
+    // Empty spaces indicate gaps in the sequence
+
+    { { 1, 1, 1, 1, }, {}, { 0, 1, 1, 1, 2, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 1, 1, 1, 2, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 0, 1, }, {}, { 0, 1, 2, 2, 1, 3, } },
+    { { 1, 0, 0, 0, }, {}, { 0, 2, 1, 1, 1, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 0, 1, }, {}, { 0, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 1, 1, }, {}, { 0, 1, 1, 2, 2, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 2, 1, 1, 1, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 1, 2, 2, 1, 3, } },
+    { { 1, 0, 0, 1, }, {}, { 0, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 0, 1, }, {}, { 0, 1, 1, 1, 1, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 2, 1, 2, 2, 3, } },
+    { { 0, 1, 0, 1, }, {}, { 0, 1, 2, 2, 2, 3, } },
+    { { 0, 0, 1, 1, }, {}, { 0, 1, 1, 2, 2, 3, } },
+    { { 0, 1, 0, 0, }, {}, { 0, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 0, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 0, 1, 0, }, {}, { 0, 1, 1, 2, 2, 3, } },
+    { { 1, 0, 1, 1, }, {}, { 0, 2, 1, 2, 1, 3, } },
+    { { 1, 1, 1, 0, }, {}, { 0, 2, 2, 2, 1, 3, } },
+    { { 0, 0, 1, 1, }, {}, { 0, 1, 2, 2, 2, 3, } },
+    { { 0, 1, 0, 1, }, {}, { 0, 2, 2, 2, 2, 3, } },
+    { { 1, 0, 0, 1, }, {}, { 0, 2, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 1, }, {}, { 0, 1, 2, 1, 2, 3, } },
+    { { 0, 1, 0, 0, }, {}, { 0, 1, 2, 2, 1, 3, } },
+    { { 0, 1, 1, 1, }, {}, { 0, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 1, }, {}, { 0, 1, 1, 1, 1, 3, } },
+
+    { { 0, 1, 1, 1, 0, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 1, 2, 2, 3, } },
+    { { 1, 0, 1, 1, 0, }, {}, { 0, 1, 1, 1, 2, 1, 3, } },
+    { { 1, 1, 1, 1, 0, }, {}, { 0, 1, 1, 2, 2, 1, 3, } },
+    { { 1, 1, 1, 0, 1, }, {}, { 0, 1, 1, 2, 2, 2, 3, } },
+    { { 0, 1, 0, 1, 1, }, {}, { 0, 1, 2, 2, 2, 2, 3, } },
+    { { 0, 0, 1, 0, 0, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 1, 1, }, {}, { 0, 1, 1, 2, 2, 1, 3, } },
+    { { 0, 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 2, 3, } },
+    { { 1, 0, 1, 1, 1, }, {}, { 0, 1, 1, 2, 2, 2, 3, } },
+    { { 0, 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 0, 1, 0, }, {}, { 0, 1, 2, 2, 2, 1, 3, } },
+    { { 1, 0, 0, 1, 0, }, {}, { 0, 2, 2, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 0, 0, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 0, 1, 1, }, {}, { 0, 2, 2, 2, 2, 2, 3, } },
+    { { 1, 0, 1, 1, 1, }, {}, { 0, 1, 1, 1, 2, 2, 3, } },
+    { { 1, 0, 1, 1, 0, }, {}, { 0, 1, 2, 2, 1, 2, 3, } },
+    { { 1, 0, 1, 1, 0, }, {}, { 0, 2, 2, 1, 1, 2, 3, } },
+    { { 0, 0, 0, 1, 1, }, {}, { 0, 1, 1, 1, 2, 2, 3, } },
+    { { 1, 1, 0, 0, 1, }, {}, { 0, 1, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 0, 0, }, {}, { 0, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 1, 0, 0, }, {}, { 0, 2, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 1, 0, }, {}, { 0, 1, 2, 2, 2, 1, 3, } },
+    { { 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 1, 0, 1, }, {}, { 0, 2, 2, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 0, 1, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 0, 0, 0, 0, }, {}, { 0, 2, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 0, 0, 0, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 0, 0, 1, 1, }, {}, { 0, 2, 1, 1, 1, 2, 3, } },
+    { { 1, 0, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 1, 3, } },
+    { { 0, 0, 1, 1, 0, }, {}, { 0, 1, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 0, 1, }, {}, { 0, 1, 1, 1, 1, 2, 3, } },
+
+    { { 1, 1, 1, 1, 0, 1, }, {}, { 0, 1, 2, 2, 1, 1, 1, 3, } },
+    { { 1, 1, 0, 0, 0, 0, }, {}, { 0, 2, 1, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 2, 2, 1, 2, 3, } },
+    { { 1, 0, 1, 0, 1, 0, }, {}, { 0, 2, 2, 1, 1, 1, 1, 3, } },
+    { { 0, 1, 0, 1, 0, 1, }, {}, { 0, 1, 2, 1, 2, 1, 2, 3, } },
+    { { 1, 0, 0, 1, 1, 0, }, {}, { 0, 2, 2, 2, 2, 2, 1, 3, } },
+    { { 1, 1, 0, 0, 1, 1, }, {}, { 0, 2, 2, 2, 1, 2, 2, 3, } },
+    { { 0, 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 1, 1, 1, 2, 3, } },
+    { { 1, 0, 0, 1, 1, 1, }, {}, { 0, 1, 1, 1, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 1, 0, 1, }, {}, { 0, 2, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 0, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 1, 2, 3, } },
+    { { 1, 1, 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 2, 1, 3, } },
+    { { 1, 1, 0, 0, 1, 1, }, {}, { 0, 1, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 0, 0, 1, 0, }, {}, { 0, 1, 2, 1, 1, 1, 2, 3, } },
+    { { 0, 1, 0, 0, 1, 0, }, {}, { 0, 1, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 1, 1, 1, }, {}, { 0, 2, 2, 1, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 2, 1, 1, 2, 3, } },
+    { { 0, 0, 1, 0, 0, 0, }, {}, { 0, 1, 1, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 1, 1, 0, }, {}, { 0, 2, 1, 2, 2, 2, 1, 3, } },
+    { { 1, 1, 1, 1, 0, 1, }, {}, { 0, 2, 2, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 1, 1, 1, 1, }, {}, { 0, 1, 1, 1, 2, 2, 2, 3, } },
+    { { 1, 1, 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 1, 1, 1, 3, } },
+    { { 1, 0, 1, 0, 0, 0, }, {}, { 0, 2, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 0, 0, 1, 1, 0, }, {}, { 0, 2, 2, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 1, 1, 1, 1, }, {}, { 0, 1, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 1, 0, 0, 1, }, {}, { 0, 2, 2, 2, 2, 1, 1, 3, } },
+    { { 1, 1, 1, 1, 1, 0, }, {}, { 0, 2, 2, 2, 2, 2, 1, 3, } },
+    { { 0, 1, 1, 0, 0, 0, }, {}, { 0, 2, 2, 1, 1, 1, 1, 3, } },
+    { { 1, 1, 1, 0, 1, 0, }, {}, { 0, 1, 1, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 1, 1, 1, 1, }, {}, { 0, 2, 2, 2, 2, 2, 2, 3, } },
+    { { 1, 1, 0, 0, 1, 1, }, {}, { 0, 1, 2, 2, 2, 2, 2, 3, } },
+    { { 0, 1, 0, 1, 0, 0, }, {}, { 0, 1, 1, 1, 1, 1, 1, 3, } },
+  });
+
+  auto trained_hmm = hmm_trainer->train(
+    HiddenMarkovModel::maximum_likelihood_algorithm{},
+    createUntrainedDishonestCoinCasinoHMM(), 1);
+
+  auto translator = tops::helper::SExprTranslator::make();
+  auto serializer = trained_hmm->serializer(translator);
+  serializer->serialize();
+
+  ASSERT_THAT(translator->sexpr(),
+    Eq("(HiddenMarkovModel: "
+         "(State: "
+           "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
+           "(DiscreteIIDModel: 0.000000 0.333333 0.333333 0.333333) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.528384 0.471616) "
+           "(DiscreteIIDModel: 0.004329 0.562771 0.216450 0.216450) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.207843 0.792157) "
+           "(DiscreteIIDModel: 0.003891 0.198444 0.610895 0.186770) "
+           "(GeometricDuration: maximumDuration = 1)) "
+         "(State: "
+           "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
+           "(DiscreteIIDModel: 0.000000 0.000000 0.000000 1.000000) "
+           "(GeometricDuration: maximumDuration = 1)))"));
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbability) {
-  Sequence observation {0, 0, 1};
-  Sequence label       {0, 1, 1};
-  Labeling<Sequence> labeling(observation, label);
+TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
+  };
 
-  ASSERT_THAT(
-      DOUBLE(hmm->labelingEvaluator(labeling)->evaluateSequence(0, 3)),
-      DoubleEq(0.9 * 0.5 * 0.3 * 0.2 * 0.5 * 0.8));
-}
+  for (const auto& test : tests) {
+    auto [ prob_f, alphas ] = hmm->forward(test);
+    auto [ prob_b, betas ] = hmm->backward(test);
 
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, ShouldEvaluateTheJointProbabilityWithCache) {
-  Sequence observation {0, 0, 1};
-  Sequence label       {0, 1, 1};
-  Labeling<Sequence> labeling(observation, label);
-
-  auto evaluator = hmm->labelingEvaluator(labeling, true);
-  ASSERT_THAT(
-      DOUBLE(evaluator->evaluateSequence(0, 3)),
-      DoubleEq(0.9 * 0.5 * 0.3 * 0.2 * 0.5 * 0.8));
+    ASSERT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-7));
+  }
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AHiddenMarkovModel, FindsTheBestPath) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 1, 1}}
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
   };
-  for (auto test : test_set) {
-    auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeler::method::bestPath);
-    auto labeling = estimation.estimated();
 
-    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  std::vector<HiddenMarkovModel::LabelerReturn> expected = {
+    { 0.0225     , {0, 1, 3}                , tests[0], {} },
+    { 0.036      , {0, 2, 3}                , tests[1], {} },
+    { 0.00275625 , {0, 1, 1, 1, 3}          , tests[2], {} },
+    { 0.00198263 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
+  };
+
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = hmm->viterbi(tests[t]);
+
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-7));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AHiddenMarkovModel, FindsTheBestPathWithCache) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 1, 1}}
+TEST_F(AHiddenMarkovModel, DecodesASequenceOfObservations) {
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
   };
-  for (auto test : test_set) {
-    auto labeler = hmm->labeler(test[0], true);
-    auto estimation = labeler->labeling(Labeler::method::bestPath);
-    auto labeling = estimation.estimated();
 
-    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  std::vector<HiddenMarkovModel::LabelerReturn> expected = {
+    { 0.714286 , {0, 1, 3}                , tests[0], {} },
+    { 0.615385 , {0, 2, 3}                , tests[1], {} },
+    { 0.604329 , {0, 1, 1, 1, 3}          , tests[2], {} },
+    { 0.196082 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
+  };
+
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = hmm->posteriorDecoding(tests[t]);
+
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-6));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AHiddenMarkovModel, CalculatesProbabilityOfObservations) {
-  std::vector<Sequence> test_set = {
-    {0},
-    {1},
-    {0, 0},
-    {0, 1},
-    {1, 0},
-    {1, 1},
-    {0, 0, 0},
-    {0, 0, 1},
-    {0, 1, 0},
-    {0, 1, 1},
-    {1, 0, 0},
-    {1, 0, 1},
-    {1, 1, 0},
-    {1, 1, 1}
+TEST_F(AHiddenMarkovModel, ShouldDrawLabeledSequenceWithDefaultSeed) {
+  std::vector<std::size_t> tests = {
+    0, 1, 2, 3, 4, 5
   };
 
-  for (auto observation : test_set) {
-    Probability px = 0;
-    auto standardEvaluator = hmm->standardEvaluator(observation);
-
-    std::vector<Sequence> labels
-      = generateAllCombinationsOfSymbols(observation.size());
-
-    for (auto label : labels) {
-      auto labelingEvaluator = hmm->labelingEvaluator({ observation, label });
-      px += labelingEvaluator->evaluateSequence(0, observation.size());
-    }
-
-    ASSERT_THAT(
-        DOUBLE(standardEvaluator->evaluateSequence(0, observation.size())),
-        DoubleEq(px));
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel,
-    DecodesASequenceOfObservationsUsingThePosteriorProbability) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
+  std::vector<HiddenMarkovModel::GeneratorReturn<Sequence>> expected = {
+    { { 0, 3                }, { {               } } },
+    { { 0, 1, 3             }, { { 1             } } },
+    { { 0, 1, 1, 3          }, { { 1, 1          } } },
+    { { 0, 2, 1, 1, 3       }, { { 1, 1, 0       } } },
+    { { 0, 1, 2, 2, 2, 3    }, { { 1, 1, 1, 1    } } },
+    { { 0, 1, 1, 1, 2, 2, 3 }, { { 1, 0, 0, 1, 0 } } },
   };
 
-  for (auto test : test_set) {
-    auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
-    auto labeling = estimation.estimated();
+  auto rng = RandomNumberGeneratorAdapter<std::mt19937>::make();
 
-    ASSERT_THAT(labeling.label(), Eq(test[1]));
+  for (unsigned int i = 0; i < tests.size(); i++) {
+    auto [ label, alignment ] = hmm->drawSequence(rng, tests[i]);
+
+    EXPECT_THAT(label, ContainerEq(expected[i].label));
+    EXPECT_THAT(alignment, ContainerEq(expected[i].alignment));
   }
-}
 
+  // for (auto size : { 4, 5, 6 }) {
+  //   for (unsigned int i = 0; i < 32; i++) {
+  //     auto [ label, alignment ] = hmm->drawSequence(rng, size);
+  //     std::cerr << "    { ";
+  //
+  //     std::cerr << "{ { ";
+  //     for (auto l : alignment[0])
+  //       std::cerr << l << ", ";
+  //     std::cerr << "} }, ";
+  //
+  //     std::cerr << "{ ";
+  //     for (auto l : label)
+  //       std::cerr << l << ", ";
+  //     std::cerr << "}";
+  //
+  //     std::cerr << " },";
+  //     std::cerr << std::endl;
+  //   }
+  //   std::cerr << std::endl;
+  // }
+}
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AHiddenMarkovModel,
-    DecodesASequenceOfObservationsUsingThePosteriorProbabilityWithCache) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
-  };
-
-  for (auto test : test_set) {
-    auto labeler = hmm->labeler(test[0]);
-    auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
-    auto labeling = estimation.estimated();
-
-    ASSERT_THAT(labeling.label(), Eq(test[1]));
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
-  };
-
-  for (auto test : test_set) {
-    auto calculator = hmm->calculator(test[0]);
-    auto prob_f = calculator->calculate(Calculator::direction::forward);
-    auto prob_b = calculator->calculate(Calculator::direction::backward);
-
-    ASSERT_THAT(DOUBLE(prob_b), DoubleNear(prob_f, 1e-4));
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, CalculatesForwardAndBackwardProbabilitiesWithCache) {
-  std::vector<std::vector<Sequence>> test_set = {
-    {{0}, {0}},
-    {{1}, {0}},
-    {{0, 0, 0}, {0, 0, 0}},
-    {{1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 1, 1}}
-  };
-
-  for (auto test : test_set) {
-    auto calculator = hmm->calculator(test[0], true);
-    auto prob_f = calculator->calculate(Calculator::direction::forward);
-    auto prob_b = calculator->calculate(Calculator::direction::backward);
-
-    ASSERT_THAT(DOUBLE(prob_b), DoubleNear(prob_f, 1e-4));
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
-  auto hmm_trainer = HiddenMarkovModel::standardTrainer();
-
-  hmm_trainer->add_training_set({
-    {0, 0, 0, 1, 1},
-    {0, 0, 0, 1, 0, 0, 1, 1},
-    {0, 0, 0, 1, 1, 0, 0},
-  });
-
-  auto trained_hmm = hmm_trainer->train(
-    HiddenMarkovModel::baum_welch_algorithm{}, hmm, 1000, 1e-4);
-
-  std::vector<Sequence> seq { {0, 0, 0}, {1, 1, 1} };
-
-  auto evaluator00 = trained_hmm->labelingEvaluator({ seq[0], seq[0] });
-  auto evaluator01 = trained_hmm->labelingEvaluator({ seq[0], seq[1] });
-  auto evaluator10 = trained_hmm->labelingEvaluator({ seq[1], seq[0] });
-  auto evaluator11 = trained_hmm->labelingEvaluator({ seq[1], seq[1] });
-
-  ASSERT_THAT(DOUBLE(evaluator00->evaluateSequence(0, 3)),
-              DoubleNear(0.191006, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator01->evaluateSequence(0, 3)),
-              DoubleNear(3.732852e-136, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator10->evaluateSequence(0, 3)),
-              DoubleNear(1.1471544e-48, 1e-4));
-  ASSERT_THAT(DOUBLE(evaluator11->evaluateSequence(0, 3)),
-              DoubleNear(8.91422e-137, 1e-4));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, ShouldBeSExprSerialized) {
-  auto translator = SExprTranslator::make();
-  auto serializer = hmm->serializer(translator);
-  serializer->serialize();
-  ASSERT_THAT(translator->sexpr(),
-    Eq("(HiddenMarkovModel: "
-         "(HMM::State: "
-           "(DiscreteIIDModel: 0.500000 0.500000) "
-           "(DiscreteIIDModel: 0.700000 0.300000) "
-           "(GeometricDuration: maximumDuration = 1)) "
-         "(HMM::State: "
-           "(DiscreteIIDModel: 0.200000 0.800000) "
-           "(DiscreteIIDModel: 0.500000 0.500000) "
-           "(GeometricDuration: maximumDuration = 1)))"));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, ShouldChooseSequenceWithDefaultSeed) {
-  ASSERT_THROW(hmm->standardGenerator()->drawSequence(5), NotYetImplemented);
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AHiddenMarkovModel, ShouldChooseLabelingWithSeed42) {
-  auto labeling = hmm->labelingGenerator()->drawSequence(5);
-  ASSERT_THAT(labeling.observation(),
-              ContainerEq(Sequence{1, 1, 1, 1, 1}));
-  ASSERT_THAT(labeling.label(),
-              ContainerEq(Sequence{0, 1, 0, 0, 1}));
-}
-
-/*----------------------------------------------------------------------------*/

@@ -195,7 +195,7 @@ TEST_F(AGHMM, ShouldEvaluateASequence) {
     0, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0};
 
   auto evaluator
-    = ghmm->labelingEvaluator(Labeling<Sequence>(observation, label));
+    = ghmm->labelingEvaluator(Labeling<Sequence>{observation, {}, label});
 
   ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(0, 21)),
               DoubleNear(6.29856e-20, 1e-4));
@@ -245,7 +245,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
   auto estimation = labeler->labeling(Labeler::method::bestPath);
   auto labeling = estimation.estimated();
 
-  ASSERT_THAT(labeling.label(), ContainerEq(label));
+  ASSERT_THAT(labeling.label, ContainerEq(label));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -262,7 +262,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
   auto estimation = labeler->labeling(Labeler::method::bestPath);
   auto labeling = estimation.estimated();
 
-  ASSERT_THAT(labeling.label(), ContainerEq(label));
+  ASSERT_THAT(labeling.label, ContainerEq(label));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -279,7 +279,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
   auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
-  ASSERT_THAT(labeling.label(), ContainerEq(label));
+  ASSERT_THAT(labeling.label, ContainerEq(label));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -296,7 +296,7 @@ TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
   auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
   auto labeling = estimation.estimated();
 
-  ASSERT_THAT(labeling.label(), ContainerEq(label));
+  ASSERT_THAT(labeling.label, ContainerEq(label));
 }
 
 /*----------------------------------------------------------------------------*/

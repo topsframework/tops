@@ -20,8 +20,6 @@
 // Interface header
 #include "model/PairHiddenMarkovModel.hpp"
 
-#include "helper/SExprTranslator.hpp"
-
 // Standard headers
 #include <utility>
 #include <iomanip>
@@ -208,7 +206,7 @@ void PairHiddenMarkovModel::serialize(SSPtr serializer) {
   serializer->translator()->translate(this->shared_from_this());
 }
 
-/*=================================  OTHERS  =================================*/
+/*----------------------------------------------------------------------------*/
 
 typename PairHiddenMarkovModel::GeneratorReturn<Symbol>
 PairHiddenMarkovModel::drawSymbol(RandomNumberGeneratorPtr rng,

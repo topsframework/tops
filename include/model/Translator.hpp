@@ -92,7 +92,6 @@ class Translator : public std::enable_shared_from_this<Translator> {
 
   virtual void translate(Ptr<typename StateTraits<HMM>::State> state) = 0;
   virtual void translate(Ptr<typename StateTraits<GHMM>::State> state) = 0;
-  virtual void translate(Ptr<typename StateTraits<PHMM>::State> state) = 0;
 
   virtual void translate(Ptr<SignalDuration> duration) = 0;
   virtual void translate(Ptr<ExplicitDuration> duration) = 0;

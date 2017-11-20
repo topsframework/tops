@@ -27,6 +27,7 @@ namespace tops {
 namespace helper {
 
 tops::model::HiddenMarkovModelPtr createDishonestCoinCasinoHMM();
+tops::model::HiddenMarkovModelPtr createUntrainedDishonestCoinCasinoHMM();
 
 }  // namespace helper
 }  // namespace tops

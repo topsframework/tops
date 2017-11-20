@@ -148,7 +148,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
                                                unsigned int /* end */,
                                                unsigned int /* phase */) const {
   Probability prob = 1;
-  auto segments = Segment::readSequence(evaluator->sequence().label());
+  auto segments = Segment::readSequence(evaluator->sequence().label);
   for (unsigned int i = 0; i < segments.size(); i++) {
     if (i == 0) {
       prob *= _initial_probabilities->probabilityOf(segments[i].symbol());
@@ -159,7 +159,7 @@ GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
     prob *= _states[segments[i].symbol()]->duration()->probabilityOfLenght(
       segments[i].end() - segments[i].begin());
     prob *= _states[segments[i].symbol()]->emission()->standardEvaluator(
-      evaluator->sequence().observation())->evaluateSequence(
+      evaluator->sequence().observation)->evaluateSequence(
         segments[i].begin(), segments[i].end());
   }
   return prob;
@@ -389,7 +389,7 @@ Estimation<Labeling<Sequence>> GeneralizedHiddenMarkovModel::viterbi(
   }
 
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), max);
+      Labeling<Sequence>{xs, {}, std::move(path)}, max);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -414,7 +414,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequence& xs,
 
   // TODO(igorbonadio): calculate joint probability
   return Estimation<Labeling<Sequence>>(
-      Labeling<Sequence>(xs, std::move(path)), 0);
+      Labeling<Sequence>{xs, {}, std::move(path)}, 0);
 }
 
 /*----------------------------------------------------------------------------*/

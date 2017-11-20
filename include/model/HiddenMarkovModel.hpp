@@ -27,9 +27,39 @@
 
 // Internal headers
 #include "model/Matrix.hpp"
+#include "model/Labeling.hpp"
+#include "model/Sequence.hpp"
+#include "model/Estimation.hpp"
+#include "model/Probability.hpp"
 #include "model/SimpleState.hpp"
-#include "model/DecodableModelCrtp.hpp"
+#include "model/DiscreteIIDModel.hpp"
 #include "model/HiddenMarkovModelState.hpp"
+
+#include "model/Trainer.hpp"
+#include "model/FixedTrainer.hpp"
+#include "model/SimpleTrainer.hpp"
+#include "model/CachedTrainer.hpp"
+
+#include "model/Evaluator.hpp"
+#include "model/SimpleEvaluator.hpp"
+#include "model/CachedEvaluator.hpp"
+
+#include "model/Generator.hpp"
+#include "model/SimpleGenerator.hpp"
+
+#include "model/Serializer.hpp"
+#include "model/SimpleSerializer.hpp"
+
+#include "model/Labeler.hpp"
+#include "model/SimpleLabeler.hpp"
+#include "model/CachedLabeler.hpp"
+
+#include "model/Calculator.hpp"
+#include "model/SimpleCalculator.hpp"
+#include "model/CachedCalculator.hpp"
+
+#include "model/RandomNumberGenerator.hpp"
+#include "model/RandomNumberGeneratorAdapter.hpp"
 
 namespace tops {
 namespace model {
@@ -48,147 +78,571 @@ using HiddenMarkovModelPtr = std::shared_ptr<HiddenMarkovModel>;
  * @brief TODO
  */
 class HiddenMarkovModel
-    : public DecodableModelCrtp<HiddenMarkovModel> {
+    : public std::enable_shared_from_this<HiddenMarkovModel> {
  public:
   // Tags
   class baum_welch_algorithm {};
-  class maximum_likehood_algorithm {};
+  class maximum_likelihood_algorithm {};
 
   // Aliases
   using Self = HiddenMarkovModel;
   using SelfPtr = HiddenMarkovModelPtr;
-  using Base = DecodableModelCrtp<Self>;
-  using Cache = Base::Cache;
+  using Base = void;
+
+  template<typename T> using Alignment = std::vector<T>;
+  template<typename T> using LabelingAlignment = Labeling<std::vector<T>>;
+
+  // Inner structs
+  struct Cache {
+    std::vector<Probability> prefix_sum_array;
+    Matrix alpha, beta, gamma, posterior_decoding;
+  };
+
+  template<typename Target>
+  struct GeneratorReturn {
+    Target label;
+    std::vector<Target> alignment;
+  };
+
+  struct LabelerReturn {
+    Probability estimation;
+    Sequence label;
+    Sequences alignment;
+    Matrix matrix;
+  };
+
+  struct CalculatorReturn {
+    Probability estimation;
+    Matrix matrix;
+  };
+
+  struct TraceBackReturn {
+    Sequence label;
+    Sequences alignment;
+  };
+
+  // Secretaries
+  template<template<typename Target> class Decorator>
+  using SEPtr = SimpleEvaluatorPtr<Decorator, Self>;
+  template<template<typename Target> class Decorator>
+  using CEPtr = CachedEvaluatorPtr<Decorator, Self>;
+
+  template<template<typename Target> class Decorator>
+  using SGPtr = SimpleGeneratorPtr<Decorator, Self>;
+
+  using SSPtr = SimpleSerializerPtr<Self>;
+
+  using SLPtr = SimpleLabelerPtr<Self>;
+  using CLPtr = CachedLabelerPtr<Self>;
+
+  using SCPtr = SimpleCalculatorPtr<Self>;
+  using CCPtr = CachedCalculatorPtr<Self>;
 
   // Type traits
   using State = typename StateTraits<Self>::State;
   using StatePtr = std::shared_ptr<State>;
 
+  using MatchState  = typename StateTraits<Self>::MatchState;
+  using SilentState = typename StateTraits<Self>::SilentState;
+
   /*=============================[ CONSTRUCTORS ]=============================*/
 
   HiddenMarkovModel(std::vector<StatePtr> states,
-                    DiscreteIIDModelPtr initial_probability,
-                    unsigned int state_alphabet_size,
-                    unsigned int observation_alphabet_size);
+                    std::size_t state_alphabet_size,
+                    std::size_t observation_alphabet_size);
 
   /*============================[ STATIC METHODS ]============================*/
 
-  // Trainer
-  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+  /*-----------------------------( Constructors )-----------------------------*/
+
+  /**
+   * Make a std::shared_ptr<Self>.
+   * @param args Any arguments, forwared to Self's constructor
+   * @return New instance of new std::shared_ptr<Self>
+   */
+  template<typename... Args>
+  static SelfPtr make(Args&&... args) {
+    return std::make_shared<Self>(std::forward<Args>(args)...);
+  }
+
+  /*------------------------------( Factories )-------------------------------*/
+
+  /**
+   * Factory of Simple Trainers for unsupervised learning of parameters.
+   * @return New instance of TrainerPtr<Alignment, Self>
+   */
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(){
+    return SimpleTrainer<Alignment, Self>::make();
+  }
+
+  /**
+   * Factory of Fixed Trainers for unsupervised learning of parameters.
+   * @param model Trained model with predefined parameters
+   * @return New instance of TrainerPtr<Alignment, Self>
+   */
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(SelfPtr model) {
+    return FixedTrainer<Alignment, Self>::make(model);
+  }
+
+  /**
+   * Factory of Cached Trainers for unsupervised learning of parameters.
+   * @param tag Tag representing the training algorithm
+   * @param params Parameters for the training algorithn chosen
+   * @return New instance of TrainerPtr<Alignment, Self>
+   */
+  template<typename Tag, typename... Args>
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(Tag, Args&&... args) {
+    return CachedTrainer<Alignment, Self, Tag, Args...>::make(
+        Tag{}, std::forward<Args>(args)...);
+  }
+
+  /**
+   * Factory of Simple Trainers for supervised learning of parameters.
+   * @return New instance of TrainerPtr<Standard, Derived>
+   */
+  static TrainerPtr<Labeling, Self> supervisedTrainer() {
+    return SimpleTrainer<Labeling, Self>::make();
+  }
+
+  /**
+   * Factory of Fixed Trainers for supervised learning of parameters.
+   * @param model Trained model with predefined parameters
+   * @return New instance of TrainerPtr<Standard, Self>
+   */
+  static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
+    return FixedTrainer<Labeling, Self>::make(model);
+  }
+
+  /**
+   * Factory of Cached Trainers for supervised learning of parameters.
+   * @param tag Tag representing the training algorithm
+   * @param params Parameters for the training algorithn chosen
+   * @return New instance of TrainerPtr<Standard, Self>
+   */
+  template<typename Tag, typename... Args>
+  static TrainerPtr<Labeling, Self> supervisedTrainer(Tag, Args&&... args) {
+    return CachedTrainer<Labeling, Self, Tag, Args...>::make(
+        Tag{}, std::forward<Args>(args)...);
+  }
+
+  /*-------------------------------( Trainer )--------------------------------*/
+
+  /**
+   * Trains (given a set of training arguments, estimate the parameters for)
+   * a new instance of the model using the Baum-Welch algorithm.
+   * @param trainer Instance of a Trainer (Fixed, Simple or Cached)
+   * @param baum_welch_algorithm Tag representing Baum-Welch algorithm
+   * @param initial_model Maximum number of iterations to stop the training
+   * @param max_iterations Maximum number of iterations to stop the training
+   * @param diff_threshold Minimum threshold of difference to stop the training
+   * @return New instance of SelfPtr pointing to a new trained Self
+   */
+  static SelfPtr train(TrainerPtr<Alignment, Self> trainer,
                        baum_welch_algorithm,
                        HiddenMarkovModelPtr initial_model,
-                       unsigned int maxiterations,
-                       double diff_threshold);
+                       std::size_t max_iterations,
+                       Probability diff_threshold);
+
+  /**
+   * Trains (given a set of training arguments, estimate the parameters for)
+   * a new instance of the model using the Maximum-Likelihood algorithm.
+   * @param trainer Instance of a Trainer (Fixed, Simple or Cached)
+   * @param maximum_likelihood_algorithm Tag representing Maximum-Likelihood
+   * @param initial_model Maximum number of iterations to stop the training
+   * @param pseudo_counter Minimum count for emissions and transitions
+   * @return New instance of SelfPtr pointing to a new trained Self
+   */
   static SelfPtr train(TrainerPtr<Labeling, Self> trainer,
-                       maximum_likehood_algorithm,
-                       unsigned int state_alphabet_size,
-                       unsigned int observation_alphabet_size,
-                       double pseudocont);
+                       maximum_likelihood_algorithm,
+                       HiddenMarkovModelPtr initial_model,
+                       std::size_t pseudo_counter);
 
-  /*==========================[ OVERRIDEN METHODS ]===========================*/
-  /*-------------------------( Probabilistic Model )--------------------------*/
+  /*==========================[ CONCRETE METHODS ]============================*/
 
-  // SimpleEvaluator
+  /*------------------------------( Factories )-------------------------------*/
+
+  /**
+   * Factory of Simple/Cached Evaluators.
+   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
+   * @param sequence Sequence to be evaluated
+   * @param cached Type of Evaluator (Simple or Cached)
+   * @return New instance of EvaluatorPtr<Standard>
+   */
+  template<template<typename Target> class Decorator>
+  EvaluatorPtr<Decorator> evaluator(const Decorator<Sequence>& sequence,
+                                    bool cached = false) {
+    auto self = shared_from_this();
+    return cached ? CachedEvaluator<Decorator, Self>::make(self, sequence)
+                  : SimpleEvaluator<Decorator, Self>::make(self, sequence);
+  }
+
+  /**
+   * Factory of Simple Generators.
+   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
+   * @param rng Random Number Generator
+   * @return New instance of EvaluatorPtr<Standard>
+   */
+  template<template<typename Target> class Decorator>
+  GeneratorPtr<Decorator> generator(RandomNumberGeneratorPtr rng
+                                      = RNGAdapter<std::mt19937>::make()) {
+    auto self = shared_from_this();
+    return SimpleGenerator<Decorator, Self>::make(self, rng);
+  }
+
+  /**
+   * Factory of Simple Serializers.
+   * @param translator Visitor that serializes the files
+   * @return New instance of SerializerPtr
+   */
+  SerializerPtr serializer(TranslatorPtr translator) {
+    auto self = shared_from_this();
+    return SimpleSerializer<Self>::make(self, translator);
+  }
+
+  /**
+   * Factory of Simple/Cached Labelers
+   * @param sequence Input sequence to be labeled
+   * @param cached Type of Labeler (cached or non-cached)
+   * @return New instance of LabelerPtr
+   */
+  LabelerPtr labeler(const Sequence& sequence, bool cached = false) {
+    auto self = shared_from_this();
+    return cached ? CachedLabeler<Self>::make(self, sequence)
+                  : SimpleLabeler<Self>::make(self, sequence);
+  }
+
+  /**
+   * Factory of Simple/Cached Calculators
+   * @param sequence Input sequence that will be used for calculations
+   * @param cached Type of Calculator (cached or non-cached)
+   * @return New instance of CalculatorPtr
+   */
+  CalculatorPtr calculator(const Sequence& sequence, bool cached = false) {
+    auto self = shared_from_this();
+    return cached ? CachedCalculator<Self>::make(self, sequence)
+                  : SimpleCalculator<Self>::make(self, sequence);
+  }
+
+  /*---------------------------( SimpleEvaluator )----------------------------*/
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **standard symbol** of a SimpleEvaluator's **standard sequence**
+   * (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param pos Position within the full sequence
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[pos])\f$
+   */
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
                              unsigned int pos,
-                             unsigned int phase) const override;
+                             unsigned int phase) const;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **standard subsequence** of a SimpleEvaluator's **standard sequence**
+   * (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param begin Position of the beginning of the subsequence
+   * @param end Position of the end of the subsequence, minus 1
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
   Probability evaluateSequence(SEPtr<Standard> evaluator,
                                unsigned int begin,
                                unsigned int end,
-                               unsigned int phase) const override;
+                               unsigned int phase) const;
 
-  // CachedEvaluator
-  void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
-
-  // SimpleGenerator
-  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
-                              const Sequence& context) const override;
-  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const override;
-
-  // SimpleSerializer
-  void serialize(SSPtr serializer) override;
-
-  /*==========================[ OVERRIDEN METHODS ]===========================*/
-  /*---------------------------( Decodable Model )----------------------------*/
-
-  // SimpleEvaluator
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **labeled symbol** of a SimpleEvaluator's **labeled sequence**
+   * (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param pos Position within the full labeled sequence
+   * @param phase Phase of the full labeled sequence
+   * @return \f$Pr(s[pos])\f$
+   */
   Probability evaluateSymbol(SEPtr<Labeling> evaluator,
                              unsigned int pos,
-                             unsigned int phase) const override;
+                             unsigned int phase) const;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **labeled subsequence** of a SimpleEvaluator's **labeled sequence**
+   * (**without a cache**).
+   * @param evaluator Instance of a SimpleEvaluator
+   * @param begin Position of the beginning of the labeled subsequence
+   * @param end Position of the end of the labeled subsequence, minus 1
+   * @param phase Phase of the full labeled sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
   Probability evaluateSequence(SEPtr<Labeling> evaluator,
                                unsigned int begin,
                                unsigned int end,
-                               unsigned int phase) const override;
+                               unsigned int phase) const;
 
-  // CachedEvaluator
+  /*---------------------------( CachedEvaluator )----------------------------*/
+
+  /**
+   * Lazily initializes the cache of a CachedEvaluator.
+   * @param evaluator Instance of CachedEvaluator
+   * @param phase Phase of the full sequence
+   */
+  void initializeCache(CEPtr<Standard> evaluator,
+                       unsigned int phase);
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **standard symbol** of a CachedEvaluator's **standard sequence**
+   * (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param pos Position within the full sequence
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[pos])\f$
+   */
+  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+                             unsigned int pos,
+                             unsigned int phase) const;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **standard subsequence** of a CachedEvaluator's **standard sequence**
+   * (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param begin Position of the beginning of the subsequence
+   * @param end Position of the end of the subsequence, minus 1
+   * @param phase Phase of the full sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
+  Probability evaluateSequence(CEPtr<Standard> evaluator,
+                               unsigned int begin,
+                               unsigned int end,
+                               unsigned int phase) const;
+
+  /**
+   * Lazily initializes the cache of a CachedEvaluator.
+   * @param evaluator Instance of CachedEvaluator
+   * @param phase Phase of the full labeled sequence
+   */
   void initializeCache(CEPtr<Labeling> evaluator,
-                       unsigned int phase) override;
+                       unsigned int phase);
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **labeled symbol** of a CachedEvaluator's **labeled sequence**
+   * (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param pos Position within the full labeled sequence
+   * @param phase Phase of the full labeled sequence
+   * @return \f$Pr(s[pos])\f$
+   */
   Probability evaluateSymbol(CEPtr<Labeling> evaluator,
                              unsigned int pos,
-                             unsigned int phase) const override;
+                             unsigned int phase) const;
+
+  /**
+   * Evaluates (given the trained model, returns the probability of)
+   * a **labeled subsequence** of a CachedEvaluator's **labeled sequence**
+   * (**with a cache**).
+   * @param evaluator Instance of a CachedEvaluator
+   * @param begin Position of the beginning of the labeled subsequence
+   * @param end Position of the end of the labeled subsequence, minus 1
+   * @param phase Phase of the full labeled sequence
+   * @return \f$Pr(s[begin..end-1])\f$
+   */
   Probability evaluateSequence(CEPtr<Labeling> evaluator,
                                unsigned int begin,
                                unsigned int end,
-                               unsigned int phase) const override;
+                               unsigned int phase) const;
 
-  // SimpleGenerator
+  /*---------------------------( SimpleGenerator )----------------------------*/
+
+  /**
+   * Draws (given the trained model, randomly choose) a symbol
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Position of the symbol to be generated
+   * @param phase Phase of the sequence in wich the symbol belongs
+   * @param context Context to be considered when generating the symbol
+   * @return \f$x,\ x \in X\f$
+   */
+  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+                             unsigned int pos,
+                             unsigned int phase,
+                             const Sequence& context) const;
+
+  /**
+   * Draws (given the trained model, randomly choose) a sequence
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Size of the sequence to be generated
+   * @param phase Phase of the sequence to be generated
+   * @return \f$x,\ x \in X\f$
+   */
+  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                                  unsigned int size,
+                                  unsigned int phase) const;
+
+  /**
+   * Draws (given the trained model, randomly choose) a labeled symbol
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Position of the labeled symbol to be generated
+   * @param phase Phase of the labeled sequence in wich the symbol belongs
+   * @param context Context to be considered when generating the labeled symbol
+   * @return \f$x,\ x \in X\f$
+   */
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               unsigned int pos,
                               unsigned int phase,
-                              const Sequence& context) const override;
+                              const Sequence& context) const;
+
+  /**
+   * Draws (given the trained model, randomly choose) a labeled sequence
+   * with a SimpleGenerator (**with no cache**).
+   * @param generator Instance of SimpleGenerator
+   * @param pos Size of the labeled sequence to be generated
+   * @param phase Phase of the labeled sequence to be generated
+   * @return \f$x,\ x \in X\f$
+   */
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   unsigned int size,
-                                  unsigned int phase) const override;
+                                  unsigned int phase) const;
 
-  // SimpleLabeler
-  Estimation<Labeling<Sequence>> labeling(
-      SLPtr labeler,
-      const Labeler::method& method) const override;
+  /*---------------------------( SimpleSerializer )---------------------------*/
 
-  // CachedLabeler
-  void initializeCache(CLPtr labeler) override;
-  Estimation<Labeling<Sequence>> labeling(
-      CLPtr labeler,
-      const Labeler::method& method) const override;
+  /**
+   * Serializes (given the trained model, save its parameters
+   * in the disk using some file format) with a SimpleSerializer.
+   * @param serializer Instance of SimpleSerializer
+   */
+  void serialize(SSPtr serializer);
 
-  // SimpleCalculator
-  Probability calculate(SCPtr calculator,
-                        const Calculator::direction& direction) const override;
+  /*----------------------------( SimpleLabeler )-----------------------------*/
 
-  // CachedCalculator
-  void initializeCache(CCPtr calculator) override;
-  Probability calculate(CCPtr calculator,
-                        const Calculator::direction& direction) const override;
-
-  // Others
-  void posteriorProbabilities(const Sequence& sequence,
-                              Matrix& probabilities) const override;
-
- private:
-  /*==========================[ CONCRETE METHODS ]============================*/
-
-  // Labeler's helpers
+  /**
+   * Labels (given the trained model, decide the best associated labels
+   * accordingly to some criteria) of a SimpleLabeler's sequence
+   * (**without a cache**).
+   * @param labeler Instance of SimpleLabeler
+   * @param method Criteria to find the best labeling for the sequence
+   * @return The labeled sequence with its probability given the model
+   */
   Estimation<Labeling<Sequence>>
-  viterbi(const Sequence& xs, Matrix& gamma) const;
+  labeling(SLPtr labeler, const Labeler::method& method) const;
 
+  /*----------------------------( CachedLabeler )-----------------------------*/
+
+  /**
+   * Lazily initializes the cache of a CachedLabeler.
+   * @param labeler Instance of CachedLabeler
+   */
+  void initializeCache(CLPtr labeler);
+
+  /**
+   * Labels (given the trained model, decide the best associated labels
+   * accordingly to some criteria) of a CachedLabeler's sequence
+   * (**with a cache**).
+   * @param labeler Instance of CachedLabeler
+   * @param method Criteria to find the best labeling for the sequence
+   * @return The labeled sequence with its probability given the model
+   */
   Estimation<Labeling<Sequence>>
-  posteriorDecoding(const Sequence& xs, Matrix& probabilities) const;
+  labeling(CLPtr labeler, const Labeler::method& method) const;
 
-  // Calculator's helpers
-  Probability backward(const Sequence& sequence, Matrix& beta) const;
-  Probability forward(const Sequence& sequence, Matrix& alpha) const;
+  /*---------------------------( SimpleCalculator )---------------------------*/
+
+  /**
+   * Calculates associated probabilities (given the model) of a
+   * SimpleCalculator's sequence (**without a cache**).
+   * @param calculator Instance of SimpleCalculator
+   * @param direction Type of calculation
+   * @return Probability of the sequence
+   */
+  Probability
+  calculate(SCPtr calculator, const Calculator::direction& direction) const;
+
+  /*---------------------------( CachedCalculator )---------------------------*/
+
+  /**
+   * Lazily initializes the cache of a CachedCalculator.
+   * @param calculator Instance of CachedCalculator
+   */
+  void initializeCache(CCPtr calculator);
+
+  /**
+   * Calculates associated probabilities (given the model) of a
+   * CachedCalculator's sequence (**witho a cache**).
+   * @param labeler Instance of CachedCalculator
+   * @param direction Type of calculation
+   * @return Probability of the sequence
+   */
+  Probability
+  calculate(CCPtr calculator, const Calculator::direction& direction) const;
+
+  /*--------------------------------( Getters )-------------------------------*/
+
+  /**
+   * Gets the model's state alphabet size.
+   * @return \f$|Y|\f$
+   */
+  std::size_t stateAlphabetSize() const;
+
+  /**
+   * Gets the model's observation alphabet size.
+   * @return \f$|X|\f$
+   */
+  std::size_t observationAlphabetSize() const;
+
+  /**
+   * Gets the state with a given ID.
+   * @return \f$y_i\f$
+   */
+  StatePtr state(typename State::Id id);
+
+  /**
+   * Gets a modifiable vector of std::shared_ptr<State>.
+   * @return \f$Yf$
+   */
+  std::vector<StatePtr> states();
+
+  /**
+   * Gets a non-modifiable vector of std::shared_ptr<State>.
+   * @return \f$Yf$
+   */
+  const std::vector<StatePtr> states() const;
+
+  /*----------------------------( Implementations )---------------------------*/
+
+  // Generator's implementations
+  GeneratorReturn<Symbol> drawSymbol(RandomNumberGeneratorPtr rng,
+                                     std::size_t pos,
+                                     const Sequence& context) const;
+  GeneratorReturn<Sequence> drawSequence(RandomNumberGeneratorPtr rng,
+                                         std::size_t size) const;
+
+  // Labeler's implementations
+  LabelerReturn viterbi(const Sequences& sequences) const;
+  LabelerReturn posteriorDecoding(const Sequences& sequences) const;
+
+  // Calculator's implementations
+  CalculatorReturn forward(const Sequences& sequences) const;
+  CalculatorReturn backward(const Sequences& sequences) const;
+
+  // Helpers
+  TraceBackReturn traceBack(const Sequences& sequences,
+                            const MultiArray<typename State::Id, 2>& psi) const;
+
+ protected:
+  // Instance variables
+  std::vector<StatePtr> _states;
+  std::size_t _state_alphabet_size;
+  std::size_t _observation_alphabet_size;
+
+  Symbol _gap = _observation_alphabet_size;
+
+  typename State::Id _begin_id = 0;
+  typename State::Id _end_id = _state_alphabet_size-1;
 };
 
 }  // namespace model
