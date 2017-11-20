@@ -38,17 +38,47 @@ namespace model {
 
 namespace {
 
-template<std::size_t N>
-MultiArray<Probability, N> convert(const MultiArray<Expectation, N>& base) {
-  MultiArray<Probability, N> converted;
-  for (const auto& sub_base : base)
-    converted.push_back(convert<N-1>(sub_base));
-  return converted;
-}
+template<typename Original, std::size_t N>
+struct SumAux {
+  Original operator()(const MultiArray<Original, N>& values) {
+    Original acc {};
+    for (const auto& curr : values)
+      acc += SumAux<Original, N-1>{}(curr);
+    return acc;
+  }
+};
 
-template<>
-MultiArray<Probability, 0> convert<0>(const MultiArray<Expectation, 0>& base) {
-  return Probability{ base };
+template<typename Original>
+struct SumAux<Original, 0> {
+  Original operator()(const MultiArray<Original, 0>& values) {
+    return values;
+  }
+};
+
+template<typename Original, std::size_t N>
+struct NormalizeAux {
+  MultiArray<Probability, N>
+  operator()(const MultiArray<Original, N>& values, Original sum) {
+    MultiArray<Probability, N> converted;
+
+    for (const auto& curr : values)
+      converted.push_back(NormalizeAux<Original, N-1>{}(curr, sum));
+
+    return converted;
+  }
+};
+
+template<typename Original>
+struct NormalizeAux<Original, 0> {
+  MultiArray<Probability, 0>
+  operator()(const MultiArray<Original, 0>& values, Original sum) {
+    return Probability{ (1.0 * values) / sum };
+  }
+};
+
+template<typename Original, std::size_t N>
+MultiArray<Probability, N> normalize(const MultiArray<Original, N>& values) {
+  return NormalizeAux<Original, N>{}(values, SumAux<Original, N>{}(values));
 }
 
 }  // namespace
@@ -144,42 +174,15 @@ PairHiddenMarkovModel::train(TrainerPtr<Alignment, Self> trainer,
       }
     }
 
-    // "Pseudo-counter" to avoid divided-by-zero error when
-    // some combination of emission symbol does not appear
-    const Expectation min
-      = std::numeric_limits<Expectation::value_type>::epsilon();
-
-    // Sum all expectancies for each state 'k' to normalize
-    std::vector<Expectation> sumA(model->stateAlphabetSize());
-    std::vector<Expectation> sumE(model->stateAlphabetSize());
-    for (const auto& state : model->states()) {
-      auto k = state->id();
-
-      sumA[k] = std::accumulate(A[k].begin(), A[k].end(), min);
-      sumE[k] = std::accumulate(E[k].begin(), E[k].end(), min,
-          [] (Expectation& a, const Expectations& b) {
-            return std::accumulate(b.begin(), b.end(), a);
-          });
-    }
-
     // Replace states in the model
     for (auto& state : model->states()) {
       if (state->isSilent()) continue;
 
       auto k = state->id();
 
-      // Normalize the expectancies in A to probabilities
-      for (auto s : state->successors())
-        A[k][s] /= sumA[k];
-
-      // Normalize the expectancies in E to probabilities
-      for (size_t i = 0; i < model->observationAlphabetSize()+1; i++)
-        for (size_t j = 0; j < model->observationAlphabetSize()+1; j++)
-          E[k][i][j] /= sumE[k];
-
       // Replace the transition and emission of each state
-      state->transition(DiscreteIIDModel::make(convert<1>(A[k])));
-      state->emission(DiscreteIIDModel::make(convert<2>(E[k])));
+      state->transition(DiscreteIIDModel::make(normalize<Expectation, 1>(A[k])));
+      state->emission(DiscreteIIDModel::make(normalize<Expectation, 2>(E[k])));
     }
 
     // Store last expectancies of alignment
