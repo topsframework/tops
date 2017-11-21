@@ -66,6 +66,8 @@ using namespace std;
 
 using Symbol = unsigned int;
 using GHMM = GeneralizedHiddenMarkovModel;
+using Id = typename GHMM::State::Id;
+unsigned int GHMM_STATE_SIZE;
 
 class Alphabet {
 public:
@@ -690,22 +692,22 @@ void generate_chart(ProbabilisticModelPtr model, std::string name,
     f << x.str() << y.str();
 }
 
-std::vector<Probability> *cria_vetor_transicao(std::vector<Symbol> vetor_indices,
-                                               std::vector<Probability> &vetor_probabilidades){
 
-    std::vector<Probability> *retorno = new vector<Probability>;
 
-    for(int i = 0; i < 68; i++){
-        retorno->push_back(0);
+std::vector<Probability> index_probabilities(std::vector<Id>& indices,
+                                             std::vector<Probability>& probabilities) {
+
+    std::vector<Probability> indexed_probabilities(GHMM_STATE_SIZE);
+    for (std::size_t i = 0; i < indices.size(); i++)
+        indexed_probabilities[indices[i]] = probabilities[i];
+    return indexed_probabilities;
+}
+
+void print_probabilities(vector<Probability> probabilities ){
+    for(unsigned int i = 0; i < probabilities.size(); i++){
+        cout << probabilities[i] << " ";
     }
-
-    for(unsigned int i = 0; i < vetor_indices.size(); i++){
-        retorno->erase(retorno->begin() + vetor_indices.at(i));
-        retorno->insert(retorno->begin() + vetor_indices.at(i),
-                        vetor_probabilidades.at(i));
-    }
-
-    return retorno;
+    cout << endl;
 }
 
 int main() {
@@ -793,7 +795,7 @@ int main() {
 
     /////////////////////////////////////////////////////////////////////////////
 
-    std::vector<std::string> states_names {
+    std::vector<std::string> state_names {
             "N","I0","I1","I2",
             "EI0","EI1","EI2","ES", "Is0", "If0",   "Is1", "If1",  "Is2", "If2",
             "ET0","ET1","ET2",  "rIs0", "rIf0",  "rIs1", "rIf1", "rIs2", "rIf2",
@@ -806,26 +808,53 @@ int main() {
             "rE00", "rE01", "rE02", "rE10", "rE11", "rE12","rE20", "rE21", "rE22", "F"
     };
 
-    std::unordered_map<std::string, Symbol> states_hash;
+    GHMM_STATE_SIZE = state_names.size();
 
-    for (unsigned int index = 0; index < states_names.size(); index++) {
-       states_hash.emplace(states_names[index], index);
+
+    std::unordered_map<std::string, Symbol> state_indices;
+
+    for (unsigned int index = 0; index < state_names.size(); index++) {
+       state_indices.emplace(state_names[index], index);
     }
 
-    //Transitions probabilities
+    //State I0 definition
     auto I0_probabilities = vector<Probability>{{0.998908491611056, 1}};
-    auto I0_probabilities_indices = vector<unsigned int> {states_hash["I0"], states_hash["If0"]};
-    auto I0_indexed_transitions_probabilities = cria_vetor_transicao(I0_probabilities_indices, I0_probabilities);
+    auto I0_probabilities_indices = vector<Id> {state_indices["I0"],
+                                                state_indices["If0"]};
+    auto I0_indexed_transitions_probabilities = index_probabilities(I0_probabilities_indices,
+                                                                    I0_probabilities);
+
+    print_probabilities(I0_indexed_transitions_probabilities);
 
     DiscreteIIDModelPtr I0_transitions_probabilities
-            = DiscreteIIDModel::make(*I0_indexed_transitions_probabilities);
+            = DiscreteIIDModel::make(I0_indexed_transitions_probabilities);
 
-    GHMM::StatePtr I0 //um modelo qq
+    GHMM::StatePtr I0
             = GHMM::State::make(
-                    states_hash["I0"],
+                    state_indices["I0"],
                     non_coding_model,
-                    I0_transitions_probabilities, //prob de trans
-                    GeometricDuration::make(states_hash["I0"],
+                    I0_transitions_probabilities,
+                    GeometricDuration::make(state_indices["I0"],
                                             I0_transitions_probabilities));
+
+    //State I1 definition
+    auto I1_probabilities = vector<Probability>{{0.998908491611056, 1}};
+    auto I1_probabilities_indices = vector<unsigned int> {state_indices["I1"], state_indices["If1"]};
+    auto I1_indexed_transitions_probabilities = index_probabilities(I1_probabilities_indices, I1_probabilities);
+
+    print_probabilities(I1_indexed_transitions_probabilities);
+
+
+    DiscreteIIDModelPtr I1_transitions_probabilities
+            = DiscreteIIDModel::make(I1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr I1
+            = GHMM::State::make(
+                    state_indices["I1"],
+                    non_coding_model,
+                    I1_transitions_probabilities,
+                    GeometricDuration::make(state_indices["I1"],
+                                            I1_transitions_probabilities));
+
     return 0;
 }
