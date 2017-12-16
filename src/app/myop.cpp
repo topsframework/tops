@@ -818,9 +818,9 @@ int main() {
     }
 
     //State I0 definition
-    auto I0_probabilities = vector<Probability>{{0.998908491611056, 1}};
+    auto I0_probabilities = vector<Probability>{{0.998908491611056, 0.00109150838894445}};
     auto I0_probabilities_indices = vector<Id> {state_indices["I0"],
-                                                state_indices["If0"]};
+                                                state_indices["acc0"]};
     auto I0_indexed_transitions_probabilities = index_probabilities(I0_probabilities_indices,
                                                                     I0_probabilities);
 
@@ -838,8 +838,8 @@ int main() {
                                             I0_transitions_probabilities));
 
     //State I1 definition
-    auto I1_probabilities = vector<Probability>{{0.998908491611056, 1}};
-    auto I1_probabilities_indices = vector<unsigned int> {state_indices["I1"], state_indices["If1"]};
+    auto I1_probabilities = vector<Probability>{{0.998908491611056, 0.00109150838894445}};
+    auto I1_probabilities_indices = vector<unsigned int> {state_indices["I1"], state_indices["acc1"]};
     auto I1_indexed_transitions_probabilities = index_probabilities(I1_probabilities_indices, I1_probabilities);
 
     print_probabilities(I1_indexed_transitions_probabilities);
