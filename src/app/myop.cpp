@@ -891,5 +891,41 @@ int main() {
                     GeometricDuration::make(state_indices["Is0"],
                                             Is0_transitions_probabilities));
 
+    //State Is1 definition
+    auto Is1_probabilities = vector<Probability>{{1}};
+    auto Is1_probabilities_indices = vector<unsigned int> {state_indices["acc1"]};
+    auto Is1_indexed_transitions_probabilities = index_probabilities(Is1_probabilities_indices, Is1_probabilities);
+
+    print_probabilities(Is1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr Is1_transitions_probabilities
+            = DiscreteIIDModel::make(Is1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr Is1
+            = GHMM::State::make(
+                    state_indices["Is1"],
+                    non_coding_model,
+                    Is1_transitions_probabilities,
+                    GeometricDuration::make(state_indices["Is1"],
+                                            Is1_transitions_probabilities));
+
+    //State Is2 definition
+    auto Is2_probabilities = vector<Probability>{{1}};
+    auto Is2_probabilities_indices = vector<unsigned int> {state_indices["acc2"]};
+    auto Is2_indexed_transitions_probabilities = index_probabilities(Is2_probabilities_indices, Is2_probabilities);
+
+    print_probabilities(Is2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr Is2_transitions_probabilities
+            = DiscreteIIDModel::make(Is2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr Is2
+            = GHMM::State::make(
+                    state_indices["Is2"],
+                    non_coding_model,
+                    Is2_transitions_probabilities,
+                    GeometricDuration::make(state_indices["Is2"],
+                                            Is2_transitions_probabilities));
+
     return 0;
 }
