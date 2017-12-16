@@ -844,7 +844,6 @@ int main() {
 
     print_probabilities(I1_indexed_transitions_probabilities);
 
-
     DiscreteIIDModelPtr I1_transitions_probabilities
             = DiscreteIIDModel::make(I1_indexed_transitions_probabilities);
 
@@ -855,6 +854,24 @@ int main() {
                     I1_transitions_probabilities,
                     GeometricDuration::make(state_indices["I1"],
                                             I1_transitions_probabilities));
+
+    //State I2 definition
+    auto I2_probabilities = vector<Probability>{{0.998908491611056, 0.00109150838894445}};
+    auto I2_probabilities_indices = vector<unsigned int> {state_indices["I2"], state_indices["acc2"]};
+    auto I2_indexed_transitions_probabilities = index_probabilities(I2_probabilities_indices, I2_probabilities);
+
+    print_probabilities(I2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr I2_transitions_probabilities
+            = DiscreteIIDModel::make(I2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr I2
+            = GHMM::State::make(
+                    state_indices["I2"],
+                    non_coding_model,
+                    I2_transitions_probabilities,
+                    GeometricDuration::make(state_indices["I2"],
+                                            I2_transitions_probabilities));
 
     return 0;
 }
