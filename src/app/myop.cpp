@@ -927,5 +927,59 @@ int main() {
                     GeometricDuration::make(state_indices["Is2"],
                                             Is2_transitions_probabilities));
 
+    //State If0 definition
+    auto If0_probabilities = vector<Probability>{{1}};
+    auto If0_probabilities_indices = vector<unsigned int> {state_indices["I0"]};
+    auto If0_indexed_transitions_probabilities = index_probabilities(If0_probabilities_indices, If0_probabilities);
+
+    print_probabilities(If0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr If0_transitions_probabilities
+            = DiscreteIIDModel::make(If0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr If0
+            = GHMM::State::make(
+                    state_indices["If0"],
+                    non_coding_model,
+                    If0_transitions_probabilities,
+                    GeometricDuration::make(state_indices["If0"],
+                                            If0_transitions_probabilities));
+
+    //State If1 definition
+    auto If1_probabilities = vector<Probability>{{1}};
+    auto If1_probabilities_indices = vector<unsigned int> {state_indices["I1"]};
+    auto If1_indexed_transitions_probabilities = index_probabilities(If1_probabilities_indices, If1_probabilities);
+
+    print_probabilities(If1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr If1_transitions_probabilities
+            = DiscreteIIDModel::make(If1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr If1
+            = GHMM::State::make(
+                    state_indices["If1"],
+                    non_coding_model,
+                    If1_transitions_probabilities,
+                    GeometricDuration::make(state_indices["If1"],
+                                            If1_transitions_probabilities));
+
+    //State If2 definition
+    auto If2_probabilities = vector<Probability>{{1}};
+    auto If2_probabilities_indices = vector<unsigned int> {state_indices["I2"]};
+    auto If2_indexed_transitions_probabilities = index_probabilities(If2_probabilities_indices, If2_probabilities);
+
+    print_probabilities(If2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr If2_transitions_probabilities
+            = DiscreteIIDModel::make(If2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr If2
+            = GHMM::State::make(
+                    state_indices["If2"],
+                    non_coding_model,
+                    If2_transitions_probabilities,
+                    GeometricDuration::make(state_indices["If2"],
+                                            If2_transitions_probabilities));
+
     return 0;
 }
