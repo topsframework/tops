@@ -873,5 +873,23 @@ int main() {
                     GeometricDuration::make(state_indices["I2"],
                                             I2_transitions_probabilities));
 
+    //State Is0 definition
+    auto Is0_probabilities = vector<Probability>{{1}};
+    auto Is0_probabilities_indices = vector<unsigned int> {state_indices["acc0"]};
+    auto Is0_indexed_transitions_probabilities = index_probabilities(Is0_probabilities_indices, Is0_probabilities);
+
+    print_probabilities(Is0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr Is0_transitions_probabilities
+            = DiscreteIIDModel::make(Is0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr Is0
+            = GHMM::State::make(
+                    state_indices["Is0"],
+                    non_coding_model,
+                    Is0_transitions_probabilities,
+                    GeometricDuration::make(state_indices["Is0"],
+                                            Is0_transitions_probabilities));
+
     return 0;
 }
