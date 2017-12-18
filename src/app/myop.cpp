@@ -981,5 +981,23 @@ int main() {
                     GeometricDuration::make(state_indices["If2"],
                                             If2_transitions_probabilities));
 
+    //State start definition
+    auto start_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto start_probabilities_indices = vector<unsigned int> {state_indices["EI0"], state_indices["EI1"],
+                                                             state_indices["EI2"], state_indices["ES"]};
+    auto start_indexed_transitions_probabilities = index_probabilities(start_probabilities_indices, start_probabilities);
+
+    print_probabilities(start_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr start_transitions_probabilities
+            = DiscreteIIDModel::make(start_indexed_transitions_probabilities);
+
+    GHMM::StatePtr start
+            = GHMM::State::make(
+                    state_indices["start"],
+                    start_model,
+                    start_transitions_probabilities,
+                    SignalDuration::make(27));
+
     return 0;
 }
