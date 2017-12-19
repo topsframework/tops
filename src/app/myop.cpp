@@ -1047,6 +1047,57 @@ int main() {
                     EI2_transitions_probabilities,
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
                                                                                                  11, 0, 2, 3)));
+    //State ET0 definition
+    auto ET0_probabilities = vector<Probability>{{1}};
+    auto ET0_probabilities_indices = vector<unsigned int> {state_indices["stop"]};
+    auto ET0_indexed_transitions_probabilities = index_probabilities(ET0_probabilities_indices, ET0_probabilities);
 
+    print_probabilities(ET0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr ET0_transitions_probabilities
+            = DiscreteIIDModel::make(ET0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr ET0
+            = GHMM::State::make(
+                    state_indices["ET0"],
+                    cds_model,
+                    ET0_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 0, 2, 3)));
+    //State ET1 definition
+    auto ET1_probabilities = vector<Probability>{{1}};
+    auto ET1_probabilities_indices = vector<unsigned int> {state_indices["stop"]};
+    auto ET1_indexed_transitions_probabilities = index_probabilities(ET1_probabilities_indices, ET1_probabilities);
+
+    print_probabilities(ET1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr ET1_transitions_probabilities
+            = DiscreteIIDModel::make(ET1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr ET1
+            = GHMM::State::make(
+                    state_indices["ET1"],
+                    cds_model,
+                    ET1_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 1, 2, 3)));
+    //State ET2 definition
+    auto ET2_probabilities = vector<Probability>{{1}};
+    auto ET2_probabilities_indices = vector<unsigned int> {state_indices["stop"]};
+    auto ET2_indexed_transitions_probabilities = index_probabilities(ET2_probabilities_indices, ET2_probabilities);
+
+    print_probabilities(ET2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr ET2_transitions_probabilities
+            = DiscreteIIDModel::make(ET2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr ET2
+            = GHMM::State::make(
+                    state_indices["ET2"],
+                    cds_model,
+                    ET2_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 2, 2, 3)));
+    
     return 0;
 }
