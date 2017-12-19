@@ -1013,5 +1013,40 @@ int main() {
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
                                                                                                  11, 0, 0, 3)));
 
+    //State EI1 definition
+    auto EI1_probabilities = vector<Probability>{{1}};
+    auto EI1_probabilities_indices = vector<unsigned int> {state_indices["don2"]};
+    auto EI1_indexed_transitions_probabilities = index_probabilities(EI1_probabilities_indices, EI1_probabilities);
+
+    print_probabilities(EI1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr EI1_transitions_probabilities
+            = DiscreteIIDModel::make(EI1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr EI1
+            = GHMM::State::make(
+                    state_indices["EI1"],
+                    cds_model,
+                    EI1_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
+                                                                                                 11, 0, 1, 3)));
+    //State EI2 definition
+    auto EI2_probabilities = vector<Probability>{{1}};
+    auto EI2_probabilities_indices = vector<unsigned int> {state_indices["don0"]};
+    auto EI2_indexed_transitions_probabilities = index_probabilities(EI2_probabilities_indices, EI2_probabilities);
+
+    print_probabilities(EI2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr EI2_transitions_probabilities
+            = DiscreteIIDModel::make(EI2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr EI2
+            = GHMM::State::make(
+                    state_indices["EI2"],
+                    cds_model,
+                    EI2_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
+                                                                                                 11, 0, 2, 3)));
+
     return 0;
 }
