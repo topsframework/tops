@@ -888,8 +888,7 @@ int main() {
                     state_indices["Is0"],
                     non_coding_model,
                     Is0_transitions_probabilities,
-                    GeometricDuration::make(state_indices["Is0"],
-                                            Is0_transitions_probabilities));
+                    ExplicitDuration::make(intron_short_duration));
 
     //State Is1 definition
     auto Is1_probabilities = vector<Probability>{{1}};
@@ -906,8 +905,7 @@ int main() {
                     state_indices["Is1"],
                     non_coding_model,
                     Is1_transitions_probabilities,
-                    GeometricDuration::make(state_indices["Is1"],
-                                            Is1_transitions_probabilities));
+                    ExplicitDuration::make(intron_short_duration));
 
     //State Is2 definition
     auto Is2_probabilities = vector<Probability>{{1}};
@@ -924,8 +922,7 @@ int main() {
                     state_indices["Is2"],
                     non_coding_model,
                     Is2_transitions_probabilities,
-                    GeometricDuration::make(state_indices["Is2"],
-                                            Is2_transitions_probabilities));
+                    ExplicitDuration::make(intron_short_duration));
 
     //State If0 definition
     auto If0_probabilities = vector<Probability>{{1}};
@@ -942,8 +939,7 @@ int main() {
                     state_indices["If0"],
                     non_coding_model,
                     If0_transitions_probabilities,
-                    GeometricDuration::make(state_indices["If0"],
-                                            If0_transitions_probabilities));
+                    SignalDuration::make(584));
 
     //State If1 definition
     auto If1_probabilities = vector<Probability>{{1}};
@@ -960,8 +956,7 @@ int main() {
                     state_indices["If1"],
                     non_coding_model,
                     If1_transitions_probabilities,
-                    GeometricDuration::make(state_indices["If1"],
-                                            If1_transitions_probabilities));
+                    SignalDuration::make(584));
 
     //State If2 definition
     auto If2_probabilities = vector<Probability>{{1}};
@@ -978,8 +973,7 @@ int main() {
                     state_indices["If2"],
                     non_coding_model,
                     If2_transitions_probabilities,
-                    GeometricDuration::make(state_indices["If2"],
-                                            If2_transitions_probabilities));
+                    SignalDuration::make(584));
 
     //State start definition
     auto start_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
