@@ -29,6 +29,7 @@
 #include "helper/VariableLengthMarkovChain.hpp"
 #include "helper/DiscreteIIDModel.hpp"
 #include "model/Standard.hpp"
+#include "model/PhasedRunLengthDistribution.hpp"
 #include <unordered_map>
 
 using tops::model::Sequence;
@@ -62,6 +63,7 @@ using tops::model::Standard;
 using tops::model::EvaluatorPtr;
 using tops::model::Labeler;
 using tops::helper::generateRandomIIDModel;
+using tops::model::PhasedRunLengthDistribution;
 using namespace std;
 
 using Symbol = unsigned int;
@@ -992,6 +994,24 @@ int main() {
                     start_model,
                     start_transitions_probabilities,
                     SignalDuration::make(27));
+
+    //State EI0 definition
+    auto EI0_probabilities = vector<Probability>{{1}};
+    auto EI0_probabilities_indices = vector<unsigned int> {state_indices["don1"]};
+    auto EI0_indexed_transitions_probabilities = index_probabilities(EI0_probabilities_indices, EI0_probabilities);
+
+    print_probabilities(EI0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr EI0_transitions_probabilities
+            = DiscreteIIDModel::make(EI0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr EI0
+            = GHMM::State::make(
+                    state_indices["EI0"],
+                    cds_model,
+                    EI0_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
+                                                                                                 11, 0, 0, 3)));
 
     return 0;
 }
