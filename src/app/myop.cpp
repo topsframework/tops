@@ -1150,6 +1150,57 @@ int main() {
                     E02_transitions_probabilities,
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
                                                                                                  12, 0, 2, 3)));
+    //State E10 definition
+    auto E10_probabilities = vector<Probability>{{1}};
+    auto E10_probabilities_indices = vector<unsigned int> {state_indices["don1"]};
+    auto E10_indexed_transitions_probabilities = index_probabilities(E10_probabilities_indices, E10_probabilities);
+
+    print_probabilities(E10_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr E10_transitions_probabilities
+            = DiscreteIIDModel::make(E10_indexed_transitions_probabilities);
+
+    GHMM::StatePtr E10
+            = GHMM::State::make(
+                    state_indices["E10"],
+                    cds_model,
+                    E10_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
+                                                                                                 12, 0, 2, 3)));
+    //State E11 definition
+    auto E11_probabilities = vector<Probability>{{1}};
+    auto E11_probabilities_indices = vector<unsigned int> {state_indices["don2"]};
+    auto E11_indexed_transitions_probabilities = index_probabilities(E11_probabilities_indices, E11_probabilities);
+
+    print_probabilities(E11_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr E11_transitions_probabilities
+            = DiscreteIIDModel::make(E11_indexed_transitions_probabilities);
+
+    GHMM::StatePtr E11
+            = GHMM::State::make(
+                    state_indices["E11"],
+                    cds_model,
+                    E11_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
+                                                                                                 12, 0, 0, 3)));
+    //State E12 definition
+    auto E12_probabilities = vector<Probability>{{1}};
+    auto E12_probabilities_indices = vector<unsigned int> {state_indices["don0"]};
+    auto E12_indexed_transitions_probabilities = index_probabilities(E12_probabilities_indices, E12_probabilities);
+
+    print_probabilities(E12_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr E12_transitions_probabilities
+            = DiscreteIIDModel::make(E12_indexed_transitions_probabilities);
+
+    GHMM::StatePtr E12
+            = GHMM::State::make(
+                    state_indices["E12"],
+                    cds_model,
+                    E12_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
+                                                                                                 12, 0, 1, 3)));
 
     return 0;
 }
