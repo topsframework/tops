@@ -1253,6 +1253,23 @@ int main() {
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
                                                                                                  12, 0, 0, 3)));
 
+    //State ES definition
+    auto ES_probabilities = vector<Probability>{{1}};
+    auto ES_probabilities_indices = vector<unsigned int> {state_indices["stop"]};
+    auto ES_indexed_transitions_probabilities = index_probabilities(ES_probabilities_indices, ES_probabilities);
+
+    print_probabilities(ES_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr ES_transitions_probabilities
+            = DiscreteIIDModel::make(ES_indexed_transitions_probabilities);
+
+    GHMM::StatePtr ES
+            = GHMM::State::make(
+                    state_indices["ES"],
+                    cds_model,
+                    ES_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_single_duration,
+                                                                                                 4, 0, 2, 3)));
 
     return 0;
 }
