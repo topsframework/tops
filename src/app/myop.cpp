@@ -1323,5 +1323,38 @@ int main() {
                     don0_transitions_probabilities,
                     SignalDuration::make(13));
 
+    //State don1 definition
+    auto don1_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto don1_probabilities_indices = vector<unsigned int> {state_indices["If1"], state_indices["Is1"]};
+    auto don1_indexed_transitions_probabilities = index_probabilities(don1_probabilities_indices, don1_probabilities);
+
+    print_probabilities(don1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr don1_transitions_probabilities
+            = DiscreteIIDModel::make(don1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr don1
+            = GHMM::State::make(
+                    state_indices["don1"],
+                    donor_model,
+                    don1_transitions_probabilities,
+                    SignalDuration::make(13));
+
+    //State don2 definition
+    auto don2_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto don2_probabilities_indices = vector<unsigned int> {state_indices["If2"], state_indices["Is2"]};
+    auto don2_indexed_transitions_probabilities = index_probabilities(don2_probabilities_indices, don2_probabilities);
+
+    print_probabilities(don2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr don2_transitions_probabilities
+            = DiscreteIIDModel::make(don2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr don2
+            = GHMM::State::make(
+                    state_indices["don2"],
+                    donor_model,
+                    don2_transitions_probabilities,
+                    SignalDuration::make(13));
     return 0;
 }
