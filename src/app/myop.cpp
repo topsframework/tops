@@ -1270,6 +1270,24 @@ int main() {
                     ES_transitions_probabilities,
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_single_duration,
                                                                                                  4, 0, 2, 3)));
+    //State N definition
+    auto N_probabilities = vector<Probability>{{9.95e-05, 0.999882352941176, 9.0735294117647e-06, 9.0735294117647e-06}};
+    auto N_probabilities_indices = vector<Id> {state_indices["F"], state_indices["N"],
+                                               state_indices["rstop"], state_indices["start"]};
+    auto N_indexed_transitions_probabilities = index_probabilities(N_probabilities_indices, N_probabilities);
+
+    print_probabilities(N_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr N_transitions_probabilities
+            = DiscreteIIDModel::make(N_indexed_transitions_probabilities);
+
+    GHMM::StatePtr N
+            = GHMM::State::make(
+                    state_indices["N"],
+                    non_coding_model,
+                    N_transitions_probabilities,
+                    GeometricDuration::make(state_indices["N"],
+                                            N_transitions_probabilities));
 
     return 0;
 }
