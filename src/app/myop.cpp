@@ -1289,5 +1289,22 @@ int main() {
                     GeometricDuration::make(state_indices["N"],
                                             N_transitions_probabilities));
 
+    //State stop definition
+    auto stop_probabilities = vector<Probability>{{1}};
+    auto stop_probabilities_indices = vector<unsigned int> {state_indices["N"]};
+    auto stop_indexed_transitions_probabilities = index_probabilities(stop_probabilities_indices, stop_probabilities);
+
+    print_probabilities(stop_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr stop_transitions_probabilities
+            = DiscreteIIDModel::make(stop_indexed_transitions_probabilities);
+
+    GHMM::StatePtr stop
+            = GHMM::State::make(
+                    state_indices["stop"],
+                    stop_model,
+                    stop_transitions_probabilities,
+                    SignalDuration::make(3));
+
     return 0;
 }
