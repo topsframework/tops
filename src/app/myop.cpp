@@ -1306,5 +1306,22 @@ int main() {
                     stop_transitions_probabilities,
                     SignalDuration::make(3));
 
+    //State don0 definition
+    auto don0_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto don0_probabilities_indices = vector<unsigned int> {state_indices["If0"], state_indices["Is0"]};
+    auto don0_indexed_transitions_probabilities = index_probabilities(don0_probabilities_indices, don0_probabilities);
+
+    print_probabilities(don0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr don0_transitions_probabilities
+            = DiscreteIIDModel::make(don0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr don0
+            = GHMM::State::make(
+                    state_indices["don0"],
+                    donor_model,
+                    don0_transitions_probabilities,
+                    SignalDuration::make(13));
+
     return 0;
 }
