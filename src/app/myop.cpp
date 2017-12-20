@@ -1356,5 +1356,60 @@ int main() {
                     donor_model,
                     don2_transitions_probabilities,
                     SignalDuration::make(13));
+
+    //State acc0 definition
+    auto acc0_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto acc0_probabilities_indices = vector<unsigned int> {state_indices["E00"], state_indices["E01"],
+                                                            state_indices["E02"], state_indices["ET0"]};
+    auto acc0_indexed_transitions_probabilities = index_probabilities(acc0_probabilities_indices, acc0_probabilities);
+
+    print_probabilities(acc0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr acc0_transitions_probabilities
+            = DiscreteIIDModel::make(acc0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr acc0
+            = GHMM::State::make(
+                    state_indices["acc0"],
+                    acceptor_model,
+                    acc0_transitions_probabilities,
+                    SignalDuration::make(42));
+
+    //State acc1 definition
+    auto acc1_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto acc1_probabilities_indices = vector<unsigned int> {state_indices["E10"], state_indices["E11"],
+                                                            state_indices["E12"], state_indices["ET1"]};
+    auto acc1_indexed_transitions_probabilities = index_probabilities(acc1_probabilities_indices, acc1_probabilities);
+
+    print_probabilities(acc1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr acc1_transitions_probabilities
+            = DiscreteIIDModel::make(acc1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr acc1
+            = GHMM::State::make(
+                    state_indices["acc1"],
+                    acceptor_model,
+                    acc1_transitions_probabilities,
+                    SignalDuration::make(42));
+
+    //State acc2 definition
+    auto acc2_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto acc2_probabilities_indices = vector<unsigned int> {state_indices["E20"], state_indices["E21"],
+                                                            state_indices["E22"], state_indices["ET2"]};
+    auto acc2_indexed_transitions_probabilities = index_probabilities(acc2_probabilities_indices, acc2_probabilities);
+
+    print_probabilities(acc2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr acc2_transitions_probabilities
+            = DiscreteIIDModel::make(acc2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr acc2
+            = GHMM::State::make(
+                    state_indices["acc2"],
+                    acceptor_model,
+                    acc2_transitions_probabilities,
+                    SignalDuration::make(42));
+
     return 0;
 }
