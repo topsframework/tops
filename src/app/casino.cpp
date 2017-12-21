@@ -709,6 +709,11 @@ std::vector<Probability> *cria_vetor_transicao(std::vector<unsigned int> vetor_i
    return retorno;
 }
 
+void connect(GHMM::StatePtr predecessor, GHMM::StatePtr successor){
+    predecessor->addSuccessor(successor->id());
+    successor->addPredecessor(predecessor->id());
+}
+
 int main() {
 	std::cerr << "|------------------------------------|" << std::endl;
 	std::cerr << "|                MYOP                |" << std::endl;
@@ -871,15 +876,10 @@ int main() {
        6); //cardinalidade do alfabeto de observacoes
 
   //GHMM graph conection
-  loaded_state->addSuccessor(0);
-  loaded_state->addSuccessor(1);
-  loaded_state->addPredecessor(0);
-  loaded_state->addPredecessor(1);
-
-  fair_state->addSuccessor(0);
-  fair_state->addSuccessor(1);
-  fair_state->addPredecessor(0);
-  fair_state->addPredecessor(1);
+  connect(loaded_state, loaded_state);
+  connect(loaded_state, fair_state);
+  connect(fair_state, fair_state);
+  connect(fair_state, loaded_state);
 
   Sequence observation {3, 0, 0, 0, 4, 1, 1, 0, 1, 4, 3, 4, 5, 3, 1, 5, 1, 3,
      5, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 3, 5, 2, 0, 1, 3, 0, 1,
