@@ -1411,5 +1411,59 @@ int main() {
                     acc2_transitions_probabilities,
                     SignalDuration::make(42));
 
+    //State rET0 definition
+    auto rET0_probabilities = vector<Probability>{{1}};
+    auto rET0_probabilities_indices = vector<unsigned int> {state_indices["racc0"]};
+    auto rET0_indexed_transitions_probabilities = index_probabilities(rET0_probabilities_indices, rET0_probabilities);
+
+    print_probabilities(rET0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rET0_transitions_probabilities
+            = DiscreteIIDModel::make(rET0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rET0
+            = GHMM::State::make(
+                    state_indices["rET0"],
+                    rcds_model,
+                    rET0_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 0, 2, 3)));
+
+    //State rET1 definition
+    auto rET1_probabilities = vector<Probability>{{1}};
+    auto rET1_probabilities_indices = vector<unsigned int> {state_indices["racc1"]};
+    auto rET1_indexed_transitions_probabilities = index_probabilities(rET1_probabilities_indices, rET1_probabilities);
+
+    print_probabilities(rET1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rET1_transitions_probabilities
+            = DiscreteIIDModel::make(rET1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rET1
+            = GHMM::State::make(
+                    state_indices["rET1"],
+                    rcds_model,
+                    rET1_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 1, 2, 3)));
+
+    //State rET2 definition
+    auto rET2_probabilities = vector<Probability>{{1}};
+    auto rET2_probabilities_indices = vector<unsigned int> {state_indices["racc2"]};
+    auto rET2_indexed_transitions_probabilities = index_probabilities(rET2_probabilities_indices, rET2_probabilities);
+
+    print_probabilities(rET2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rET2_transitions_probabilities
+            = DiscreteIIDModel::make(rET2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rET2
+            = GHMM::State::make(
+                    state_indices["rET2"],
+                    rcds_model,
+                    rET2_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_final_duration,
+                                                                                                 5, 2, 2, 3)));
+
     return 0;
 }
