@@ -1519,5 +1519,22 @@ int main() {
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_initial_duration,
                                                                                                  11, 0, 2, 3)));
 
+    //State rES definition
+    auto rES_probabilities = vector<Probability>{{1}};
+    auto rES_probabilities_indices = vector<unsigned int> {state_indices["rstart"]};
+    auto rES_indexed_transitions_probabilities = index_probabilities(rES_probabilities_indices, rES_probabilities);
+
+    print_probabilities(rES_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rES_transitions_probabilities
+            = DiscreteIIDModel::make(rES_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rES
+            = GHMM::State::make(
+                    state_indices["rES"],
+                    rcds_model,
+                    rES_transitions_probabilities,
+                    ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_single_duration,
+                                                                                                 4, 0, 2, 3)));
     return 0;
 }
