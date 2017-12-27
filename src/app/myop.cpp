@@ -1726,5 +1726,56 @@ int main() {
                     rstop_transitions_probabilities,
                     SignalDuration::make(3));
 
+    //State racc0 definition
+    auto racc0_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto racc0_probabilities_indices = vector<unsigned int> {state_indices["rIf0"], state_indices["rIs0"]};
+    auto racc0_indexed_transitions_probabilities = index_probabilities(racc0_probabilities_indices, racc0_probabilities);
+
+    print_probabilities(racc0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr racc0_transitions_probabilities
+            = DiscreteIIDModel::make(racc0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr racc0
+            = GHMM::State::make(
+                    state_indices["racc0"],
+                    racceptor_model,
+                    racc0_transitions_probabilities,
+                    SignalDuration::make(42));
+
+    //State racc1 definition
+    auto racc1_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto racc1_probabilities_indices = vector<unsigned int> {state_indices["rIf1"], state_indices["rIs1"]};
+    auto racc1_indexed_transitions_probabilities = index_probabilities(racc1_probabilities_indices, racc1_probabilities);
+
+    print_probabilities(racc1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr racc1_transitions_probabilities
+            = DiscreteIIDModel::make(racc1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr racc1
+            = GHMM::State::make(
+                    state_indices["racc1"],
+                    racceptor_model,
+                    racc1_transitions_probabilities,
+                    SignalDuration::make(42));
+
+    //State racc2 definition
+    auto racc2_probabilities = vector<Probability>{{0.144160536105428, 0.855839463894572}};
+    auto racc2_probabilities_indices = vector<unsigned int> {state_indices["rIf2"], state_indices["rIs2"]};
+    auto racc2_indexed_transitions_probabilities = index_probabilities(racc2_probabilities_indices, racc2_probabilities);
+
+    print_probabilities(racc2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr racc2_transitions_probabilities
+            = DiscreteIIDModel::make(racc2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr racc2
+            = GHMM::State::make(
+                    state_indices["racc2"],
+                    racceptor_model,
+                    racc2_transitions_probabilities,
+                    SignalDuration::make(42));
+
     return 0;
 }
