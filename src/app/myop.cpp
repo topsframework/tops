@@ -1692,5 +1692,39 @@ int main() {
                     rE22_transitions_probabilities,
                     ExplicitDuration::make(PhasedRunLengthDistribution::makeFromDiscreteIIDModel(exon_internal_duration,
                                                                                                  12, 0, 0, 3)));
+    //State rstart definition
+    auto rstart_probabilities = vector<Probability>{{1}};
+    auto rstart_probabilities_indices = vector<unsigned int> {state_indices["N"]};
+    auto rstart_indexed_transitions_probabilities = index_probabilities(rstart_probabilities_indices, rstart_probabilities);
+
+    print_probabilities(rstart_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rstart_transitions_probabilities
+            = DiscreteIIDModel::make(rstart_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rstart
+            = GHMM::State::make(
+                    state_indices["rstart"],
+                    rstart_model,
+                    rstart_transitions_probabilities,
+                    SignalDuration::make(27));
+
+    //State rstop definition
+    auto rstop_probabilities = vector<Probability>{{0.1, 0.3, 0.3, 0.3}};
+    auto rstop_probabilities_indices = vector<unsigned int> {state_indices["rES"], state_indices["rET0"], state_indices["rET1"], state_indices["rET2"]};
+    auto rstop_indexed_transitions_probabilities = index_probabilities(rstop_probabilities_indices, rstop_probabilities);
+
+    print_probabilities(rstop_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rstop_transitions_probabilities
+            = DiscreteIIDModel::make(rstop_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rstop
+            = GHMM::State::make(
+                    state_indices["rstop"],
+                    rstop_model,
+                    rstop_transitions_probabilities,
+                    SignalDuration::make(3));
+
     return 0;
 }
