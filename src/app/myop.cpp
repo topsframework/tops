@@ -1711,7 +1711,8 @@ int main() {
 
     //State rstop definition
     auto rstop_probabilities = vector<Probability>{{0.1, 0.3, 0.3, 0.3}};
-    auto rstop_probabilities_indices = vector<unsigned int> {state_indices["rES"], state_indices["rET0"], state_indices["rET1"], state_indices["rET2"]};
+    auto rstop_probabilities_indices = vector<unsigned int> {state_indices["rES"], state_indices["rET0"],
+                                                             state_indices["rET1"], state_indices["rET2"]};
     auto rstop_indexed_transitions_probabilities = index_probabilities(rstop_probabilities_indices, rstop_probabilities);
 
     print_probabilities(rstop_indexed_transitions_probabilities);
@@ -1776,6 +1777,60 @@ int main() {
                     racceptor_model,
                     racc2_transitions_probabilities,
                     SignalDuration::make(42));
+
+    //State rdon0 definition
+    auto rdon0_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto rdon0_probabilities_indices = vector<unsigned int> {state_indices["rE20"], state_indices["rE21"],
+                                                             state_indices["rE22"], state_indices["rEI2"]};
+    auto rdon0_indexed_transitions_probabilities = index_probabilities(rdon0_probabilities_indices, rdon0_probabilities);
+
+    print_probabilities(rdon0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rdon0_transitions_probabilities
+            = DiscreteIIDModel::make(rdon0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rdon0
+            = GHMM::State::make(
+                    state_indices["rdon0"],
+                    rdonor_model,
+                    rdon0_transitions_probabilities,
+                    SignalDuration::make(13));
+
+    //State rdon1 definition
+    auto rdon1_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto rdon1_probabilities_indices = vector<unsigned int> {state_indices["rE00"], state_indices["rE01"],
+                                                             state_indices["rE02"], state_indices["rEI0"]};
+    auto rdon1_indexed_transitions_probabilities = index_probabilities(rdon1_probabilities_indices, rdon1_probabilities);
+
+    print_probabilities(rdon1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rdon1_transitions_probabilities
+            = DiscreteIIDModel::make(rdon1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rdon1
+            = GHMM::State::make(
+                    state_indices["rdon1"],
+                    rdonor_model,
+                    rdon1_transitions_probabilities,
+                    SignalDuration::make(13));
+
+    //State rdon2 definition
+    auto rdon2_probabilities = vector<Probability>{{0.3, 0.3, 0.3, 0.1}};
+    auto rdon2_probabilities_indices = vector<unsigned int> {state_indices["rE10"], state_indices["rE11"],
+                                                             state_indices["rE12"], state_indices["rEI1"]};
+    auto rdon2_indexed_transitions_probabilities = index_probabilities(rdon2_probabilities_indices, rdon2_probabilities);
+
+    print_probabilities(rdon2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rdon2_transitions_probabilities
+            = DiscreteIIDModel::make(rdon2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rdon2
+            = GHMM::State::make(
+                    state_indices["rdon2"],
+                    rdonor_model,
+                    rdon2_transitions_probabilities,
+                    SignalDuration::make(13));
 
     return 0;
 }
