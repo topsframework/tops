@@ -1939,5 +1939,56 @@ int main() {
                     rIs2_transitions_probabilities,
                     ExplicitDuration::make(intron_short_duration));
 
+    //State rIf0 definition
+    auto rIf0_probabilities = vector<Probability>{{1}};
+    auto rIf0_probabilities_indices = vector<unsigned int> {state_indices["rI0"]};
+    auto rIf0_indexed_transitions_probabilities = index_probabilities(rIf0_probabilities_indices, rIf0_probabilities);
+
+    print_probabilities(rIf0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIf0_transitions_probabilities
+            = DiscreteIIDModel::make(rIf0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIf0
+            = GHMM::State::make(
+                    state_indices["rIf0"],
+                    non_coding_model,
+                    rIf0_transitions_probabilities,
+                    SignalDuration::make(584));
+
+    //State rIf1 definition
+    auto rIf1_probabilities = vector<Probability>{{1}};
+    auto rIf1_probabilities_indices = vector<unsigned int> {state_indices["rI1"]};
+    auto rIf1_indexed_transitions_probabilities = index_probabilities(rIf1_probabilities_indices, rIf1_probabilities);
+
+    print_probabilities(rIf1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIf1_transitions_probabilities
+            = DiscreteIIDModel::make(rIf1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIf1
+            = GHMM::State::make(
+                    state_indices["rIf1"],
+                    non_coding_model,
+                    rIf1_transitions_probabilities,
+                    SignalDuration::make(584));
+
+    //State rIf2 definition
+    auto rIf2_probabilities = vector<Probability>{{1}};
+    auto rIf2_probabilities_indices = vector<unsigned int> {state_indices["rI2"]};
+    auto rIf2_indexed_transitions_probabilities = index_probabilities(rIf2_probabilities_indices, rIf2_probabilities);
+
+    print_probabilities(rIf2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIf2_transitions_probabilities
+            = DiscreteIIDModel::make(rIf2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIf2
+            = GHMM::State::make(
+                    state_indices["rIf2"],
+                    non_coding_model,
+                    rIf2_transitions_probabilities,
+                    SignalDuration::make(584));
+
     return 0;
 }
