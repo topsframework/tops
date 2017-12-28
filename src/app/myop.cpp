@@ -1888,5 +1888,56 @@ int main() {
                     GeometricDuration::make(state_indices["rI2"],
                                             rI2_transitions_probabilities));
 
+    //State rIs0 definition
+    auto rIs0_probabilities = vector<Probability>{{1}};
+    auto rIs0_probabilities_indices = vector<unsigned int> {state_indices["rdon0"]};
+    auto rIs0_indexed_transitions_probabilities = index_probabilities(rIs0_probabilities_indices, rIs0_probabilities);
+
+    print_probabilities(rIs0_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIs0_transitions_probabilities
+            = DiscreteIIDModel::make(rIs0_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIs0
+            = GHMM::State::make(
+                    state_indices["rIs0"],
+                    non_coding_model,
+                    rIs0_transitions_probabilities,
+                    ExplicitDuration::make(intron_short_duration));
+
+    //State rIs1 definition
+    auto rIs1_probabilities = vector<Probability>{{1}};
+    auto rIs1_probabilities_indices = vector<unsigned int> {state_indices["rdon1"]};
+    auto rIs1_indexed_transitions_probabilities = index_probabilities(rIs1_probabilities_indices, rIs1_probabilities);
+
+    print_probabilities(rIs1_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIs1_transitions_probabilities
+            = DiscreteIIDModel::make(rIs1_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIs1
+            = GHMM::State::make(
+                    state_indices["rIs1"],
+                    non_coding_model,
+                    rIs1_transitions_probabilities,
+                    ExplicitDuration::make(intron_short_duration));
+
+    //State rIs2 definition
+    auto rIs2_probabilities = vector<Probability>{{1}};
+    auto rIs2_probabilities_indices = vector<unsigned int> {state_indices["rdon2"]};
+    auto rIs2_indexed_transitions_probabilities = index_probabilities(rIs2_probabilities_indices, rIs2_probabilities);
+
+    print_probabilities(rIs2_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr rIs2_transitions_probabilities
+            = DiscreteIIDModel::make(rIs2_indexed_transitions_probabilities);
+
+    GHMM::StatePtr rIs2
+            = GHMM::State::make(
+                    state_indices["rIs2"],
+                    non_coding_model,
+                    rIs2_transitions_probabilities,
+                    ExplicitDuration::make(intron_short_duration));
+
     return 0;
 }
