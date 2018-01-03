@@ -712,6 +712,11 @@ void print_probabilities(vector<Probability> probabilities ){
     cout << endl;
 }
 
+void connect_states(GHMM::StatePtr successor, GHMM::StatePtr predecessor) {
+    predecessor->addSuccessor(successor->id());
+    successor->addPredecessor(predecessor->id());
+}
+
 int main() {
     std::cerr << "|------------------------------------|" << std::endl;
     std::cerr << "|                MYOP                |" << std::endl;
@@ -2031,5 +2036,113 @@ int main() {
 
     auto myop_ghmm = GHMM::make(myop_ghmm_states, initial_probabilities_model, GHMM_STATE_SIZE, 4);
 
+    connect_states(don1, E00);
+    connect_states(don2, E01);
+    connect_states(don0, E02);
+    connect_states(don1, E10);
+    connect_states(don2, E11);
+    connect_states(don0, E12);
+    connect_states(don1, E20);
+    connect_states(don2, E21);
+    connect_states(don0, E22);
+    connect_states(don1, EI0);
+    connect_states(don2, EI1);
+    connect_states(don0, EI2);
+    connect_states(stop, ES);
+    connect_states(stop, ET0);
+    connect_states(stop, ET1);
+    connect_states(stop, ET2);
+    connect_states(F, F);
+    connect_states(I0, I0);
+    connect_states(acc0, I0);
+    connect_states(I1, I1);
+    connect_states(acc1, I1);
+    connect_states(I2, I2);
+    connect_states(acc2, I2);
+    connect_states(I0, If0);
+    connect_states(I1, If1);
+    connect_states(I2, If2);
+    connect_states(acc0, Is0);
+    connect_states(acc1, Is1);
+    connect_states(acc2, Is2);
+    connect_states(F, N);
+    connect_states(N, N);
+    connect_states(rstop, N);
+    connect_states(start, N);
+    connect_states(E00, acc0);
+    connect_states(E01, acc0);
+    connect_states(E02, acc0);
+    connect_states(ET0, acc0);
+    connect_states(E10, acc1);
+    connect_states(E11, acc1);
+    connect_states(E12, acc1);
+    connect_states(ET1, acc1);
+    connect_states(E20, acc2);
+    connect_states(E21, acc2);
+    connect_states(E22, acc2);
+    connect_states(ET2, acc2);
+    connect_states(If0, don0);
+    connect_states(Is0, don0);
+    connect_states(If1, don1);
+    connect_states(Is1, don1);
+    connect_states(If2, don2);
+    connect_states(Is2, don2);
+    connect_states(racc0, rE00);
+    connect_states(racc1, rE01);
+    connect_states(racc2, rE02);
+    connect_states(racc0, rE10);
+    connect_states(racc1, rE11);
+    connect_states(racc2, rE12);
+    connect_states(racc0, rE20);
+    connect_states(racc1, rE21);
+    connect_states(racc2, rE22);
+    connect_states(rstart, rEI0);
+    connect_states(rstart, rEI1);
+    connect_states(rstart, rEI2);
+    connect_states(rstart, rES);
+    connect_states(racc0, rET0);
+    connect_states(racc1, rET1);
+    connect_states(racc2, rET2);
+    connect_states(rI0, rI0);
+    connect_states(rdon0, rI0);
+    connect_states(rI1, rI1);
+    connect_states(rdon1, rI1);
+    connect_states(rI2, rI2);
+    connect_states(rdon2, rI2);
+    connect_states(rI0, rIf0);
+    connect_states(rI1, rIf1);
+    connect_states(rI2, rIf2);
+    connect_states(rdon0, rIs0);
+    connect_states(rdon1, rIs1);
+    connect_states(rdon2, rIs2);
+    connect_states(rIf0, racc0);
+    connect_states(rIs0, racc0);
+    connect_states(rIf1, racc1);
+    connect_states(rIs1, racc1);
+    connect_states(rIf2, racc2);
+    connect_states(rIs2, racc2);
+    connect_states(rE20, rdon0);
+    connect_states(rE21, rdon0);
+    connect_states(rE22, rdon0);
+    connect_states(rEI2, rdon0);
+    connect_states(rE00, rdon1);
+    connect_states(rE01, rdon1);
+    connect_states(rE02, rdon1);
+    connect_states(rEI0, rdon1);
+    connect_states(rE10, rdon2);
+    connect_states(rE11, rdon2);
+    connect_states(rE12, rdon2);
+    connect_states(rEI1, rdon2);
+    connect_states(N, rstart);
+    connect_states(rES, rstop);
+    connect_states(rET0, rstop);
+    connect_states(rET1, rstop);
+    connect_states(rET2, rstop);
+    connect_states(EI0, start);
+    connect_states(EI1, start);
+    connect_states(EI2, start);
+    connect_states(ES, start);
+    connect_states(N, stop);
+    
     return 0;
 }
