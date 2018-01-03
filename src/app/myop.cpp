@@ -1990,5 +1990,23 @@ int main() {
                     rIf2_transitions_probabilities,
                     SignalDuration::make(584));
 
+    //State F definition
+    auto F_probabilities = vector<Probability>{{1}};
+    auto F_probabilities_indices = vector<Id> {state_indices["F"]};
+    auto F_indexed_transitions_probabilities = index_probabilities(F_probabilities_indices, F_probabilities);
+
+    print_probabilities(F_indexed_transitions_probabilities);
+
+    DiscreteIIDModelPtr F_transitions_probabilities
+            = DiscreteIIDModel::make(F_indexed_transitions_probabilities);
+
+    GHMM::StatePtr F
+            = GHMM::State::make(
+                    state_indices["F"],
+                    non_coding_model,
+                    F_transitions_probabilities,
+                    GeometricDuration::make(state_indices["F"],
+                                            F_transitions_probabilities));
+
     return 0;
 }
