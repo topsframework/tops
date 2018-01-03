@@ -2008,5 +2008,28 @@ int main() {
                     GeometricDuration::make(state_indices["F"],
                                             F_transitions_probabilities));
 
+    vector<GHMM::StatePtr> myop_ghmm_states {
+            N, I0, I1, I2,
+            EI0, EI1, EI2, ES,  Is0,  If0,    Is1,  If1,   Is2,  If2,
+            ET0, ET1, ET2,   rIs0,  rIf0,   rIs1,  rIf1,  rIs2,  rIf2,
+            start,  stop,  acc0,  acc1,  acc2,  don0,  don1,  don2,
+            E00,  E01,  E02,  E10,  E11,  E12, E20,  E21,  E22,
+            rI0, rI1,  rI2,
+            rEI0, rEI1, rEI2, rES,
+            rET0, rET1, rET2,
+            rstart,  rstop,  racc0,  racc1,  racc2,  rdon0,  rdon1,  rdon2,
+            rE00,  rE01,  rE02,  rE10,  rE11,  rE12, rE20,  rE21,  rE22,  F
+    };
+
+    auto initial_probabilities = vector<Probability>{{1}};
+    auto initial_probabilities_indices = vector<Id> {state_indices["N"]};
+    auto initial_indexed_transitions_probabilities = index_probabilities(
+            initial_probabilities_indices, initial_probabilities);
+
+    auto initial_probabilities_model
+            = DiscreteIIDModel::make(initial_indexed_transitions_probabilities);
+
+    auto myop_ghmm = GHMM::make(myop_ghmm_states, initial_probabilities_model, GHMM_STATE_SIZE, 4);
+
     return 0;
 }
