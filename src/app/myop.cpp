@@ -71,6 +71,10 @@ using GHMM = GeneralizedHiddenMarkovModel;
 using Id = typename GHMM::State::Id;
 unsigned int GHMM_STATE_SIZE;
 
+////------ Dataset Folder ------ ////
+string DATASET = "dataset";
+//// ---------------------- ////
+
 class Alphabet {
 public:
     void addSymbol(std::string symbol) {
@@ -160,7 +164,7 @@ DiscreteIIDModelPtr trainDuration(std::string model_name, unsigned int max,
     );
 
     trainer->add_training_sequence(readSequence(
-            "dataset/" + model_name + "_duration/sequence.0.tsv",
+            DATASET + "/" + model_name + "_duration/sequence.0.tsv",
             { std::make_shared<IntegerAlphabet>() }
                                    )[0]
     );
@@ -177,11 +181,11 @@ ProbabilisticModelPtr trainNonCodingModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("DATASET/noncoding")) != NULL) {
+    if ((dir = opendir((DATASET + "/noncoding").c_str()))!= NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/noncoding/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/noncoding/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -203,11 +207,11 @@ ProbabilisticModelPtr trainRCDSModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/rcds")) != NULL) {
+    if ((dir = opendir((DATASET + "/rcds").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/rcds/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/rcds/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -229,11 +233,11 @@ ProbabilisticModelPtr trainCDSModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/cds")) != NULL) {
+    if ((dir = opendir((DATASET + "/cds").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/cds/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/cds/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -255,11 +259,11 @@ ProbabilisticModelPtr trainRStopModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/rstop")) != NULL) {
+    if ((dir = opendir((DATASET + "/rstop").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/rstop/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/rstop/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -280,11 +284,11 @@ ProbabilisticModelPtr trainStopModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/stop")) != NULL) {
+    if ((dir = opendir((DATASET + "/stop").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/stop/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/stop/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -305,11 +309,11 @@ ProbabilisticModelPtr trainRStartModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/rstart_initiation_motif")) != NULL) {
+    if ((dir = opendir((DATASET + "/rstart_initiation_motif").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/rstart_initiation_motif/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/rstart_initiation_motif/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -344,11 +348,11 @@ ProbabilisticModelPtr trainRStartModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/rstart_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/rstart_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/rstart_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/rstart_initial_pattern/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -372,11 +376,11 @@ ProbabilisticModelPtr trainStartModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/start_initiation_motif")) != NULL) {
+    if ((dir = opendir((DATASET + "/start_initiation_motif").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/start_initiation_motif/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/start_initiation_motif/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -411,11 +415,11 @@ ProbabilisticModelPtr trainStartModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/start_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/start_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/start_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/start_initial_pattern/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -439,11 +443,11 @@ ProbabilisticModelPtr trainRDonorModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/rdonor")) != NULL) {
+    if ((dir = opendir((DATASET + "/rdonor").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/rdonor/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/rdonor/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -460,11 +464,11 @@ ProbabilisticModelPtr trainRDonorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/rdonor_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/rdonor_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/rdonor_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/rdonor_initial_pattern/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -488,11 +492,11 @@ ProbabilisticModelPtr trainDonorModel(AlphabetPtr nucleotides) {
     DIR *dir;
     std::vector<double> weights;
     struct dirent *ent;
-    if ((dir = opendir("dataset/donor")) != NULL) {
+    if ((dir = opendir((DATASET + "/donor").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/donor/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/donor/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -509,11 +513,11 @@ ProbabilisticModelPtr trainDonorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/donor_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/donor_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/donor_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/donor_initial_pattern/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -537,11 +541,11 @@ ProbabilisticModelPtr trainRAcceptorModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/racceptor_branch")) != NULL) {
+    if ((dir = opendir((DATASET + "/racceptor_branch").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/racceptor_branch/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/racceptor_branch/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -558,11 +562,11 @@ ProbabilisticModelPtr trainRAcceptorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/racceptor")) != NULL) {
+    if ((dir = opendir((DATASET + "/racceptor").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/racceptor/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/racceptor/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -579,11 +583,11 @@ ProbabilisticModelPtr trainRAcceptorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset3;
     std::vector<double> weights3;
-    if ((dir = opendir("dataset/racceptor_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/racceptor_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset3.push_back(readSequence("dataset/racceptor_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset3.push_back(readSequence(DATASET + "/racceptor_initial_pattern/" + filename, {nucleotides})[0]);
                 weights3.push_back(1.0);
             }
         }
@@ -608,11 +612,11 @@ ProbabilisticModelPtr trainAcceptorModel(AlphabetPtr nucleotides) {
     std::vector<double> weights;
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("dataset/acceptor_branch")) != NULL) {
+    if ((dir = opendir((DATASET + "/acceptor_branch").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset.push_back(readSequence("dataset/acceptor_branch/" + filename, {nucleotides})[0]);
+                dataset.push_back(readSequence(DATASET + "/acceptor_branch/" + filename, {nucleotides})[0]);
                 weights.push_back(1.0);
             }
         }
@@ -629,11 +633,11 @@ ProbabilisticModelPtr trainAcceptorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset2;
     std::vector<double> weights2;
-    if ((dir = opendir("dataset/acceptor")) != NULL) {
+    if ((dir = opendir((DATASET + "/acceptor").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset2.push_back(readSequence("dataset/acceptor/" + filename, {nucleotides})[0]);
+                dataset2.push_back(readSequence(DATASET + "/acceptor/" + filename, {nucleotides})[0]);
                 weights2.push_back(1.0);
             }
         }
@@ -650,11 +654,11 @@ ProbabilisticModelPtr trainAcceptorModel(AlphabetPtr nucleotides) {
 
     std::vector<Sequence> dataset3;
     std::vector<double> weights3;
-    if ((dir = opendir("dataset/acceptor_initial_pattern")) != NULL) {
+    if ((dir = opendir((DATASET + "/acceptor_initial_pattern").c_str())) != NULL) {
         while ((ent = readdir(dir)) != NULL) {
             auto filename = std::string(ent->d_name);
             if (filename.size() > 4 && filename.substr(filename.size() - 4, filename.size()) == ".tsv") {
-                dataset3.push_back(readSequence("dataset/acceptor_initial_pattern/" + filename, {nucleotides})[0]);
+                dataset3.push_back(readSequence(DATASET + "/acceptor_initial_pattern/" + filename, {nucleotides})[0]);
                 weights3.push_back(1.0);
             }
         }
@@ -2143,6 +2147,6 @@ int main() {
     connect_states(EI2, start);
     connect_states(ES, start);
     connect_states(N, stop);
-    
+
     return 0;
 }
