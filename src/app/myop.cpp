@@ -721,7 +721,12 @@ void connect_states(GHMM::StatePtr successor, GHMM::StatePtr predecessor) {
     successor->addPredecessor(predecessor->id());
 }
 
-int main() {
+int main(int argc, char *argsv[]) {
+
+    if(argc >= 2){
+        DATASET = argsv[1];
+    }
+
     std::cerr << "|------------------------------------|" << std::endl;
     std::cerr << "|                MYOP                |" << std::endl;
     std::cerr << "|------------------------------------|" << std::endl;
