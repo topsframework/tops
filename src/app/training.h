@@ -142,23 +142,6 @@ std::vector<std::vector<Symbol>> readSequence(std::string filename, std::vector<
     return sequence;
 }
 
-void generateDistributionChart(DiscreteIIDModelPtr iid, unsigned int start,
-                               unsigned int end, std::string name) {
-    std::stringstream y, x;
-    y << "var " << name << "_duration_y = " << "[";
-    x << "var " << name << "_duration_x = " << "[";
-    for (auto i = start; i < end; i++) {
-        y << iid->probabilityOf(i) << ",";
-        x << i << ",";
-    }
-    y << "];" << std::endl;
-    x << "];" << std::endl;
-
-    std::ofstream f;
-    f.open("output/" + name + "_duration.js");
-    f << x.str() << y.str();
-}
-
 DiscreteIIDModelPtr trainDuration(std::string model_name, unsigned int max,
                                   unsigned int m, double slope) {
     auto trainer = DiscreteIIDModel::standardTrainer(
@@ -173,8 +156,6 @@ DiscreteIIDModelPtr trainDuration(std::string model_name, unsigned int max,
     );
 
     auto model = trainer->train();
-
-    generateDistributionChart(model, 0, max, model_name);
 
     return model;
 }
@@ -678,27 +659,6 @@ ProbabilisticModelPtr trainAcceptorModel(AlphabetPtr nucleotides) {
 
     return MultipleSequentialModel::make(std::vector<ProbabilisticModelPtr>{
             branch, acceptor, initial_pattern}, std::vector<int>{32, 6, 4});
-}
-
-void generate_chart(ProbabilisticModelPtr model, std::string name,
-                    Sequence sequence, unsigned int window_size = 1,
-                    unsigned int start_phase = 0) {
-
-    auto evaluator = model->standardEvaluator(sequence);
-
-    std::stringstream y, x;
-    y << "var " << name << "_y = " << "[";
-    x << "var " << name << "_x = " << "[";
-    for (auto i = 0u; i < sequence.size() - window_size + 1; i++) {
-        y << evaluator->evaluateSequence(i, i + window_size, start_phase) << ",";
-        x << i << ",";
-    }
-    y << "];" << std::endl;
-    x << "];" << std::endl;
-
-    std::ofstream f;
-    f.open("output/" + name + ".js");
-    f << x.str() << y.str();
 }
 
 #endif //TOPS_TRAINING_H
