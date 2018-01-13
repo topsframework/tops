@@ -1,7 +1,3 @@
-//
-// Created by bruno on 12/01/18.
-//
-
 #ifndef TOPS_TRAINING_H
 #define TOPS_TRAINING_H
 #include <iostream>
