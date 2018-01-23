@@ -24,6 +24,8 @@
 #include <string>
 
 // Internal headers
+#include "model/Sequence.hpp"
+
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
 namespace tops {
@@ -33,6 +35,9 @@ class Myop {
  public:
   // Constructors
   Myop(std::string dataset);
+
+  // Concrete methods
+  model::Sequence predict(const model::Sequence& observation);
 
  private:
   // Static variables

@@ -4,6 +4,7 @@
 
 // Internal headers
 #include "app/Myop.hpp"
+#include "app/states.hpp"
 
 int main(int argc, char *argv[]) {
   std::string dataset = "dataset";
@@ -13,6 +14,12 @@ int main(int argc, char *argv[]) {
   }
 
   tops::app::Myop myop(dataset);
+
+  auto prediction = myop.predict({ 1, 1, 1, 1, 0, 1, 1, 0, 1 });
+
+  for (auto symbol : prediction)
+    std::cout << tops::app::state_names[symbol] << " ";
+  std::cout << std::endl;
 
   return 0;
 }
