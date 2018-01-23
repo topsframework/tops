@@ -19,9 +19,16 @@
 
 // Interface header
 #include "app/Myop.hpp"
+#include <iostream>
 
 // Internal headers
 #include "app/states.hpp"
+
+#include "model/Sequence.hpp"
+#include "model/Labeling.hpp"
+#include "model/Estimation.hpp"
+
+#include "model/Labeler.hpp"
 
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
@@ -321,6 +328,16 @@ Myop::Myop(std::string dataset) {
 
   _ghmm = GHMM::make(states, initial_model,
                      states.size(), Myop::alphabetSize);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+model::Sequence Myop::predict(const model::Sequence& observation) {
+  auto labeler = _ghmm->labeler(observation, true);
+  auto estimation = labeler->labeling(model::Labeler::method::bestPath);
+  return estimation.estimated().label();
 }
 
 /*----------------------------------------------------------------------------*/
