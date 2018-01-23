@@ -59,15 +59,10 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
     Sequence fixed_sequence,
     unsigned int fixed_sequence_position,
     std::vector<double> weights) {
-
   auto& sample_set = trainer->training_set();
 
+  std::vector<VariableLengthMarkovChainPtr> positional_distribution(length);
 
-
-
-
-  std::vector<VariableLengthMarkovChainPtr> positional_distribution;
-  positional_distribution.resize(length);
   bool fixseq = false;
   Sequence fixed;
   int fixed_pos = 0;
@@ -77,28 +72,28 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
     fixseq = true;
   }
 
-  for(auto i = 0u; i < length; i++) {
+  for (auto i = 0u; i < length; i++) {
     std::vector<Sequence> positionalSample;
     std::vector<double> w;
     auto o = i;
     if (o > order)
       o = order;
-    for(auto j = 0u; j < sample_set.size(); j++) {
-      for(int k = -vicinity; k <= static_cast<int>(vicinity); k++) {
+    for (auto j = 0u; j < sample_set.size(); j++) {
+      for (int k = -vicinity; k <= static_cast<int>(vicinity); k++) {
         Sequence s;
         s.resize(o+1);
         unsigned int l = 0;
         int m = i - o + k + offset;
-        if(m < 0)
+        if (m < 0)
           continue;
-        if((m + o) >= sample_set[j].size())
+        if ((m + o) >= sample_set[j].size())
           continue;
-        if(fixseq) {
+        if (fixseq) {
           while((m < static_cast<int>(sample_set[j].size())) && (l <= o)) {
             s[l] = sample_set[j][m];
-            if(fixseq && (fixed_pos <= (m-k)) && ( (m-k) <= static_cast<int>(fixed_pos + fixed.size()-1))) {
+            if (fixseq && (fixed_pos <= (m-k)) && ( (m-k) <= static_cast<int>(fixed_pos + fixed.size()-1))) {
               int p = m - fixed_pos - k;
-              if((p >= 0) && (p < static_cast<int>(fixed.size())))
+              if ((p >= 0) && (p < static_cast<int>(fixed.size())))
                 s[l] = fixed[p];
             }
             l++;
@@ -116,7 +111,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
       }
     }
 
-    if(fixseq && (fixed_pos <= static_cast<int>(i)) && (static_cast<unsigned long>(i) <= (fixed_pos + fixed.size() - 1))){
+    if (fixseq && (fixed_pos <= static_cast<int>(i)) && (static_cast<unsigned long>(i) <= (fixed_pos + fixed.size() - 1))){
       ContextTreePtr tree = ContextTree::make(alphabet_size);
       tree->initializeCounter(positionalSample, o, pseudo_counts, w);
       tree->normalize();
@@ -169,17 +164,13 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
-                                               unsigned int /*phase*/) {
+                                               unsigned int /* phase */) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  prefix_sum_array.resize(_vlmcs.size());
-  for (auto k = 0u; k < _vlmcs.size(); k++) {
-    prefix_sum_array[k].resize(evaluator->sequence().size() + 1);
-    prefix_sum_array[k][0] = 1.0;
-    for (auto i = 0u; i < evaluator->sequence().size(); i++) {
-      auto phase = (i + k) % _vlmcs.size();
-      prefix_sum_array[k][i + 1] = prefix_sum_array[k][i] * evaluator->evaluateSymbol(i, phase);
-    }
-  }
+  prefix_sum_array.resize(evaluator->sequence().size());
+
+  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
+    prefix_sum_array[i] = evaluateSequence(
+        SEPtr<Standard>(evaluator), i, evaluator->sequence().size(), 0);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -197,20 +188,14 @@ InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 Probability InhomogeneousMarkovChain::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
-  if ((end - begin) > _vlmcs.size())
-    return 0.0;
-
+    unsigned int /* end */,
+    unsigned int /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
 
-  auto p = begin % _vlmcs.size();
-  auto k = 0u;
-  while (((p + k) % _vlmcs.size()) != phase)
-    k++;
-  p = k;
+  if (begin < prefix_sum_array.size())
+    return prefix_sum_array[begin];
 
-  return prefix_sum_array[p][end] / prefix_sum_array[p][begin];
+  throw_exception(OutOfRange);
 }
 
 /*===============================  GENERATOR  ================================*/
