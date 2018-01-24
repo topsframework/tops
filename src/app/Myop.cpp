@@ -58,6 +58,13 @@ const std::size_t Myop::alphabetSize = 4;
 Myop::Myop(std::string dataset) {
   tops::app::initialize_globals(dataset);
 
+  std::cerr << "##############################################" << std::endl;
+  std::cerr << "##                  STATES                  ##" << std::endl;
+  std::cerr << "##############################################" << std::endl;
+  std::cerr << std::endl;
+
+  std::cerr << "Making states ..." << std::flush;
+
   /*--------------------------------------------------------------------------*/
   /*                               BOTH STRANDS                               */
   /*--------------------------------------------------------------------------*/
@@ -176,7 +183,9 @@ Myop::Myop(std::string dataset) {
 
   // Start
   auto rstart = tops::app::make_state_rstart();
+  std::cerr << " OK" << std::endl;
 
+  std::cerr << "Making GHMM ..." << std::flush;
   /*--------------------------------------------------------------------------*/
   /*                                   GHMM                                   */
   /*--------------------------------------------------------------------------*/
@@ -324,10 +333,11 @@ Myop::Myop(std::string dataset) {
   connect_states(N, stop);
 
   auto initial_model = IID::make(
-      tops::app::index_probabilities({ 1 }, { tops::app::state_indices["N"] }));
+      tops::app::index_probabilities({ tops::app::state_indices["N"] }, { 1 }));
 
   _ghmm = GHMM::make(states, initial_model,
                      states.size(), Myop::alphabetSize);
+  std::cerr << " OK" << std::endl;
 }
 
 /*----------------------------------------------------------------------------*/

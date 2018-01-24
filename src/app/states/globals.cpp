@@ -20,6 +20,9 @@
 // Interface header
 #include "app/states.hpp"
 
+// Standard headers
+#include <iostream>
+
 // Internal headers
 #include "app/training.hpp"
 
@@ -125,36 +128,57 @@ void initialize_globals(const std::string& dataset) {
 			state_indices.emplace(state_names[index], index);
 	}
 
+	std::cerr << "##############################################" << std::endl;
+	std::cerr << "##                 TRAINING                 ##" << std::endl;
+	std::cerr << "##############################################" << std::endl;
+	std::cerr << std::endl;
+
 	// Both
+	std::cerr << "Training NonCoding models..." << std::flush;
 	non_coding_model = trainNonCodingModel(nucleotides);
+	std::cerr << " OK" << std::endl;
 
 	// Start
+	std::cerr << "Training Start models..." << std::flush;
 	start_model = trainStartModel(nucleotides);
 	rstart_model = trainRStartModel(nucleotides);
+	std::cerr << " OK" << std::endl;
 
 	// Exons
+	std::cerr << "Training CDS models..." << std::flush;
 	cds_model = trainCDSModel(nucleotides);
 	rcds_model = trainRCDSModel(nucleotides);
+	std::cerr << " OK" << std::endl;
 
+	std::cerr << "Training Exon durations..." << std::flush;
 	exon_single_duration = trainDuration("exon_single", 15000, 10, 0.2);
 	exon_initial_duration = trainDuration("exon_initial", 15000, 10, 0.2);
 	exon_internal_duration = trainDuration("exon_internal", 15000, 10, 0.2);
 	exon_terminal_duration = trainDuration("exon_final", 15000, 10, 0.2);
+	std::cerr << " OK" << std::endl;
 
 	// Donors
+	std::cerr << "Training Donor models..." << std::flush;
 	donor_model = trainDonorModel(nucleotides);
 	rdonor_model = trainRDonorModel(nucleotides);
+	std::cerr << " OK" << std::endl;
 
 	// Intron
+	std::cerr << "Training Short duration..." << std::flush;
 	short_duration = trainDuration("intron_short", 585, 2, 0.4);
+	std::cerr << " OK" << std::endl;
 
 	// Acceptors
+	std::cerr << "Training Acceptor models..." << std::flush;
 	acceptor_model = trainAcceptorModel(nucleotides);
 	racceptor_model = trainRAcceptorModel(nucleotides);
+	std::cerr << " OK" << std::endl;
 
 	// Stop
+	std::cerr << "Training Stop models..." << std::flush;
 	stop_model = trainStopModel(nucleotides);
 	rstop_model = trainRStopModel(nucleotides);
+	std::cerr << " OK" << std::endl << std::endl;
 }
 
 /*----------------------------------------------------------------------------*/
