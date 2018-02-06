@@ -17,44 +17,22 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_STATE_
-#define TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_STATE_
+#ifndef TOPS_HELPER_GENERALIZED_HIDDEN_MARKOV_MODEL_
+#define TOPS_HELPER_GENERALIZED_HIDDEN_MARKOV_MODEL_
 
-// Standard headers
-#include <memory>
-#include <vector>
+// Tested header
+#include "model/GeneralizedHiddenMarkovModel.hpp"
 
 namespace tops {
-namespace model {
+namespace helper {
 
-// Forward declarations
-class ProbabilisticModel;
-using Model = ProbabilisticModel;
+tops::model::GeneralizedHiddenMarkovModelPtr
+  createDishonestCoinCasinoGHMM();
 
-class DiscreteIIDModel;
-using IID = DiscreteIIDModel;
+tops::model::GeneralizedHiddenMarkovModelPtr
+  createUntrainedDishonestCoinCasinoGHMM();
 
-class GeneralizedHiddenMarkovModel;
-using GHMM = GeneralizedHiddenMarkovModel;
-
-template<typename Model> struct StateTraits;
-template<typename EmissionModel, typename TransitionModel> class State;
-template<typename EmissionModel, typename TransitionModel,
-         std::size_t dimension, bool... gaps> class SimpleState;
-
-/**
- * @typedef StateTraits
- * @brief GeneralizedHiddenMarkovModel specialization of StateTraits
- */
-template<>
-struct StateTraits<GeneralizedHiddenMarkovModel> {
-  using State = tops::model::State<Model, IID>;
-
-  using MatchState = SimpleState<Model, IID, 1, false>;
-  using SilentState = SimpleState<Model, IID, 1, true>;
-};
-
-}  // namespace model
+}  // namespace helper
 }  // namespace tops
 
-#endif  // TOPS_MODEL_GENERALIZED_HIDDEN_MARKOV_MODEL_STATE_
+#endif  // TOPS_HELPER_GENERALIZED_HIDDEN_MARKOV_MODEL_

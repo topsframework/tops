@@ -21,28 +21,25 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <iomanip>
 
 // External headers
 #include "gmock/gmock.h"
 
 // ToPS headers
 #include "model/Util.hpp"
-#include "model/Matrix.hpp"
 #include "model/Sequence.hpp"
 #include "model/Probability.hpp"
-#include "model/SignalDuration.hpp"
-#include "model/ExplicitDuration.hpp"
-#include "model/GeometricDuration.hpp"
+#include "model/RandomNumberGeneratorAdapter.hpp"
 
 #include "exception/NotYetImplemented.hpp"
 
 #include "helper/Sequence.hpp"
 #include "helper/SExprTranslator.hpp"
-#include "helper/DiscreteIIDModel.hpp"
-#include "helper/VariableLengthMarkovChain.hpp"
 
 // Tested header
 #include "model/GeneralizedHiddenMarkovModel.hpp"
+#include "helper/GeneralizedHiddenMarkovModel.hpp"
 
 // Macros
 #define DOUBLE(X) static_cast<double>(X)
@@ -56,276 +53,144 @@ using ::testing::DoubleEq;
 using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
-using tops::model::Matrix;
-using tops::model::Labeler;
-using tops::model::log_sum;
-using tops::model::Labeling;
 using tops::model::Sequence;
-using tops::model::Calculator;
-using tops::model::Probability;
-using tops::model::SignalDuration;
-using tops::model::DiscreteIIDModel;
-using tops::model::ExplicitDuration;
-using tops::model::GeometricDuration;
-using tops::model::DiscreteIIDModelPtr;
-using tops::model::VariableLengthMarkovChain;
+using tops::model::Sequences;
 using tops::model::GeneralizedHiddenMarkovModel;
-using tops::model::VariableLengthMarkovChainPtr;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
+using tops::model::RandomNumberGeneratorAdapter;
 
 using tops::exception::NotYetImplemented;
 
-using tops::helper::createVLMCMC;
-using tops::helper::createMachlerVLMC;
-using tops::helper::createFairCoinIIDModel;
-using tops::helper::generateAllCombinationsOfSymbols;
-
-using tops::helper::SExprTranslator;
-
-/*----------------------------------------------------------------------------*/
-/*                                  ALIASES                                   */
-/*----------------------------------------------------------------------------*/
-
-using GHMM = GeneralizedHiddenMarkovModel;
+using tops::helper::createDishonestCoinCasinoGHMM;
+using tops::helper::createUntrainedDishonestCoinCasinoGHMM;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
 /*----------------------------------------------------------------------------*/
 
-class AGHMM : public testing::Test {
+class AGeneralizedHiddenMarkovModel : public testing::Test {
  protected:
-  DiscreteIIDModelPtr geometric_transition
-    = DiscreteIIDModel::make(std::vector<Probability>{{ 0.3, 0.3, 0.4 }});
-
-  DiscreteIIDModelPtr signal_transition
-    = DiscreteIIDModel::make(std::vector<Probability>{{ 0.1, 0.0, 0.9 }});
-
-  DiscreteIIDModelPtr explicit_transition
-    = DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }});
-
-  DiscreteIIDModelPtr explicit_duration
-    = DiscreteIIDModel::make(
-        std::vector<Probability>{{ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.1 }});
-
-  std::vector<GHMM::StatePtr> states {
-    GHMM::State::make( // Geometric duration state
-      /* id         */ 0,
-      /* emission   */ createMachlerVLMC(),
-      /* transition */ geometric_transition,
-      /* duration   */ GeometricDuration::make(0, geometric_transition)),
-
-    GHMM::State::make( // Signal duration state
-      /* id         */ 1,
-      /* emission   */ createVLMCMC(),
-      /* transition */ signal_transition,
-      /* duration   */ SignalDuration::make(3)),
-
-    GHMM::State::make( // Explicit duration state
-      /* id         */ 2,
-      /* emission   */ createFairCoinIIDModel(),
-      /* transition */ explicit_transition,
-      /* duration   */ ExplicitDuration::make(explicit_duration)),
-  };
-
-  DiscreteIIDModelPtr initial_probabilities
-    = DiscreteIIDModel::make(std::vector<Probability>{{ 1.0, 0.0, 0.0 }});
-
-  GeneralizedHiddenMarkovModelPtr ghmm
-    = GeneralizedHiddenMarkovModel::make(states, initial_probabilities, 3, 2);
-
-  virtual void SetUp() {
-    //  .-.
-    //  | v
-    //  (0) <--> (2)
-    //   ^        ^
-    //    `.    .´
-    //      v .´
-    //      (1)
-    //
-    // Graph of states
-
-    states[0]->addSuccessor(0);
-    states[0]->addSuccessor(1);
-    states[0]->addSuccessor(2);
-    states[0]->addPredecessor(0);
-    states[0]->addPredecessor(1);
-    states[0]->addPredecessor(2);
-
-    states[1]->addSuccessor(0);
-    states[1]->addSuccessor(2);
-    states[1]->addPredecessor(0);
-
-    states[2]->addSuccessor(0);
-    states[2]->addPredecessor(0);
-    states[2]->addPredecessor(1);
-  }
+  GeneralizedHiddenMarkovModelPtr ghmm = createDishonestCoinCasinoGHMM();
 };
 
 /*----------------------------------------------------------------------------*/
 /*                             TESTS WITH FIXTURE                             */
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AGHMM, ShouldBeSExprSerialized) {
-  auto translator = SExprTranslator::make();
-  auto serializer = ghmm->serializer(translator);
-  serializer->serialize();
-  ASSERT_EQ(
-    "(GeneralizedHiddenMarkovModel: "
-      "(GHMM::State: "
-        " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: 0.300000 0.300000 0.400000) "
-        "(GeometricDuration: maximumDuration = 1)) "
-      "(GHMM::State: "
-        " " /* VLMC serializarion not implemented */
-        "(DiscreteIIDModel: 0.100000 0.000000 0.900000) "
-        "(SignalDuration: maximumDuration = 3)) "
-      "(GHMM::State: "
-        "(DiscreteIIDModel: 0.500000 0.500000) "
-        "(DiscreteIIDModel: 1.000000 0.000000 0.000000) "
-        "(ExplicitDuration: maximumDuration = 0)))",
-    translator->sexpr());
+TEST_F(AGeneralizedHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
+  };
+
+  for (const auto& test : tests) {
+    auto [ prob_f, alphas ] = ghmm->forward(test);
+    auto [ prob_b, betas ] = ghmm->backward(test);
+
+    ASSERT_THAT(DOUBLE(prob_f), DoubleNear(DOUBLE(prob_b), 1e-7));
+  }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AGHMM, ShouldEvaluateASequence) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-  Sequence label {
-    0, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0};
+TEST_F(AGeneralizedHiddenMarkovModel, FindsTheBestPath) {
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
+  };
 
-  auto evaluator
-    = ghmm->labelingEvaluator(Labeling<Sequence>{observation, {}, label});
+  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn> expected = {
+    { 0.0225     , {0, 1, 3}                , tests[0], {} },
+    { 0.036      , {0, 2, 3}                , tests[1], {} },
+    { 0.00275625 , {0, 1, 1, 1, 3}          , tests[2], {} },
+    { 0.00198263 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
+  };
 
-  ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(0, 21)),
-              DoubleNear(6.29856e-20, 1e-4));
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = ghmm->viterbi(tests[t]);
+
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-7));
+  }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSequence) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+TEST_F(AGeneralizedHiddenMarkovModel, DecodesASequenceOfObservations) {
+  std::vector<Sequences> tests = {
+    {{0}},
+    {{1}},
+    {{0, 0, 0}},
+    {{1, 1, 1, 1, 1, 1}},
+  };
 
-  auto evaluator = ghmm->standardEvaluator(observation, true);
+  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn> expected = {
+    { 0.714286 , {0, 1, 3}                , tests[0], {} },
+    { 0.615385 , {0, 2, 3}                , tests[1], {} },
+    { 0.604329 , {0, 1, 1, 1, 3}          , tests[2], {} },
+    { 0.196082 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
+  };
 
-  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
+  for (unsigned int t = 0; t < tests.size(); t++) {
+    auto [ estimation, label, alignment, _ ] = ghmm->posteriorDecoding(tests[t]);
 
-  evaluator = ghmm->standardEvaluator(observation);
-
-  ASSERT_THROW(evaluator->evaluateSequence(0, 0), NotYetImplemented);
+    EXPECT_THAT(label, Eq(expected[t].label));
+    EXPECT_THAT(alignment, Eq(expected[t].alignment));
+    EXPECT_THAT(DOUBLE(estimation),
+        DoubleNear(DOUBLE(expected[t].estimation), 1e-6));
+  }
 }
 
 /*----------------------------------------------------------------------------*/
 
-TEST_F(AGHMM, ShouldThrowAnNotYetImplementedInEvaluateSymbol) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+TEST_F(AGeneralizedHiddenMarkovModel, DISABLED_ShouldDrawLabeledSequenceWithDefaultSeed) {
+  std::vector<std::size_t> tests = {
+    0, 1, 2, 3, 4, 5
+  };
 
-  auto evaluator = ghmm->standardEvaluator(observation, true);
+  std::vector<GeneralizedHiddenMarkovModel::GeneratorReturn<Sequence>> expected = {
+    { { 0, 3                }, { {               } } },
+    { { 0, 1, 3             }, { { 1             } } },
+    { { 0, 1, 1, 3          }, { { 1, 1          } } },
+    { { 0, 2, 1, 1, 3       }, { { 1, 1, 0       } } },
+    { { 0, 1, 2, 2, 2, 3    }, { { 1, 1, 1, 1    } } },
+    { { 0, 1, 1, 1, 2, 2, 3 }, { { 1, 0, 0, 1, 0 } } },
+  };
 
-  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
+  auto rng = RandomNumberGeneratorAdapter<std::mt19937>::make();
 
-  evaluator = ghmm->standardEvaluator(observation);
+  for (unsigned int i = 0; i < tests.size(); i++) {
+    auto [ label, alignment ] = ghmm->drawSequence(rng, tests[i]);
 
-  ASSERT_THROW(evaluator->evaluateSymbol(0), NotYetImplemented);
+    EXPECT_THAT(label, ContainerEq(expected[i].label));
+    EXPECT_THAT(alignment, ContainerEq(expected[i].alignment));
+  }
+
+  // for (auto size : { 4, 5, 6 }) {
+  //   for (unsigned int i = 0; i < 32; i++) {
+  //     auto [ label, alignment ] = ghmm->drawSequence(rng, size);
+  //     std::cerr << "    { ";
+  //
+  //     std::cerr << "{ { ";
+  //     for (auto l : alignment[0])
+  //       std::cerr << l << ", ";
+  //     std::cerr << "} }, ";
+  //
+  //     std::cerr << "{ ";
+  //     for (auto l : label)
+  //       std::cerr << l << ", ";
+  //     std::cerr << "}";
+  //
+  //     std::cerr << " },";
+  //     std::cerr << std::endl;
+  //   }
+  //   std::cerr << std::endl;
+  // }
 }
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithoutCache) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label {
-    0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };
-
-  // TODO(igorbonadio): check if it is correct
-
-  auto labeler = ghmm->labeler(observation);
-  auto estimation = labeler->labeling(Labeler::method::bestPath);
-  auto labeling = estimation.estimated();
-
-  ASSERT_THAT(labeling.label, ContainerEq(label));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldFindBestPathUsingViterbiDecodingWithCache) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label {
-    0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 1, 1 };
-
-  // TODO(igorbonadio): check if it is correct
-
-  auto labeler = ghmm->labeler(observation, true);
-  auto estimation = labeler->labeling(Labeler::method::bestPath);
-  auto labeling = estimation.estimated();
-
-  ASSERT_THAT(labeling.label, ContainerEq(label));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithoutCache) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label {
-    0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };
-
-  // TODO(igorbonadio): check if it is correct
-
-  auto labeler = ghmm->labeler(observation);
-  auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
-  auto labeling = estimation.estimated();
-
-  ASSERT_THAT(labeling.label, ContainerEq(label));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldFindBestPathUsingPosteriorDecodingWithCache) {
-  Sequence observation {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-  Sequence label {
-    0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 1 };
-
-  // TODO(igorbonadio): check if it is correct
-
-  auto labeler = ghmm->labeler(observation, true);
-  auto estimation = labeler->labeling(Labeler::method::posteriorDecoding);
-  auto labeling = estimation.estimated();
-
-  ASSERT_THAT(labeling.label, ContainerEq(label));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM, ShouldReturnTheSameValueForTheForwardAndBackwardAlgorithms) {
-  Matrix alpha, beta;
-  Sequence sequence {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-
-  auto calculator = ghmm->calculator(sequence);
-
-  ASSERT_THAT(
-    DOUBLE(calculator->calculate(Calculator::direction::forward)),
-    DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
-}
-
-/*----------------------------------------------------------------------------*/
-
-TEST_F(AGHMM,
-    ReturnsTheSameValueForTheForwardAndBackwardAlgorithmsWithCache) {
-  Matrix alpha, beta;
-  Sequence sequence {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-
-  auto calculator = ghmm->calculator(sequence, true);
-
-  ASSERT_THAT(
-    DOUBLE(calculator->calculate(Calculator::direction::forward)),
-    DoubleNear(calculator->calculate(Calculator::direction::backward), 1e-4));
-}
-
 /*----------------------------------------------------------------------------*/
