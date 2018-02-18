@@ -21,10 +21,8 @@
 #include "model/HiddenMarkovModel.hpp"
 
 // Standard headers
+#include <limits>
 #include <utility>
-#include <iomanip>
-#include <utility>
-#include <iostream>
 
 // Internal headers
 #include "model/Util.hpp"
@@ -32,7 +30,7 @@
 #include "exception/NotYetImplemented.hpp"
 
 // Macros
-#define UNUSED(var) do { (void) sizeof(var); } while(false)
+#define UNUSED(var) do { (void) sizeof(var); } while (false)
 
 namespace tops {
 namespace model {
@@ -304,21 +302,22 @@ HiddenMarkovModel::viterbi(const Sequences& sequences) const {
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
+      auto k = state->id();
+
       if (!state->hasGap(0) && i == 0) continue;
 
-      for(auto p : state->predecessors()) {
-        Probability v = gammas[p][i - state->delta(0)]
-          * _states[p]->transition()->probabilityOf(state->id());
+      for (auto p : state->predecessors()) {
+        Probability candidate_max
+          = gammas[p][i - state->delta(0)]
+          * _states[p]->transition()->probabilityOf(state->id())
+          * _states[k]->emission()->probabilityOf(
+              state->hasGap(0) ? _gap : sequences[0][i-1]);
 
-        if (v > gammas[state->id()][i]) {
-          gammas[state->id()][i] = v;
+        if (candidate_max > gammas[state->id()][i]) {
+          gammas[state->id()][i] = candidate_max;
           psi[state->id()][i] = p;
         }
       }
-
-      gammas[state->id()][i]
-        *= state->emission()->probabilityOf(
-            state->hasGap(0) ? _gap : sequences[0][i-1]);
     }
   }
 
@@ -351,20 +350,20 @@ HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
+      auto k = state->id();
+
       if (!state->hasGap(0) && i == 0) continue;
 
-      for(auto p : state->predecessors()) {
-        Probability v
-          = posteriors[p][i - state->delta(0)];
+      for (auto p : state->predecessors()) {
+        Probability candidate_max
+          = posteriors[p][i - state->delta(0)]
+          * (alphas[k][i] * betas[k][i] / full);
 
-        if (v > posteriors[state->id()][i]) {
-          posteriors[state->id()][i] = v;
-          psi[state->id()][i] = p;
+        if (candidate_max > posteriors[k][i]) {
+          posteriors[k][i] = candidate_max;
+          psi[k][i] = p;
         }
       }
-
-      posteriors[state->id()][i]
-        *= ((alphas[state->id()][i] * betas[state->id()][i]) / full);
     }
   }
 
@@ -388,17 +387,17 @@ HiddenMarkovModel::forward(const Sequences& sequences) const {
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
+      auto k = state->id();
+
       if (!state->hasGap(0) && i == 0) continue;
 
       for (auto p : state->predecessors()) {
         alphas[state->id()][i]
           += alphas[p][i - state->delta(0)]
-          * _states[p]->transition()->probabilityOf(state->id());
+          * _states[p]->transition()->probabilityOf(k)
+          * _states[k]->emission()->probabilityOf(
+              state->hasGap(0) ? _gap : sequences[0][i-1]);
       }
-
-      alphas[state->id()][i]
-        *= state->emission()->probabilityOf(
-            state->hasGap(0) ? _gap : sequences[0][i-1]);
     }
   }
 
@@ -422,14 +421,16 @@ HiddenMarkovModel::backward(const Sequences& sequences) const {
   auto max = std::numeric_limits<std::size_t>::max();
   for (std::size_t i = sequences[0].size(); i != max; i--) {
     for (const auto& state : _states) {
-      for(auto s : state->successors()) {
+      auto k = state->id();
+
+      for (auto s : state->successors()) {
         if (!_states[s]->hasGap(0) && i == sequences[0].size()) continue;
 
         betas[state->id()][i]
           += betas[s][i + _states[s]->delta(0)]
           * _states[s]->emission()->probabilityOf(
               _states[s]->hasGap(0) ? _gap : sequences[0][i])
-          * state->transition()->probabilityOf(s);
+          * _states[k]->transition()->probabilityOf(s);
       }
     }
   }

@@ -21,13 +21,11 @@
 #include "model/PairHiddenMarkovModel.hpp"
 
 // Standard headers
+#include <limits>
 #include <utility>
-#include <iomanip>
-#include <utility>
-#include <iostream>
 
 // Macros
-#define UNUSED(var) do { (void) sizeof(var); } while(false)
+#define UNUSED(var) do { (void) sizeof(var); } while (false)
 
 namespace tops {
 namespace model {
@@ -248,7 +246,7 @@ PairHiddenMarkovModel::drawSequence(RandomNumberGeneratorPtr rng,
   return { label, alignment };
 }
 
-/*----------------------------------------------------------------------------*/
+/*================================  LABELER  =================================*/
 
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
@@ -267,23 +265,24 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
+        auto k = state->id();
+
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
 
-        for(auto p : state->predecessors()) {
-          Probability v = gammas[p][i - state->delta(0)][j - state->delta(1)]
-            * _states[p]->transition()->probabilityOf(state->id());
+        for (auto p : state->predecessors()) {
+          Probability candidate_max
+            = gammas[p][i - state->delta(0)][j - state->delta(1)]
+            * _states[p]->transition()->probabilityOf(state->id())
+            * _states[k]->emission()->probabilityOf(
+                state->hasGap(0) ? _gap : sequences[0][i-1],
+                state->hasGap(1) ? _gap : sequences[1][j-1]);
 
-          if (v > gammas[state->id()][i][j]) {
-             gammas[state->id()][i][j] = v;
+          if (candidate_max > gammas[state->id()][i][j]) {
+             gammas[state->id()][i][j] = candidate_max;
              psi[state->id()][i][j] = p;
           }
         }
-
-        gammas[state->id()][i][j]
-          *= state->emission()->probabilityOf(
-              state->hasGap(0) ? _gap : sequences[0][i-1],
-              state->hasGap(1) ? _gap : sequences[1][j-1]);
       }
     }
   }
@@ -320,21 +319,21 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
+        auto k = state->id();
+
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
 
-        for(auto p : state->predecessors()) {
-          Probability v
-            = posteriors[p][i - state->delta(0)][j - state->delta(1)];
+        for (auto p : state->predecessors()) {
+          Probability candidate_max
+            = posteriors[p][i - state->delta(0)][j - state->delta(1)]
+            * (alphas[k][i][j] * betas[k][i][j] / full);
 
-          if (v > posteriors[state->id()][i][j]) {
-            posteriors[state->id()][i][j] = v;
-            psi[state->id()][i][j] = p;
+          if (candidate_max > posteriors[k][i][j]) {
+            posteriors[k][i][j] = candidate_max;
+            psi[k][i][j] = p;
           }
         }
-
-        posteriors[state->id()][i][j]
-          *= ((alphas[state->id()][i][j] * betas[state->id()][i][j]) / full);
       }
     }
   }
@@ -361,19 +360,19 @@ PairHiddenMarkovModel::forward(const Sequences& sequences) const {
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (std::size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
+        auto k = state->id();
+
         if (!state->hasGap(0) && i == 0) continue;
         if (!state->hasGap(1) && j == 0) continue;
 
         for (auto p : state->predecessors()) {
-          alphas[state->id()][i][j]
+          alphas[k][i][j]
             += alphas[p][i - state->delta(0)][j - state->delta(1)]
-            * _states[p]->transition()->probabilityOf(state->id());
+            * _states[p]->transition()->probabilityOf(state->id())
+            * _states[k]->emission()->probabilityOf(
+               state->hasGap(0) ? _gap : sequences[0][i-1],
+               state->hasGap(1) ? _gap : sequences[1][j-1]);
         }
-
-        alphas[state->id()][i][j]
-          *= state->emission()->probabilityOf(
-              state->hasGap(0) ? _gap : sequences[0][i-1],
-              state->hasGap(1) ? _gap : sequences[1][j-1]);
       }
     }
   }
@@ -400,16 +399,18 @@ PairHiddenMarkovModel::backward(const Sequences& sequences) const {
   for (std::size_t i = sequences[0].size(); i != max; i--) {
     for (std::size_t j = sequences[1].size(); j != max; j--) {
       for (const auto& state : _states) {
-        for(auto s : state->successors()) {
+        auto k = state->id();
+
+        for (auto s : state->successors()) {
           if (!_states[s]->hasGap(0) && i == sequences[0].size()) continue;
           if (!_states[s]->hasGap(1) && j == sequences[1].size()) continue;
 
-          betas[state->id()][i][j]
+          betas[k][i][j]
             += betas[s][i + _states[s]->delta(0)][j + _states[s]->delta(1)]
             * _states[s]->emission()->probabilityOf(
                 _states[s]->hasGap(0) ? _gap : sequences[0][i],
                 _states[s]->hasGap(1) ? _gap : sequences[1][j])
-            * state->transition()->probabilityOf(s);
+            * _states[k]->transition()->probabilityOf(s);
         }
       }
     }
