@@ -6,7 +6,7 @@
 using namespace std;
 
 //The HintLine has a line of gff hint file
-class HintLine{
+class HintsLine{
   public:
     string name_sequence;
     string source;
@@ -18,7 +18,7 @@ class HintLine{
     string frame;
     string atribute;
 
-    HintLine(){
+    HintsLine(){
       this->name_sequence = "";
       this->source = "";
       this->feature = "";
@@ -31,7 +31,7 @@ class HintLine{
 
     }
 
-    HintLine(string name_sequence, string source, string feature, string start, string end, string score,
+    HintsLine(string name_sequence, string source, string feature, string start, string end, string score,
      string strand, string frame, string atribute) {
       this->name_sequence = name_sequence;
       this->source = source;
@@ -102,7 +102,6 @@ class HintPoint{
     }
 
     void setType(string type){
-
       if (type.compare("start") == 0){
         start = 1;
       }
@@ -168,41 +167,56 @@ class Hints{
 
 };
 
+class HintsConverter{
+  public:
+  vector<HintsLine*> *hintsLine;
+  Hints *hints = new Hints(5000);
+
+  vector<HintsLine*> *convertGffFileToHintsLine(string fileName){
+    hintsLine = new vector<HintsLine*>();
+    ifstream hintsFile(fileName);
+    string line;
+    vector<string> tokens;
+
+    while(getline(hintsFile, line)) {
+      istringstream iss(line);
+      string token;
+      while(getline(iss, token, '\t'))
+          tokens.push_back(token);
+    }
+
+    for (size_t i = 0; i < tokens.size(); i+=9){ //+9 to jump to next line of gff file
+      HintsLine *n = new HintsLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
+      hintsLine->push_back(n);
+    }
+    return hintsLine;
+  }
+
+  Hints *convertHintsLineToHints(vector<HintsLine*> *hintsLine){
+    for(size_t i = 0; i < hintsLine->size(); i++){
+      HintsLine *hl = new HintsLine();
+      hl =  hintsLine->at(i);
+      string type = hl->feature;
+      int start = stoi(hl->start);
+      int stop = stoi(hl->end);
+      for(size_t i = start-1; i < stop; i++){ //-1 to sincronize vector indices and hints indices
+        hints->hints->at(i)->setType(type);
+      } 
+    }
+    return hints;
+  }
+};
+
 int main(int argc, char const *argv[]) {
 
-ifstream hintsFile("hints.gff");
-
-string line;
-vector<string> tokens;
-vector<HintLine*> hintsLine;
-
-while(getline(hintsFile, line)) {
-    istringstream iss(line);
-    string token;
-    while(getline(iss, token, '\t'))
-        tokens.push_back(token);
-}
-
-for (size_t i = 0; i < tokens.size(); i+=9){ //+9 to jump to next line of gff file
-  HintLine *n = new HintLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
-  hintsLine.push_back(n);
-}
-
+HintsConverter *hc = new HintsConverter();
+vector<HintsLine*> *hintsLine = new vector<HintsLine*>();
+hintsLine = hc->convertGffFileToHintsLine("hints.gff");
 Hints *hints = new Hints(5000);
-
-for(size_t i = 0; i < hintsLine.size(); i++){
-  HintLine *hl = new HintLine();
-  hl =  hintsLine[i];
-  string type = hl->feature;
-  int start = stoi(hl->start);
-  int stop = stoi(hl->end);
-  for(size_t i = start-1; i < stop; i++){ //-1 to sincronize vector indices and hints indices
-    hints->hints->at(i)->setType(type);
-  }
-}
-
+hints = hc->convertHintsLineToHints(hintsLine);
 hints->setAllEmptyHintsAsNullHints();
 hints->printAllHints();
 
 return 0;
 }
+
