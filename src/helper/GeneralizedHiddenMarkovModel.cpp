@@ -28,7 +28,7 @@
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 namespace tops {
 namespace helper {
@@ -89,7 +89,7 @@ model::GeneralizedHiddenMarkovModelPtr createDishonestCoinCasinoGHMM() {
     /* E */ {   0.0  ,     0.0     ,     0.0     ,  1.0   },
   };
 
-  auto silent_duration = model::SignalDuration::make(0);
+  auto silent_duration = model::FixedDuration::make(0);
 
   std::vector<model::GeneralizedHiddenMarkovModel::StatePtr> states = {
     model::GeneralizedHiddenMarkovModel::SilentState::make(
@@ -189,11 +189,14 @@ model::GeneralizedHiddenMarkovModelPtr createUntrainedDishonestCoinCasinoGHMM() 
     /* E */ {  0.0  ,  0.0  ,  0.0  ,  1.0  },
   };
 
+  auto silent_duration = model::FixedDuration::make(0);
+
   std::vector<model::GeneralizedHiddenMarkovModel::StatePtr> states = {
     model::GeneralizedHiddenMarkovModel::SilentState::make(
       /* id         */ B,
       /* emission   */ IID::make(emissions[B]),
-      /* transition */ IID::make(transitions[B])),
+      /* transition */ IID::make(transitions[B]),
+      /* duration   */ silent_duration),
 
     model::GeneralizedHiddenMarkovModel::MatchState::make(
       /* id         */ H,
@@ -208,7 +211,8 @@ model::GeneralizedHiddenMarkovModelPtr createUntrainedDishonestCoinCasinoGHMM() 
     model::GeneralizedHiddenMarkovModel::SilentState::make(
       /* id         */ E,
       /* emission   */ IID::make(emissions[E]),
-      /* transition */ IID::make(transitions[E]))
+      /* transition */ IID::make(transitions[E]),
+      /* duration   */ silent_duration),
   };
 
   states[B]->addSuccessor(H);

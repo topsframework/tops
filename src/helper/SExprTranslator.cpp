@@ -153,8 +153,8 @@ void SExprTranslator::translate(
 
 /*----------------------------------------------------------------------------*/
 
-void SExprTranslator::translate(Ptr<model::SignalDuration> duration) {
-  _sexpr += "(SignalDuration: maximumDuration = ";
+void SExprTranslator::translate(Ptr<model::FixedDuration> duration) {
+  _sexpr += "(FixedDuration: maximumDuration = ";
   _sexpr += std::to_string(duration->maximumSize());
   _sexpr += ")";
 }

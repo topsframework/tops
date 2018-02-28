@@ -21,7 +21,7 @@
 #include <utility>
 
 // Internal headers
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 namespace tops {
 namespace model {
@@ -42,8 +42,7 @@ SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
 template<typename E, typename T, std::size_t d, bool... gaps>
 SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
                                                   TransitionModelPtr transition)
-    : Base(id, emission, transition, SignalDuration::make(1)),
-      _gaps{ gaps... } {
+    : Base(id, emission, transition, FixedDuration::make(1)), _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/

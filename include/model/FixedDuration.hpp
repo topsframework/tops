@@ -17,49 +17,52 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-// Interface header
-#include "model/SignalDuration.hpp"
+#ifndef TOPS_MODEL_FIXED_DURATION_
+#define TOPS_MODEL_FIXED_DURATION_
 
 // Standard headers
-#include <limits>
 #include <memory>
 
 // Internal headers
-#include "model/SingleValueRange.hpp"
+#include "model/DurationCrtp.hpp"
 
 namespace tops {
 namespace model {
 
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
+// Forward declaration
+class FixedDuration;
 
-SignalDuration::SignalDuration(unsigned int duration_size)
-    : _duration_size(duration_size) {
-}
+/**
+ * @typedef FixedDurationPtr
+ * @brief Alias of pointer to FixedDuration.
+ */
+using FixedDurationPtr = std::shared_ptr<FixedDuration>;
 
-/*----------------------------------------------------------------------------*/
-/*                             OVERRIDEN METHODS                              */
-/*----------------------------------------------------------------------------*/
+/**
+ * @class FixedDuration
+ * @brief TODO
+ */
+class FixedDuration : public DurationCrtp<FixedDuration> {
+ public:
+  // Alias
+  using Self = FixedDuration;
+  using SelfPtr = std::shared_ptr<Self>;
+  using Base = DurationCrtp<Self>;
 
-RangePtr SignalDuration::range() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
-}
+  // Constructors
+  explicit FixedDuration(unsigned int duration_size);
 
-/*----------------------------------------------------------------------------*/
+  // Overriden methods
+  RangePtr range() const override;
+  unsigned int maximumSize() const override;
+  Probability probabilityOfLenght(unsigned int length) const override;
 
-unsigned int SignalDuration::maximumSize() const {
-  return _duration_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-Probability SignalDuration::probabilityOfLenght(unsigned int length) const {
-  if (length == _duration_size) return 1;
-  return 0;
-}
-
-/*----------------------------------------------------------------------------*/
+ private:
+  // Instance variables
+  unsigned int _duration_size;
+};
 
 }  // namespace model
 }  // namespace tops
+
+#endif  // TOPS_MODEL_FIXED_DURATION_

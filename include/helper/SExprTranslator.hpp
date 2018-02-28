@@ -39,7 +39,7 @@
 #include "model/SimilarityBasedSequenceWeighting.hpp"
 #include "model/TargetModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 #include "model/ExplicitDuration.hpp"
 
 // Tested header
@@ -90,7 +90,7 @@ class SExprTranslator : public model::Translator {
   void translate(
     Ptr<typename model::GeneralizedHiddenMarkovModel::State> state) override;
 
-  void translate(Ptr<model::SignalDuration> duration) override;
+  void translate(Ptr<model::FixedDuration> duration) override;
   void translate(Ptr<model::ExplicitDuration> duration) override;
 
   // Concrete mehtods
