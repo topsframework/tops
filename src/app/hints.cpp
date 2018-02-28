@@ -1,21 +1,11 @@
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <stdio.h>
-#include <string.h>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <iterator>
-#include <vector>
 #include <sstream>
-#include <fstream>
-#include <string>
 #include <vector>
-#include <unordered_map>
 
 using namespace std;
 
+//The HintLine has a line of gff hint file
 class HintLine{
   public:
     string name_sequence;
@@ -66,6 +56,7 @@ class HintLine{
       }
 };
 
+//The HintPoint class has the hints of a specific position of a sequence"
 class HintPoint{
   public:
     unsigned short int start;
@@ -149,19 +140,20 @@ class HintPoint{
     }
 };
 
+//"The Hints class has 3 columns (feature, start and end) of all hints in gff file.
 class Hints{
   public:
   vector<HintPoint*> *hints;
-   
+
   Hints(int max_sequence_length){
     hints = new vector<HintPoint*>();
-    for(int i = 0; i < max_sequence_length; i++){
+    for(size_t i = 0; i < max_sequence_length; i++){
       hints->push_back(new HintPoint());
     }
   }
 
   void setAllEmptyHintsAsNullHints(){
-    for(int i = 0; i < hints->size(); i++){
+    for(size_t i = 0; i < hints->size(); i++){
       if(hints->at(i)->hintIsEmpty()){
         hints->at(i)->setAsNullHint();
       }
@@ -169,49 +161,42 @@ class Hints{
   }
 
   void printAllHints(){
-    for(int i = 0; i < hints->size(); i++){
+    for(size_t i = 0; i < hints->size(); i++){
       hints->at(i)->print_hint();
     }
   }
 
-  bool allHintsHasAtype(){
-    for(int i = 0; i < hints->size(); i++){
-      
-    }
-
-
-  }
 };
 
-int main () { 
+int main(int argc, char const *argv[]) {
 
-std::ifstream file("hints.gff");
+ifstream hintsFile("hints.gff");
 
-std::string line;
-std::vector<std::string> tokens;
+string line;
+vector<string> tokens;
 vector<HintLine*> hintsLine;
 
-while(std::getline(file, line)) {     // '\n' is the default delimiter
-    std::istringstream iss(line);
-    std::string token;
-    while(std::getline(iss, token, '\t'))   // but we can specify a different one
+while(getline(hintsFile, line)) {
+    istringstream iss(line);
+    string token;
+    while(getline(iss, token, '\t'))
         tokens.push_back(token);
 }
 
-for (std::size_t i = 0; i < tokens.size(); i+=9){
+for (size_t i = 0; i < tokens.size(); i+=9){ //+9 to jump to next line of gff file
   HintLine *n = new HintLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
   hintsLine.push_back(n);
 }
 
 Hints *hints = new Hints(5000);
 
-for(std::size_t i = 0; i < hintsLine.size(); i++){
+for(size_t i = 0; i < hintsLine.size(); i++){
   HintLine *hl = new HintLine();
   hl =  hintsLine[i];
   string type = hl->feature;
   int start = stoi(hl->start);
   int stop = stoi(hl->end);
-  for(int i = start-1; i < stop; i++){ //-1 to sincronize vector e hints
+  for(size_t i = start-1; i < stop; i++){ //-1 to sincronize vector indices and hints indices
     hints->hints->at(i)->setType(type);
   }
 }
