@@ -49,7 +49,6 @@ class VariableLengthMarkovChain;
 
 class SignalDuration;
 class ExplicitDuration;
-class GeometricDuration;
 
 // Forward declaration
 class Translator;
@@ -95,7 +94,6 @@ class Translator : public std::enable_shared_from_this<Translator> {
 
   virtual void translate(Ptr<SignalDuration> duration) = 0;
   virtual void translate(Ptr<ExplicitDuration> duration) = 0;
-  virtual void translate(Ptr<GeometricDuration> duration) = 0;
 
   // Destructor
   virtual ~Translator() = default;

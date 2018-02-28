@@ -168,14 +168,6 @@ void SExprTranslator::translate(Ptr<model::ExplicitDuration> duration) {
 }
 
 /*----------------------------------------------------------------------------*/
-
-void SExprTranslator::translate(Ptr<model::GeometricDuration> duration) {
-  _sexpr += "(GeometricDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumSize());
-  _sexpr += ")";
-}
-
-/*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 

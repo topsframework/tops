@@ -41,7 +41,6 @@
 
 #include "model/SignalDuration.hpp"
 #include "model/ExplicitDuration.hpp"
-#include "model/GeometricDuration.hpp"
 
 // Tested header
 #include "model/Translator.hpp"
@@ -93,7 +92,6 @@ class SExprTranslator : public model::Translator {
 
   void translate(Ptr<model::SignalDuration> duration) override;
   void translate(Ptr<model::ExplicitDuration> duration) override;
-  void translate(Ptr<model::GeometricDuration> duration) override;
 
   // Concrete mehtods
   std::string sexpr();

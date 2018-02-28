@@ -197,19 +197,19 @@ TEST(HiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
          "(State: "
            "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
            "(DiscreteIIDModel: 0.000000 0.333333 0.333333 0.333333) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.358333 0.641667 0.000000) "
            "(DiscreteIIDModel: 0.000000 0.400000 0.400000 0.200000) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.358333 0.641667 0.000000) "
            "(DiscreteIIDModel: 0.000000 0.400000 0.400000 0.200000) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
            "(DiscreteIIDModel: 0.000000 0.000000 0.000000 1.000000) "
-           "(GeometricDuration: maximumDuration = 1)))"));
+           "(SignalDuration: maximumDuration = 1)))"));
 
 }
 
@@ -333,19 +333,19 @@ TEST(HiddenMarkovModel, ShouldBeTrainedUsingMaximumLikelihoodAlgorithm) {
          "(State: "
            "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
            "(DiscreteIIDModel: 0.000000 0.333333 0.333333 0.333333) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.528384 0.471616) "
            "(DiscreteIIDModel: 0.004329 0.562771 0.216450 0.216450) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.207843 0.792157) "
            "(DiscreteIIDModel: 0.003891 0.198444 0.610895 0.186770) "
-           "(GeometricDuration: maximumDuration = 1)) "
+           "(SignalDuration: maximumDuration = 1)) "
          "(State: "
            "(DiscreteIIDModel: 0.000000 0.000000 1.000000) "
            "(DiscreteIIDModel: 0.000000 0.000000 0.000000 1.000000) "
-           "(GeometricDuration: maximumDuration = 1)))"));
+           "(SignalDuration: maximumDuration = 1)))"));
 }
 
 /*----------------------------------------------------------------------------*/
