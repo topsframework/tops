@@ -2,13 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-
+#include <unordered_map>
 using namespace std;
 
 //The HintLine has a line of gff hint file
 class HintsLine{
   public:
-    string name_sequence;
+    string sequenceName;
     string source;
     string feature;
     string start;
@@ -19,7 +19,7 @@ class HintsLine{
     string atribute;
 
     HintsLine(){
-      this->name_sequence = "";
+      this->sequenceName = "";
       this->source = "";
       this->feature = "";
       this->start = "";
@@ -31,9 +31,9 @@ class HintsLine{
 
     }
 
-    HintsLine(string name_sequence, string source, string feature, string start, string end, string score,
+    HintsLine(string sequenceName, string source, string feature, string start, string end, string score,
      string strand, string frame, string atribute) {
-      this->name_sequence = name_sequence;
+      this->sequenceName = sequenceName;
       this->source = source;
       this->feature = feature;
       this->start = start;
@@ -45,7 +45,7 @@ class HintsLine{
     }
 
     void print_hint(){
-      cout << this->name_sequence << '\t';
+      cout << this->sequenceName << '\t';
       cout << this->source << '\t';
       cout << this->feature << '\t';
       cout << this->start << '\t';
@@ -67,7 +67,9 @@ class HintPoint{
     unsigned short int dss;
     unsigned short int intron;
     unsigned short int null_type;
-    HintPoint(){
+    string sequenceName;
+    int position;
+    HintPoint(string sequenceName, int position){
       start = 0;
       stop = 0;
       ep = 0;
@@ -76,21 +78,13 @@ class HintPoint{
       dss = 0;
       intron = 0;
       null_type = 0;
-    }
-
-    HintPoint(unsigned short int start, unsigned short int stop, unsigned short int ep, unsigned short int exon,
-     unsigned short int ass, unsigned short int dss, unsigned short int intron, unsigned short int null_type){
-      this->start = start;
-      this->stop = stop;
-      this->ep = ep;
-      this->exon = exon;
-      this->ass = ass;
-      this->dss = dss;
-      this->intron = intron;
-      this->null_type = null_type;
+      this->sequenceName = sequenceName;
+      this->position = position;
     }
 
     void print_hint(){
+      cout << "name_seq: " << sequenceName << '\t';
+      cout << "pos: " << position << '\t';
       cout << "start: " << start << '\t';
       cout << "stop: " << stop << '\t';
       cout << "ep: " << ep << '\t';
@@ -142,38 +136,78 @@ class HintPoint{
 //"The Hints class has 3 columns (feature, start and end) of all hints in gff file.
 class Hints{
   public:
-  vector<HintPoint*> *hints;
+  int numberOfsequences;
+  int max_sequence_length;
+  vector<string> * sequencesNames = new vector<string>();
+  vector<vector<HintPoint*>*> *hints = new vector<vector<HintPoint*>*>();
 
-  Hints(int max_sequence_length){
-    hints = new vector<HintPoint*>();
-    for(size_t i = 0; i < max_sequence_length; i++){
-      hints->push_back(new HintPoint());
+  Hints(int max_sequence_length, vector<HintsLine*> *hintsLine){
+    this->max_sequence_length = max_sequence_length;
+    this->sequencesNames = this->getSequencesNames(hintsLine);
+
+    for(size_t i = 0; i < this->sequencesNames->size(); i++){
+      vector<HintPoint*> *aux = new vector<HintPoint*>();
+      for(size_t j = 0; j < max_sequence_length; j++){
+        aux->push_back(new HintPoint(sequencesNames->at(i), j));
+      }
+      hints->push_back(aux);
     }
   }
 
   void setAllEmptyHintsAsNullHints(){
     for(size_t i = 0; i < hints->size(); i++){
-      if(hints->at(i)->hintIsEmpty()){
-        hints->at(i)->setAsNullHint();
+      for(size_t j = 0; j < max_sequence_length; j++){
+        if(hints->at(i)->at(j)->hintIsEmpty()){
+          hints->at(i)->at(j)->setAsNullHint();
+        }
       }
     }
   }
 
   void printAllHints(){
     for(size_t i = 0; i < hints->size(); i++){
-      hints->at(i)->print_hint();
+      for(size_t j = 0; j < max_sequence_length; j++){
+        hints->at(i)->at(j)->print_hint();
+      }
     }
   }
 
+  vector<string> *getSequencesNames(vector<HintsLine*> *hintsLine){
+    unordered_map<string,string> *sequencesNamesHash = new unordered_map<string,string>();
+    vector<string> *sequencesNames = new vector<string>();
+    for(size_t i = 0; i < hintsLine->size(); i++){
+      string sequenceName = hintsLine->at(i)->sequenceName;
+      sequencesNamesHash->emplace(sequenceName, sequenceName);
+    }
+    unordered_map<string, string>::iterator it = sequencesNamesHash->begin();
+    while (it != sequencesNamesHash->end()){
+	    sequencesNames->push_back(it->first);
+		  it++;
+    }
+    this->numberOfsequences = sequencesNames->size();
+    return sequencesNames;
+  }
+
+  int getNumberOfSequencesNames(vector<HintsLine*> *hintsLine){
+    unordered_map<string,string> *sequencesNamesHash = new unordered_map<string,string>();
+    for(size_t i = 0; i < hintsLine->size(); i++){
+      string sequenceName = hintsLine->at(i)->sequenceName;
+      sequencesNamesHash->emplace(sequenceName, sequenceName);
+    }
+    return sequencesNamesHash->size();
+  }
 };
 
 class HintsConverter{
   public:
   vector<HintsLine*> *hintsLine;
-  Hints *hints = new Hints(5000);
+  Hints *hints;
+  int numberOfsequences;
+  string fileName;
 
   vector<HintsLine*> *convertGffFileToHintsLine(string fileName){
     hintsLine = new vector<HintsLine*>();
+    this->fileName = fileName;
     ifstream hintsFile(fileName);
     string line;
     vector<string> tokens;
@@ -193,30 +227,37 @@ class HintsConverter{
   }
 
   Hints *convertHintsLineToHints(vector<HintsLine*> *hintsLine){
+    this->hints = new Hints(5000, hintsLine);
     for(size_t i = 0; i < hintsLine->size(); i++){
       HintsLine *hl = new HintsLine();
       hl =  hintsLine->at(i);
       string type = hl->feature;
+      string sequenceName = hl->sequenceName;
       int start = stoi(hl->start);
-      int stop = stoi(hl->end);
-      for(size_t i = start-1; i < stop; i++){ //-1 to sincronize vector indices and hints indices
-        hints->hints->at(i)->setType(type);
-      } 
+      int end = stoi(hl->end);
+
+      for(size_t j = 0; j < this->hints->hints->size(); j++){
+        if(sequenceName.compare(this->hints->hints->at(j)->at(0)->sequenceName) == 0){
+          for(size_t i = start; i <= end; i++){ //-1 to sincronize vector indices and hints indices
+              this->hints->hints->at(j)->at(i)->setType(type);
+          }
+        }
+      }
     }
     return hints;
   }
+
 };
 
 int main(int argc, char const *argv[]) {
 
-HintsConverter *hc = new HintsConverter();
-vector<HintsLine*> *hintsLine = new vector<HintsLine*>();
-hintsLine = hc->convertGffFileToHintsLine("hints.gff");
-Hints *hints = new Hints(5000);
-hints = hc->convertHintsLineToHints(hintsLine);
-hints->setAllEmptyHintsAsNullHints();
-hints->printAllHints();
+  HintsConverter *hc = new HintsConverter();
+  vector<HintsLine*> *hintsLine = new vector<HintsLine*>();
+  hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
+  Hints *hints = new Hints(5000, hintsLine);
+  hints = hc->convertHintsLineToHints(hintsLine);
+  hints->setAllEmptyHintsAsNullHints();
+  hints->printAllHints();
 
-return 0;
+  return 0;
 }
-
