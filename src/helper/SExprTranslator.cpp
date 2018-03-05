@@ -154,16 +154,16 @@ void SExprTranslator::translate(
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::FixedDuration> duration) {
-  _sexpr += "(FixedDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumSize());
+  _sexpr += "(FixedDuration: fixedLength = ";
+  _sexpr += std::to_string(duration->fixedLength());
   _sexpr += ")";
 }
 
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(Ptr<model::ExplicitDuration> duration) {
-  _sexpr += "(ExplicitDuration: maximumDuration = ";
-  _sexpr += std::to_string(duration->maximumSize());
+  _sexpr += "(ExplicitDuration: durationModel = ";
+  duration->durationModel()->serializer(make_shared())->serialize();
   _sexpr += ")";
 }
 

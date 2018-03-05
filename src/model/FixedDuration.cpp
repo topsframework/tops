@@ -34,28 +34,31 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-FixedDuration::FixedDuration(unsigned int duration_size)
-    : _duration_size(duration_size) {
+FixedDuration::FixedDuration(std::size_t fixed_length)
+    : _fixed_length(fixed_length) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Range FixedDuration::range() const {
-  return { _duration_size, _duration_size + 1 };
+Range FixedDuration::possibleLengths(std::size_t max_length) const {
+  if (_fixed_length > max_length) return { 0, 0 };
+  return { _fixed_length, _fixed_length + 1 };
 }
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int FixedDuration::maximumSize() const {
-  return _duration_size;
+Probability FixedDuration::probabilityOfLenght(std::size_t length) const {
+  return length == _fixed_length ? 1 : 0;
 }
 
 /*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
-Probability FixedDuration::probabilityOfLenght(unsigned int length) const {
-  return length == _duration_size ? 1 : 0;
+std::size_t FixedDuration::fixedLength() {
+  return _fixed_length;
 }
 
 /*----------------------------------------------------------------------------*/

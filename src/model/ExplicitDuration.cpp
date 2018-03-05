@@ -34,30 +34,30 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration,
-                                   unsigned int max_duration_size)
-    : _duration(std::move(duration)), _max_duration_size(max_duration_size) {
+ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration)
+    : _duration_model(std::move(duration)) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Range ExplicitDuration::range() const {
-  return { 1, _max_duration_size + 1 };
+Range ExplicitDuration::possibleLengths(std::size_t max_length) const {
+  return { 1, max_length + 1 };
 }
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int ExplicitDuration::maximumSize() const {
-  return 0;
+Probability ExplicitDuration::probabilityOfLenght(std::size_t len) const {
+  return _duration_model->standardEvaluator(Sequence{len})->evaluateSymbol(0);
 }
 
 /*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
-Probability
-ExplicitDuration::probabilityOfLenght(unsigned int length) const {
-  return _duration->standardEvaluator(Sequence{length})->evaluateSymbol(0);
+ProbabilisticModelPtr ExplicitDuration::durationModel() {
+  return _duration_model;
 }
 
 /*----------------------------------------------------------------------------*/

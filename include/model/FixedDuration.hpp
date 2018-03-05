@@ -50,16 +50,18 @@ class FixedDuration : public DurationCrtp<FixedDuration> {
   using Base = DurationCrtp<Self>;
 
   // Constructors
-  explicit FixedDuration(unsigned int duration_size);
+  explicit FixedDuration(std::size_t fixed_length);
 
   // Overriden methods
-  Range range() const override;
-  unsigned int maximumSize() const override;
-  Probability probabilityOfLenght(unsigned int length) const override;
+  Range possibleLengths(std::size_t max_length) const override;
+  Probability probabilityOfLenght(std::size_t length) const override;
+
+  // Concrete methods
+  std::size_t fixedLength();
 
  private:
   // Instance variables
-  unsigned int _duration_size;
+  std::size_t _fixed_length;
 };
 
 }  // namespace model

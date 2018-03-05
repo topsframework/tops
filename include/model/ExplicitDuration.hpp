@@ -51,18 +51,18 @@ class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
   using Base = DurationCrtp<Self>;
 
   // Constructors
-  ExplicitDuration(ProbabilisticModelPtr duration,
-                   unsigned int max_duration = 100);
+  explicit ExplicitDuration(ProbabilisticModelPtr duration);
 
   // Overriden methods
-  Range range() const override;
-  unsigned int maximumSize() const override;
-  Probability probabilityOfLenght(unsigned int length) const override;
+  Range possibleLengths(std::size_t max) const override;
+  Probability probabilityOfLenght(std::size_t length) const override;
+
+  // Concrete methods
+  ProbabilisticModelPtr durationModel();
 
  private:
   // Instance variables
-  ProbabilisticModelPtr _duration;
-  unsigned int _max_duration_size;
+  ProbabilisticModelPtr _duration_model;
 };
 
 }  // namespace model
