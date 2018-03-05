@@ -21,6 +21,7 @@
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
 // Standard headers
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -228,9 +229,8 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
       if (!state->hasGap(0) && i == 0) continue;
 
-      auto range = _states[k]->duration()->range();
-      for (auto d=range->begin(); !range->end() && d <= i+1
-          && d <= _max_backtracking; d=range->next()) {
+      auto max_length = std::min(i, _max_backtracking);
+      for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
         for (auto p : state->predecessors()) {
           Probability candidate_max
             = gammas[p][i - d]
@@ -326,9 +326,8 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
 
       if (!state->hasGap(0) && i == 0) continue;
 
-      auto range = _states[k]->duration()->range();
-      for (auto d=range->begin(); !range->end() && d <= i+1
-          && d <= _max_backtracking; d=range->next()) {
+      auto max_length = std::min(i, _max_backtracking);
+      for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
         for (auto p : state->predecessors()) {
           alphas[k][i]
             += alphas[p][i - d]
@@ -369,9 +368,8 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
       for (auto s : state->successors()) {
         if (!_states[s]->hasGap(0) && i == sequences[0].size()) continue;
 
-        auto range = _states[s]->duration()->range();
-        for (auto d=range->begin(); !range->end() && d <= i+1
-            && d <= _max_backtracking; d=range->next()) {
+        auto max_length = std::min(sequences[0].size()-i, _max_backtracking);
+        for (auto d : _states[s]->duration()->possibleLengths(max_length)) {
           betas[k][i]
             += _states[k]->transition()
                          ->probabilityOf(s)
