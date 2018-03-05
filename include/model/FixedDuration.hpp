@@ -53,7 +53,7 @@ class FixedDuration : public DurationCrtp<FixedDuration> {
   explicit FixedDuration(unsigned int duration_size);
 
   // Overriden methods
-  RangePtr range() const override;
+  Range range() const override;
   unsigned int maximumSize() const override;
   Probability probabilityOfLenght(unsigned int length) const override;
 

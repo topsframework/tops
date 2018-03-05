@@ -25,7 +25,7 @@
 #include <memory>
 
 // Internal headers
-#include "model/SingleValueRange.hpp"
+#include "model/Range.hpp"
 
 namespace tops {
 namespace model {
@@ -42,8 +42,8 @@ FixedDuration::FixedDuration(unsigned int duration_size)
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-RangePtr FixedDuration::range() const {
-  return std::make_shared<SingleValueRange>(_duration_size);
+Range FixedDuration::range() const {
+  return { _duration_size, _duration_size + 1 };
 }
 
 /*----------------------------------------------------------------------------*/
@@ -55,8 +55,7 @@ unsigned int FixedDuration::maximumSize() const {
 /*----------------------------------------------------------------------------*/
 
 Probability FixedDuration::probabilityOfLenght(unsigned int length) const {
-  if (length == _duration_size) return 1;
-  return 0;
+  return length == _duration_size ? 1 : 0;
 }
 
 /*----------------------------------------------------------------------------*/

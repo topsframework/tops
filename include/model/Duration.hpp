@@ -49,7 +49,7 @@ class Duration {
   // Purely virtual methods
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
-  virtual RangePtr range() const = 0;
+  virtual Range range() const = 0;
   virtual unsigned int maximumSize() const = 0;
   virtual Probability probabilityOfLenght(unsigned int length) const = 0;
 

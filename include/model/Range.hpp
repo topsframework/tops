@@ -27,7 +27,7 @@ namespace tops {
 namespace model {
 
 // Forward declaration
-class Range;
+struct Range;
 
 /**
  * @typedef RangePtr
@@ -39,15 +39,61 @@ using RangePtr = std::shared_ptr<Range>;
  * @class Range
  * @brief TODO
  */
-class Range {
- public:
-  // Purely virtual methods
-  virtual unsigned int begin() = 0;
-  virtual unsigned int next() = 0;
-  virtual bool end() = 0;
+struct Range {
+  // Inner classes
+  struct iterator_type {
+    // Aliases
+    using value_type = std::size_t;
+    using difference_type = std::size_t;
+    using iterator_category = std::forward_iterator_tag;
+    using pointer = const value_type *;
+    using reference = const value_type &;
 
-  // Destructor
-  virtual ~Range() = default;
+    // Instance variables
+    mutable value_type value_;
+    const difference_type increment_;
+
+    // Constructors
+    explicit iterator_type(value_type value, difference_type increment = 0)
+      : value_(value), increment_(increment) {}
+
+    // Concrete methods
+    const iterator_type& operator++() const {
+      value_ += increment_;
+      return *this;
+    }
+    const iterator_type operator++(int) const {
+      iterator_type tmp(*this);
+      operator++();
+      return tmp;
+    }
+
+    value_type& operator*() const { return value_; }
+
+    bool operator==(const iterator_type &rhs) const {
+      return value_ == rhs.value_;
+    }
+    bool operator!=(const iterator_type &rhs) const {
+      return !operator==(rhs);
+    }
+  };
+
+  // Aliases
+  using iterator = iterator_type;
+  using const_iterator = const iterator_type;
+
+  // Instance variables
+  std::size_t first_, last_, increment_;
+
+  // Constructors
+  explicit Range(std::size_t last)
+    : first_(0), last_(last), increment_(1) {}
+  Range(std::size_t first, std::size_t last, std::size_t increment = 1)
+    : first_(first), last_(last), increment_(increment) {}
+
+  // Concrete methods
+  iterator begin() const { return iterator(first_, increment_); }
+  iterator end() const { return iterator(last_); }
 };
 
 }  // namespace model

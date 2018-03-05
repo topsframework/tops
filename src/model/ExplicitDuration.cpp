@@ -25,11 +25,10 @@
 #include <utility>
 
 // Internal headers
-#include "model/LazzyRange.hpp"
+#include "model/Range.hpp"
 
 namespace tops {
 namespace model {
-
 
 /*----------------------------------------------------------------------------*/
 /*                                CONSTRUCTORS                                */
@@ -44,8 +43,8 @@ ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration,
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-RangePtr ExplicitDuration::range() const {
-  return std::make_shared<LazzyRange>(1, _max_duration_size);
+Range ExplicitDuration::range() const {
+  return { 1, _max_duration_size + 1 };
 }
 
 /*----------------------------------------------------------------------------*/

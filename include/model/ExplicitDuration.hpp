@@ -55,7 +55,7 @@ class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
                    unsigned int max_duration = 100);
 
   // Overriden methods
-  RangePtr range() const override;
+  Range range() const override;
   unsigned int maximumSize() const override;
   Probability probabilityOfLenght(unsigned int length) const override;
 
