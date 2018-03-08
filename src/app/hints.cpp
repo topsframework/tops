@@ -28,7 +28,6 @@ class HintsLine{
       this->strand = "";
       this->frame = "";
       this->atribute = "";
-
     }
 
     HintsLine(string sequenceName, string source, string feature, string start, string end, string score,
@@ -133,30 +132,117 @@ class HintPoint{
     }
 };
 
-//"The Hints class has 3 columns (feature, start and end) of all hints in gff file.
+class FastaSequence{
+  private:
+  string sequenceName;
+  string sequenceValue;
+ 
+  public:
+  FastaSequence(string sequenceName, string sequenceValue){
+    this->sequenceName = sequenceName;
+    this->sequenceValue = sequenceValue;
+  }
+
+  FastaSequence(){
+  }
+
+  void setSequenceName(string sequenceName){
+    this->sequenceName = sequenceName;
+  }
+
+  void setSequenceValue(string sequenceValue){
+    this->sequenceValue = sequenceValue; 
+  }
+  
+  string getSequenceName(){
+    return this->sequenceName;
+  }
+
+  string getSequenceValue(){
+    return this->sequenceValue; 
+  }
+};
+
+//based on Rosetta http://rosettacode.org/wiki/FASTA_format#C%2B%2B
+class FastaConverter{
+  public:
+    vector<FastaSequence> *converteFastaFileToFastaSequence(string fastaFile){
+      vector<FastaSequence> *fastaSequences = new vector<FastaSequence>();  
+      
+      if(fastaFile.empty()){
+        std::cerr << "Usage: '"<< fastaFile <<"' [fasta infile]" << std::endl;
+        return nullptr;
+      }
+ 
+      std::ifstream input(fastaFile);
+      if(!input.good()){
+        std::cerr << "Error opening " << fastaFile << ". Bailing out." << std::endl;
+        return nullptr;
+      }
+ 
+      std::string line, name, content;
+      FastaSequence fs;
+      while( std::getline( input, line ).good() ){
+        if( line.empty() || line[0] == '>' ){ // Identifier marker
+
+          if( !name.empty() ){ // Print out what we read from the last entry
+            fs.setSequenceName(name);
+            fs.setSequenceValue(content);
+            fastaSequences->push_back(fs);
+            name.clear();
+          }
+          if( !line.empty() ){
+            name = line.substr(1);
+            fs.setSequenceName(name);
+          }
+          content.clear();
+        }else if( !name.empty() ){
+          if( line.find(' ') != std::string::npos ){ // Invalid sequence--no spaces allowed
+            name.clear();
+            content.clear();
+          }else{
+             content += line;
+          }
+        }
+      }
+
+    if( !name.empty() ){ // Print out what we read from the last entry
+      fs.setSequenceName(name);
+      fs.setSequenceValue(content);
+      fastaSequences->push_back(fs);
+    }
+ 
+    return fastaSequences;
+    }
+
+
+};
+
+//The Hints class has 3 columns (feature, start and end) of all hints in gff file.
 class Hints{
   public:
-  int numberOfsequences;
-  int max_sequence_length;
+
+  int numberOfSequences;
   vector<string> * sequencesNames = new vector<string>();
   vector<vector<HintPoint*>*> *hints = new vector<vector<HintPoint*>*>();
 
-  Hints(int max_sequence_length, vector<HintsLine*> *hintsLine){
-    this->max_sequence_length = max_sequence_length;
-    this->sequencesNames = this->getSequencesNames(hintsLine);
-
-    for(size_t i = 0; i < this->sequencesNames->size(); i++){
+  Hints(vector<FastaSequence> *fastaSequences, vector<HintsLine*> *hintsLine){
+    
+    for(size_t i = 0; i < fastaSequences->size(); i++){
       vector<HintPoint*> *aux = new vector<HintPoint*>();
-      for(size_t j = 0; j < max_sequence_length; j++){
-        aux->push_back(new HintPoint(sequencesNames->at(i), j));
+      unsigned int sequenceLenght = fastaSequences->at(i).getSequenceValue().length();
+      string sequence_name = fastaSequences->at(i).getSequenceName();
+      
+      for(size_t j = 0; j < sequenceLenght; j++){
+        aux->push_back(new HintPoint(sequence_name, j));
       }
       hints->push_back(aux);
     }
   }
 
-  void setAllEmptyHintsAsNullHints(){
-    for(size_t i = 0; i < hints->size(); i++){
-      for(size_t j = 0; j < max_sequence_length; j++){
+  void setAllEmptyHintsAsNullHints(vector<FastaSequence> fs){
+    for(size_t i = 0; i < fs.size(); i++){
+      for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
         if(hints->at(i)->at(j)->hintIsEmpty()){
           hints->at(i)->at(j)->setAsNullHint();
         }
@@ -164,9 +250,9 @@ class Hints{
     }
   }
 
-  void printAllHints(){
-    for(size_t i = 0; i < hints->size(); i++){
-      for(size_t j = 0; j < max_sequence_length; j++){
+  void printAllHints(vector<FastaSequence> fs){
+    for(size_t i = 0; i < fs.size(); i++){
+      for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
         hints->at(i)->at(j)->print_hint();
       }
     }
@@ -184,7 +270,7 @@ class Hints{
 	    sequencesNames->push_back(it->first);
 		  it++;
     }
-    this->numberOfsequences = sequencesNames->size();
+    this->numberOfSequences = sequencesNames->size();
     return sequencesNames;
   }
 
@@ -226,8 +312,9 @@ class HintsConverter{
     return hintsLine;
   }
 
-  Hints *convertHintsLineToHints(vector<HintsLine*> *hintsLine){
-    this->hints = new Hints(5000, hintsLine);
+  Hints *convertHintsLineToHints(vector<FastaSequence> *fastaSequences, vector<HintsLine*> *hintsLine){
+    this->hints = new Hints(fastaSequences, hintsLine);
+    
     for(size_t i = 0; i < hintsLine->size(); i++){
       HintsLine *hl = new HintsLine();
       hl =  hintsLine->at(i);
@@ -235,29 +322,35 @@ class HintsConverter{
       string sequenceName = hl->sequenceName;
       int start = stoi(hl->start);
       int end = stoi(hl->end);
-
+      
       for(size_t j = 0; j < this->hints->hints->size(); j++){
-        if(sequenceName.compare(this->hints->hints->at(j)->at(0)->sequenceName) == 0){
-          for(size_t i = start; i <= end; i++){ //-1 to sincronize vector indices and hints indices
-              this->hints->hints->at(j)->at(i)->setType(type);
+        int sizeHintsSequence = this->hints->hints->at(j)->size();
+        string name_hints = this->hints->hints->at(j)->at(0)->sequenceName;
+
+        if(sequenceName.compare(name_hints) == 0){
+          for(size_t k = start; k <=end; k++){
+            this->hints->hints->at(j)->at(k)->setType(type);
           }
         }
       }
     }
+      
     return hints;
   }
 
 };
 
 int main(int argc, char const *argv[]) {
-
+  
+  FastaConverter *fc = new FastaConverter();
+  vector<FastaSequence> *fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-treinamento.fasta");
+  
   HintsConverter *hc = new HintsConverter();
-  vector<HintsLine*> *hintsLine = new vector<HintsLine*>();
-  hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
-  Hints *hints = new Hints(5000, hintsLine);
-  hints = hc->convertHintsLineToHints(hintsLine);
-  hints->setAllEmptyHintsAsNullHints();
-  hints->printAllHints();
+  vector<HintsLine*> *hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
+  Hints *hints = hc->convertHintsLineToHints(fastaSequences, hintsLine);
+  
+  hints->setAllEmptyHintsAsNullHints(*fastaSequences);
+  hints->printAllHints(*fastaSequences);
 
   return 0;
 }
