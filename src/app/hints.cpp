@@ -224,27 +224,27 @@ class Hints{
 
   int numberOfSequences;
   vector<string> * sequencesNames = new vector<string>();
-  vector<vector<HintPoint*>*> *hints = new vector<vector<HintPoint*>*>();
+  vector<vector<HintPoint>> hints;
 
-  Hints(vector<FastaSequence> *fastaSequences, vector<HintsLine*> *hintsLine){
+  Hints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
     
-    for(size_t i = 0; i < fastaSequences->size(); i++){
-      vector<HintPoint*> *aux = new vector<HintPoint*>();
-      unsigned int sequenceLenght = fastaSequences->at(i).getSequenceValue().length();
-      string sequence_name = fastaSequences->at(i).getSequenceName();
+    for(size_t i = 0; i < fastaSequences.size(); i++){
+      vector<HintPoint> aux;
+      unsigned int sequenceLenght = fastaSequences.at(i).getSequenceValue().length();
+      string sequence_name = fastaSequences.at(i).getSequenceName();
       
       for(size_t j = 0; j < sequenceLenght; j++){
-        aux->push_back(new HintPoint(sequence_name, j));
+        aux.push_back(HintPoint(sequence_name, j));
       }
-      hints->push_back(aux);
+      hints.push_back(aux);
     }
   }
 
   void setAllEmptyHintsAsNullHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        if(hints->at(i)->at(j)->hintIsEmpty()){
-          hints->at(i)->at(j)->setAsNullHint();
+        if(hints.at(i).at(j).hintIsEmpty()){
+          hints.at(i).at(j).setAsNullHint();
         }
       }
     }
@@ -253,7 +253,7 @@ class Hints{
   void printAllHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        hints->at(i)->at(j)->print_hint();
+        hints.at(i).at(j).print_hint();
       }
     }
   }
@@ -286,13 +286,12 @@ class Hints{
 
 class HintsConverter{
   public:
-  vector<HintsLine*> *hintsLine;
+  vector<HintsLine> hintsLine;
   Hints *hints;
   int numberOfsequences;
   string fileName;
 
-  vector<HintsLine*> *convertGffFileToHintsLine(string fileName){
-    hintsLine = new vector<HintsLine*>();
+  vector<HintsLine> convertGffFileToHintsLine(string fileName){
     this->fileName = fileName;
     ifstream hintsFile(fileName);
     string line;
@@ -306,30 +305,29 @@ class HintsConverter{
     }
 
     for (size_t i = 0; i < tokens.size(); i+=9){ //+9 to jump to next line of gff file
-      HintsLine *n = new HintsLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
-      hintsLine->push_back(n);
+      HintsLine n = HintsLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
+      hintsLine.push_back(n);
     }
     return hintsLine;
   }
 
-  Hints *convertHintsLineToHints(vector<FastaSequence> *fastaSequences, vector<HintsLine*> *hintsLine){
+  Hints *convertHintsLineToHints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
     this->hints = new Hints(fastaSequences, hintsLine);
     
-    for(size_t i = 0; i < hintsLine->size(); i++){
-      HintsLine *hl = new HintsLine();
-      hl =  hintsLine->at(i);
-      string type = hl->feature;
-      string sequenceName = hl->sequenceName;
-      int start = stoi(hl->start);
-      int end = stoi(hl->end);
+    for(size_t i = 0; i < hintsLine.size(); i++){
+      HintsLine hl =  hintsLine.at(i);
+      string type = hl.feature;
+      string sequenceName = hl.sequenceName;
+      int start = stoi(hl.start);
+      int end = stoi(hl.end);
       
-      for(size_t j = 0; j < this->hints->hints->size(); j++){
-        int sizeHintsSequence = this->hints->hints->at(j)->size();
-        string name_hints = this->hints->hints->at(j)->at(0)->sequenceName;
+      for(size_t j = 0; j < this->hints->hints.size(); j++){
+        int sizeHintsSequence = this->hints->hints.at(j).size();
+        string name_hints = this->hints->hints.at(j).at(0).sequenceName;
 
         if(sequenceName.compare(name_hints) == 0){
           for(size_t k = start; k <=end; k++){
-            this->hints->hints->at(j)->at(k)->setType(type);
+            this->hints->hints.at(j).at(k).setType(type);
           }
         }
       }
@@ -346,8 +344,8 @@ int main(int argc, char const *argv[]) {
   vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-treinamento.fasta");
   
   HintsConverter *hc = new HintsConverter();
-  vector<HintsLine*> *hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
-  Hints *hints = hc->convertHintsLineToHints(&fastaSequences, hintsLine);
+  vector<HintsLine> hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
+  Hints *hints = hc->convertHintsLineToHints(fastaSequences, hintsLine);
   
   hints->setAllEmptyHintsAsNullHints(fastaSequences);
   hints->printAllHints(fastaSequences);
