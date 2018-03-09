@@ -166,18 +166,18 @@ class FastaSequence{
 //based on Rosetta http://rosettacode.org/wiki/FASTA_format#C%2B%2B
 class FastaConverter{
   public:
-    vector<FastaSequence> *converteFastaFileToFastaSequence(string fastaFile){
-      vector<FastaSequence> *fastaSequences = new vector<FastaSequence>();  
+    vector<FastaSequence> converteFastaFileToFastaSequence(string fastaFile){
+      vector<FastaSequence> fastaSequences;  
       
       if(fastaFile.empty()){
         std::cerr << "Usage: '"<< fastaFile <<"' [fasta infile]" << std::endl;
-        return nullptr;
+        return fastaSequences;
       }
  
       std::ifstream input(fastaFile);
       if(!input.good()){
         std::cerr << "Error opening " << fastaFile << ". Bailing out." << std::endl;
-        return nullptr;
+        return fastaSequences;
       }
  
       std::string line, name, content;
@@ -188,7 +188,7 @@ class FastaConverter{
           if( !name.empty() ){ // Print out what we read from the last entry
             fs.setSequenceName(name);
             fs.setSequenceValue(content);
-            fastaSequences->push_back(fs);
+            fastaSequences.push_back(fs);
             name.clear();
           }
           if( !line.empty() ){
@@ -209,7 +209,7 @@ class FastaConverter{
     if( !name.empty() ){ // Print out what we read from the last entry
       fs.setSequenceName(name);
       fs.setSequenceValue(content);
-      fastaSequences->push_back(fs);
+      fastaSequences.push_back(fs);
     }
  
     return fastaSequences;
@@ -343,14 +343,14 @@ class HintsConverter{
 int main(int argc, char const *argv[]) {
   
   FastaConverter *fc = new FastaConverter();
-  vector<FastaSequence> *fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-treinamento.fasta");
+  vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-treinamento.fasta");
   
   HintsConverter *hc = new HintsConverter();
   vector<HintsLine*> *hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
-  Hints *hints = hc->convertHintsLineToHints(fastaSequences, hintsLine);
+  Hints *hints = hc->convertHintsLineToHints(&fastaSequences, hintsLine);
   
-  hints->setAllEmptyHintsAsNullHints(*fastaSequences);
-  hints->printAllHints(*fastaSequences);
+  hints->setAllEmptyHintsAsNullHints(fastaSequences);
+  hints->printAllHints(fastaSequences);
 
   return 0;
 }
