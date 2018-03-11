@@ -223,7 +223,7 @@ class Hints{
   public:
 
   int numberOfSequences;
-  vector<string> * sequencesNames = new vector<string>();
+  vector<string> sequencesNames;
   vector<vector<HintPoint>> hints;
 
   Hints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
@@ -258,29 +258,29 @@ class Hints{
     }
   }
 
-  vector<string> *getSequencesNames(vector<HintsLine*> *hintsLine){
-    unordered_map<string,string> *sequencesNamesHash = new unordered_map<string,string>();
-    vector<string> *sequencesNames = new vector<string>();
-    for(size_t i = 0; i < hintsLine->size(); i++){
-      string sequenceName = hintsLine->at(i)->sequenceName;
-      sequencesNamesHash->emplace(sequenceName, sequenceName);
+  vector<string> getSequencesNames(vector<HintsLine> hintsLine){
+    unordered_map<string,string> sequencesNamesHash;
+    vector<string> sequencesNames;
+    for(size_t i = 0; i < hintsLine.size(); i++){
+      string sequenceName = hintsLine.at(i).sequenceName;
+      sequencesNamesHash.emplace(sequenceName, sequenceName);
     }
-    unordered_map<string, string>::iterator it = sequencesNamesHash->begin();
-    while (it != sequencesNamesHash->end()){
-	    sequencesNames->push_back(it->first);
+    unordered_map<string, string>::iterator it = sequencesNamesHash.begin();
+    while (it != sequencesNamesHash.end()){
+        sequencesNames.push_back(it->first);
 		  it++;
     }
-    this->numberOfSequences = sequencesNames->size();
+    this->numberOfSequences = sequencesNames.size();
     return sequencesNames;
   }
 
-  int getNumberOfSequencesNames(vector<HintsLine*> *hintsLine){
-    unordered_map<string,string> *sequencesNamesHash = new unordered_map<string,string>();
-    for(size_t i = 0; i < hintsLine->size(); i++){
-      string sequenceName = hintsLine->at(i)->sequenceName;
-      sequencesNamesHash->emplace(sequenceName, sequenceName);
+  int getNumberOfSequencesNames(vector<HintsLine> hintsLine){
+    unordered_map<string,string> sequencesNamesHash;
+    for(size_t i = 0; i < hintsLine.size(); i++){
+      string sequenceName = hintsLine.at(i).sequenceName;
+      sequencesNamesHash.emplace(sequenceName, sequenceName);
     }
-    return sequencesNamesHash->size();
+    return sequencesNamesHash.size();
   }
 };
 
