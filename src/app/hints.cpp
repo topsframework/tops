@@ -224,7 +224,7 @@ class Hints{
 
   int numberOfSequences;
   vector<string> sequencesNames;
-  vector<vector<HintPoint>> hints;
+  vector<vector<HintPoint>> allHints;
 
   Hints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
     
@@ -236,15 +236,15 @@ class Hints{
       for(size_t j = 0; j < sequenceLenght; j++){
         aux.push_back(HintPoint(sequence_name, j));
       }
-      hints.push_back(aux);
+      allHints.push_back(aux);
     }
   }
 
   void setAllEmptyHintsAsNullHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        if(hints.at(i).at(j).hintIsEmpty()){
-          hints.at(i).at(j).setAsNullHint();
+        if(allHints.at(i).at(j).hintIsEmpty()){
+          allHints.at(i).at(j).setAsNullHint();
         }
       }
     }
@@ -253,7 +253,7 @@ class Hints{
   void printAllHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        hints.at(i).at(j).print_hint();
+        allHints.at(i).at(j).print_hint();
       }
     }
   }
@@ -270,7 +270,6 @@ class Hints{
         sequencesNames.push_back(it->first);
 		  it++;
     }
-    this->numberOfSequences = sequencesNames.size();
     return sequencesNames;
   }
 
@@ -286,16 +285,12 @@ class Hints{
 
 class HintsConverter{
   public:
-  vector<HintsLine> hintsLine;
-  Hints *hints;
-  int numberOfsequences;
-  string fileName;
-
+  
   vector<HintsLine> convertGffFileToHintsLine(string fileName){
-    this->fileName = fileName;
     ifstream hintsFile(fileName);
     string line;
     vector<string> tokens;
+    vector<HintsLine>  hintsLine;
 
     while(getline(hintsFile, line)) {
       istringstream iss(line);
@@ -312,7 +307,7 @@ class HintsConverter{
   }
 
   Hints *convertHintsLineToHints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
-    this->hints = new Hints(fastaSequences, hintsLine);
+    Hints *hints = new Hints(fastaSequences, hintsLine);
     
     for(size_t i = 0; i < hintsLine.size(); i++){
       HintsLine hl =  hintsLine.at(i);
@@ -321,13 +316,13 @@ class HintsConverter{
       int start = stoi(hl.start);
       int end = stoi(hl.end);
       
-      for(size_t j = 0; j < this->hints->hints.size(); j++){
-        int sizeHintsSequence = this->hints->hints.at(j).size();
-        string name_hints = this->hints->hints.at(j).at(0).sequenceName;
+      for(size_t j = 0; j < hints->allHints.size(); j++){
+        int sizeHintsSequence = hints->allHints.at(j).size();
+        string name_hints = hints->allHints.at(j).at(0).sequenceName;
 
         if(sequenceName.compare(name_hints) == 0){
           for(size_t k = start; k <=end; k++){
-            this->hints->hints.at(j).at(k).setType(type);
+            hints->allHints.at(j).at(k).setType(type);
           }
         }
       }
