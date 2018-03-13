@@ -6,7 +6,7 @@
 using namespace std;
 
 //The HintLine has a line of gff hint file
-class HintsLine{
+class GtfLine{
   public:
     string sequenceName;
     string source;
@@ -18,7 +18,7 @@ class HintsLine{
     string frame;
     string atribute;
 
-    HintsLine(){
+    GtfLine(){
       this->sequenceName = "";
       this->source = "";
       this->feature = "";
@@ -30,7 +30,7 @@ class HintsLine{
       this->atribute = "";
     }
 
-    HintsLine(string sequenceName, string source, string feature, string start, string end, string score,
+    GtfLine(string sequenceName, string source, string feature, string start, string end, string score,
      string strand, string frame, string atribute) {
       this->sequenceName = sequenceName;
       this->source = source;
@@ -136,7 +136,7 @@ class FastaSequence{
   private:
   string sequenceName;
   string sequenceValue;
- 
+
   public:
   FastaSequence(string sequenceName, string sequenceValue){
     this->sequenceName = sequenceName;
@@ -151,15 +151,15 @@ class FastaSequence{
   }
 
   void setSequenceValue(string sequenceValue){
-    this->sequenceValue = sequenceValue; 
+    this->sequenceValue = sequenceValue;
   }
-  
+
   string getSequenceName(){
     return this->sequenceName;
   }
 
   string getSequenceValue(){
-    return this->sequenceValue; 
+    return this->sequenceValue;
   }
 };
 
@@ -167,19 +167,19 @@ class FastaSequence{
 class FastaConverter{
   public:
     vector<FastaSequence> converteFastaFileToFastaSequence(string fastaFile){
-      vector<FastaSequence> fastaSequences;  
-      
+      vector<FastaSequence> fastaSequences;
+
       if(fastaFile.empty()){
         std::cerr << "Usage: '"<< fastaFile <<"' [fasta infile]" << std::endl;
         return fastaSequences;
       }
- 
+
       std::ifstream input(fastaFile);
       if(!input.good()){
         std::cerr << "Error opening " << fastaFile << ". Bailing out." << std::endl;
         return fastaSequences;
       }
- 
+
       std::string line, name, content;
       FastaSequence fs;
       while( std::getline( input, line ).good() ){
@@ -211,7 +211,7 @@ class FastaConverter{
       fs.setSequenceValue(content);
       fastaSequences.push_back(fs);
     }
- 
+
     return fastaSequences;
     }
 
@@ -226,13 +226,13 @@ class Hints{
   vector<string> sequencesNames;
   vector<vector<HintPoint>> allHints;
 
-  Hints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
-    
+  Hints(vector<FastaSequence> fastaSequences, vector<GtfLine> gtfLine){
+
     for(size_t i = 0; i < fastaSequences.size(); i++){
       vector<HintPoint> aux;
       unsigned int sequenceLenght = fastaSequences.at(i).getSequenceValue().length();
       string sequence_name = fastaSequences.at(i).getSequenceName();
-      
+
       for(size_t j = 0; j < sequenceLenght; j++){
         aux.push_back(HintPoint(sequence_name, j));
       }
@@ -258,11 +258,11 @@ class Hints{
     }
   }
 
-  vector<string> getSequencesNames(vector<HintsLine> hintsLine){
+  vector<string> getSequencesNames(vector<GtfLine> gtfLine){
     unordered_map<string,string> sequencesNamesHash;
     vector<string> sequencesNames;
-    for(size_t i = 0; i < hintsLine.size(); i++){
-      string sequenceName = hintsLine.at(i).sequenceName;
+    for(size_t i = 0; i < gtfLine.size(); i++){
+      string sequenceName = gtfLine.at(i).sequenceName;
       sequencesNamesHash.emplace(sequenceName, sequenceName);
     }
     unordered_map<string, string>::iterator it = sequencesNamesHash.begin();
@@ -273,10 +273,10 @@ class Hints{
     return sequencesNames;
   }
 
-  int getNumberOfSequencesNames(vector<HintsLine> hintsLine){
+  int getNumberOfSequencesNames(vector<GtfLine> gtfLine){
     unordered_map<string,string> sequencesNamesHash;
-    for(size_t i = 0; i < hintsLine.size(); i++){
-      string sequenceName = hintsLine.at(i).sequenceName;
+    for(size_t i = 0; i < gtfLine.size(); i++){
+      string sequenceName = gtfLine.at(i).sequenceName;
       sequencesNamesHash.emplace(sequenceName, sequenceName);
     }
     return sequencesNamesHash.size();
@@ -285,12 +285,12 @@ class Hints{
 
 class HintsConverter{
   public:
-  
-  vector<HintsLine> convertGffFileToHintsLine(string fileName){
+
+  vector<GtfLine> convertGtfFileToGtfLine(string fileName){
     ifstream hintsFile(fileName);
     string line;
     vector<string> tokens;
-    vector<HintsLine>  hintsLine;
+    vector<GtfLine>  gtfLine;
 
     while(getline(hintsFile, line)) {
       istringstream iss(line);
@@ -300,22 +300,22 @@ class HintsConverter{
     }
 
     for (size_t i = 0; i < tokens.size(); i+=9){ //+9 to jump to next line of gff file
-      HintsLine n = HintsLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
-      hintsLine.push_back(n);
+      GtfLine n = GtfLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3], tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
+      gtfLine.push_back(n);
     }
-    return hintsLine;
+    return gtfLine;
   }
 
-  Hints *convertHintsLineToHints(vector<FastaSequence> fastaSequences, vector<HintsLine> hintsLine){
-    Hints *hints = new Hints(fastaSequences, hintsLine);
-    
-    for(size_t i = 0; i < hintsLine.size(); i++){
-      HintsLine hl =  hintsLine.at(i);
+  Hints *convertGtfLineToHints(vector<FastaSequence> fastaSequences, vector<GtfLine> gtfLine){
+    Hints *hints = new Hints(fastaSequences, gtfLine);
+
+    for(size_t i = 0; i < gtfLine.size(); i++){
+      GtfLine hl =  gtfLine.at(i);
       string type = hl.feature;
       string sequenceName = hl.sequenceName;
       int start = stoi(hl.start);
       int end = stoi(hl.end);
-      
+
       for(size_t j = 0; j < hints->allHints.size(); j++){
         int sizeHintsSequence = hints->allHints.at(j).size();
         string name_hints = hints->allHints.at(j).at(0).sequenceName;
@@ -327,23 +327,23 @@ class HintsConverter{
         }
       }
     }
-      
+
     return hints;
   }
 
 };
 
 int main(int argc, char const *argv[]) {
-  
+
   FastaConverter *fc = new FastaConverter();
-  vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-treinamento.fasta");
-  
+  vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-test_0.fasta");
+
   HintsConverter *hc = new HintsConverter();
-  vector<HintsLine> hintsLine = hc->convertGffFileToHintsLine("2-seq-hints.gff");
-  Hints *hints = hc->convertHintsLineToHints(fastaSequences, hintsLine);
-  
+  vector<GtfLine> gtfLine = hc->convertGtfFileToGtfLine("2-seq-test_0-hints-ssOn.est.gtf");
+  Hints *hints = hc->convertGtfLineToHints(fastaSequences, gtfLine);
+
   hints->setAllEmptyHintsAsNullHints(fastaSequences);
   hints->printAllHints(fastaSequences);
-
+  
   return 0;
 }
