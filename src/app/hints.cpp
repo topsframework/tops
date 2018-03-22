@@ -166,7 +166,7 @@ class FastaSequence{
 //based on Rosetta http://rosettacode.org/wiki/FASTA_format#C%2B%2B
 class FastaConverter{
   public:
-    vector<FastaSequence> converteFastaFileToFastaSequence(string fastaFile){
+    vector<FastaSequence> converteFastaFileToFastaSequences(string fastaFile){
       vector<FastaSequence> fastaSequences;
 
       if(fastaFile.empty()){
@@ -286,11 +286,18 @@ class Hints{
 class HintsConverter{
   public:
 
-  vector<GtfLine> convertGtfFileToGtfLine(string fileName){
-    ifstream hintsFile(fileName);
+  vector<GtfLine> convertGtfFileToGtfLine(string gtfFile){
+    ifstream hintsFile(gtfFile);
+    vector<GtfLine>  gtfLine;
+    
+    if(!hintsFile.good()){
+        std::cerr << "Error opening " << gtfFile << ". Bailing out." << std::endl;
+        return gtfLine;
+    }
+    
     string line;
     vector<string> tokens;
-    vector<GtfLine>  gtfLine;
+    
 
     while(getline(hintsFile, line)) {
       istringstream iss(line);
@@ -336,7 +343,7 @@ class HintsConverter{
 int main(int argc, char const *argv[]) {
 
   FastaConverter *fc = new FastaConverter();
-  vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequence("2-seq-test_0.fasta");
+  vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequences("2-seq-test_0.fasta");
 
   HintsConverter *hc = new HintsConverter();
   vector<GtfLine> gtfLine = hc->convertGtfFileToGtfLine("2-seq-test_0-hints-ssOn.est.gtf");
