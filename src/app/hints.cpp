@@ -134,32 +134,32 @@ class HintPoint{
 
 class FastaSequence{
   private:
-  string sequenceName;
-  string sequenceValue;
+  string _sequenceName;
+  string _sequenceValue;
 
   public:
   FastaSequence(string sequenceName, string sequenceValue){
-    this->sequenceName = sequenceName;
-    this->sequenceValue = sequenceValue;
+    _sequenceName = sequenceName;
+    _sequenceValue = sequenceValue;
   }
 
   FastaSequence(){
   }
 
   void setSequenceName(string sequenceName){
-    this->sequenceName = sequenceName;
+    _sequenceName = sequenceName;
   }
 
   void setSequenceValue(string sequenceValue){
-    this->sequenceValue = sequenceValue;
+    _sequenceValue = sequenceValue;
   }
 
   string getSequenceName(){
-    return this->sequenceName;
+    return _sequenceName;
   }
 
   string getSequenceValue(){
-    return this->sequenceValue;
+    return _sequenceValue;
   }
 };
 
@@ -222,11 +222,11 @@ class FastaConverter{
 class Hints{
   public:
 
-  int numberOfSequences;
-  vector<string> sequencesNames;
-  vector<vector<HintPoint>> allHints;
+  int _numberOfSequences;
+  vector<string> _sequencesNames;
+  vector<vector<HintPoint>> _allHints;
 
-  Hints(vector<FastaSequence> fastaSequences, vector<GtfLine> gtfLine){
+  Hints(vector<FastaSequence> fastaSequences){
 
     for(size_t i = 0; i < fastaSequences.size(); i++){
       vector<HintPoint> aux;
@@ -236,15 +236,15 @@ class Hints{
       for(size_t j = 0; j < sequenceLenght; j++){
         aux.push_back(HintPoint(sequence_name, j));
       }
-      allHints.push_back(aux);
+      _allHints.push_back(aux);
     }
   }
 
   void setAllEmptyHintsAsNullHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        if(allHints.at(i).at(j).hintIsEmpty()){
-          allHints.at(i).at(j).setAsNullHint();
+        if(_allHints.at(i).at(j).hintIsEmpty()){
+          _allHints.at(i).at(j).setAsNullHint();
         }
       }
     }
@@ -253,7 +253,7 @@ class Hints{
   void printAllHints(vector<FastaSequence> fs){
     for(size_t i = 0; i < fs.size(); i++){
       for(size_t j = 0; j < fs.at(i).getSequenceValue().length(); j++){
-        allHints.at(i).at(j).print_hint();
+        _allHints.at(i).at(j).print_hint();
       }
     }
   }
@@ -314,7 +314,7 @@ class HintsConverter{
   }
 
   Hints *convertGtfLineToHints(vector<FastaSequence> fastaSequences, vector<GtfLine> gtfLine){
-    Hints *hints = new Hints(fastaSequences, gtfLine);
+    Hints *hints = new Hints(fastaSequences);
 
     for(size_t i = 0; i < gtfLine.size(); i++){
       GtfLine hl =  gtfLine.at(i);
@@ -323,13 +323,12 @@ class HintsConverter{
       int start = stoi(hl.start);
       int end = stoi(hl.end);
 
-      for(size_t j = 0; j < hints->allHints.size(); j++){
-        int sizeHintsSequence = hints->allHints.at(j).size();
-        string name_hints = hints->allHints.at(j).at(0).sequenceName;
+      for(size_t j = 0; j < hints->_allHints.size(); j++){
+        string name_hints = hints->_allHints.at(j).at(0).sequenceName;
 
         if(sequenceName.compare(name_hints) == 0){
-          for(size_t k = start; k <=end; k++){
-            hints->allHints.at(j).at(k).setType(type);
+          for(int k = start; k <=end; k++){
+            hints->_allHints.at(j).at(k).setType(type);
           }
         }
       }
