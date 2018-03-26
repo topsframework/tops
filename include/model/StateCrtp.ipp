@@ -30,13 +30,20 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
-StateCrtp<E, T, D>::StateCrtp(Id id, EmissionModelPtr emission,
-                                     TransitionModelPtr transition,
-                                     DurationPtr duration)
+StateCrtp<E, T, D>::StateCrtp(
+    Id id,
+    EmissionModelPtr emission,
+    TransitionModelPtr transition,
+    DurationPtr duration,
+    std::pair<std::size_t, std::size_t> extensions,
+    std::pair<std::size_t, std::size_t> phases)
     : _id(std::move(id)),
       _emission(std::move(emission)),
       _transition(std::move(transition)),
-      _duration(std::move(duration)) {
+      _duration(std::move(duration)),
+      _extensions(std::move(extensions)),
+      _phases(std::move(phases))
+  {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -149,6 +156,34 @@ auto StateCrtp<E, T, D>::successors() -> std::vector<Id>& {
 template<typename E, typename T, typename D>
 auto StateCrtp<E, T, D>::successors() const -> const std::vector<Id>& {
   return _successors;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+std::size_t StateCrtp<E, T, D>::beginExtension() const {
+  return _extensions.first;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+std::size_t StateCrtp<E, T, D>::endExtension() const {
+  return _extensions.second;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+std::size_t StateCrtp<E, T, D>::beginPhase() const {
+  return _phases.first;
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename E, typename T, typename D>
+std::size_t StateCrtp<E, T, D>::endPhase() const {
+  return _phases.second;
 }
 
 /*----------------------------------------------------------------------------*/

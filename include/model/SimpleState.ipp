@@ -31,18 +31,28 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, std::size_t d, bool... gaps>
-SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
-                                                  TransitionModelPtr transition,
-                                                  DurationPtr duration)
-    : Base(id, emission, transition, duration), _gaps{ gaps... } {
+SimpleState<E, T, d, gaps...>::SimpleState(
+    Id id,
+    EmissionModelPtr emission,
+    TransitionModelPtr transition,
+    DurationPtr duration,
+    std::pair<std::size_t, std::size_t> extensions,
+    std::pair<std::size_t, std::size_t> phases)
+    : Base(id, emission, transition, duration, extensions, phases),
+      _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, std::size_t d, bool... gaps>
-SimpleState<E, T, d, gaps...>::SimpleState(Id id, EmissionModelPtr emission,
-                                                  TransitionModelPtr transition)
-    : Base(id, emission, transition, FixedDuration::make(1)), _gaps{ gaps... } {
+SimpleState<E, T, d, gaps...>::SimpleState(
+    Id id,
+    EmissionModelPtr emission,
+    TransitionModelPtr transition,
+    std::pair<std::size_t, std::size_t> extensions,
+    std::pair<std::size_t, std::size_t> phases)
+    : Base(id, emission, transition, FixedDuration::make(1), extensions, phases),
+      _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/

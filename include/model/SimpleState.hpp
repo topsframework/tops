@@ -78,11 +78,15 @@ class SimpleState
 
   // Constructors
   SimpleState(Id id, EmissionModelPtr emission,
-                     TransitionModelPtr transition);
+                     TransitionModelPtr transition,
+                     std::pair<std::size_t, std::size_t> extensions = { 0, 0 },
+                     std::pair<std::size_t, std::size_t> phases = { 0, 0 });
 
   SimpleState(Id id, EmissionModelPtr emission,
                      TransitionModelPtr transition,
-                     DurationPtr duration);
+                     DurationPtr duration,
+                     std::pair<std::size_t, std::size_t> extensions = { 0, 0 },
+                     std::pair<std::size_t, std::size_t> phases = { 0, 0 });
 
   // Overriden methods
   bool hasGap(Dimension dim) const override;

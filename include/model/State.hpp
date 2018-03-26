@@ -86,6 +86,12 @@ class State {
   virtual std::vector<Id>& successors() = 0;
   virtual const std::vector<Id>& successors() const = 0;
 
+  virtual std::size_t beginExtension() const = 0;
+  virtual std::size_t endExtension() const = 0;
+
+  virtual std::size_t beginPhase() const = 0;
+  virtual std::size_t endPhase() const = 0;
+
   virtual bool hasGap(Dimension dim) const = 0;
   virtual bool isSilent() const = 0;
 

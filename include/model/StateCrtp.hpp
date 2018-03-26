@@ -94,6 +94,12 @@ class StateCrtp
   std::vector<Id>& successors() override;
   const std::vector<Id>& successors() const override;
 
+  std::size_t beginExtension() const override;
+  std::size_t endExtension() const override;
+
+  std::size_t beginPhase() const override;
+  std::size_t endPhase() const override;
+
   // Virtual methods
   virtual void serialize(SSPtr serializer);
 
@@ -101,7 +107,9 @@ class StateCrtp
   // Constructors
   StateCrtp(Id id, EmissionModelPtr emission,
                    TransitionModelPtr transition,
-                   DurationPtr duration);
+                   DurationPtr duration,
+                   std::pair<std::size_t, std::size_t> extensions,
+                   std::pair<std::size_t, std::size_t> phases);
 
   // Instance variables
   Id _id;
@@ -109,6 +117,9 @@ class StateCrtp
   EmissionModelPtr _emission;
   TransitionModelPtr _transition;
   DurationPtr _duration;
+
+  std::pair<std::size_t, std::size_t> _extensions;
+  std::pair<std::size_t, std::size_t> _phases;
 
   std::vector<Id> _predecessors;
   std::vector<Id> _successors;
