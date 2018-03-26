@@ -101,10 +101,12 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     std::vector<StatePtr> states,
     std::size_t state_alphabet_size,
     std::size_t observation_alphabet_size,
+    std::size_t num_phases,
     std::size_t max_backtracking)
     : _states(std::move(states)),
       _state_alphabet_size(std::move(state_alphabet_size)),
       _observation_alphabet_size(std::move(observation_alphabet_size)),
+      _num_phases(std::move(num_phases)),
       _max_backtracking(std::move(max_backtracking)) {
 }
 
@@ -226,11 +228,16 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
+      auto phase = state->beginPhase();
 
       if (!state->hasGap(0) && i == 0) continue;
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
+        auto begin = i-d, end = i;
+
+        if (!segmentIsViable(sequences[0], begin, end, _states[k])) continue;
+
         for (auto p : state->predecessors()) {
           Probability candidate_max
             = gammas[p][i - d]
@@ -240,7 +247,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
                         ->probabilityOfLenght(d)
             * _states[k]->emission()
                         ->standardEvaluator(sequences[0])
-                        ->evaluateSequence(i-d, i);
+                        ->evaluateSequence(begin, end, phase);
 
           if (candidate_max > gammas[k][i]) {
             gammas[k][i] = candidate_max;
@@ -323,11 +330,16 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
+      auto phase = state->beginPhase();
 
       if (!state->hasGap(0) && i == 0) continue;
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
+        auto begin = i-d, end = i;
+
+        if (!segmentIsViable(sequences[0], begin, end, _states[k])) continue;
+
         for (auto p : state->predecessors()) {
           alphas[k][i]
             += alphas[p][i - d]
@@ -337,7 +349,7 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
                         ->probabilityOfLenght(d)
             * _states[k]->emission()
                         ->standardEvaluator(sequences[0])
-                        ->evaluateSequence(i-d, i);
+                        ->evaluateSequence(begin, end, phase);
         }
       }
     }
@@ -368,8 +380,14 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
       for (auto s : state->successors()) {
         if (!_states[s]->hasGap(0) && i == sequences[0].size()) continue;
 
+        auto phase = _states[s]->beginPhase();
+
         auto max_length = std::min(sequences[0].size()-i, _max_backtracking);
         for (auto d : _states[s]->duration()->possibleLengths(max_length)) {
+          auto begin = i, end = i+d;
+
+          if (!segmentIsViable(sequences[0], begin, end, _states[s])) continue;
+
           betas[k][i]
             += _states[k]->transition()
                          ->probabilityOf(s)
@@ -377,7 +395,7 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
                         ->probabilityOfLenght(d)
             * _states[s]->emission()
                         ->standardEvaluator(sequences[0])
-                        ->evaluateSequence(i, i+d)
+                        ->evaluateSequence(begin, end, phase)
             * betas[s][i + d];
         }
       }
@@ -388,6 +406,36 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
   Probability full = betas[_begin_id][0];
 
   return { full, betas };
+}
+
+/*----------------------------------------------------------------------------*/
+
+bool GeneralizedHiddenMarkovModel::segmentIsViable(
+    const Sequence& sequence,
+    std::size_t begin,
+    std::size_t end,
+    const StatePtr& state) const {
+  const Probability zero = 0;
+
+  bool exceedsBegin = (begin < state->beginExtension());
+  bool exceedsEnd = (end + state->endExtension() > sequence.size());
+
+  if (exceedsBegin || exceedsEnd) return false;
+
+  auto extended_begin
+    = begin - state->beginExtension();
+  auto extended_end
+    = end + state->endExtension();
+  auto extended_phase
+    = (state->beginPhase() - state->beginExtension()) % _num_phases;
+
+  auto prob = state->emission()
+                   ->standardEvaluator(sequence)
+                   ->evaluateSequence(extended_begin,
+                                      extended_end,
+                                      extended_phase);
+
+  return prob != zero;
 }
 
 /*----------------------------------------------------------------------------*/

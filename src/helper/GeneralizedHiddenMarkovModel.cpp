@@ -28,7 +28,6 @@
 #include "helper/DiscreteIIDModel.hpp"
 
 #include "model/Probability.hpp"
-#include "model/FixedDuration.hpp"
 
 namespace tops {
 namespace helper {
@@ -137,7 +136,8 @@ model::GeneralizedHiddenMarkovModelPtr createDishonestCoinCasinoGHMM() {
   states[E]->addPredecessor(H);
   states[E]->addPredecessor(D);
 
-  return std::make_shared<model::GeneralizedHiddenMarkovModel>(states, 4, 2, 100);
+  return std::make_shared<model::GeneralizedHiddenMarkovModel>(
+		  states, 4, 2, 1, 100);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -237,7 +237,8 @@ model::GeneralizedHiddenMarkovModelPtr createUntrainedDishonestCoinCasinoGHMM() 
   states[E]->addPredecessor(H);
   states[E]->addPredecessor(D);
 
-  return std::make_shared<model::GeneralizedHiddenMarkovModel>(states, 4, 2, 100);
+  return std::make_shared<model::GeneralizedHiddenMarkovModel>(
+		  states, 4, 2, 1, 100);
 }
 
 /*----------------------------------------------------------------------------*/

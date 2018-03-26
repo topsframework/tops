@@ -150,7 +150,8 @@ class GeneralizedHiddenMarkovModel
       std::vector<StatePtr> states,
       std::size_t state_alphabet_size,
       std::size_t observation_alphabet_size,
-      std::size_t max_backtracking = 100);
+      std::size_t num_phases,
+      std::size_t max_backtracking);
 
   /*============================[ STATIC METHODS ]============================*/
 
@@ -615,6 +616,11 @@ class GeneralizedHiddenMarkovModel
   CalculatorReturn backward(const Sequences& sequences) const;
 
   // Helpers
+  bool segmentIsViable(const Sequence& sequence,
+                       std::size_t begin,
+                       std::size_t end,
+                       const StatePtr& state) const;
+
   TraceBackReturn traceBack(const Sequences& sequences,
                             const MultiArray<typename State::Id, 2>& psi,
                             const MultiArray<typename std::size_t, 2>& phi) const;
@@ -624,6 +630,7 @@ class GeneralizedHiddenMarkovModel
   std::vector<StatePtr> _states;
   std::size_t _state_alphabet_size;
   std::size_t _observation_alphabet_size;
+  std::size_t _num_phases;
   std::size_t _max_backtracking;
 
   Symbol _gap = _observation_alphabet_size;
