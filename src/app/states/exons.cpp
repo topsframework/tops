@@ -30,14 +30,12 @@
 #include "model/PhasedRunLengthDistribution.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 #include "model/ExplicitDuration.hpp"
-#include "model/GeometricDuration.hpp"
 
 // Imports
-using tops::model::SignalDuration;
+using tops::model::FixedDuration;
 using tops::model::ExplicitDuration;
-using tops::model::GeometricDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -73,7 +71,7 @@ GHMM::StatePtr make_state_ES() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_single_duration, 4, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["ES"], emission_model, transition_model, duration_model);
 }
 
@@ -89,7 +87,7 @@ GHMM::StatePtr make_state_EI0() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["EI0"], emission_model, transition_model, duration_model);
 }
 
@@ -105,7 +103,7 @@ GHMM::StatePtr make_state_EI1() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["EI1"], emission_model, transition_model, duration_model);
 }
 
@@ -121,7 +119,7 @@ GHMM::StatePtr make_state_EI2() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["EI2"], emission_model, transition_model, duration_model);
 }
 
@@ -137,7 +135,7 @@ GHMM::StatePtr make_state_E00() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E00"], emission_model, transition_model, duration_model);
 }
 
@@ -153,7 +151,7 @@ GHMM::StatePtr make_state_E01() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E01"], emission_model, transition_model, duration_model);
 }
 
@@ -169,7 +167,7 @@ GHMM::StatePtr make_state_E02() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E02"], emission_model, transition_model, duration_model);
 }
 
@@ -185,7 +183,7 @@ GHMM::StatePtr make_state_E10() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E10"], emission_model, transition_model, duration_model);
 }
 
@@ -201,7 +199,7 @@ GHMM::StatePtr make_state_E11() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E11"], emission_model, transition_model, duration_model);
 }
 
@@ -217,7 +215,7 @@ GHMM::StatePtr make_state_E12() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E12"], emission_model, transition_model, duration_model);
 }
 
@@ -233,7 +231,7 @@ GHMM::StatePtr make_state_E20() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E20"], emission_model, transition_model, duration_model);
 }
 
@@ -249,7 +247,7 @@ GHMM::StatePtr make_state_E21() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E21"], emission_model, transition_model, duration_model);
 }
 
@@ -265,7 +263,7 @@ GHMM::StatePtr make_state_E22() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["E22"], emission_model, transition_model, duration_model);
 }
 
@@ -281,7 +279,7 @@ GHMM::StatePtr make_state_ET0() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["ET0"], emission_model, transition_model, duration_model);
 }
 
@@ -297,7 +295,7 @@ GHMM::StatePtr make_state_ET1() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 1, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["ET1"], emission_model, transition_model, duration_model);
 }
 
@@ -313,7 +311,7 @@ GHMM::StatePtr make_state_ET2() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 2, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["ET2"], emission_model, transition_model, duration_model);
 }
 
@@ -331,7 +329,7 @@ GHMM::StatePtr make_state_rES() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_single_duration, 4, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rES"], emission_model, transition_model, duration_model);
 }
 
@@ -347,7 +345,7 @@ GHMM::StatePtr make_state_rEI0() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rEI0"], emission_model, transition_model, duration_model);
 }
 
@@ -363,7 +361,7 @@ GHMM::StatePtr make_state_rEI1() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rEI1"], emission_model, transition_model, duration_model);
 }
 
@@ -379,7 +377,7 @@ GHMM::StatePtr make_state_rEI2() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_initial_duration, 11, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rEI2"], emission_model, transition_model, duration_model);
 }
 
@@ -395,7 +393,7 @@ GHMM::StatePtr make_state_rE00() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE00"], emission_model, transition_model, duration_model);
 }
 
@@ -411,7 +409,7 @@ GHMM::StatePtr make_state_rE01() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE01"], emission_model, transition_model, duration_model);
 }
 
@@ -427,7 +425,7 @@ GHMM::StatePtr make_state_rE02() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE02"], emission_model, transition_model, duration_model);
 }
 
@@ -443,7 +441,7 @@ GHMM::StatePtr make_state_rE10() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE10"], emission_model, transition_model, duration_model);
 }
 
@@ -459,7 +457,7 @@ GHMM::StatePtr make_state_rE11() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE11"], emission_model, transition_model, duration_model);
 }
 
@@ -475,7 +473,7 @@ GHMM::StatePtr make_state_rE12() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE12"], emission_model, transition_model, duration_model);
 }
 
@@ -491,7 +489,7 @@ GHMM::StatePtr make_state_rE20() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE20"], emission_model, transition_model, duration_model);
 }
 
@@ -507,7 +505,7 @@ GHMM::StatePtr make_state_rE21() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 1, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE21"], emission_model, transition_model, duration_model);
 }
 
@@ -523,7 +521,7 @@ GHMM::StatePtr make_state_rE22() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_internal_duration, 12, 0, 0, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rE22"], emission_model, transition_model, duration_model);
 }
 
@@ -539,7 +537,7 @@ GHMM::StatePtr make_state_rET0() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 0, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rET0"], emission_model, transition_model, duration_model);
 }
 
@@ -555,7 +553,7 @@ GHMM::StatePtr make_state_rET1() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 1, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rET1"], emission_model, transition_model, duration_model);
 }
 
@@ -571,7 +569,7 @@ GHMM::StatePtr make_state_rET2() {
     = ExplicitDuration::make(
         PRLD::makeFromDiscreteIIDModel(exon_terminal_duration, 5, 2, 2, 3));
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rET2"], emission_model, transition_model, duration_model);
 }
 

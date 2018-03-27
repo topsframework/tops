@@ -29,10 +29,10 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 // Imports
-using tops::model::SignalDuration;
+using tops::model::FixedDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -58,9 +58,9 @@ GHMM::StatePtr make_state_stop() {
   auto transition_model
     = IID::make(index_probabilities({ state_indices["N"] }, { 1 }));
 
-  auto duration_model = SignalDuration::make(3);
+  auto duration_model = FixedDuration::make(3);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rstop"], emission_model, transition_model, duration_model);
 }
 
@@ -88,9 +88,9 @@ GHMM::StatePtr make_state_rstop() {
 
   auto& emission_model = stop_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(3);
+  auto duration_model = FixedDuration::make(3);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rstop"], emission_model, transition_model, duration_model);
 }
 

@@ -22,6 +22,7 @@
 
 // Standard headers
 #include <iostream>
+#include <vector>
 
 // Internal headers
 #include "model/Probability.hpp"
@@ -40,8 +41,8 @@ namespace app {
 /*----------------------------------------------------------------------------*/
 
 std::vector<Probability> index_probabilities(
-		const std::vector<GHMM::State::Id>& indices,
-		const std::vector<Probability>& probabilities) {
+    const std::vector<GHMM::State::Id>& indices,
+    const std::vector<Probability>& probabilities) {
   std::vector<Probability> indexed_probabilities(state_names.size());
   for (std::size_t i = 0; i < indices.size(); i++)
     indexed_probabilities[indices[i]] = probabilities[i];

@@ -29,14 +29,12 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 #include "model/ExplicitDuration.hpp"
-#include "model/GeometricDuration.hpp"
 
 // Imports
-using tops::model::SignalDuration;
+using tops::model::FixedDuration;
 using tops::model::ExplicitDuration;
-using tops::model::GeometricDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -73,11 +71,9 @@ GHMM::StatePtr make_state_I0() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["I0"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["I0"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["I0"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -99,11 +95,9 @@ GHMM::StatePtr make_state_I1() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["I1"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["I1"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["I1"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -125,11 +119,9 @@ GHMM::StatePtr make_state_I2() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["I2"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["I2"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["I2"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -142,7 +134,7 @@ GHMM::StatePtr make_state_Is0() {
 
   auto duration_model = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["Is0"], emission_model, transition_model, duration_model);
 }
 
@@ -157,7 +149,7 @@ GHMM::StatePtr make_state_Is1() {
   auto duration_model
     = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["Is1"], emission_model, transition_model, duration_model);
 }
 
@@ -171,7 +163,7 @@ GHMM::StatePtr make_state_Is2() {
 
   auto duration_model = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["Is2"], emission_model, transition_model, duration_model);
 }
 
@@ -183,9 +175,9 @@ GHMM::StatePtr make_state_If0() {
   auto transition_model
     = IID::make(index_probabilities({ state_indices["I0"] }, { 1 }));
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["If0"], emission_model, transition_model, duration_model);
 }
 
@@ -198,9 +190,9 @@ GHMM::StatePtr make_state_If1() {
     = IID::make(index_probabilities({ state_indices["I1"] }, { 1 }));
 
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["If1"], emission_model, transition_model, duration_model);
 }
 
@@ -213,9 +205,9 @@ GHMM::StatePtr make_state_If2() {
     = IID::make(index_probabilities({ state_indices["I2"] }, { 1 }));
 
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["If2"], emission_model, transition_model, duration_model);
 }
 
@@ -240,11 +232,9 @@ GHMM::StatePtr make_state_rI0() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["rI0"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["rI0"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["rI0"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -266,11 +256,9 @@ GHMM::StatePtr make_state_rI1() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["rI1"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["rI1"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["rI1"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -292,11 +280,9 @@ GHMM::StatePtr make_state_rI2() {
   auto& emission_model = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["rI2"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["rI2"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["rI2"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -310,7 +296,7 @@ GHMM::StatePtr make_state_rIs0() {
   auto duration_model
     = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIs0"], emission_model, transition_model, duration_model);
 }
 
@@ -325,7 +311,7 @@ GHMM::StatePtr make_state_rIs1() {
   auto duration_model
     = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIs1"], emission_model, transition_model, duration_model);
 }
 
@@ -340,7 +326,7 @@ GHMM::StatePtr make_state_rIs2() {
   auto duration_model
     = ExplicitDuration::make(short_duration);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIs2"], emission_model, transition_model, duration_model);
 }
 
@@ -353,9 +339,9 @@ GHMM::StatePtr make_state_rIf0() {
     = IID::make(index_probabilities({ state_indices["rI0"] }, { 1 }));
 
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIf0"], emission_model, transition_model, duration_model);
 }
 
@@ -368,9 +354,9 @@ GHMM::StatePtr make_state_rIf1() {
     = IID::make(index_probabilities({ state_indices["rI1"] }, { 1 }));
 
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIf1"], emission_model, transition_model, duration_model);
 }
 
@@ -383,9 +369,9 @@ GHMM::StatePtr make_state_rIf2() {
     = IID::make(index_probabilities({ state_indices["rI2"] }, { 1 }));
 
   auto duration_model
-    = SignalDuration::make(584);
+    = FixedDuration::make(584);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rIf2"], emission_model, transition_model, duration_model);
 }
 

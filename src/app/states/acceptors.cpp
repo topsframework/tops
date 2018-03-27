@@ -20,6 +20,9 @@
 // Interface header
 #include "app/states.hpp"
 
+// Standard headers
+#include <vector>
+
 // Internal headers
 #include "app/training.hpp"
 
@@ -29,10 +32,10 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 // Imports
-using tops::model::SignalDuration;
+using tops::model::FixedDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -72,9 +75,9 @@ GHMM::StatePtr make_state_acc0() {
 
   auto& emission_model = acceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["acc0"], emission_model, transition_model, duration_model);
 }
 
@@ -100,9 +103,9 @@ GHMM::StatePtr make_state_acc1() {
 
   auto& emission_model = acceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["acc1"], emission_model, transition_model, duration_model);
 }
 
@@ -128,9 +131,9 @@ GHMM::StatePtr make_state_acc2() {
 
   auto& emission_model = acceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["acc2"], emission_model, transition_model, duration_model);
 }
 
@@ -154,9 +157,9 @@ GHMM::StatePtr make_state_racc0() {
 
   auto& emission_model = racceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["racc0"], emission_model, transition_model, duration_model);
 }
 
@@ -178,9 +181,9 @@ GHMM::StatePtr make_state_racc1() {
 
   auto& emission_model = racceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["racc1"], emission_model, transition_model, duration_model);
 }
 
@@ -202,9 +205,9 @@ GHMM::StatePtr make_state_racc2() {
 
   auto& emission_model = racceptor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(42);
+  auto duration_model = FixedDuration::make(42);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["racc2"], emission_model, transition_model, duration_model);
 }
 

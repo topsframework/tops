@@ -69,8 +69,9 @@ Myop::Myop(std::string dataset) {
   /*                               BOTH STRANDS                               */
   /*--------------------------------------------------------------------------*/
 
+  auto B = tops::app::make_state_B();
   auto N = tops::app::make_state_N();
-  auto F = tops::app::make_state_F();
+  auto E = tops::app::make_state_E();
 
   /*--------------------------------------------------------------------------*/
   /*                              FORWARD STRAND                              */
@@ -191,7 +192,7 @@ Myop::Myop(std::string dataset) {
   /*--------------------------------------------------------------------------*/
 
   std::vector<GHMM::StatePtr> states {
-    N,
+    B,
 
     start,
     ES,
@@ -207,6 +208,8 @@ Myop::Myop(std::string dataset) {
     acc0, acc1, acc2,
     stop,
 
+    N,
+
     rstop,
     rES,
     rEI0, rEI1, rEI2,
@@ -221,7 +224,7 @@ Myop::Myop(std::string dataset) {
     rdon0, rdon1, rdon2,
     rstart,
 
-    F
+    E
   };
 
   connect_states(don1, E00);
@@ -240,7 +243,7 @@ Myop::Myop(std::string dataset) {
   connect_states(stop, ET0);
   connect_states(stop, ET1);
   connect_states(stop, ET2);
-  connect_states(F, F);
+  connect_states(E, E);
   connect_states(I0, I0);
   connect_states(acc0, I0);
   connect_states(I1, I1);
@@ -253,8 +256,9 @@ Myop::Myop(std::string dataset) {
   connect_states(acc0, Is0);
   connect_states(acc1, Is1);
   connect_states(acc2, Is2);
-  connect_states(F, N);
+  connect_states(N, B);
   connect_states(N, N);
+  connect_states(E, N);
   connect_states(rstop, N);
   connect_states(start, N);
   connect_states(E00, acc0);
@@ -332,11 +336,8 @@ Myop::Myop(std::string dataset) {
   connect_states(ES, start);
   connect_states(N, stop);
 
-  auto initial_model = IID::make(
-      tops::app::index_probabilities({ tops::app::state_indices["N"] }, { 1 }));
+  _ghmm = GHMM::make(states, states.size(), Myop::alphabetSize, 3, 15'000);
 
-  _ghmm = GHMM::make(states, initial_model,
-                     states.size(), Myop::alphabetSize);
   std::cerr << " OK" << std::endl;
 }
 
@@ -345,9 +346,11 @@ Myop::Myop(std::string dataset) {
 /*----------------------------------------------------------------------------*/
 
 model::Sequence Myop::predict(const model::Sequence& observation) {
-  auto labeler = _ghmm->labeler(observation, true);
-  auto estimation = labeler->labeling(model::Labeler::method::bestPath);
-  return estimation.estimated().label();
+  // auto labeler = _ghmm->labeler(observation, true);
+  // auto estimation = labeler->labeling(model::Labeler::method::bestPath);
+  auto [ estimation, label, alignment, _ ] = _ghmm->viterbi({ observation });
+
+  return label;
 }
 
 /*----------------------------------------------------------------------------*/

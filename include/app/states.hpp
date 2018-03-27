@@ -71,8 +71,9 @@ void print_probabilities(const std::vector<Probability>& probabilities);
 /*                                BOTH STRANDS                                */
 /*----------------------------------------------------------------------------*/
 
+GHMM::StatePtr make_state_B();
 GHMM::StatePtr make_state_N();
-GHMM::StatePtr make_state_F();
+GHMM::StatePtr make_state_E();
 
 /*----------------------------------------------------------------------------*/
 /*                               FORWARD STRAND                               */

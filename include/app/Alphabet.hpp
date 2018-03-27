@@ -48,6 +48,10 @@ class Alphabet {
     return _hash[symbol];
   }
 
+  std::size_t size() {
+    return _vector.size();
+  }
+
  private:
   std::map<std::string, model::Symbol> _hash;
   std::vector<std::string> _vector;

@@ -29,10 +29,10 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/SignalDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 // Imports
-using tops::model::SignalDuration;
+using tops::model::FixedDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -68,9 +68,9 @@ GHMM::StatePtr make_state_don0() {
 
   auto& emission_model = donor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["don0"], emission_model, transition_model, duration_model);
 }
 
@@ -92,9 +92,9 @@ GHMM::StatePtr make_state_don1() {
 
   auto& emission_model = donor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["don1"], emission_model, transition_model, duration_model);
 }
 
@@ -116,9 +116,9 @@ GHMM::StatePtr make_state_don2() {
 
   auto& emission_model = donor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["don2"], emission_model, transition_model, duration_model);
 }
 
@@ -146,9 +146,9 @@ GHMM::StatePtr make_state_rdon0() {
 
   auto& emission_model = rdonor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rdon0"], emission_model, transition_model, duration_model);
 }
 
@@ -174,9 +174,9 @@ GHMM::StatePtr make_state_rdon1() {
 
   auto& emission_model = rdonor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rdon1"], emission_model, transition_model, duration_model);
 }
 
@@ -202,9 +202,9 @@ GHMM::StatePtr make_state_rdon2() {
 
   auto& emission_model = rdonor_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
-  auto duration_model = SignalDuration::make(13);
+  auto duration_model = FixedDuration::make(13);
 
-  return GHMM::State::make(
+  return GHMM::MatchState::make(
       state_indices["rdon2"], emission_model, transition_model, duration_model);
 }
 

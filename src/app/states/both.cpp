@@ -20,6 +20,9 @@
 // Interface header
 #include "app/states.hpp"
 
+// Standard headers
+#include <vector>
+
 // Internal headers
 #include "app/training.hpp"
 
@@ -29,10 +32,10 @@
 #include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
 
-#include "model/GeometricDuration.hpp"
+#include "model/FixedDuration.hpp"
 
 // Imports
-using tops::model::GeometricDuration;
+using tops::model::FixedDuration;
 
 // Aliases
 using IID = tops::model::DiscreteIIDModel;
@@ -51,6 +54,22 @@ extern model::ProbabilisticModelPtr non_coding_model;
 /*                                BOTH STRANDS                                */
 /*----------------------------------------------------------------------------*/
 
+GHMM::StatePtr make_state_B() {
+  auto emission_model
+    = IID::make(model::Probabilities(nucleotides->size(), 1.0));
+
+  auto transition_model
+    = IID::make(index_probabilities({ state_indices["N"] }, { 1.0 }));
+
+  auto duration_model
+    = FixedDuration::make(0);
+
+  return GHMM::SilentState::make(
+      state_indices["B"], emission_model, transition_model, duration_model);
+}
+
+/*----------------------------------------------------------------------------*/
+
 GHMM::StatePtr make_state_N() {
   std::vector<model::Probability> transition_probabilities {
     0.999882352941176,
@@ -63,7 +82,7 @@ GHMM::StatePtr make_state_N() {
     state_indices["N"],
     state_indices["start"],
     state_indices["rstop"],
-    state_indices["F"],
+    state_indices["E"],
   };
 
   auto transition_indexed_probabilities
@@ -73,26 +92,25 @@ GHMM::StatePtr make_state_N() {
     = non_coding_model;
   auto transition_model
     = IID::make(transition_indexed_probabilities);
-  auto duration_model
-    = GeometricDuration::make(state_indices["N"], transition_model);
 
-  return GHMM::State::make(
-      state_indices["N"], emission_model, transition_model, duration_model);
+  return GHMM::MatchState::make(
+      state_indices["N"], emission_model, transition_model);
 }
 
 /*----------------------------------------------------------------------------*/
 
-GHMM::StatePtr make_state_F() {
-  auto& emission_model = non_coding_model;
+GHMM::StatePtr make_state_E() {
+  auto emission_model
+    = IID::make(model::Probabilities(nucleotides->size(), 1.0));
 
   auto transition_model
-    = IID::make(index_probabilities({ state_indices["F"] }, { 1 }));
+    = IID::make(index_probabilities({ state_indices["E"] }, { 1 }));
 
   auto duration_model
-    = GeometricDuration::make(state_indices["F"], transition_model);
+    = FixedDuration::make(0);
 
-  return GHMM::State::make(
-      state_indices["F"], emission_model, transition_model, duration_model);
+  return GHMM::SilentState::make(
+      state_indices["E"], emission_model, transition_model, duration_model);
 }
 
 /*----------------------------------------------------------------------------*/
