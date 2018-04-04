@@ -144,6 +144,8 @@ class GeneralizedHiddenMarkovModel
   using MatchState  = typename StateTraits<Self>::MatchState;
   using SilentState = typename StateTraits<Self>::SilentState;
 
+  
+using ProbabilitiesPtr = std::shared_ptr<std::vector<tops::model::Probability>>;
   /*=============================[ CONSTRUCTORS ]=============================*/
 
   GeneralizedHiddenMarkovModel(
@@ -610,7 +612,8 @@ class GeneralizedHiddenMarkovModel
                                          std::size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn viterbi(const Sequences& sequences) const;
+  LabelerReturn viterbi(const Sequences& sequences, const Probabilities &extrinsic_probabilities ) const;
+                      std::vector<tops::model::Probability> _probabilities;
   LabelerReturn posteriorDecoding(const Sequences& sequences) const;
 
   // Calculator's implementations

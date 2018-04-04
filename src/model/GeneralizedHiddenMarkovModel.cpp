@@ -160,7 +160,9 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 /*================================  LABELER  =================================*/
 
 typename GeneralizedHiddenMarkovModel::LabelerReturn
-GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
+GeneralizedHiddenMarkovModel::viterbi(
+    const Sequences& sequences,
+    const Probabilities& extrinsic_probabilities) const {
   Probability zero;
 
   auto gammas = make_multiarray(
@@ -191,6 +193,11 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
           continue;
         }
 
+        Probability extrinsic_contribuition = 1;
+        for (auto ii = begin; ii < end; ii++) {
+          extrinsic_contribuition *= extrinsic_probabilities[ii];
+        }
+
         for (auto p : state->predecessors()) {
           Probability candidate_max
             = gammas[p][i - d]
@@ -200,7 +207,8 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
                         ->probabilityOfLenght(d)
             * _states[k]->emission()
                         ->standardEvaluator(sequences[0])
-                        ->evaluateSequence(begin, end, phase);
+                        ->evaluateSequence(begin, end, phase)
+            * extrinsic_contribuition;
 
           if (candidate_max > gammas[k][i]) {
             gammas[k][i] = candidate_max;

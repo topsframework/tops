@@ -27,6 +27,7 @@
 #include "model/Sequence.hpp"
 
 #include "model/GeneralizedHiddenMarkovModel.hpp"
+#include "../src/myop/extrinsic.cpp"
 
 namespace tops {
 namespace myop {
@@ -37,7 +38,7 @@ class Myop {
   Myop(std::string dataset);
 
   // Concrete methods
-  model::Sequence predict(const model::Sequence& observation);
+  model::Sequence predict(const model::Sequence& observation, const tops::model::Probabilities extrinsic_probabilities);
 
  private:
   // Static variables

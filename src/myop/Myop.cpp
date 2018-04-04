@@ -345,10 +345,10 @@ Myop::Myop(std::string dataset) {
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-model::Sequence Myop::predict(const model::Sequence& observation) {
+model::Sequence Myop::predict(const model::Sequence& observation, const model::Probabilities extrinsic_probabilities) {
   // auto labeler = _ghmm->labeler(observation, true);
   // auto estimation = labeler->labeling(model::Labeler::method::bestPath);
-  auto [ estimation, label, alignment, _ ] = _ghmm->viterbi({ observation });
+  auto [ estimation, label, alignment, _ ] = _ghmm->viterbi({ observation }, extrinsic_probabilities);
 
   return label;
 }
