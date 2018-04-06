@@ -28,6 +28,7 @@
 #include "myop/states.hpp"
 #include "model/Sequence.hpp"
 
+
 int main(int argc, char *argv[]) {
   std::string dataset = "dataset";
 
@@ -65,12 +66,17 @@ int main(int argc, char *argv[]) {
 
   if (argc >= 3) {
     string extrinsicMethod = argv[2];
+    if(extrinsicMethod.compare("augustus") == 0){
+      ExtrinsicInformation extrinsic_info;
+      auto augustus = std::make_shared<Augustus>(sequence.size());
+      extrinsic_info.extrinsicTechnique(augustus);
+      extrinsic_contribuition
+        = extrinsic_info.extrinsicTechnique()->makeContribuition();
+    }
   } else {
     ExtrinsicInformation extrinsic_info;
-
     auto nohints = std::make_shared<NoHints>(sequence.size());
     extrinsic_info.extrinsicTechnique(nohints);
-
     extrinsic_contribuition
       = extrinsic_info.extrinsicTechnique()->makeContribuition();
   }
@@ -87,3 +93,4 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+

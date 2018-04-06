@@ -5,12 +5,11 @@
 #include <iostream>
 
 #include "model/Probability.hpp"
+#include "extrinsic_converter.cpp"
 
 class ExtrinsicTechnique;
 
 using ExtrinsicTechniquePtr = std::shared_ptr<ExtrinsicTechnique>;
-
-//using ProbabilitiesPtr = std::shared_ptr<std::vector<tops::model::Probability>>;
 
 class ExtrinsicTechnique {
  public:
@@ -43,9 +42,18 @@ class NoHints : public ExtrinsicTechnique {
 };
 
 class Augustus : public ExtrinsicTechnique {
+ public:
+  explicit Augustus(size_t sequence_size)
+     : ExtrinsicTechnique(tops::model::Probabilities(sequence_size, 1)) {
+  }
+
   std::vector<tops::model::Probability> makeContribuition() override {
-    std::vector<tops::model::Probability> a;
-    return a;
+    ExtrinsicConverter *hc = new ExtrinsicConverter();
+    vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine("test.gff");
+    tops::model::Probabilities p = hc->convertGtfLineToProbabilities(gtf_line,
+     "./src/myop/augustus_config.json", 20);
+
+    return p;
   }
 };
 

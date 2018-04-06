@@ -1,0 +1,20 @@
+{
+	"bonus": {
+		"start": 1,
+		"stop": 1,
+		"exon": 1,
+		"ep": 1,
+		"ass": 1,
+		"dss": 1,
+		"intron": 1
+	},
+	"punishment": {
+		"start": 1,
+		"stop": 1,
+		"exon": 1,
+		"ep": 1,
+		"ass": 1,
+		"dss": 1,
+		"intron": 1
+	}
+}
