@@ -53,107 +53,108 @@ class GtfLine{
 
 
 class ExtrinsicConverter{
+ private:
+  json _extrinsic_probabilities_contribuition;
+  tops::model::Probabilities _extrinsic_probabilities;
  public:
   vector<GtfLine> convertGtfFileToGtfLine(string gtfFile) {
-     ifstream gtf_file(gtfFile);
-     vector<GtfLine> gtf_line;
-     if (!gtf_file.good()) {
-       std::cerr << "Error opening " << gtfFile
-         << ". Bailing out." << std::endl;
-       return gtf_line;
-     }
+    ifstream gtf_file(gtfFile);
+    vector<GtfLine> gtf_line;
+    if (!gtf_file.good()) {
+      std::cerr << "Error opening " << gtfFile
+      << ". Bailing out." << std::endl;
+      return gtf_line;
+    }
 
-     string line;
-     vector<string> tokens;
+    string line;
+    vector<string> tokens;
 
-     while (getline(gtf_file, line)) {
-       istringstream iss(line);
-       string token;
-       while (getline(iss, token, '\t')) {
-         tokens.push_back(token);
-       }
-     }
+    while (getline(gtf_file, line)) {
+      istringstream iss(line);
+      string token;
+      while (getline(iss, token, '\t')) {
+        tokens.push_back(token);
+      }
+    }
 
-     // +9 to jump to next line of gff file
-     for (size_t i = 0; i < tokens.size(); i+=9) {
-       GtfLine n = GtfLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3],
+    // +9 to jump to next line of gff file
+    for (size_t i = 0; i < tokens.size(); i+=9) {
+      GtfLine n = GtfLine(tokens[i], tokens[i+1], tokens[i+2], tokens[i+3],
            tokens[i+4], tokens[i+5], tokens[i+6], tokens[i+7], tokens[i+8]);
-       gtf_line.push_back(n);
-     }
-     return gtf_line;
-   }
+      gtf_line.push_back(n);
+    }
+    return gtf_line;
+  }
+  void addContribution(size_t position, string bonus_type, string type){
+    double d = _extrinsic_probabilities[position];
+    double ec = _extrinsic_probabilities_contribuition[bonus_type][type];
+    d *= ec;
+    _extrinsic_probabilities[position] *= d;
+  }
 
   tops::model::Probabilities convertGtfLineToProbabilities(
       const vector<GtfLine> &gtf_line, const string extrinsic_config,
       const size_t sequence_size){
-      
-    tops::model::Probabilities extrinsic_probabilities;
-    
     for (size_t i = 0; i < sequence_size; i++) {
-      extrinsic_probabilities.push_back(1);
+      _extrinsic_probabilities.push_back(1);
     }
     std::ifstream ifs(extrinsic_config);
-    json extrinsic_probabilities_contribuition = json::parse(ifs);
-
+    _extrinsic_probabilities_contribuition = json::parse(ifs);
     for (size_t i = 0; i < gtf_line.size(); i++) {
       GtfLine hl =  gtf_line.at(i);
       string type = hl._feature;
       int start = stoi(hl._start);
       int end = stoi(hl._end);
-      
       if (type.compare("ep") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["ep"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "ep");
         }
 
-      }else if (type.compare("exon") == 0) {
+      } else if (type.compare("exon") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["exon"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "exon");
         }
-      }else if (type.compare("start") == 0) {
+      } else if (type.compare("start") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["start"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "start");
         }
-      }else if (type.compare("stop") == 0) {
+      } else if (type.compare("stop") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["stop"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "stop");
         }
-      }else if (type.compare("ass") == 0) {
+      } else if (type.compare("ass") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["ass"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "ass");
         }
-      }else if (type.compare("dss") == 0) {
+      } else if (type.compare("dss") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["dss"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "dss");
         }
-      }else if (type.compare("intron") == 0) {
+      } else if (type.compare("intron") == 0) {
         for (int j = start - 1; j < end; j++) {
-          double d = extrinsic_probabilities[j];
-          double ec = extrinsic_probabilities_contribuition["bonus"]["intron"];
-          d *= ec;
-          extrinsic_probabilities[j] *= d;
+          addContribution(j, "bonus", "intron");
         }
       }
-    
     }
-    return extrinsic_probabilities;
+    return _extrinsic_probabilities;
   }
 };
+
+
+/*
+int main(int argc, char *argv[]) {
+  argc = 1;
+  argv[0] = NULL;
+ 
+  ExtrinsicConverter *hc = new ExtrinsicConverter();
+  vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine(
+      "test.gff");
+  tops::model::Probabilities p = hc->convertGtfLineToProbabilities(gtf_line,
+      "./src/myop/augustus_config.json", 20);
+
+  for (size_t i = 0; i < p.size(); i++) {
+    cout << "p[" << i << "]" << p[i] << endl;
+  }
+  return 0;
+}
+*/

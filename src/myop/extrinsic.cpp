@@ -28,6 +28,7 @@ class ExtrinsicTechnique {
 
  protected:
   std::vector<tops::model::Probability> _probabilities;
+  size_t _sequence_size;
 };
 
 class NoHints : public ExtrinsicTechnique {
@@ -44,15 +45,15 @@ class NoHints : public ExtrinsicTechnique {
 class Augustus : public ExtrinsicTechnique {
  public:
   explicit Augustus(size_t sequence_size)
-     : ExtrinsicTechnique(tops::model::Probabilities(sequence_size, 1)) {
+    : ExtrinsicTechnique(tops::model::Probabilities(sequence_size, 1)) {
+      _sequence_size = sequence_size;
   }
 
   std::vector<tops::model::Probability> makeContribuition() override {
     ExtrinsicConverter *hc = new ExtrinsicConverter();
-    vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine("test.gff");
+    vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine("./src/myop/test.gff");
     tops::model::Probabilities p = hc->convertGtfLineToProbabilities(gtf_line,
-     "./src/myop/augustus_config.json", 20);
-
+     "./src/myop/augustus_config.json", _sequence_size);
     return p;
   }
 };
