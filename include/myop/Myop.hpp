@@ -38,7 +38,9 @@ class Myop {
   Myop(std::string dataset);
 
   // Concrete methods
-  model::Sequence predict(const model::Sequence& observation, const tops::model::Probabilities extrinsic_probabilities);
+  model::Sequence predict(
+    const model::Sequence& observation,
+    const ExtrinsicTechniquePtr& extrinsic_technique);
 
  private:
   // Static variables

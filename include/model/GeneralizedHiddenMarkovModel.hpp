@@ -612,7 +612,7 @@ using ProbabilitiesPtr = std::shared_ptr<std::vector<tops::model::Probability>>;
                                          std::size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn viterbi(const Sequences& sequences, const Probabilities &extrinsic_probabilities ) const;
+  LabelerReturn viterbi(const Sequences& sequences, const Matrix& extrinsic_probabilities ) const;
                       std::vector<tops::model::Probability> _probabilities;
   LabelerReturn posteriorDecoding(const Sequences& sequences) const;
 

@@ -27,6 +27,7 @@
 #include "myop/Myop.hpp"
 #include "myop/states.hpp"
 #include "model/Sequence.hpp"
+//#include "model/Matrix.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -62,9 +63,11 @@ int main(int argc, char *argv[]) {
     3, 2, 1, 3, 3, 1, 1, 1, 0, 3, 1, 0, 0, 0, 0, 3, 0, 3, 0, 3, 3, 1,
   };
 
-  std::vector<tops::model::Probability> extrinsic_contribuition;
+  ExtrinsicTechniquePtr extrinsic_technique;
 
   if (argc >= 3) {
+    cout << "a";
+    /*
     string extrinsicMethod = argv[2];
     if(extrinsicMethod.compare("augustus") == 0){
       ExtrinsicInformation extrinsic_info;
@@ -73,17 +76,15 @@ int main(int argc, char *argv[]) {
       extrinsic_contribuition
         = extrinsic_info.extrinsicTechnique()->makeContribuition();
     }
+    */
   } else {
-    ExtrinsicInformation extrinsic_info;
-    auto nohints = std::make_shared<NoHints>(sequence.size());
-    extrinsic_info.extrinsicTechnique(nohints);
-    extrinsic_contribuition
-      = extrinsic_info.extrinsicTechnique()->makeContribuition();
+    extrinsic_technique
+      = std::make_shared<NoHints>(69, sequence.size());
   }
 
   tops::myop::Myop myop(dataset);
 
-  auto prediction = myop.predict(sequence, extrinsic_contribuition);
+  auto prediction = myop.predict(sequence, extrinsic_technique);
 
   for (auto symbol : prediction) {
     std::cout << tops::myop::state_names[symbol] << " ";

@@ -162,7 +162,7 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::viterbi(
     const Sequences& sequences,
-    const Probabilities& extrinsic_probabilities) const {
+    const Matrix& extrinsic_probabilities) const {
   Probability zero;
 
   auto gammas = make_multiarray(
@@ -195,7 +195,7 @@ GeneralizedHiddenMarkovModel::viterbi(
 
         Probability extrinsic_contribuition = 1;
         for (auto ii = begin; ii < end; ii++) {
-          extrinsic_contribuition *= extrinsic_probabilities[ii];
+          extrinsic_contribuition *= extrinsic_probabilities[k][ii];
         }
 
         for (auto p : state->predecessors()) {
