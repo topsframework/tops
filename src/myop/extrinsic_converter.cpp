@@ -9,6 +9,8 @@
 
 #include "model/Probability.hpp"
 #include "model/Segment.hpp"
+#include "model/Matrix.hpp"
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -55,9 +57,13 @@ class GtfLine{
 class ExtrinsicConverter{
  private:
   json _extrinsic_probabilities_contribuition;
-  tops::model::Probabilities _extrinsic_probabilities;
+  tops::model::Matrix _extrinsic_probabilities;
+  
+  std::unordered_map<std::string, tops::model::Symbol> _state_indices;
+  std::vector<std::string> _state_names;
+
  public:
-  vector<GtfLine> convertGtfFileToGtfLine(string gtfFile) {
+  vector<GtfLine> convertGtfFileToGtfLine(const string gtfFile) {
     ifstream gtf_file(gtfFile);
     vector<GtfLine> gtf_line;
     if (!gtf_file.good()) {
@@ -85,21 +91,34 @@ class ExtrinsicConverter{
     }
     return gtf_line;
   }
-  void addContribution(size_t position, string bonus_type, string type){
-    double d = _extrinsic_probabilities[position];
-    double ec = _extrinsic_probabilities_contribuition[bonus_type][type];
-    d *= ec;
-    _extrinsic_probabilities[position] *= d;
+  void addContributionEp(const size_t position,
+   const string bonus_type, const string type){
+    std::vector<std::string> exons = std::vector<std::string> {
+      "EI1", "EI2", "E00", "E01", "E02", "E10", "E11", "E12", "E20", 
+      "E21", "E22", "ET0", "ET1", "ET2", "rEI0", "rEI1", "rEI2", "rE00",
+      "rE01", "rE02", "rE10", "rE11", "rE12", "rE20", "rE21", "rE22",
+      "rET0", "rET1", "rET2",
+    };
+    
+    for (const auto& exon : exons) {
+      auto d = _extrinsic_probabilities[_state_indices[exon]][position];
+      tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
+      _extrinsic_probabilities[_state_indices[exon]][position] *= d * ec;     
+    }
   }
 
-  tops::model::Probabilities convertGtfLineToProbabilities(
-      const vector<GtfLine> &gtf_line, const string extrinsic_config,
-      const size_t sequence_size){
-    for (size_t i = 0; i < sequence_size; i++) {
-      _extrinsic_probabilities.push_back(1);
-    }
+  tops::model::Matrix convertGtfLineToProbabilities(
+    tops::model::Matrix &probabilities,
+    const vector<GtfLine> &gtf_line,
+    const string extrinsic_config) {
+    
+    _extrinsic_probabilities = probabilities;
+    initializeMatrixNames();
+
     std::ifstream ifs(extrinsic_config);
     _extrinsic_probabilities_contribuition = json::parse(ifs);
+
+
     for (size_t i = 0; i < gtf_line.size(); i++) {
       GtfLine hl =  gtf_line.at(i);
       string type = hl._feature;
@@ -107,36 +126,78 @@ class ExtrinsicConverter{
       int end = stoi(hl._end);
       if (type.compare("ep") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "ep");
+          addContributionEp(j, "bonus", "ep");
         }
 
       } else if (type.compare("exon") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "exon");
+    //      addContribution(j, "bonus", "exon");
         }
       } else if (type.compare("start") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "start");
+      //    addContribution(j, "bonus", "start");
         }
       } else if (type.compare("stop") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "stop");
+        //  addContribution(j, "bonus", "stop");
         }
       } else if (type.compare("ass") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "ass");
+          //addContribution(j, "bonus", "ass");
         }
       } else if (type.compare("dss") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "dss");
+          //addContribution(j, "bonus", "dss");
         }
       } else if (type.compare("intron") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "intron");
+          //addContribution(j, "bonus", "intron");
         }
       }
     }
     return _extrinsic_probabilities;
+  }
+
+  void initializeMatrixNames(){
+   
+    _state_names = std::vector<std::string>{
+      "B",
+
+      "start",
+      "ES",
+      "EI0", "EI1", "EI2",
+      "E00", "E01", "E02",
+      "E10", "E11", "E12",
+      "E20", "E21", "E22",
+      "ET0", "ET1", "ET2",
+      "don0", "don1", "don2",
+      "I0", "I1", "I2",
+      "Is0", "If0", "Is1",
+      "If1",  "Is2", "If2",
+      "acc0", "acc1", "acc2",
+      "stop",
+
+      "N",
+
+      "rstop",
+      "rES",
+      "rEI0", "rEI1", "rEI2",
+      "rE00", "rE01", "rE02",
+      "rE10", "rE11", "rE12",
+      "rE20", "rE21", "rE22",
+      "rET0", "rET1", "rET2",
+      "racc0", "racc1", "racc2",
+      "rI0", "rI1", "rI2",
+      "rIs0", "rIf0", "rIs1",
+      "rIf1", "rIs2", "rIf2",
+      "rdon0", "rdon1", "rdon2",
+      "rstart",
+
+      "E"
+    };
+
+    for (std::size_t index = 0; index < _state_names.size(); index++)
+      _state_indices.emplace(_state_names[index], index);
   }
 };
 

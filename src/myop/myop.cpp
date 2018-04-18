@@ -66,22 +66,22 @@ int main(int argc, char *argv[]) {
   ExtrinsicTechniquePtr extrinsic_technique;
 
   if (argc >= 3) {
-    cout << "a";
-    /*
     string extrinsicMethod = argv[2];
     if(extrinsicMethod.compare("augustus") == 0){
-      ExtrinsicInformation extrinsic_info;
-      auto augustus = std::make_shared<Augustus>(sequence.size());
-      extrinsic_info.extrinsicTechnique(augustus);
-      extrinsic_contribuition
-        = extrinsic_info.extrinsicTechnique()->makeContribuition();
+      extrinsic_technique
+      = std::make_shared<Augustus>(69, sequence.size());
+    } else if (extrinsicMethod.compare("noHints") == 0) {
+      extrinsic_technique
+        = std::make_shared<NoHints>(69, sequence.size());
+    } else if (extrinsicMethod.compare("twinscan") == 0) {
+      extrinsic_technique
+        = std::make_shared<Twinscan>(69, sequence.size());
     }
-    */
-  } else {
+  } else if (argc == 1) {
     extrinsic_technique
-      = std::make_shared<NoHints>(69, sequence.size());
+        = std::make_shared<NoHints>(69, sequence.size());
   }
-
+  
   tops::myop::Myop myop(dataset);
 
   auto prediction = myop.predict(sequence, extrinsic_technique);
@@ -94,4 +94,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
