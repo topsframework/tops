@@ -91,15 +91,55 @@ class ExtrinsicConverter{
     }
     return gtf_line;
   }
-  void addContributionEp(const size_t position,
+  void addContribution(const size_t position,
    const string bonus_type, const string type){
-    std::vector<std::string> exons = std::vector<std::string> {
-      "EI1", "EI2", "E00", "E01", "E02", "E10", "E11", "E12", "E20", 
-      "E21", "E22", "ET0", "ET1", "ET2", "rEI0", "rEI1", "rEI2", "rE00",
-      "rE01", "rE02", "rE10", "rE11", "rE12", "rE20", "rE21", "rE22",
-      "rET0", "rET1", "rET2",
-    };
     
+    std::vector<std::string> exons;
+    
+    if (type.compare("ep") == 0) {
+      exons = std::vector<std::string> {
+        "EI0", "EI1", "EI2",
+        "E00", "E01", "E02",
+        "E10", "E11", "E12",
+        "E20", "E21", "E22",
+        "ET0", "ET1", "ET2",
+        "rEI0", "rEI1", "rEI2",
+        "rE00", "rE01", "rE02",
+        "rE10", "rE11", "rE12",
+        "rE20", "rE21", "rE22",
+        "rET0", "rET1", "rET2",
+      };
+    }else if (type.compare("exon") == 0) {
+      exons = std::vector<std::string> {
+        "ES", "rES",
+      };
+    } else if (type.compare("start") == 0) {
+      exons = std::vector<std::string> {
+        "start", "rstart",
+      };
+    } else if (type.compare("stop") == 0) {
+      exons = std::vector<std::string> {
+        "stop", "rstop",
+      };
+    } else if (type.compare("ass") == 0) {
+      exons = std::vector<std::string> {
+        "acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
+      };
+    } else if (type.compare("dss") == 0) {
+      exons = std::vector<std::string> {
+        "don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
+      };
+    } else if (type.compare("intron") == 0) {
+      exons = std::vector<std::string> {
+        "I0", "I1", "I2",
+        "Is0", "If0", "Is1",
+        "If1",  "Is2", "If2",
+        "rI0", "rI1", "rI2",
+        "rIs0", "rIf0", "rIs1",
+        "rIf1", "rIs2", "rIf2",        
+      };
+    }
+
     for (const auto& exon : exons) {
       auto d = _extrinsic_probabilities[_state_indices[exon]][position];
       tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
@@ -126,32 +166,32 @@ class ExtrinsicConverter{
       int end = stoi(hl._end);
       if (type.compare("ep") == 0) {
         for (int j = start - 1; j < end; j++) {
-          addContributionEp(j, "bonus", "ep");
+          addContribution(j, "bonus", "ep");
         }
 
       } else if (type.compare("exon") == 0) {
         for (int j = start - 1; j < end; j++) {
-    //      addContribution(j, "bonus", "exon");
+          addContribution(j, "bonus", "exon");
         }
       } else if (type.compare("start") == 0) {
         for (int j = start - 1; j < end; j++) {
-      //    addContribution(j, "bonus", "start");
+          addContribution(j, "bonus", "start");
         }
       } else if (type.compare("stop") == 0) {
         for (int j = start - 1; j < end; j++) {
-        //  addContribution(j, "bonus", "stop");
+          addContribution(j, "bonus", "stop");
         }
       } else if (type.compare("ass") == 0) {
         for (int j = start - 1; j < end; j++) {
-          //addContribution(j, "bonus", "ass");
+          addContribution(j, "bonus", "ass");
         }
       } else if (type.compare("dss") == 0) {
         for (int j = start - 1; j < end; j++) {
-          //addContribution(j, "bonus", "dss");
+          addContribution(j, "bonus", "dss");
         }
       } else if (type.compare("intron") == 0) {
         for (int j = start - 1; j < end; j++) {
-          //addContribution(j, "bonus", "intron");
+          addContribution(j, "bonus", "intron");
         }
       }
     }
