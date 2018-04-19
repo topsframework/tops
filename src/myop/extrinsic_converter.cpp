@@ -93,9 +93,7 @@ class ExtrinsicConverter{
   }
   void addContribution(const size_t position,
    const string bonus_type, const string type){
-    
     std::vector<std::string> exons;
-    
     if (type.compare("ep") == 0) {
       exons = std::vector<std::string> {
         "EI0", "EI1", "EI2",
@@ -108,10 +106,20 @@ class ExtrinsicConverter{
         "rE10", "rE11", "rE12",
         "rE20", "rE21", "rE22",
         "rET0", "rET1", "rET2",
-      };
-    }else if (type.compare("exon") == 0) {
-      exons = std::vector<std::string> {
         "ES", "rES",
+      };
+    } else if (type.compare("exon") == 0) {
+      exons = std::vector<std::string> {
+        "EI0", "EI1", "EI2",
+        "E00", "E01", "E02",
+        "E10", "E11", "E12",
+        "E20", "E21", "E22",
+        "ET0", "ET1", "ET2",
+        "rEI0", "rEI1", "rEI2",
+        "rE00", "rE01", "rE02",
+        "rE10", "rE11", "rE12",
+        "rE20", "rE21", "rE22",
+        "rET0", "rET1", "rET2",
       };
     } else if (type.compare("start") == 0) {
       exons = std::vector<std::string> {
