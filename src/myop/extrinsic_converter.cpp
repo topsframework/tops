@@ -91,8 +91,9 @@ class ExtrinsicConverter{
     }
     return gtf_line;
   }
-  void addContribution(const size_t position,
-   const string bonus_type, const string type){
+  
+  void addContribution(const size_t start, const size_t end,
+      const string bonus_type, const string type){
     std::vector<std::string> exons;
     if (type.compare("ep") == 0) {
       exons = std::vector<std::string> {
@@ -144,14 +145,16 @@ class ExtrinsicConverter{
         "If1",  "Is2", "If2",
         "rI0", "rI1", "rI2",
         "rIs0", "rIf0", "rIs1",
-        "rIf1", "rIs2", "rIf2",        
+        "rIf1", "rIs2", "rIf2",
       };
     }
 
-    for (const auto& exon : exons) {
-      auto d = _extrinsic_probabilities[_state_indices[exon]][position];
-      tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
-      _extrinsic_probabilities[_state_indices[exon]][position] = d * ec;     
+    for (size_t j = start - 1; j < end; j++) {
+      for (const auto& exon : exons) {
+        auto d = _extrinsic_probabilities[_state_indices[exon]][j];
+        tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
+        _extrinsic_probabilities[_state_indices[exon]][j] = d * ec;     
+      }
     }
   }
 
@@ -166,41 +169,25 @@ class ExtrinsicConverter{
     std::ifstream ifs(extrinsic_config);
     _extrinsic_probabilities_contribuition = json::parse(ifs);
 
-
     for (size_t i = 0; i < gtf_line.size(); i++) {
       GtfLine hl =  gtf_line.at(i);
       string type = hl._feature;
       int start = stoi(hl._start);
       int end = stoi(hl._end);
       if (type.compare("ep") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "ep");
-        }
-
+          addContribution(start, end,  "bonus", "ep");
       } else if (type.compare("exon") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "exon");
-        }
+          addContribution(start, end, "bonus", "exon");
       } else if (type.compare("start") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "start");
-        }
+          addContribution(start, end, "bonus", "start");
       } else if (type.compare("stop") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "stop");
-        }
+          addContribution(start, end, "bonus", "stop");
       } else if (type.compare("ass") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "ass");
-        }
+          addContribution(start, end, "bonus", "ass");
       } else if (type.compare("dss") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "dss");
-        }
+          addContribution(start, end, "bonus", "dss");
       } else if (type.compare("intron") == 0) {
-        for (int j = start - 1; j < end; j++) {
-          addContribution(j, "bonus", "intron");
-        }
+          addContribution(start, end, "bonus", "intron");
       }
     }
     return _extrinsic_probabilities;
