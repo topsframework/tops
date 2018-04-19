@@ -151,7 +151,7 @@ class ExtrinsicConverter{
     for (const auto& exon : exons) {
       auto d = _extrinsic_probabilities[_state_indices[exon]][position];
       tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
-      _extrinsic_probabilities[_state_indices[exon]][position] *= d * ec;     
+      _extrinsic_probabilities[_state_indices[exon]][position] = d * ec;     
     }
   }
 
