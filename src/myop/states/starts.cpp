@@ -83,7 +83,7 @@ GHMM::StatePtr make_state_start() {
 /*----------------------------------------------------------------------------*/
 
 GHMM::StatePtr make_state_rstart() {
-  auto& emission_model = start_model;
+  auto& emission_model = rstart_model;
 
   auto transition_model
     = IID::make(index_probabilities({ state_indices["N"] }, { 1 }));

@@ -61,7 +61,7 @@ GHMM::StatePtr make_state_stop() {
   auto duration_model = FixedDuration::make(3);
 
   return GHMM::MatchState::make(
-      state_indices["rstop"], emission_model, transition_model, duration_model);
+      state_indices["stop"], emission_model, transition_model, duration_model);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ GHMM::StatePtr make_state_rstop() {
   auto transition_indexed_probabilities
     = index_probabilities(transition_indices, transition_probabilities);
 
-  auto& emission_model = stop_model;
+  auto& emission_model = rstop_model;
   auto transition_model = IID::make(transition_indexed_probabilities);
   auto duration_model = FixedDuration::make(3);
 
