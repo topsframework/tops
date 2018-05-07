@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <fstream>
 
 // Internal headers
 #include "myop/Myop.hpp"
@@ -42,6 +43,8 @@ int main(int argc, char *argv[]) {
 
   // Real gene (AT1G34280)
   tops::model::Sequence sequence {
+    //ATAATAACTTG A 0, C 1, G 2, T 3
+    0, 3, 0, 0, 3, 0, 0, 1, 3, 3, 2, 2, 0, 2, 0, 0, 0, 3, 3, 2, 0, 3, 
     3, 1, 3, 0, 1, 2, 3, 0, 0, 3, 2, 3, 0, 2, 0, 2, 2, 0, 0, 2, 0, 0,
     3, 0, 2, 0, 1, 0, 1, 0, 3, 2, 0, 3, 3, 3, 3, 1, 0, 3, 0, 2, 3, 3,
     0, 3, 0, 0, 3, 3, 0, 3, 1, 1, 1, 0, 3, 2, 3, 2, 1, 3, 3, 0, 3, 0,
@@ -81,16 +84,18 @@ int main(int argc, char *argv[]) {
     extrinsic_technique
         = std::make_shared<NoHints>(69, sequence.size());
   }
-  
+
   tops::myop::Myop myop(dataset);
 
-  auto prediction = myop.predict(sequence, extrinsic_technique);
+  auto [ estimation, prediction ]
+    = myop.predict(sequence, extrinsic_technique);
 
-  for (auto symbol : prediction) {
-    std::cout << tops::myop::state_names[symbol] << " ";
+  string header = "<sequence_name:1," + std::to_string(sequence.size()) + ">,sequence_name: " + std::to_string(estimation) + ":\t";
+  string sequence_path;
+  for (size_t i = 1; i < prediction.size()-1; i++) {
+    sequence_path += tops::myop::state_names[prediction[i]] + " ";
   }
 
   std::cout << std::endl;
-
   return 0;
 }
