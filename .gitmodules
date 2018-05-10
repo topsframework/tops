@@ -17,3 +17,7 @@
 	path = external/named_types
 	url = https://github.com/duckie/named_types.git
 	ignore = dirty
+[submodule "external/chaiscript"]
+	path = external/chaiscript
+	url = https://github.com/ChaiScript/ChaiScript
+	ignore = dirty
