@@ -1,0 +1,13 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "MSM"
+
+observations = [ "0", "1" ]
+
+models = [
+  "first"  : [ emission: model("vlmc.tops"),
+               duration: max_length(22) ],
+  "second" : [ emission: model("vlmc.tops"),
+               duration: max_length(11) ]
+]

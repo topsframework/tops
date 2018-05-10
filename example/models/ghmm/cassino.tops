@@ -1,0 +1,45 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Dishonest Cassino
+model_type = "GHMM"
+
+observations = [ "1", "2", "3", "4", "5", "6" ]
+
+labels = [ "B", "F", "L", "E" ]
+
+states = [
+  "B" : [ duration: fixed(0),
+          emission: model("initial.tops") ],
+  "F" : [ duration: geometric(),
+          emission: model("fair_dice.tops") ],
+  "L" : [ duration: geometric(),
+          emission: model("loaded_dice.tops") ],
+  "E" : [ duration: fixed(0),
+          emission: model("final.tops")]
+]
+
+var sigma = 0.7
+var tau = 0.1
+
+transition_probabilities = [
+  "B" | "B" : 0.0,
+  "B" | "H" : 0.0,
+  "B" | "E" : 0.0,
+  "B" | "D" : 0.0,
+
+  "H" | "B" : (1-tau)/2,
+  "H" | "H" : sigma,
+  "H" | "D" : 1-sigma-tau,
+  "H" | "E" : 0.0,
+
+  "D" | "B" : (1-tau)/2,
+  "D" | "H" : 1-sigma-tau,
+  "D" | "D" : sigma,
+  "D" | "E" : 0.0,
+
+  "E" | "B" : tau,
+  "E" | "H" : tau,
+  "E" | "D" : tau,
+  "E" | "E" : 1.0
+]

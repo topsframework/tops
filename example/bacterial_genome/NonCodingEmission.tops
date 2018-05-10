@@ -1,0 +1,12 @@
+// Non-Coding Emission
+
+model_type = "IID"
+
+observations = [ "A", "C", "G", "T" ]
+
+emission_probabilities = [
+  "A" : 0.25,
+  "C" : 0.25,
+  "G" : 0.25,
+  "T" : 0.25
+]

@@ -1,0 +1,35 @@
+// Start Emission
+
+model_type = "IMC"
+
+observations = [ "A", "C", "G", "T" ]
+
+position_specific_distributions = [
+  model("StartEmission/Phase01.tops"),
+  model("StartEmission/Phase02.tops"),
+  model("StartEmission/Phase03.tops"),
+  model("StartEmission/Phase04.tops"),
+  model("StartEmission/Phase05.tops"),
+  model("StartEmission/Phase06.tops"),
+  model("StartEmission/Phase07.tops"),
+  model("StartEmission/Phase08.tops"),
+  model("StartEmission/Phase09.tops"),
+  model("StartEmission/Phase10.tops"),
+  model("StartEmission/Phase11.tops"),
+  model("StartEmission/Phase12.tops"),
+  model("StartEmission/Phase13.tops"),
+  model("StartEmission/Phase14.tops"),
+  model("StartEmission/Phase15.tops"),
+  model("StartEmission/Phase16.tops"),
+  model("StartEmission/Phase17.tops"),
+  model("StartEmission/Phase18.tops"),
+  model("StartEmission/Phase19.tops"),
+  model("StartEmission/Phase20.tops"),
+  model("StartEmission/Phase21.tops"),
+  model("StartEmission/Phase22.tops"),
+  model("StartEmission/Phase23.tops"),
+  model("StartEmission/Phase24.tops"),
+  model("StartEmission/Phase25.tops"),
+  model("StartEmission/Phase26.tops"),
+  model("StartEmission/Phase27.tops")
+]

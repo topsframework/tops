@@ -42,8 +42,14 @@ CXXFLAGS        += -std=c++1z \
                    -Werror -O2
 LDFLAGS         += # Linker Flags
 
+ifeq ($(CXX),clang++)
+CXXFLAGS += -Wno-gnu-string-literal-operator-template
+endif
+
 # Makeball list
 # ===============
 include conf/googletest.mk
 include conf/googlebenchmark.mk
 include conf/probability.mk
+include conf/chaiscript.mk
+include conf/named_types.mk

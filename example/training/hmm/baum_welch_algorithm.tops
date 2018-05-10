@@ -1,0 +1,18 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "HMM"
+
+observations = [ "1", "2", "3", "4", "5", "6" ]
+
+training_algorithm = "BaumWelch"
+
+training_set = dataset("data/cassino-dice.tsv")
+
+labels = [ "Loaded", "Fair" ]
+
+initial_model = pretrained_model("hmm.tops")
+
+maximum_iterations = 100
+
+diff_threshold = 1.23

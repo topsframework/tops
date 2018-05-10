@@ -1,0 +1,8 @@
+// Donor model
+model_type = "MDD"
+
+observations = [ "A", "C", "G", "T" ]
+
+consensus = "[AC]AGGT[AG]AGT"
+
+dependencies = [ tree("dependency.tree") ]

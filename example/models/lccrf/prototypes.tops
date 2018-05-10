@@ -1,0 +1,24 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Feature function prototypes
+
+def observation(sym) {
+  return fun(x, yp, yc, i) {
+    if (x[i] == symbol(sym)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+}
+
+def transition(prev_label, curr_label) {
+  return fun(x, yp, yc, i) {
+    if (yp == label(prev_label) && yc == label(curr_label)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+}

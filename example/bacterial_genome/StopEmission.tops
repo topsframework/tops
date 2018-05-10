@@ -1,0 +1,35 @@
+// Stop Emission
+
+model_type = "IMC"
+
+observations = [ "A", "C", "G", "T" ]
+
+position_specific_distributions = [
+  model("StopEmission/Phase01.tops"),
+  model("StopEmission/Phase02.tops"),
+  model("StopEmission/Phase03.tops"),
+  model("StopEmission/Phase04.tops"),
+  model("StopEmission/Phase05.tops"),
+  model("StopEmission/Phase06.tops"),
+  model("StopEmission/Phase07.tops"),
+  model("StopEmission/Phase08.tops"),
+  model("StopEmission/Phase09.tops"),
+  model("StopEmission/Phase10.tops"),
+  model("StopEmission/Phase11.tops"),
+  model("StopEmission/Phase12.tops"),
+  model("StopEmission/Phase13.tops"),
+  model("StopEmission/Phase14.tops"),
+  model("StopEmission/Phase15.tops"),
+  model("StopEmission/Phase16.tops"),
+  model("StopEmission/Phase17.tops"),
+  model("StopEmission/Phase18.tops"),
+  model("StopEmission/Phase19.tops"),
+  model("StopEmission/Phase20.tops"),
+  model("StopEmission/Phase21.tops"),
+  model("StopEmission/Phase22.tops"),
+  model("StopEmission/Phase23.tops"),
+  model("StopEmission/Phase24.tops"),
+  model("StopEmission/Phase25.tops"),
+  model("StopEmission/Phase26.tops"),
+  model("StopEmission/Phase27.tops")
+]

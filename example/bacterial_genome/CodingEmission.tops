@@ -1,0 +1,11 @@
+// Coding Emission
+
+model_type = "PeriodicIMC"
+
+observations = [ "A", "C", "G", "T" ]
+
+position_specific_distributions = [
+  model("CodingEmission/Phase01.tops"),
+  model("CodingEmission/Phase02.tops"),
+  model("CodingEmission/Phase03.tops")
+]

@@ -1,0 +1,19 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Dishonest Cassino
+
+model_type = "LCCRF"
+
+observations = [ "1", "2", "3", "4", "5", "6" ]
+
+labels = [ "Fair", "Loaded" ]
+
+feature_function_libraries = [
+  lib("features.tops")
+]
+
+feature_parameters = [
+  "label_loaded": 1.0,
+  "label_fair": 2.0
+]

@@ -1,0 +1,34 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Feature function library
+
+observations = [ "1", "2", "3", "4", "5", "6" ]
+
+labels = [ "Loaded", "Fair" ]
+
+// Feature function prototypes
+use("prototypes.tops")
+
+// Feature functions built from factory
+feature("Fair -> Fair"    , transition("Fair"   , "Fair"  ))
+feature("Fair -> Loaded"  , transition("Fair"   , "Loaded"))
+feature("Loaded -> Fair"  , transition("Loaded" , "Fair"  ))
+feature("Loaded -> Loaded", transition("Loaded" , "Loaded"))
+
+// Feature functions built directly
+feature("label_loaded", fun(x, yp, yc, i) {
+  if (yc == label("Loaded")) {
+    return 1;
+  } else {
+    return 0;
+  }
+})
+
+feature("label_fair", fun(x, yp, yc, i) {
+  if (yc == label("Fair")) {
+    return 1;
+  } else {
+    return 0;
+  }
+})

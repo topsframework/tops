@@ -1,0 +1,37 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Dishonest Cassino
+
+model_type = "HMM"
+
+observations = [ "1", "2", "3", "4", "5", "6" ]
+
+labels = [ "Fair", "Loaded" ]
+
+initial_probabilities = [
+  "Fair"   : 0.5,
+  "Loaded" : 0.5
+]
+
+transition_probabilities = [
+  "Loaded" | "Fair"   : 0.1,
+  "Fair"   | "Fair"   : 0.9,
+  "Fair"   | "Loaded" : 0.1,
+  "Loaded" | "Loaded" : 0.9
+]
+
+emission_probabilities = [
+  "1" | "Fair"   : 1.0/6,
+  "2" | "Fair"   : 1.0/6,
+  "3" | "Fair"   : 1.0/6,
+  "4" | "Fair"   : 1.0/6,
+  "5" | "Fair"   : 1.0/6,
+  "6" | "Fair"   : 1.0/6,
+  "1" | "Loaded" : 1.0/2,
+  "2" | "Loaded" : 1.0/10,
+  "3" | "Loaded" : 1.0/10,
+  "4" | "Loaded" : 1.0/10,
+  "5" | "Loaded" : 1.0/10,
+  "6" | "Loaded" : 1.0/10
+]

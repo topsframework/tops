@@ -1,0 +1,41 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "SBSW"
+
+observations = [ "A", "C", "G", "T" ]
+
+sequences = [
+ "AAAGTAAAA": 1.0,
+ "AAAGTAAAG": 1.0,
+ "AAAGTAAAT": 2.0,
+ "AAAGTAACC": 1.0,
+ "AAAGTAACT": 1.0,
+ "AAAGTAAGA": 13.0,
+ "AAAGTAAGC": 13.0,
+ "AAAGTAAGG": 14.0,
+ "AAAGTAAGT": 83.0,
+ "AAAGTAATC": 1.0,
+ "AAAGTAATT": 3.0,
+ "AAAGTACAG": 1.0,
+ "AAAGTACGT": 5.0,
+ "AAAGTACTG": 1.0,
+ "AAAGTAGGC": 1.0,
+ "AAAGTAGGG": 1.0,
+ "AAAGTAGGT": 10.0,
+ "AAAGTATGA": 1.0,
+ "AAAGTATGT": 11.0,
+ "AAAGTCAGT": 2.0,
+ "AAAGTGAGA": 4.0,
+ "AAAGTGAGC": 3.0,
+ "AAAGTGAGG": 2.0,
+ "AAAGTGAGT": 3.0
+]
+
+normalizer = 12274.5
+
+skip_offset = 3
+
+skip_length = 2
+
+skip_sequence = "GT"

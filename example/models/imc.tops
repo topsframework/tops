@@ -1,0 +1,12 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "IMC"
+
+observations = [ "0", "1" ]
+
+position_specific_distributions = [
+  model("vlmc.tops"),
+  model("vlmc.tops"),
+  model("vlmc.tops")
+]

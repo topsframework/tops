@@ -1,0 +1,34 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+// Bacterial Genome
+
+model_type = "GHMM"
+
+observations = [ "A", "C", "G", "T" ]
+
+labels = [ "Start", "Stop", "Coding", "NonCoding" ]
+
+initial_probabilities = [ "NonCoding": 1.0 ]
+
+transition_probabilities = [
+  "NonCoding" | "NonCoding" : 0.999,
+  "Start"     | "NonCoding" : 0.001,
+  "Coding"    | "Start"     : 1.0,
+  "Stop"      | "Coding"    : 1.0,
+  "NonCoding" | "Stop"      : 1.0
+]
+
+states = [
+  "NonCoding" : [ duration : geometric(),
+                  emission : model("NonCodingEmission.tops") ],
+
+  "Coding"    : [ duration : explicit(model("CodingDuration.tops")),
+                  emission : model("CodingEmission.tops") ],
+
+  "Start"     : [ duration : fixed(27),
+                  emission : model("StartEmission.tops") ],
+
+  "Stop"      : [ duration : fixed(27),
+                  emission : model("StopEmission.tops") ]
+]

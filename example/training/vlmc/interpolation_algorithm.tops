@@ -1,0 +1,18 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "VLMC"
+
+observations = [ "0", "1" ]
+
+training_algorithm = "Interpolation"
+
+training_set = dataset("data/cassino-coin.tsv")
+
+initial_model = pretrained_model("vlmc.tops")
+
+weights = weights("data/cassino-coin.weights")
+
+order = 3
+
+pseudo_counter = 1.23

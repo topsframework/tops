@@ -1,0 +1,16 @@
+// -*- mode: c++ -*-
+// vim: ft=chaiscript:
+
+model_type = "MDD"
+
+observations = [ "A", "C", "G", "T" ]
+
+training_algorithm = "Standard"
+
+training_set = dataset("data/dna.tsv")
+
+consensus = "[AC]C[GA]TTA"
+
+consensus_model = pretrained_model("consensus_model.tops")
+
+minimum_subset = 42
