@@ -28,11 +28,13 @@
 #include "model/HiddenMarkovModelState.hpp"
 #include "model/PairHiddenMarkovModelState.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
+#include "model/ContextSensitiveHiddenMarkovModelState.hpp"
 
 namespace tops {
 namespace model {
 
 // Forward declarations
+class ContextSensitiveHiddenMarkovModel;
 class DiscreteIIDModel;
 class FixedSequenceAtPosition;
 class GeneralizedHiddenMarkovModel;
@@ -73,8 +75,10 @@ class Translator : public std::enable_shared_from_this<Translator> {
   using HMM = HiddenMarkovModel;
   using PHMM = PairHiddenMarkovModel;
   using GHMM = GeneralizedHiddenMarkovModel;
+  using CSHMM = ContextSensitiveHiddenMarkovModel;
 
   // Purely virtual functions
+  virtual void translate(Ptr<ContextSensitiveHiddenMarkovModel> model) = 0;
   virtual void translate(Ptr<DiscreteIIDModel> model) = 0;
   virtual void translate(Ptr<FixedSequenceAtPosition> model) = 0;
   virtual void translate(Ptr<GeneralizedHiddenMarkovModel> model) = 0;

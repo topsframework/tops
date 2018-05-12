@@ -47,6 +47,18 @@ void SExprTranslator::translate(
 /*----------------------------------------------------------------------------*/
 
 void SExprTranslator::translate(
+    Ptr<model::ContextSensitiveHiddenMarkovModel> model) {
+  _sexpr += "(ContextSensitiveHiddenMarkovModel: ";
+  for (unsigned int i = 0; i < model->stateAlphabetSize(); i++) {
+    model->state(i)->serializer(make_shared())->serialize();
+    _sexpr += " ";
+  }
+  _sexpr[_sexpr.size()-1] =  ')';
+}
+
+/*----------------------------------------------------------------------------*/
+
+void SExprTranslator::translate(
     Ptr<model::GeneralizedHiddenMarkovModel> model) {
   _sexpr += "(GeneralizedHiddenMarkovModel: ";
   for (const auto& state : model->states()) {

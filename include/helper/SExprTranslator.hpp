@@ -26,6 +26,7 @@
 #include <utility>
 
 // Internal headers
+#include "model/ContextSensitiveHiddenMarkovModel.hpp"
 #include "model/DiscreteIIDModel.hpp"
 #include "model/FixedSequenceAtPosition.hpp"
 #include "model/GeneralizedHiddenMarkovModel.hpp"
@@ -71,6 +72,7 @@ class SExprTranslator : public model::Translator {
   }
 
   // Overriden methods
+  void translate(Ptr<model::ContextSensitiveHiddenMarkovModel> model) override;
   void translate(Ptr<model::DiscreteIIDModel> model) override;
   void translate(Ptr<model::FixedSequenceAtPosition> model) override;
   void translate(Ptr<model::GeneralizedHiddenMarkovModel> model) override;
