@@ -59,8 +59,8 @@ class ExtrinsicConverter{
   json _extrinsic_probabilities_contribuition;
   tops::model::Matrix _extrinsic_probabilities;
   
-  std::unordered_map<std::string, tops::model::Symbol> _state_indices;
-  std::vector<std::string> _state_names;
+  std::unordered_map<std::string, tops::model::Symbol> _states_indices;
+  std::vector<std::string> _states_names;
 
  public:
   vector<GtfLine> convertGtfFileToGtfLine(const string gtfFile) {
@@ -95,7 +95,7 @@ class ExtrinsicConverter{
   void addContribution(const size_t start, const size_t end,
       const string bonus_type, const string type){
     std::vector<std::string> exons;
-    if (type.compare("ep") == 0) {
+    if ((type.compare("ep") == 0) || (type.compare("exon") == 0)) {
       exons = std::vector<std::string> {
         "EI0", "EI1", "EI2",
         "E00", "E01", "E02",
@@ -108,19 +108,6 @@ class ExtrinsicConverter{
         "rE20", "rE21", "rE22",
         "rET0", "rET1", "rET2",
         "ES", "rES",
-      };
-    } else if (type.compare("exon") == 0) {
-      exons = std::vector<std::string> {
-        "EI0", "EI1", "EI2",
-        "E00", "E01", "E02",
-        "E10", "E11", "E12",
-        "E20", "E21", "E22",
-        "ET0", "ET1", "ET2",
-        "rEI0", "rEI1", "rEI2",
-        "rE00", "rE01", "rE02",
-        "rE10", "rE11", "rE12",
-        "rE20", "rE21", "rE22",
-        "rET0", "rET1", "rET2",
       };
     } else if (type.compare("start") == 0) {
       exons = std::vector<std::string> {
@@ -151,9 +138,9 @@ class ExtrinsicConverter{
 
     for (size_t j = start - 1; j < end; j++) {
       for (const auto& exon : exons) {
-        auto d = _extrinsic_probabilities[_state_indices[exon]][j];
+        auto d = _extrinsic_probabilities[_states_indices[exon]][j];
         tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
-        _extrinsic_probabilities[_state_indices[exon]][j] = d * ec;     
+        _extrinsic_probabilities[_states_indices[exon]][j] = d * ec;     
       }
     }
   }
@@ -164,7 +151,7 @@ class ExtrinsicConverter{
     const string extrinsic_config) {
     
     _extrinsic_probabilities = probabilities;
-    initializeMatrixNames();
+    initializeMatrixNames(_states_names, _states_indices);
 
     std::ifstream ifs(extrinsic_config);
     _extrinsic_probabilities_contribuition = json::parse(ifs);
@@ -193,9 +180,10 @@ class ExtrinsicConverter{
     return _extrinsic_probabilities;
   }
 
-  void initializeMatrixNames(){
+  void initializeMatrixNames(std::vector<std::string> &states_names,
+      std::unordered_map<std::string, tops::model::Symbol> &states_indices ){
    
-    _state_names = std::vector<std::string>{
+    states_names = std::vector<std::string>{
       "B",
 
       "start",
@@ -231,8 +219,8 @@ class ExtrinsicConverter{
       "E"
     };
 
-    for (std::size_t index = 0; index < _state_names.size(); index++)
-      _state_indices.emplace(_state_names[index], index);
+    for (std::size_t index = 0; index < states_names.size(); index++)
+      states_indices.emplace(states_names[index], index);
   }
 };
 
