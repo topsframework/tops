@@ -29,18 +29,15 @@
 #include <utility>
 #include <vector>
 
-// Internal headers
-#include "model/Util.hpp"
-
-#include "exception/NotYetImplemented.hpp"
-
 // Macros
 #define UNUSED(var) do { (void) sizeof(var); } while (false)
 
 namespace tops {
 namespace model {
 
+// Aliases
 using Counter = std::size_t;
+using IID = DiscreteIIDModel;
 
 /*----------------------------------------------------------------------------*/
 /*                              LOCAL FUNCTIONS                               */
@@ -52,8 +49,9 @@ template<typename Original, std::size_t N>
 struct SumAux {
   Original operator()(const MultiArray<Original, N>& values) {
     Original acc {};
-    for (const auto& curr : values)
+    for (const auto& curr : values) {
       acc += SumAux<Original, N-1>{}(curr);
+    }
     return acc;
   }
 };
@@ -71,8 +69,9 @@ struct NormalizeAux {
   operator()(const MultiArray<Original, N>& values, Original sum) {
     MultiArray<Probability, N> converted;
 
-    for (const auto& curr : values)
+    for (const auto& curr : values) {
       converted.push_back(NormalizeAux<Original, N-1>{}(curr, sum));
+    }
 
     return converted;
   }
@@ -104,10 +103,10 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     std::size_t num_phases,
     std::size_t max_backtracking)
     : _states(std::move(states)),
-      _state_alphabet_size(std::move(state_alphabet_size)),
-      _observation_alphabet_size(std::move(observation_alphabet_size)),
-      _num_phases(std::move(num_phases)),
-      _max_backtracking(std::move(max_backtracking)) {
+      _state_alphabet_size(state_alphabet_size),
+      _observation_alphabet_size(observation_alphabet_size),
+      _num_phases(num_phases),
+      _max_backtracking(max_backtracking) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -117,10 +116,11 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
 /*================================  TRAINER  =================================*/
 
 GeneralizedHiddenMarkovModelPtr
-GeneralizedHiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
-                         maximum_likelihood_algorithm,
-                         GeneralizedHiddenMarkovModelPtr initial_model,
-                         std::size_t pseudo_counter) {
+GeneralizedHiddenMarkovModel::train(
+    const TrainerPtr<Labeling, Self>& trainer,
+    maximum_likelihood_algorithm /* tag */,
+    const GeneralizedHiddenMarkovModelPtr& initial_model,
+    std::size_t pseudo_counter) {
   auto model = std::make_shared<GeneralizedHiddenMarkovModel>(*initial_model);
 
   // Matrix for counting of emissions
@@ -145,13 +145,13 @@ GeneralizedHiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
   }
 
   for (auto& state : model->states()) {
-    if (state->isSilent()) continue;
+    if (state->isSilent()) { continue; }
 
     auto k = state->id();
 
     // Replace the transition and emission of each state
-    state->transition(DiscreteIIDModel::make(normalize<Counter, 1>(A[k])));
-    state->emission(DiscreteIIDModel::make(normalize<Counter, 1>(E[k])));
+    state->transition(IID::make(normalize<Counter, 1>(A[k])));
+    state->emission(IID::make(normalize<Counter, 1>(E[k])));
   }
 
   return model;
@@ -163,17 +163,17 @@ GeneralizedHiddenMarkovModel::train(TrainerPtr<Labeling, Self> trainer,
 
 /*===============================  SERIALIZER  ===============================*/
 
-void GeneralizedHiddenMarkovModel::serialize(SSPtr serializer) {
+void GeneralizedHiddenMarkovModel::serialize(const SSPtr& serializer) {
   serializer->translator()->translate(this->shared_from_this());
 }
 
 /*=================================  OTHERS  =================================*/
 
 typename GeneralizedHiddenMarkovModel::GeneratorReturn<Symbol>
-GeneralizedHiddenMarkovModel::drawSymbol(RandomNumberGeneratorPtr rng,
+GeneralizedHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
                                          std::size_t pos,
                                          const Sequence& context) const {
-  assert(context.size() > 0 && context[0] == _begin_id);
+  assert(!context.empty() && context[0] == _begin_id);
 
   // TODO(renatocf): Implement drawing of duration
   Symbol label = _states[context[pos-1]]->transition()->draw(rng);
@@ -187,14 +187,14 @@ GeneralizedHiddenMarkovModel::drawSymbol(RandomNumberGeneratorPtr rng,
 /*----------------------------------------------------------------------------*/
 
 typename GeneralizedHiddenMarkovModel::GeneratorReturn<Sequence>
-GeneralizedHiddenMarkovModel::drawSequence(RandomNumberGeneratorPtr rng,
+GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
                                            std::size_t size) const {
   Sequences alignment(1);
   Sequence label;
 
   label.push_back(_begin_id);
   for (std::size_t i = 1; i <= size; i++) {
-    auto [ y, xs ] = drawSymbol(rng, i, label);
+    auto[ y, xs ] = drawSymbol(rng, i, label);
 
     // Keep trying to emit the right number of symbols
     if (y == _end_id) { i--; continue; }
@@ -230,13 +230,15 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
       auto k = state->id();
       auto phase = state->beginPhase();
 
-      if (!state->hasGap(0) && i == 0) continue;
+      if (!state->hasGap(0) && i == 0) { continue; }
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
         auto begin = i-d, end = i;
 
-        if (!segmentIsViable(sequences[0], begin, end, _states[k])) continue;
+        if (!segmentIsViable(sequences[0], begin, end, _states[k])) {
+          continue;
+        }
 
         for (auto p : state->predecessors()) {
           Probability candidate_max
@@ -261,7 +263,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
   // Termination
   auto max = gammas[_end_id][sequences[0].size()];
-  auto [ label, alignment ] = traceBack(sequences, psi, phi);
+  auto[ label, alignment ] = traceBack(sequences, psi, phi);
 
   return { max, label, alignment, gammas };
 }
@@ -269,7 +271,8 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename GeneralizedHiddenMarkovModel::LabelerReturn
-GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
+GeneralizedHiddenMarkovModel::posteriorDecoding(
+    const Sequences& sequences) const {
   auto posteriors = Matrix(_state_alphabet_size,
       std::vector<Probability>(sequences[0].size() + 1));
 
@@ -280,8 +283,8 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) cons
       MultiArray<typename State::Id, 1>(sequences[0].size() + 1, _begin_id));
 
   // Preprocessment
-  auto [ full, alphas ] = forward(sequences);
-  auto [ _, betas ] = backward(sequences);
+  auto[ full, alphas ] = forward(sequences);
+  auto[ _, betas ] = backward(sequences);
 
   UNUSED(_);  // A hack while we don't have pattern matching in C++
 
@@ -293,7 +296,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) cons
     for (const auto& state : _states) {
       auto k = state->id();
 
-      if (!state->hasGap(0) && i == 0) continue;
+      if (!state->hasGap(0) && i == 0) { continue; }
 
       for (auto p : state->predecessors()) {
         Probability candidate_max
@@ -311,7 +314,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) cons
 
   // Termination
   auto max = posteriors[_end_id][sequences[0].size()];
-  auto [ label, alignment ] = traceBack(sequences, psi, phi);
+  auto[ label, alignment ] = traceBack(sequences, psi, phi);
 
   return { max, label, alignment, posteriors };
 }
@@ -332,13 +335,15 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
       auto k = state->id();
       auto phase = state->beginPhase();
 
-      if (!state->hasGap(0) && i == 0) continue;
+      if (!state->hasGap(0) && i == 0) { continue; }
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
         auto begin = i-d, end = i;
 
-        if (!segmentIsViable(sequences[0], begin, end, _states[k])) continue;
+        if (!segmentIsViable(sequences[0], begin, end, _states[k])) {
+          continue;
+        }
 
         for (auto p : state->predecessors()) {
           alphas[k][i]
@@ -378,7 +383,7 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
       auto k = state->id();
 
       for (auto s : state->successors()) {
-        if (!_states[s]->hasGap(0) && i == sequences[0].size()) continue;
+        if (!_states[s]->hasGap(0) && i == sequences[0].size()) { continue; }
 
         auto phase = _states[s]->beginPhase();
 
@@ -386,7 +391,9 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
         for (auto d : _states[s]->duration()->possibleLengths(max_length)) {
           auto begin = i, end = i+d;
 
-          if (!segmentIsViable(sequences[0], begin, end, _states[s])) continue;
+          if (!segmentIsViable(sequences[0], begin, end, _states[s])) {
+            continue;
+          }
 
           betas[k][i]
             += _states[k]->transition()
@@ -415,12 +422,12 @@ bool GeneralizedHiddenMarkovModel::segmentIsViable(
     std::size_t begin,
     std::size_t end,
     const StatePtr& state) const {
-  const Probability zero = 0;
+  const Probability zero;
 
   bool exceedsBegin = (begin < state->beginExtension());
   bool exceedsEnd = (end + state->endExtension() > sequence.size());
 
-  if (exceedsBegin || exceedsEnd) return false;
+  if (exceedsBegin || exceedsEnd) { return false; }
 
   auto extended_begin
     = begin - state->beginExtension();
@@ -471,7 +478,7 @@ GeneralizedHiddenMarkovModel::traceBack(
 
     best_id = psi[best_id][idxs[0]];
 
-    if (!_states[best_id]->hasGap(0)) idxs[0] -= duration;
+    if (!_states[best_id]->hasGap(0)) { idxs[0] -= duration; }
   }
   label.push_back(_begin_id);
 

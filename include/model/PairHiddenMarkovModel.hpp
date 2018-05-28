@@ -190,7 +190,8 @@ class PairHiddenMarkovModel
    * @return New instance of TrainerPtr<Alignment, Self>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(Tag, Args&&... args) {
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(
+      Tag /* training_algorithm */, Args&&... args) {
     return CachedTrainer<Alignment, Self, Tag, Args...>::make(
         Tag{}, std::forward<Args>(args)...);
   }
@@ -219,7 +220,8 @@ class PairHiddenMarkovModel
    * @return New instance of TrainerPtr<Standard, Self>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Labeling, Self> supervisedTrainer(Tag, Args&&... args) {
+  static TrainerPtr<Labeling, Self> supervisedTrainer(
+      Tag /* training_algorithm */, Args&&... args) {
     return CachedTrainer<Labeling, Self, Tag, Args...>::make(
         Tag{}, std::forward<Args>(args)...);
   }
@@ -235,9 +237,9 @@ class PairHiddenMarkovModel
    * @param diff_threshold Minimum threshold of difference to stop the training
    * @return New instance of SelfPtr pointing to a new trained Self
    */
-  static SelfPtr train(TrainerPtr<Alignment, Self> trainer,
+  static SelfPtr train(const TrainerPtr<Alignment, Self>& trainer,
                        baum_welch_algorithm,
-                       PairHiddenMarkovModelPtr initial_model,
+                       const PairHiddenMarkovModelPtr& initial_model,
                        std::size_t max_iterations,
                        Probability diff_threshold);
 
@@ -280,7 +282,7 @@ class PairHiddenMarkovModel
    */
   SerializerPtr serializer(TranslatorPtr translator) {
     auto self = shared_from_this();
-    return SimpleSerializer<Self>::make(self, translator);
+    return SimpleSerializer<Self>::make(self, std::move(translator));
   }
 
   /**
@@ -500,7 +502,7 @@ class PairHiddenMarkovModel
    * in the disk using some file format) with a SimpleSerializer.
    * @param serializer Instance of SimpleSerializer
    */
-  void serialize(SSPtr serializer);
+  void serialize(const SSPtr& serializer);
 
   /*----------------------------( SimpleLabeler )-----------------------------*/
 
@@ -599,10 +601,10 @@ class PairHiddenMarkovModel
   /*----------------------------( Implementations )---------------------------*/
 
   // Generator's implementations
-  GeneratorReturn<Symbol> drawSymbol(RandomNumberGeneratorPtr rng,
+  GeneratorReturn<Symbol> drawSymbol(const RandomNumberGeneratorPtr& rng,
                                      std::size_t pos,
                                      const Sequence& context) const;
-  GeneratorReturn<Sequence> drawSequence(RandomNumberGeneratorPtr rng,
+  GeneratorReturn<Sequence> drawSequence(const RandomNumberGeneratorPtr& rng,
                                          std::size_t size) const;
 
   // Labeler's implementations
