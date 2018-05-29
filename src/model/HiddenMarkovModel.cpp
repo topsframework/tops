@@ -38,59 +38,6 @@ using IID = DiscreteIIDModel;
 using Counter = std::size_t;
 
 /*----------------------------------------------------------------------------*/
-/*                              LOCAL FUNCTIONS                               */
-/*----------------------------------------------------------------------------*/
-
-namespace {
-
-template<typename Original, std::size_t N>
-struct SumAux {
-  Original operator()(const MultiArray<Original, N>& values) {
-    Original acc {};
-    for (const auto& curr : values) {
-      acc += SumAux<Original, N-1>{}(curr);
-    }
-    return acc;
-  }
-};
-
-template<typename Original>
-struct SumAux<Original, 0> {
-  Original operator()(const MultiArray<Original, 0>& values) {
-    return values;
-  }
-};
-
-template<typename Original, std::size_t N>
-struct NormalizeAux {
-  MultiArray<Probability, N>
-  operator()(const MultiArray<Original, N>& values, Original sum) {
-    MultiArray<Probability, N> converted;
-
-    for (const auto& curr : values) {
-      converted.push_back(NormalizeAux<Original, N-1>{}(curr, sum));
-    }
-
-    return converted;
-  }
-};
-
-template<typename Original>
-struct NormalizeAux<Original, 0> {
-  MultiArray<Probability, 0>
-  operator()(const MultiArray<Original, 0>& values, Original sum) {
-    return Probability{ (1.0 * values) / sum };
-  }
-};
-
-template<typename Original, std::size_t N>
-MultiArray<Probability, N> normalize(const MultiArray<Original, N>& values) {
-  return NormalizeAux<Original, N>{}(values, SumAux<Original, N>{}(values));
-}
-
-}  // namespace
-
-/*----------------------------------------------------------------------------*/
 /*                               CONSTRUCTORS                                 */
 /*----------------------------------------------------------------------------*/
 
