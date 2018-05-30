@@ -21,6 +21,7 @@
 #define TOPS_MODEL_MATRIX_
 
 // Standard headers
+#include <array>
 #include <vector>
 
 // Internal headers
@@ -28,6 +29,8 @@
 
 namespace tops {
 namespace model {
+
+/*----------------------------------------------------------------------------*/
 
 template<typename T, std::size_t N>
 struct Nest : Nest<std::vector<T>, N-1> {};
@@ -65,11 +68,9 @@ struct NormalizeAux {
   MultiArray<Probability, N>
   operator()(const MultiArray<Original, N>& values, Original sum) {
     MultiArray<Probability, N> converted;
-
     for (const auto& curr : values) {
       converted.push_back(NormalizeAux<Original, N-1>{}(curr, sum));
     }
-
     return converted;
   }
 };
@@ -85,6 +86,34 @@ struct NormalizeAux<Original, 0> {
 template<typename Original, std::size_t N>
 MultiArray<Probability, N> normalize(const MultiArray<Original, N>& values) {
   return NormalizeAux<Original, N>{}(values, SumAux<Original, N>{}(values));
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Original, size_t D, size_t N>
+struct ConstructorAux {
+  MultiArray<Original, N> operator()(
+      const Original& initial_value,
+      const std::array<size_t, D>& dimensions) {
+    return MultiArray<Original, N>(dimensions[D-N],
+        ConstructorAux<Original, D, N-1>{}(initial_value, dimensions));
+  }
+};
+
+template<typename Original, size_t D>
+struct ConstructorAux<Original, D, 0> {
+  MultiArray<Original, 0> operator()(
+      const Original& initial_value,
+      const std::array<size_t, D>& /* dimensions */) {
+    return initial_value;
+  }
+};
+
+template<typename Original, typename... Dimensions>
+auto make_multiarray(const Original& initial_value, Dimensions... dimensions) {
+  constexpr size_t D = sizeof...(dimensions);
+  return ConstructorAux<Original, D, D>{}(
+      initial_value, std::array<size_t, D>{ dimensions... });
 }
 
 /*----------------------------------------------------------------------------*/

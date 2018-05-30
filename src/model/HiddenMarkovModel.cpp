@@ -68,13 +68,17 @@ HiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
 
   std::pair<Expectation, Expectation> lasts;
   for (std::size_t iteration = 0; iteration < max_iterations; iteration++) {
+    Expectation zero;
+
     // Matrix for expectations of transitions
-    auto A = MultiArray<Expectation, 2>(model->stateAlphabetSize(),
-        MultiArray<Expectation, 1>(model->stateAlphabetSize()));
+    auto A = make_multiarray(zero,
+                             model->stateAlphabetSize(),
+                             model->stateAlphabetSize());
 
     // Matrix for expectations of emissions
-    auto E = MultiArray<Expectation, 2>(model->stateAlphabetSize(),
-          MultiArray<Expectation, 1>(model->observationAlphabetSize()+1));
+    auto E = make_multiarray(zero,
+                             model->stateAlphabetSize(),
+                             model->observationAlphabetSize()+1);
 
     Expectation last;
     for (const auto& sequences : trainer->training_set()) {
@@ -154,12 +158,14 @@ HiddenMarkovModel::train(const TrainerPtr<Labeling, Self>& trainer,
   auto model = std::make_shared<HiddenMarkovModel>(*initial_model);
 
   // Matrix for counting of emissions
-  auto A = MultiArray<Counter, 2>(model->stateAlphabetSize(),
-      MultiArray<Counter, 1>(model->stateAlphabetSize(), pseudo_counter));
+  auto A = make_multiarray(pseudo_counter,
+                           model->stateAlphabetSize(),
+                           model->stateAlphabetSize());
 
   // Matrix for counting of transitions
-  auto E = MultiArray<Counter, 2>(model->stateAlphabetSize(),
-      MultiArray<Counter, 1>(model->observationAlphabetSize(), pseudo_counter));
+  auto E = make_multiarray(pseudo_counter,
+                           model->stateAlphabetSize(),
+                           model->observationAlphabetSize());
 
   for (const auto& [ observation, other_observations, label ]
       : trainer->training_set()) {
@@ -239,11 +245,13 @@ HiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 
 typename HiddenMarkovModel::LabelerReturn
 HiddenMarkovModel::viterbi(const Sequences& sequences) const {
-  auto psi = MultiArray<typename State::Id, 2>(_state_alphabet_size,
-      MultiArray<typename State::Id, 1>(sequences[0].size() + 1, _begin_id));
+  Probability zero;
 
-  auto gammas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  auto gammas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
+
+  auto psi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
 
   // Initialization
   gammas[_begin_id][0] = 1;
@@ -281,11 +289,13 @@ HiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
 typename HiddenMarkovModel::LabelerReturn
 HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
-  auto psi = MultiArray<typename State::Id, 2>(_state_alphabet_size,
-      MultiArray<typename State::Id, 1>(sequences[0].size() + 1, _begin_id));
+  Probability zero;
 
-  auto posteriors = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  auto posteriors = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
+
+  auto psi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
 
   // Preprocessment
   auto[ full, alphas ] = forward(sequences);
@@ -327,8 +337,10 @@ HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
 
 typename HiddenMarkovModel::CalculatorReturn
 HiddenMarkovModel::forward(const Sequences& sequences) const {
-  auto alphas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  const Probability zero;
+
+  auto alphas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
 
   // Initialization
   alphas[_begin_id][0] = 1;
@@ -360,8 +372,10 @@ HiddenMarkovModel::forward(const Sequences& sequences) const {
 
 typename HiddenMarkovModel::CalculatorReturn
 HiddenMarkovModel::backward(const Sequences& sequences) const {
-  auto betas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 2));
+  const Probability zero;
+
+  auto betas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 2);
 
   // Initialization
   betas[_end_id][sequences[0].size()] = 1;

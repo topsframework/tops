@@ -71,12 +71,14 @@ GeneralizedHiddenMarkovModel::train(
   auto model = std::make_shared<GeneralizedHiddenMarkovModel>(*initial_model);
 
   // Matrix for counting of emissions
-  auto A = MultiArray<Counter, 2>(model->stateAlphabetSize(),
-      MultiArray<Counter, 1>(model->stateAlphabetSize(), pseudo_counter));
+  auto A = make_multiarray(pseudo_counter,
+                           model->stateAlphabetSize(),
+                           model->stateAlphabetSize());
 
   // Matrix for counting of transitions
-  auto E = MultiArray<Counter, 2>(model->stateAlphabetSize(),
-      MultiArray<Counter, 1>(model->observationAlphabetSize(), pseudo_counter));
+  auto E = make_multiarray(pseudo_counter,
+                           model->stateAlphabetSize(),
+                           model->observationAlphabetSize());
 
   for (const auto& [ observation, other_observations, label ]
       : trainer->training_set()) {
@@ -159,14 +161,16 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
-  auto gammas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  Probability zero;
 
-  auto phi = MultiArray<std::size_t, 2>(_state_alphabet_size,
-      MultiArray<std::size_t, 1>(sequences[0].size() + 1, _begin_id));
+  auto gammas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
 
-  auto psi = MultiArray<typename State::Id, 2>(_state_alphabet_size,
-      MultiArray<typename State::Id, 1>(sequences[0].size() + 1, _begin_id));
+  auto phi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+
+  auto psi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
 
   // Initialization
   gammas[_begin_id][0] = 1;
@@ -220,14 +224,16 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::posteriorDecoding(
     const Sequences& sequences) const {
-  auto posteriors = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  const Probability zero;
 
-  auto phi = MultiArray<std::size_t, 2>(_state_alphabet_size,
-      MultiArray<std::size_t, 1>(sequences[0].size() + 1, _begin_id));
+  auto posteriors = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
 
-  auto psi = MultiArray<typename State::Id, 2>(_state_alphabet_size,
-      MultiArray<typename State::Id, 1>(sequences[0].size() + 1, _begin_id));
+  auto phi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+
+  auto psi = make_multiarray(
+      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
 
   // Preprocessment
   auto[ full, alphas ] = forward(sequences);
@@ -270,8 +276,10 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
 
 typename GeneralizedHiddenMarkovModel::CalculatorReturn
 GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
-  auto alphas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 1));
+  const Probability zero;
+
+  auto alphas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 1);
 
   // Initialization
   alphas[_begin_id][0] = 1;
@@ -317,8 +325,10 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
 
 typename GeneralizedHiddenMarkovModel::CalculatorReturn
 GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
-  auto betas = Matrix(_state_alphabet_size,
-      std::vector<Probability>(sequences[0].size() + 2));
+  const Probability zero;
+
+  auto betas = make_multiarray(
+      zero, _state_alphabet_size, sequences[0].size() + 2);
 
   // Initialization
   betas[_end_id][sequences[0].size()] = 1;

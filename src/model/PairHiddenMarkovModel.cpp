@@ -66,14 +66,18 @@ PairHiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
 
   std::pair<Expectation, Expectation> lasts;
   for (std::size_t iteration = 0; iteration < max_iterations; iteration++) {
+    Expectation zero;
+
     // Matrix for expectations of transitions
-    auto A = MultiArray<Expectation, 2>(model->stateAlphabetSize(),
-        MultiArray<Expectation, 1>(model->stateAlphabetSize()));
+    auto A = make_multiarray(zero,
+                             model->stateAlphabetSize(),
+                             model->stateAlphabetSize());
 
     // Matrix for expectations of emissions
-    auto E = MultiArray<Expectation, 3>(model->stateAlphabetSize(),
-        MultiArray<Expectation, 2>(model->observationAlphabetSize()+1,
-          MultiArray<Expectation, 1>(model->observationAlphabetSize()+1)));
+    auto E = make_multiarray(zero,
+                             model->stateAlphabetSize(),
+                             model->observationAlphabetSize()+1,
+                             model->observationAlphabetSize()+1);
 
     Expectation last;
     for (const auto& sequences : trainer->training_set()) {
@@ -208,13 +212,17 @@ PairHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
-  auto psi = MultiArray<typename State::Id, 3>(_state_alphabet_size,
-      MultiArray<typename State::Id, 2>(sequences[0].size() + 1,
-        MultiArray<typename State::Id, 1>(sequences[1].size() + 1, _begin_id)));
+  Probability zero;
 
-  auto gammas = Cube(_state_alphabet_size,
-      Matrix(sequences[0].size() + 1,
-        std::vector<Probability>(sequences[1].size() + 1)));
+  auto gammas = make_multiarray(zero,
+                                _state_alphabet_size,
+                                sequences[0].size() + 1,
+                                sequences[1].size() + 1);
+
+  auto psi = make_multiarray(_begin_id,
+                             _state_alphabet_size,
+                             sequences[0].size() + 1,
+                             sequences[1].size() + 1);
 
   // Initialization
   gammas[_begin_id][0][0] = 1;
@@ -256,13 +264,17 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
 typename PairHiddenMarkovModel::LabelerReturn
 PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
-  auto psi = MultiArray<typename State::Id, 3>(_state_alphabet_size,
-      MultiArray<typename State::Id, 2>(sequences[0].size() + 1,
-        MultiArray<typename State::Id, 1>(sequences[1].size() + 1, _begin_id)));
+  Probability zero;
 
-  auto posteriors = Cube(_state_alphabet_size,
-      Matrix(sequences[0].size() + 1,
-        std::vector<Probability>(sequences[1].size() + 1)));
+  auto posteriors = make_multiarray(zero,
+                                    _state_alphabet_size,
+                                    sequences[0].size() + 1,
+                                    sequences[1].size() + 1);
+
+  auto psi = make_multiarray(_begin_id,
+                             _state_alphabet_size,
+                             sequences[0].size() + 1,
+                             sequences[1].size() + 1);
 
   // Preprocessment
   auto[ full, alphas ] = forward(sequences);
@@ -307,9 +319,12 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
 
 typename PairHiddenMarkovModel::CalculatorReturn
 PairHiddenMarkovModel::forward(const Sequences& sequences) const {
-  auto alphas = Cube(_state_alphabet_size,
-      Matrix(sequences[0].size() + 1,
-        std::vector<Probability>(sequences[1].size() + 1)));
+  Probability zero;
+
+  auto alphas = make_multiarray(zero,
+                                _state_alphabet_size,
+                                sequences[0].size() + 1,
+                                sequences[1].size() + 1);
 
   // Initialization
   alphas[_begin_id][0][0] = 1;
@@ -345,9 +360,12 @@ PairHiddenMarkovModel::forward(const Sequences& sequences) const {
 
 typename PairHiddenMarkovModel::CalculatorReturn
 PairHiddenMarkovModel::backward(const Sequences& sequences) const {
-  auto betas = Cube(_state_alphabet_size,
-      Matrix(sequences[0].size() + 2,
-        std::vector<Probability>(sequences[1].size() + 2)));
+  Probability zero;
+
+  auto betas = make_multiarray(zero,
+                               _state_alphabet_size,
+                               sequences[0].size() + 2,
+                               sequences[1].size() + 2);
 
   // Initialization
   betas[_end_id][sequences[0].size()][sequences[1].size()] = 1;
