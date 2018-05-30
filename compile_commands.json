@@ -1,0 +1,571 @@
+[
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/PeriodicInhomogeneousMarkovChain.o src/model/PeriodicInhomogeneousMarkovChain.cpp",
+  "file": "src/model/PeriodicInhomogeneousMarkovChain.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/TargetModel.o src/model/TargetModel.cpp",
+  "file": "src/model/TargetModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/FixedSequenceAtPosition.o src/model/FixedSequenceAtPosition.cpp",
+  "file": "src/model/FixedSequenceAtPosition.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/MultipleSequentialModel.o src/model/MultipleSequentialModel.cpp",
+  "file": "src/model/MultipleSequentialModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/ProbabilisticModel.o src/model/ProbabilisticModel.cpp",
+  "file": "src/model/ProbabilisticModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/PhasedRunLengthDistribution.o src/model/PhasedRunLengthDistribution.cpp",
+  "file": "src/model/PhasedRunLengthDistribution.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/InhomogeneousMarkovChain.o src/model/InhomogeneousMarkovChain.cpp",
+  "file": "src/model/InhomogeneousMarkovChain.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/DiscreteIIDModel.o src/model/DiscreteIIDModel.cpp",
+  "file": "src/model/DiscreteIIDModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/MaximalDependenceDecomposition.o src/model/MaximalDependenceDecomposition.cpp",
+  "file": "src/model/MaximalDependenceDecomposition.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/MaximalDependenceDecompositionNode.o src/model/MaximalDependenceDecompositionNode.cpp",
+  "file": "src/model/MaximalDependenceDecompositionNode.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/ContextTreeNode.o src/model/ContextTreeNode.cpp",
+  "file": "src/model/ContextTreeNode.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/ContextSensitiveHiddenMarkovModel.o src/model/ContextSensitiveHiddenMarkovModel.cpp",
+  "file": "src/model/ContextSensitiveHiddenMarkovModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/Consensus.o src/model/Consensus.cpp",
+  "file": "src/model/Consensus.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/SimilarityBasedSequenceWeighting.o src/model/SimilarityBasedSequenceWeighting.cpp",
+  "file": "src/model/SimilarityBasedSequenceWeighting.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/ExplicitDuration.o src/model/ExplicitDuration.cpp",
+  "file": "src/model/ExplicitDuration.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/ContextTree.o src/model/ContextTree.cpp",
+  "file": "src/model/ContextTree.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/Util.o src/model/Util.cpp",
+  "file": "src/model/Util.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/HiddenMarkovModel.o src/model/HiddenMarkovModel.cpp",
+  "file": "src/model/HiddenMarkovModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/VariableLengthMarkovChain.o src/model/VariableLengthMarkovChain.cpp",
+  "file": "src/model/VariableLengthMarkovChain.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/GeneralizedHiddenMarkovModel.o src/model/GeneralizedHiddenMarkovModel.cpp",
+  "file": "src/model/GeneralizedHiddenMarkovModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/Segment.o src/model/Segment.cpp",
+  "file": "src/model/Segment.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/FixedDuration.o src/model/FixedDuration.cpp",
+  "file": "src/model/FixedDuration.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -c -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -o build/model/PairHiddenMarkovModel.o src/model/PairHiddenMarkovModel.cpp",
+  "file": "src/model/PairHiddenMarkovModel.cpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/PeriodicInhomogeneousMarkovChain.hpp",
+  "file": "include/model/PeriodicInhomogeneousMarkovChain.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Matrix.hpp",
+  "file": "include/model/Matrix.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Probability.hpp",
+  "file": "include/model/Probability.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/InhomogeneousMarkovChain.hpp",
+  "file": "include/model/InhomogeneousMarkovChain.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ProbabilisticModel.hpp",
+  "file": "include/model/ProbabilisticModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Sequence.hpp",
+  "file": "include/model/Sequence.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Symbol.hpp",
+  "file": "include/model/Symbol.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Standard.hpp",
+  "file": "include/model/Standard.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Evaluator.hpp",
+  "file": "include/model/Evaluator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Generator.hpp",
+  "file": "include/model/Generator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/RandomNumberGenerator.hpp",
+  "file": "include/model/RandomNumberGenerator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Serializer.hpp",
+  "file": "include/model/Serializer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Translator.hpp",
+  "file": "include/model/Translator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/MemberDelegator.hpp",
+  "file": "include/model/MemberDelegator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/MemberDetector.hpp",
+  "file": "include/model/MemberDetector.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/HiddenMarkovModelState.hpp",
+  "file": "include/model/HiddenMarkovModelState.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/PairHiddenMarkovModelState.hpp",
+  "file": "include/model/PairHiddenMarkovModelState.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/GeneralizedHiddenMarkovModelState.hpp",
+  "file": "include/model/GeneralizedHiddenMarkovModelState.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ContextSensitiveHiddenMarkovModelState.hpp",
+  "file": "include/model/ContextSensitiveHiddenMarkovModelState.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/RandomNumberGeneratorAdapter.hpp",
+  "file": "include/model/RandomNumberGeneratorAdapter.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/VariableLengthMarkovChain.hpp",
+  "file": "include/model/VariableLengthMarkovChain.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ContextTree.hpp",
+  "file": "include/model/ContextTree.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ContextTreeNode.hpp",
+  "file": "include/model/ContextTreeNode.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/DiscreteIIDModel.hpp",
+  "file": "include/model/DiscreteIIDModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ProbabilisticModelCrtp.hpp",
+  "file": "include/model/ProbabilisticModelCrtp.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Trainer.hpp",
+  "file": "include/model/Trainer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/FixedTrainer.hpp",
+  "file": "include/model/FixedTrainer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleTrainer.hpp",
+  "file": "include/model/SimpleTrainer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/CachedTrainer.hpp",
+  "file": "include/model/CachedTrainer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleGenerator.hpp",
+  "file": "include/model/SimpleGenerator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleEvaluator.hpp",
+  "file": "include/model/SimpleEvaluator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Labeling.hpp",
+  "file": "include/model/Labeling.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Estimation.hpp",
+  "file": "include/model/Estimation.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Estimation.ipp",
+  "file": "include/model/Estimation.ipp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/CachedEvaluator.hpp",
+  "file": "include/model/CachedEvaluator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleSerializer.hpp",
+  "file": "include/model/SimpleSerializer.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ProbabilisticModelCrtp.ipp",
+  "file": "include/model/ProbabilisticModelCrtp.ipp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/TargetModel.hpp",
+  "file": "include/model/TargetModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/FixedSequenceAtPosition.hpp",
+  "file": "include/model/FixedSequenceAtPosition.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/MultipleSequentialModel.hpp",
+  "file": "include/model/MultipleSequentialModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Util.hpp",
+  "file": "include/model/Util.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/exception/NotYetImplemented.hpp",
+  "file": "include/exception/NotYetImplemented.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/exception/Exception.hpp",
+  "file": "include/exception/Exception.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/exception/InvalidModelDefinition.hpp",
+  "file": "include/exception/InvalidModelDefinition.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/PhasedRunLengthDistribution.hpp",
+  "file": "include/model/PhasedRunLengthDistribution.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/exception/OutOfRange.hpp",
+  "file": "include/exception/OutOfRange.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/MaximalDependenceDecomposition.hpp",
+  "file": "include/model/MaximalDependenceDecomposition.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Consensus.hpp",
+  "file": "include/model/Consensus.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/MaximalDependenceDecompositionNode.hpp",
+  "file": "include/model/MaximalDependenceDecompositionNode.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ContextSensitiveHiddenMarkovModel.hpp",
+  "file": "include/model/ContextSensitiveHiddenMarkovModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleState.hpp",
+  "file": "include/model/SimpleState.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/StateCrtp.hpp",
+  "file": "include/model/StateCrtp.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/State.hpp",
+  "file": "include/model/State.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Duration.hpp",
+  "file": "include/model/Duration.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Range.hpp",
+  "file": "include/model/Range.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/StateCrtp.ipp",
+  "file": "include/model/StateCrtp.ipp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleState.ipp",
+  "file": "include/model/SimpleState.ipp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/FixedDuration.hpp",
+  "file": "include/model/FixedDuration.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/DurationCrtp.hpp",
+  "file": "include/model/DurationCrtp.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/DurationCrtp.ipp",
+  "file": "include/model/DurationCrtp.ipp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Labeler.hpp",
+  "file": "include/model/Labeler.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleLabeler.hpp",
+  "file": "include/model/SimpleLabeler.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/CachedLabeler.hpp",
+  "file": "include/model/CachedLabeler.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Calculator.hpp",
+  "file": "include/model/Calculator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimpleCalculator.hpp",
+  "file": "include/model/SimpleCalculator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/CachedCalculator.hpp",
+  "file": "include/model/CachedCalculator.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/SimilarityBasedSequenceWeighting.hpp",
+  "file": "include/model/SimilarityBasedSequenceWeighting.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/ExplicitDuration.hpp",
+  "file": "include/model/ExplicitDuration.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/HiddenMarkovModel.hpp",
+  "file": "include/model/HiddenMarkovModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/GeneralizedHiddenMarkovModel.hpp",
+  "file": "include/model/GeneralizedHiddenMarkovModel.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Segment.hpp",
+  "file": "include/model/Segment.hpp"
+},
+
+{
+  "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/PairHiddenMarkovModel.hpp",
+  "file": "include/model/PairHiddenMarkovModel.hpp"
+}
+]
