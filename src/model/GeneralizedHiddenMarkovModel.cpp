@@ -162,58 +162,83 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::viterbi(
     const Sequences& sequences,
-    const Matrix& extrinsic_probabilities) const {
+    const Matrix&  extrinsic_probabilities ) const {
   Probability zero;
 
   auto gammas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+      zero,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   auto phi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+      _begin_id,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   auto psi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+      _begin_id,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   // Initialization
-  gammas[_begin_id][0] = 1;
+  gammas[0][_begin_id] = 1;
 
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
-      auto phase = state->beginPhase();
 
       if (!state->hasGap(0) && i == 0) { continue; }
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
-        auto begin = i-d, end = i;
+        auto begin = i - d - state->beginExtension();
+        auto end = i + state->endExtension();
+        auto phase =
+          (state->beginPhase() - state->beginExtension()) % _num_phases;
 
-        if (!segmentIsViable(sequences[0], begin, end, _states[k])) {
-          continue;
-        }
+        // Verify extesion
+        bool exceedsBegin = (begin < state->beginExtension());
+        bool exceedsEnd = (end + state->endExtension() > sequences[0].size());
+        if (exceedsBegin || exceedsEnd) { break; }
+
+        // Duration is valid
+        Probability duration_probability =
+          state->duration()->probabilityOfLenght(d);
+
+        // TODO(renatocf): segment_probability should be lazy!
+        Probability segment_probability =
+          state->emission()
+               ->standardEvaluator(sequences[0])
+               ->evaluateSequence(begin, end, phase);
+
+        // Code should be here if caches are working
+        // If model is locally factorable, we stop the backtracking
+        if (segment_probability == zero) { break; }
 
         Probability extrinsic_contribuition = 1;
-        for (auto ii = begin; ii < end; ii++) {
+        for (auto ii = begin; i < end; ii++) {
           extrinsic_contribuition *= extrinsic_probabilities[k][ii];
         }
 
         for (auto p : state->predecessors()) {
+          // No need to compute if predecessor has probability 0
+          if (gammas[i - d][p] == zero) { continue; }
+
+          Probability transition_probability =
+            _states[p]->transition()->probabilityOf(k);
+
           Probability candidate_max
-            = gammas[p][i - d]
-            * _states[p]->transition()
-                        ->probabilityOf(k)
-            * _states[k]->duration()
-                        ->probabilityOfLenght(d)
-            * _states[k]->emission()
-                        ->standardEvaluator(sequences[0])
-                        ->evaluateSequence(begin, end, phase)
+            = gammas[i - d][p]
+            * transition_probability
+            * duration_probability
+            * segment_probability
             * extrinsic_contribuition;
 
-          if (candidate_max > gammas[k][i]) {
-            gammas[k][i] = candidate_max;
-            phi[k][i] = d;
-            psi[k][i] = p;
+          if (candidate_max > gammas[i][k]) {
+            gammas[i][k] = candidate_max;
+            phi[i][k] = d;
+            psi[i][k] = p;
           }
         }
       }
@@ -221,7 +246,7 @@ GeneralizedHiddenMarkovModel::viterbi(
   }
 
   // Termination
-  auto max = gammas[_end_id][sequences[0].size()];
+  auto max = gammas[sequences[0].size()][_end_id];
   auto[ label, alignment ] = traceBack(sequences, psi, phi);
 
   return { max, label, alignment, gammas };
@@ -235,13 +260,19 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
   const Probability zero;
 
   auto posteriors = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+      zero,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   auto phi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+      _begin_id,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   auto psi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+      _begin_id,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   // Preprocessment
   auto[ full, alphas ] = forward(sequences);
@@ -250,7 +281,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
   UNUSED(_);  // A hack while we don't have pattern matching in C++
 
   // Initialization
-  posteriors[_begin_id][0] = 1;
+  posteriors[0][_begin_id] = 1;
 
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
@@ -261,20 +292,20 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
 
       for (auto p : state->predecessors()) {
         Probability candidate_max
-          = posteriors[p][i - state->delta(0)]
-          * ((alphas[k][i] * betas[k][i]) / full);
+          = posteriors[i - state->delta(0)][p]
+          * ((alphas[i][k] * betas[i][k]) / full);
 
-        if (candidate_max > posteriors[k][i]) {
-          posteriors[k][i] = candidate_max;
-          phi[k][i] = 1;
-          psi[k][i] = p;
+        if (candidate_max > posteriors[i][k]) {
+          posteriors[i][k] = candidate_max;
+          phi[i][k] = 1;
+          psi[i][k] = p;
         }
       }
     }
   }
 
   // Termination
-  auto max = posteriors[_end_id][sequences[0].size()];
+  auto max = posteriors[sequences[0].size()][_end_id];
   auto[ label, alignment ] = traceBack(sequences, psi, phi);
 
   return { max, label, alignment, posteriors };
@@ -287,10 +318,12 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
   const Probability zero;
 
   auto alphas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+      zero,
+      sequences[0].size() + 1,
+      _state_alphabet_size);
 
   // Initialization
-  alphas[_begin_id][0] = 1;
+  alphas[0][_begin_id] = 1;
 
   // Recursion
   for (std::size_t i = 0; i <= sequences[0].size(); i++) {
@@ -309,8 +342,8 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
         }
 
         for (auto p : state->predecessors()) {
-          alphas[k][i]
-            += alphas[p][i - d]
+          alphas[i][k]
+            += alphas[i - d][p]
             * _states[p]->transition()
                         ->probabilityOf(k)
             * _states[k]->duration()
@@ -324,7 +357,7 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
   }
 
   // Termination
-  Probability full = alphas[_end_id][sequences[0].size()];
+  Probability full = alphas[sequences[0].size()][_end_id];
 
   return { full, alphas };
 }
@@ -336,10 +369,12 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
   const Probability zero;
 
   auto betas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 2);
+      zero,
+      sequences[0].size() + 2,
+      _state_alphabet_size);
 
   // Initialization
-  betas[_end_id][sequences[0].size()] = 1;
+  betas[sequences[0].size()][_end_id] = 1;
 
   // Recursion
   auto max = std::numeric_limits<std::size_t>::max();
@@ -360,7 +395,7 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
             continue;
           }
 
-          betas[k][i]
+          betas[i][k]
             += _states[k]->transition()
                          ->probabilityOf(s)
             * _states[s]->duration()
@@ -368,14 +403,14 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
             * _states[s]->emission()
                         ->standardEvaluator(sequences[0])
                         ->evaluateSequence(begin, end, phase)
-            * betas[s][i + d];
+            * betas[i + d][s];
         }
       }
     }
   }
 
   // Termination
-  Probability full = betas[_begin_id][0];
+  Probability full = betas[0][_begin_id];
 
   return { full, betas };
 }
@@ -423,12 +458,12 @@ GeneralizedHiddenMarkovModel::traceBack(
   // Initialization
   std::vector<std::size_t> idxs { sequences[0].size() };
 
-  auto best_id = psi[_end_id][idxs[0]];
+  auto best_id = psi[idxs[0]][_end_id];
 
   // Iteration
   label.push_back(_end_id);
   while (best_id != _begin_id) {
-    auto duration = phi[best_id][idxs[0]];
+    auto duration = phi[idxs[0]][best_id];
 
     label.insert(label.end(), duration, best_id);
 
@@ -441,7 +476,7 @@ GeneralizedHiddenMarkovModel::traceBack(
           sequences[0].begin() + idxs[0]);
     }
 
-    best_id = psi[best_id][idxs[0]];
+    best_id = psi[idxs[0]][best_id];
 
     if (!_states[best_id]->hasGap(0)) { idxs[0] -= duration; }
   }
