@@ -6,6 +6,7 @@
 using namespace std;
 
 //The HintLine has a line of gff hint file
+//Arquivo usado somente para testes de funções e classes em desenvolvimento
 class GtfLine{
   public:
     string sequenceName;
