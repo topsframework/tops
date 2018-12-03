@@ -73,6 +73,8 @@ model::ProbabilisticModelPtr racceptor_model;
 model::ProbabilisticModelPtr stop_model;
 model::ProbabilisticModelPtr rstop_model;
 
+model::Sequence sequence;
+
 /*----------------------------------------------------------------------------*/
 /*                                 FUNCTIONS                                  */
 /*----------------------------------------------------------------------------*/

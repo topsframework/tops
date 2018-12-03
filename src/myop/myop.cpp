@@ -28,8 +28,17 @@
 #include "myop/Myop.hpp"
 #include "myop/states.hpp"
 #include "model/Sequence.hpp"
-//#include "model/Matrix.hpp"
+#include "myop/states.hpp"
 
+
+//#include "model/Matrix.hpp"
+namespace tops{
+  namespace myop{
+    extern tops::model::Sequence sequence;
+  }
+}
+
+using namespace tops::myop;
 
 int main(int argc, char *argv[]) {
   std::string dataset = "dataset";
@@ -37,13 +46,12 @@ int main(int argc, char *argv[]) {
   if (argc >= 2) {
     dataset = argv[1];
   }
-
+ 
   // Random sequence
   // 1, 3, 1, 2, 0, 1, 3, 0, 2
 
   // Real gene (AT1G34280)
-  tops::model::Sequence sequence {
-    //ATAATAACTTG A 0, C 1, G 2, T 3
+  sequence =  {
     0, 3, 0, 0, 3, 0, 0, 1, 3, 3, 2, 2, 0, 2, 0, 0, 0, 3, 3, 2, 0, 3, 
     3, 1, 3, 0, 1, 2, 3, 0, 0, 3, 2, 3, 0, 2, 0, 2, 2, 0, 0, 2, 0, 0,
     3, 0, 2, 0, 1, 0, 1, 0, 3, 2, 0, 3, 3, 3, 3, 1, 0, 3, 0, 2, 3, 3,
@@ -96,6 +104,6 @@ int main(int argc, char *argv[]) {
     sequence_path += tops::myop::state_names[prediction[i]] + " ";
   }
 
-  std::cout << std::endl;
+  std::cout << header + sequence_path << std::endl;
   return 0;
 }

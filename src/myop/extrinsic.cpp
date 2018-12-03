@@ -7,6 +7,15 @@
 #include "model/Matrix.hpp"
 #include "extrinsic_converter.cpp"
 
+//#include "model/Matrix.hpp"
+namespace tops{
+  namespace myop{
+    extern tops::model::Sequence sequence;
+  }
+}
+
+using namespace tops::myop;
+
 class ExtrinsicTechnique;
 
 using ExtrinsicTechniquePtr = std::shared_ptr<ExtrinsicTechnique>;
@@ -59,9 +68,10 @@ class Augustus : public ExtrinsicTechnique {
   }
 
   tops::model::Matrix makeContribuition() override {
-    std::unique_ptr<ExtrinsicConverter> hc = std::make_unique<ExtrinsicConverter>();
+    std::unique_ptr<ExtrinsicConverterAugustus> hc = std::make_unique<ExtrinsicConverterAugustus>();
     vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine("./src/myop/test.gff");
     _probabilities = hc->convertGtfLineToProbabilities(_probabilities, gtf_line, "./src/myop/augustus_config.json");
+    //printExtrinsicMatrix();
     return _probabilities;
   }
 };
@@ -74,6 +84,9 @@ class Twinscan : public ExtrinsicTechnique {
   }
   
   tops::model::Matrix makeContribuition() override {
+    std::unique_ptr<ExtrinsicConverterTwinscan> hc = std::make_unique<ExtrinsicConverterTwinscan>();
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "exon");
+    //printExtrinsicMatrix();
     return _probabilities;
   }
 };
