@@ -1,13 +1,13 @@
 {
-	"bonus": {
-		"start": 1,
-		"stop": 1,
-		"exon": 1,
-		"ep": 1,
-		"ass": 1,
-		"dss": 1,
-		"intron": 1
-	},
+    "bonus": {
+        "start": 1e-4,
+        "stop": 1e-4,
+        "exon": 1,
+        "ep": 1e-1,
+        "ass": 1e-4,
+        "dss": 1e-4,
+        "intron": 1
+    },
 	"punishment": {
 		"start": 1,
 		"stop": 1,
