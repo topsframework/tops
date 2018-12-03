@@ -339,6 +339,7 @@ class HintsConverter{
 
 };
 
+/*
 int main() {
   FastaConverter *fc = new FastaConverter();
   vector<FastaSequence> fastaSequences = fc->converteFastaFileToFastaSequences("2-seq-test_0.fasta");
@@ -352,3 +353,4 @@ int main() {
   
   return 0;
 }
+*/
