@@ -217,7 +217,7 @@ GeneralizedHiddenMarkovModel::viterbi(
         if (segment_probability == zero) { break; }
 
         Probability extrinsic_contribuition = 1;
-        for (auto ii = begin; i < end; ii++) {
+        for (auto ii = begin; ii < end; ii++) {
           extrinsic_contribuition *= extrinsic_probabilities[k][ii];
         }
 
