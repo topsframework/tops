@@ -28,77 +28,71 @@
 #include "myop/Myop.hpp"
 #include "myop/states.hpp"
 #include "model/Sequence.hpp"
-#include "myop/states.hpp"
+#include "hints.cpp"
 
 
-//#include "model/Matrix.hpp"
-namespace tops{
-  namespace myop{
-    extern tops::model::Sequence sequence;
-  }
+namespace tops {
+namespace myop {
+  extern tops::model::Sequence sequence;
+  extern tops::model::Sequence conservation_sequence;
+}
 }
 
 using namespace tops::myop;
 
 int main(int argc, char *argv[]) {
-  std::string dataset = "dataset";
+  string datasetFolder = "dataset";
+  string sequenceFile;
+  string conservationSequenceFile;
+  string technique;
 
-  if (argc >= 2) {
-    dataset = argv[1];
+  for (int i = 0; i < argc; i++) {
+    std::string s(argv[i]);
+    if (s == "-d") {
+      datasetFolder = argv[i+1];
+    }
+    else if (s == "-s") {
+      sequenceFile = argv[i+1];
+    }
+    else if (s == "-c") {
+          conservationSequenceFile = argv[i+1];
+    }
+    else if (s == "-t") {
+      technique = argv[i+1];
+    }
   }
- 
-  // Random sequence
-  // 1, 3, 1, 2, 0, 1, 3, 0, 2
 
-  // Real gene (AT1G34280)
-  sequence =  {
-    0, 3, 0, 0, 3, 0, 0, 1, 3, 3, 2, 2, 0, 2, 0, 0, 0, 3, 3, 2, 0, 3, 
-    3, 1, 3, 0, 1, 2, 3, 0, 0, 3, 2, 3, 0, 2, 0, 2, 2, 0, 0, 2, 0, 0,
-    3, 0, 2, 0, 1, 0, 1, 0, 3, 2, 0, 3, 3, 3, 3, 1, 0, 3, 0, 2, 3, 3,
-    0, 3, 0, 0, 3, 3, 0, 3, 1, 1, 1, 0, 3, 2, 3, 2, 1, 3, 3, 0, 3, 0,
-    3, 3, 1, 0, 0, 0, 1, 1, 3, 3, 2, 0, 3, 1, 0, 1, 1, 0, 1, 1, 0, 0,
-    0, 1, 1, 1, 0, 1, 1, 1, 3, 2, 0, 1, 3, 2, 0, 3, 1, 1, 0, 0, 2, 0,
-    1, 1, 0, 0, 1, 0, 2, 0, 1, 1, 0, 3, 1, 1, 0, 0, 0, 2, 3, 1, 0, 0,
-    3, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 3, 0, 2, 2, 1, 1, 1, 3, 1, 1, 0,
-    1, 3, 0, 2, 3, 0, 2, 0, 3, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-    0, 3, 2, 1, 3, 3, 3, 0, 1, 1, 3, 0, 0, 0, 2, 0, 1, 3, 3, 0, 3, 3,
-    0, 1, 1, 0, 1, 1, 0, 3, 3, 3, 1, 1, 0, 2, 0, 0, 0, 1, 0, 3, 1, 0,
-    2, 0, 3, 3, 3, 3, 0, 1, 0, 3, 0, 3, 3, 1, 0, 1, 3, 3, 1, 1, 0, 1,
-    3, 0, 3, 3, 2, 0, 3, 2, 1, 1, 0, 2, 3, 3, 0, 1, 3, 1, 2, 3, 0, 0,
-    2, 3, 3, 2, 0, 3, 1, 0, 3, 0, 3, 1, 0, 1, 0, 0, 2, 2, 0, 3, 3, 1,
-    0, 3, 0, 3, 0, 3, 3, 3, 0, 3, 2, 0, 0, 1, 0, 1, 1, 2, 2, 0, 3, 0,
-    0, 1, 1, 2, 1, 3, 1, 1, 0, 3, 3, 3, 0, 3, 1, 2, 0, 0, 3, 3, 3, 3,
-    0, 3, 3, 1, 3, 1, 1, 3, 1, 0, 1, 3, 3, 1, 2, 3, 0, 0, 1, 3, 3, 3,
-    0, 3, 0, 0, 0, 3, 1, 1, 2, 3, 1, 0, 1, 0, 0, 0, 3, 0, 3, 1, 3, 3,
-    1, 0, 3, 1, 2, 3, 3, 1, 0, 3, 3, 0, 2, 1, 0, 0, 1, 3, 3, 2, 3, 3,
-    3, 2, 1, 3, 3, 1, 1, 1, 0, 3, 1, 0, 0, 0, 0, 3, 0, 3, 0, 3, 3, 1,
-  };
+  cout << "datasetFolder: " << datasetFolder << endl;
+  cout << "sequenceFile: " << sequenceFile << endl;
+  cout << "conservationSequenceFile: " << conservationSequenceFile << endl;
+  cout << "technique: " << technique << endl;
 
+  std::shared_ptr<FastaConverter> fc = std::make_shared<FastaConverter>();
+  auto fastaSequences = fc->converteFastaFileToFastaSequences(sequenceFile);
+  sequence = fc->convertFastaSequenceToToPSSequence(fastaSequences[0]);
   ExtrinsicTechniquePtr extrinsic_technique;
 
-  if (argc >= 3) {
-    string extrinsicMethod = argv[2];
-    if(extrinsicMethod.compare("augustus") == 0){
-      extrinsic_technique
-      = std::make_shared<Augustus>(69, sequence.size());
-    } else if (extrinsicMethod.compare("noHints") == 0) {
-      extrinsic_technique
-        = std::make_shared<NoHints>(69, sequence.size());
-    } else if (extrinsicMethod.compare("twinscan") == 0) {
-      extrinsic_technique
-        = std::make_shared<Twinscan>(69, sequence.size());
-    }
-  } else if (argc == 1) {
-    extrinsic_technique
-        = std::make_shared<NoHints>(69, sequence.size());
+  if (technique == "augustus") {
+      extrinsic_technique = std::make_shared<Augustus>(69, sequence.size());
+  } else if (technique == "noHints") {
+      extrinsic_technique = std::make_shared<NoHints>(69, sequence.size());
+  } else if (technique == "twinscan") {
+    auto fastaConservationSequeces =
+      fc->converteFastaFileToFastaSequences(conservationSequenceFile);
+    conservation_sequence = fc->convertFastaConservationSequenceToToPSSequence(
+                                                  fastaConservationSequeces[0]);
+    extrinsic_technique = std::make_shared<Twinscan>(69, sequence.size());
   }
 
-  tops::myop::Myop myop(dataset);
+  tops::myop::Myop myop(datasetFolder);
 
-  auto [ estimation, prediction ]
+  auto[ estimation, prediction ]
     = myop.predict(sequence, extrinsic_technique);
 
-  string header = "<sequence_name:1," + std::to_string(sequence.size()) + ">,sequence_name: " + std::to_string(estimation) + ":\t";
+  string header = "<" + fastaSequences[0].getSequenceName() + ":1," +
+                    std::to_string(sequence.size()) + ">," +
+                    fastaSequences[0].getSequenceName() + ": " +
+                    std::to_string(estimation) + ":\t";
   string sequence_path;
   for (size_t i = 1; i < prediction.size()-1; i++) {
     sequence_path += tops::myop::state_names[prediction[i]] + " ";

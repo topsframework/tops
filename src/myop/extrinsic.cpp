@@ -11,6 +11,7 @@
 namespace tops{
   namespace myop{
     extern tops::model::Sequence sequence;
+    extern tops::model::Sequence conservation_sequence;
   }
 }
 

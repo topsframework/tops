@@ -24,6 +24,12 @@ using json = nlohmann::json;
 using VLMCPtr = tops::model::VariableLengthMarkovChainPtr;
 using VLMC = tops::model::VariableLengthMarkovChain;
 
+namespace tops{
+  namespace myop{
+    extern tops::model::Sequence conservation_sequence;
+  }
+}
+
 // The HintLine has a line of gff hint file
 class GtfLine{
  public:
@@ -62,6 +68,123 @@ class GtfLine{
      _frame = frame;
      _atribute = atribute;
    }
+};
+
+class FastaSequence{
+  private:
+  string _sequenceName;
+  string _sequenceValue;
+
+  public:
+  FastaSequence(string sequenceName, string sequenceValue){
+    _sequenceName = sequenceName;
+    _sequenceValue = sequenceValue;
+  }
+
+  FastaSequence(){
+  }
+
+  void setSequenceName(string sequenceName){
+    _sequenceName = sequenceName;
+  }
+
+  void setSequenceValue(string sequenceValue){
+    _sequenceValue = sequenceValue;
+  }
+
+  string getSequenceName(){
+    return _sequenceName;
+  }
+
+  string getSequenceValue(){
+    return _sequenceValue;
+  }
+};
+
+//based on Rosetta http://rosettacode.org/wiki/FASTA_format#C%2B%2B
+class FastaConverter{
+  public:
+    vector<FastaSequence> converteFastaFileToFastaSequences(string fastaFile){
+      vector<FastaSequence> fastaSequences;
+
+      if(fastaFile.empty()){
+        std::cerr << "Usage: '"<< fastaFile <<"' [fasta infile]" << std::endl;
+        return fastaSequences;
+      }
+
+      std::ifstream input(fastaFile);
+      if(!input.good()){
+        std::cerr << "Error opening " << fastaFile << ". Bailing out." << std::endl;
+        return fastaSequences;
+      }
+
+      std::string line, name, content;
+      FastaSequence fs;
+      while( std::getline( input, line ).good() ){
+        if( line.empty() || line[0] == '>' ){ // Identifier marker
+
+          if( !name.empty() ){ // Print out what we read from the last entry
+            fs.setSequenceName(name);
+            fs.setSequenceValue(content);
+            fastaSequences.push_back(fs);
+            name.clear();
+          }
+          if( !line.empty() ){
+            name = line.substr(1);
+            fs.setSequenceName(name);
+          }
+          content.clear();
+        }else if( !name.empty() ){
+          if( line.find(' ') != std::string::npos ){ // Invalid sequence--no spaces allowed
+            name.clear();
+            content.clear();
+          }else{
+             content += line;
+          }
+        }
+      }
+
+    if( !name.empty() ){ // Print out what we read from the last entry
+      fs.setSequenceName(name);
+      fs.setSequenceValue(content);
+      fastaSequences.push_back(fs);
+    }
+
+    return fastaSequences;
+    }
+
+    tops::model::Sequence convertFastaSequenceToToPSSequence(FastaSequence fasta_sequence){
+      //ATAATAACTTG A 0, C 1, G 2, T 3
+      string s = fasta_sequence.getSequenceValue();
+      tops::model::Sequence tops_sequence;
+      std::unordered_map<char, tops::model::Symbol> map;
+      map.emplace('A', 0);
+      map.emplace('C', 1);
+      map.emplace('G', 2);
+      map.emplace('T', 3);
+
+      for (auto c : s)
+        tops_sequence.push_back(map[c]);
+      return tops_sequence;
+
+    }
+
+    tops::model::Sequence convertFastaConservationSequenceToToPSSequence(FastaSequence fasta_sequence){
+      //ATAATAACTTG A 0, C 1, G 2, T 3
+      string s = fasta_sequence.getSequenceValue();
+      tops::model::Sequence tops_sequence;
+
+      std::unordered_map<char, tops::model::Symbol> map;
+      map.emplace('0', 0);
+      map.emplace('1', 1);
+      map.emplace('2', 2);
+
+      for (auto c : s)
+        tops_sequence.push_back(map[c]);
+      return tops_sequence;
+    }
+
+
 };
 
 class ExtrinsicConverter{
@@ -273,12 +396,29 @@ class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
     VLMCPtr trainVLCM(unsigned int alphabet_size,
                       unsigned int order) {
       auto vlmc_trainer = VLMC::standardTrainer();
-      tops::model::Sequence sequence =  {
-      //ATAATAACTTG A 0, C 1, G 2, T 3
-    0, 3, 0, 0, 3, 0, 0, 1, 3, 3, 2, 2, 0, 2, 0, 0, 0, 3, 3, 2, 0, 3, 
-    };
+      tops::model::Sequences sequences =  {
+        {1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,1,},
+        {1,0,0,1,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,},
+        {1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,},
+        {1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,1,0,1,1,0,0,0,1,0,0,1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,0,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,0,0,1,1,1,1,0},
+        {0,0,1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,0,1,1,1,0,0,1,1,0,1,1,0,1,0,0,1,1,0,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,0,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
+        {1,0,1,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,0,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,1},
+        {0,1,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,0,1,0,1,1,1,1,1,1,1,1,},
+        {1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,},
+        {1,0,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,0,1,1,1,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0,1,1,0,},
+        {1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
+        {1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,1,1,0,1,1,0,0,0,1,1,1,0,1,1,0,1,0,1,0,0,0,1,1,1,1,0,1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,0,0,1,0,1,1,1,0,1,1,0,1,1,1,1,0,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,0,0,1,1,1,1,1,1,0,0,1,0,0,1,1,0,0,1,0,1,1,1,1,0,0,0,1,1,0,1,1,1,1,0,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,0,0,0,1,0,0,0,1,1,1,0,1,1,1,0,1,0,},
+        {1,0,1,1,1,0,1,0,0,1,0,1,0,0,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,1,0,},
+        {0,1,0,1,1,0,1,1,0,1,1,0,0,1,0,1,1,1,1,0,0,1,0,1,1,0,1,1,0,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,0,0,1,1,0,0,1,0,1,0,0,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,0,0,1,0,1,0,0,0,1,0,1,1,0,0,1,1,1,0,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,1,0,0,0,1,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,0,0,1,0,0,1,1,1,1,0,0,1,1,0,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,0,1,0,1,1,0,1,1,0,0,1,1,1,0,1,0,1,1,1,0,0,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,1,0,1,1,1,1,1,0,0,1,0,1,0,0,0,1,0,1,0,1,1,0,1,1,1,1,1,0,},
+        {0,0,0,1,0,1,0,0,0,0,1,1,0,1,0,0,1,0,1,1,1,0,1,0,0,1,0,0,1,1,0,1,1,0,1,},
+        {1,0,1,0,1,1,1,0,1,0,0,1,1,0,1,1,0,1,1,0,0,0,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0,1,1,0,0,},
+        {0,1,0,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,0,1,1,0,0,0,0,0,0,1,1,0,1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,},
+        {0,0,1,1,0,0,0,1,0,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,},
+        {0,1,0,1,1,1,1,0,1,1,1,0,0,1,0,0,1,0,0,0,0,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,1,1,1,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,1,0,1,1,0,1,1,1,0,0,1,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,1,1,0,0,},
+        {1,0,1,1,0,1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,0,0,1,0,0,0,1,1,0,0,1,0,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,1,1,0,},
+      };
     
-      vlmc_trainer->add_training_set({sequence});
+      vlmc_trainer->add_training_set(sequences);
       auto vlmc = vlmc_trainer->train(
                       VLMC::fixed_length_algorithm{},
      //pseudocontador = 1.0, qdo n é informado,
@@ -305,7 +445,7 @@ class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
                                     tops::model::Matrix &probabilities,
                                     const std::string &type){
     auto vlmc = chooseTrainedVLCM(type);
-    auto evaluator = vlmc->standardEvaluator(target_sequence, true);
+    auto evaluator = vlmc->standardEvaluator(tops::myop::conservation_sequence, true);
     //return probability sequence 0 to end
     evaluator->evaluateSequence(0,target_sequence.size());
     auto[ prefix_sum_array ] = std::dynamic_pointer_cast<
