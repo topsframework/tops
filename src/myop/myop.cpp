@@ -35,6 +35,7 @@ namespace tops {
 namespace myop {
   extern tops::model::Sequence sequence;
   extern tops::model::Sequence conservation_sequence;
+  extern string hintsFileGFF;
 }
 }
 
@@ -60,12 +61,16 @@ int main(int argc, char *argv[]) {
     else if (s == "-t") {
       technique = argv[i+1];
     }
+    else if (s == "-gff") {
+      hintsFileGFF = argv[i+1];
+    }
   }
 
   cout << "datasetFolder: " << datasetFolder << endl;
   cout << "sequenceFile: " << sequenceFile << endl;
   cout << "conservationSequenceFile: " << conservationSequenceFile << endl;
   cout << "technique: " << technique << endl;
+  cout << "hintsFileGFF: " << hintsFileGFF <<endl;
 
   std::shared_ptr<FastaConverter> fc = std::make_shared<FastaConverter>();
   auto fastaSequences = fc->converteFastaFileToFastaSequences(sequenceFile);

@@ -75,6 +75,7 @@ model::ProbabilisticModelPtr rstop_model;
 
 model::Sequence sequence;
 model::Sequence conservation_sequence;
+std::string hintsFileGFF;
 
 /*----------------------------------------------------------------------------*/
 /*                                 FUNCTIONS                                  */

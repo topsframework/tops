@@ -12,6 +12,8 @@ namespace tops{
   namespace myop{
     extern tops::model::Sequence sequence;
     extern tops::model::Sequence conservation_sequence;
+    extern string hintsFileGFF;
+    
   }
 }
 
@@ -70,7 +72,7 @@ class Augustus : public ExtrinsicTechnique {
 
   tops::model::Matrix makeContribuition() override {
     std::unique_ptr<ExtrinsicConverterAugustus> hc = std::make_unique<ExtrinsicConverterAugustus>();
-    vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine("./src/myop/test.gff");
+    vector<GtfLine> gtf_line = hc->convertGtfFileToGtfLine(hintsFileGFF);
     _probabilities = hc->convertGtfLineToProbabilities(_probabilities, gtf_line, "./src/myop/augustus_config.json");
     //printExtrinsicMatrix();
     return _probabilities;
