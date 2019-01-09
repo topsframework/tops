@@ -66,11 +66,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  cout << "datasetFolder: " << datasetFolder << endl;
-  cout << "sequenceFile: " << sequenceFile << endl;
-  cout << "conservationSequenceFile: " << conservationSequenceFile << endl;
-  cout << "technique: " << technique << endl;
-  cout << "hintsFileGFF: " << hintsFileGFF <<endl;
+  //cout << "datasetFolder: " << datasetFolder << endl;
+  //cout << "sequenceFile: " << sequenceFile << endl;
+  //cout << "conservationSequenceFile: " << conservationSequenceFile << endl;
+  //cout << "technique: " << technique << endl;
+  //cout << "hintsFileGFF: " << hintsFileGFF <<endl;
 
   std::shared_ptr<FastaConverter> fc = std::make_shared<FastaConverter>();
   auto fastaSequences = fc->converteFastaFileToFastaSequences(sequenceFile);
