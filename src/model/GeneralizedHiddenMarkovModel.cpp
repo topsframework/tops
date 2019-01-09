@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <map>
 
 // Macros
 #define UNUSED(var) do { (void) sizeof(var); } while (false)
@@ -118,6 +119,31 @@ void GeneralizedHiddenMarkovModel::serialize(const SSPtr& serializer) {
 
 /*=================================  OTHERS  =================================*/
 
+std::vector<EvaluatorPtr<Standard>>
+GeneralizedHiddenMarkovModel::cacheEvaluators(
+    const Sequences& sequences) const {
+  std::map<ProbabilisticModelPtr, std::vector<typename State::Id>>
+    unique_emission_models;
+  for (const auto& state : _states) {
+    const auto& emission = state->emission();
+    unique_emission_models.try_emplace(
+        emission, std::vector<typename State::Id>{});
+    unique_emission_models[emission].push_back(state->id());
+  }
+
+  std::vector<EvaluatorPtr<Standard>> cached_evaluators(_states.size());
+  for (const auto& [emission, list_state_ids] : unique_emission_models) {
+    auto cachedEvaluator = emission->standardEvaluator(sequences[0], true);
+    for (const auto& state_id : list_state_ids) {
+      cached_evaluators[state_id] = cachedEvaluator;
+    }
+  }
+
+  return cached_evaluators;
+}
+
+/*----------------------------------------------------------------------------*/
+
 typename GeneralizedHiddenMarkovModel::GeneratorReturn<Symbol>
 GeneralizedHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
                                          std::size_t pos,
@@ -162,9 +188,13 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::viterbi(
     const Sequences& sequences,
-    const Matrix&  extrinsic_probabilities ) const {
+    const Matrix& extrinsic_probabilities) const {
   Probability zero;
 
+  // Cache
+  auto cached_evaluators = cacheEvaluators(sequences);
+
+  // Matrices
   auto gammas = make_multiarray(
       zero,
       sequences[0].size() + 1,
@@ -188,33 +218,50 @@ GeneralizedHiddenMarkovModel::viterbi(
     for (const auto& state : _states) {
       auto k = state->id();
 
+      // If state emits in the beginning, give up
       if (!state->hasGap(0) && i == 0) { continue; }
 
       auto max_length = std::min(i, _max_backtracking);
       for (auto d : _states[k]->duration()->possibleLengths(max_length)) {
+        Probability duration_probability =
+          state->duration()->probabilityOfLenght(d);
+
+        // If duration is impossible, give up
+        if (duration_probability == zero) { continue; }
+
         auto begin = i - d - state->beginExtension();
         auto end = i + state->endExtension();
         auto phase =
           (state->beginPhase() - state->beginExtension()) % _num_phases;
 
-        // Verify extesion
+        // If extensions exceed the sequence, give up
         bool exceedsBegin = (begin < state->beginExtension());
         bool exceedsEnd = (end + state->endExtension() > sequences[0].size());
-        if (exceedsBegin || exceedsEnd) { break; }
+        if (exceedsBegin || exceedsEnd) { continue; }
 
-        // Duration is valid
-        Probability duration_probability =
-          state->duration()->probabilityOfLenght(d);
+        // If threre is only one unviable successor, give up
+        if (state->successors().size() == 1) {
+          auto s = state->successors()[0];
 
-        // TODO(renatocf): segment_probability should be lazy!
+          auto max_next = std::min(sequences[0].size()-i, _max_backtracking);
+          auto[first, last, increment]
+            = _states[s]->duration()->possibleLengths(max_next);
+
+          // Model has fixed duration
+          if (last == first + increment) {
+            auto successor_probability
+              = cached_evaluators[s]->evaluateSequence(
+                  i, i + increment, (phase + increment) % _num_phases);
+
+            if (successor_probability == zero) { continue; }
+          }
+        }
+
         Probability segment_probability =
-          state->emission()
-               ->standardEvaluator(sequences[0])
-               ->evaluateSequence(begin, end, phase);
+          cached_evaluators[k]->evaluateSequence(begin, end, phase);
 
-        // Code should be here if caches are working
-        // If model is locally factorable, we stop the backtracking
-        if (segment_probability == zero) { break; }
+        // If segment cannot be emitted, give up
+        if (segment_probability == zero) { continue; }
 
         Probability extrinsic_contribuition = 1;
         for (auto ii = begin; ii < end; ii++) {
@@ -222,14 +269,19 @@ GeneralizedHiddenMarkovModel::viterbi(
         }
 
         for (auto p : state->predecessors()) {
-          // No need to compute if predecessor has probability 0
-          if (gammas[i - d][p] == zero) { continue; }
+          auto predecessor_probability = gammas[i - d][p];
+
+          // If predecessor is unviable, give up
+          if (predecessor_probability == zero) { continue; }
 
           Probability transition_probability =
             _states[p]->transition()->probabilityOf(k);
 
+          // If transition is impossible, give up
+          if (transition_probability == zero) { continue; }
+
           Probability candidate_max
-            = gammas[i - d][p]
+            = predecessor_probability
             * transition_probability
             * duration_probability
             * segment_probability

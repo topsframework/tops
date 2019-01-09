@@ -144,8 +144,6 @@ class GeneralizedHiddenMarkovModel
   using MatchState  = typename StateTraits<Self>::MatchState;
   using SilentState = typename StateTraits<Self>::SilentState;
 
-  
-using ProbabilitiesPtr = std::shared_ptr<std::vector<tops::model::Probability>>;
   /*=============================[ CONSTRUCTORS ]=============================*/
 
   GeneralizedHiddenMarkovModel(
@@ -603,6 +601,10 @@ using ProbabilitiesPtr = std::shared_ptr<std::vector<tops::model::Probability>>;
   const std::vector<StatePtr> states() const;
 
   /*----------------------------( Implementations )---------------------------*/
+
+  // Cache calculation
+  std::vector<EvaluatorPtr<Standard>>
+  cacheEvaluators(const Sequences& sequences) const;
 
   // Generator's implementations
   GeneratorReturn<Symbol> drawSymbol(const RandomNumberGeneratorPtr& rng,

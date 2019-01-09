@@ -52,7 +52,7 @@ class InhomogeneousMarkovChain
  public:
   // Inner classes
   struct Cache {
-    std::vector<Probability> prefix_sum_array;
+    std::vector<std::vector<Probability>> prefix_sum_array;
   };
 
   // Tags

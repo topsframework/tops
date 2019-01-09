@@ -149,15 +149,18 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
     SEPtr<Standard> evaluator,
     unsigned int begin,
     unsigned int end,
-    unsigned int /*phase*/) const {
-  if ((end - begin) > _vlmcs.size())
+    unsigned int /* phase */) const {
+  if ((end - begin) > _vlmcs.size()) {
     return 0.0;
-  auto t = 0u;
+  }
+
+  size_t t = 0;
   Probability prob = 1;
   for (unsigned int i = begin; i < end; i++) {
     prob *= evaluator->evaluateSymbol(i, t);
     t++;
   }
+
   return prob;
 }
 
@@ -167,10 +170,18 @@ void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
                                                unsigned int /* phase */) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size());
+  for (size_t i = 0; i < evaluator->sequence().size(); i++) {
+    prefix_sum_array[i].resize(_vlmcs.size() + 1);
+    prefix_sum_array[i][0] = 1.0;
 
-  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
-    prefix_sum_array[i] = evaluateSequence(
-        SEPtr<Standard>(evaluator), i, evaluator->sequence().size(), 0);
+    for (size_t j = 0; j < _vlmcs.size(); j++) {
+      if (i + j >= evaluator->sequence().size()) break;
+
+      // Support to semi-factorable models
+      prefix_sum_array[i][j + 1]
+        = prefix_sum_array[i][j] * evaluator->evaluateSymbol(i + j, j);
+    }
+  }
 }
 
 /*----------------------------------------------------------------------------*/
@@ -179,8 +190,7 @@ Probability
 InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
                                          unsigned int pos,
                                          unsigned int phase) const {
-  return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
-                      ->evaluateSymbol(pos);
+  return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -188,14 +198,14 @@ InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 Probability InhomogeneousMarkovChain::evaluateSequence(
     CEPtr<Standard> evaluator,
     unsigned int begin,
-    unsigned int /* end */,
+    unsigned int end,
     unsigned int /* phase */) const {
+  if ((end - begin) > _vlmcs.size()) {
+    return 0.0;
+  }
+
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-
-  if (begin < prefix_sum_array.size())
-    return prefix_sum_array[begin];
-
-  throw_exception(OutOfRange);
+  return prefix_sum_array[begin][end-begin];
 }
 
 /*===============================  GENERATOR  ================================*/
