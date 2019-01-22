@@ -312,9 +312,11 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
      selectStatesToReceiveContribution(type);
     for (size_t j = start - 1; j < end; j++) {
       for (const auto& exon : exons) {
-        auto d = _extrinsic_probabilities[_states_indices[exon]][j];
-        tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
-        _extrinsic_probabilities[_states_indices[exon]][j] = d * ec;     
+        if(double(_extrinsic_probabilities[_states_indices[exon]][j]) == double(1)){//only receive 1 hint by positon and by type
+          //auto d = _extrinsic_probabilities[_states_indices[exon]][j];
+          tops::model::Probability ec = double(_extrinsic_probabilities_contribuition[bonus_type][type]);
+          _extrinsic_probabilities[_states_indices[exon]][j] =  ec;
+        }     
       }
     }
   }
@@ -379,8 +381,20 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
       } else if (type.compare("intron") == 0) {
           addContribution(start, end, "bonus", "intron");
       }
+      
     }
-   
+    
+    //punishment for noHints
+    for(size_t i = 0; i < _extrinsic_probabilities.size(); i++){
+      for(size_t j = 0; j < _extrinsic_probabilities[i].size(); j++){
+        if(double(_extrinsic_probabilities[i][j]) == double(1)){ //dont received hint contribution
+          tops::model::Probability ec = double(_extrinsic_probabilities_contribuition["bonus"]["no_hints"]); 
+          _extrinsic_probabilities[i][j] = ec; 
+        }
+      }
+    }
+
+    //printAllHints();
     return _extrinsic_probabilities;
   }
 
