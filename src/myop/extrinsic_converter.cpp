@@ -253,52 +253,6 @@ class ExtrinsicConverter{
       }
     }
 
-    //select states that will receive extrinsic contribution
-    std::vector<std::string>
-    selectStatesToReceiveContribution(const string type){    
-        std::vector<std::string> exons;
-        if ((type.compare("ep") == 0) || (type.compare("exon") == 0)) {
-        exons = std::vector<std::string> {
-          "EI0", "EI1", "EI2",
-          "E00", "E01", "E02",
-          "E10", "E11", "E12",
-          "E20", "E21", "E22",
-          "ET0", "ET1", "ET2",
-          "rEI0", "rEI1", "rEI2",
-          "rE00", "rE01", "rE02",
-          "rE10", "rE11", "rE12",
-          "rE20", "rE21", "rE22",
-          "rET0", "rET1", "rET2",
-          "ES", "rES",
-        };
-      } else if (type.compare("start") == 0) {
-        exons = std::vector<std::string> {
-          "start", "rstart",
-        };
-      } else if (type.compare("stop") == 0) {
-        exons = std::vector<std::string> {
-          "stop", "rstop",
-        };
-      } else if (type.compare("ass") == 0) {
-        exons = std::vector<std::string> {
-          "acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
-        };
-      } else if (type.compare("dss") == 0) {
-        exons = std::vector<std::string> {
-          "don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
-        };
-      } else if (type.compare("intron") == 0) {
-        exons = std::vector<std::string> {
-          "I0", "I1", "I2",
-          "Is0", "If0", "Is1",
-          "If1",  "Is2", "If2",
-          "rI0", "rI1", "rI2",
-          "rIs0", "rIf0", "rIs1",
-          "rIf1", "rIs2", "rIf2",
-        };
-      }
-      return exons;
-    }
 
 };
 
@@ -398,6 +352,53 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
     return _extrinsic_probabilities;
   }
 
+      //select states that will receive extrinsic contribution
+    std::vector<std::string>
+    selectStatesToReceiveContribution(const string type){    
+        std::vector<std::string> exons;
+        if ((type.compare("ep") == 0) || (type.compare("exon") == 0)) {
+        exons = std::vector<std::string> {
+          "EI0", "EI1", "EI2",
+          "E00", "E01", "E02",
+          "E10", "E11", "E12",
+          "E20", "E21", "E22",
+          "ET0", "ET1", "ET2",
+          "rEI0", "rEI1", "rEI2",
+          "rE00", "rE01", "rE02",
+          "rE10", "rE11", "rE12",
+          "rE20", "rE21", "rE22",
+          "rET0", "rET1", "rET2",
+          "ES", "rES",
+        };
+      } else if (type.compare("start") == 0) {
+        exons = std::vector<std::string> {
+          "start", "rstart",
+        };
+      } else if (type.compare("stop") == 0) {
+        exons = std::vector<std::string> {
+          "stop", "rstop",
+        };
+      } else if (type.compare("ass") == 0) {
+        exons = std::vector<std::string> {
+          "acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
+        };
+      } else if (type.compare("dss") == 0) {
+        exons = std::vector<std::string> {
+          "don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
+        };
+      } else if (type.compare("intron") == 0) {
+        exons = std::vector<std::string> {
+          "I0", "I1", "I2",
+          "Is0", "If0", "Is1",
+          "If1",  "Is2", "If2",
+          "rI0", "rI1", "rI2",
+          "rIs0", "rIf0", "rIs1",
+          "rIf1", "rIs2", "rIf2",
+        };
+      }
+      return exons;
+    }
+
 };
 
 class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
@@ -475,6 +476,13 @@ class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
     }
 
     return probabilities;
+  }
+  //select states that will receive extrinsic contribution
+  std::vector<std::string>
+  selectStatesToReceiveContribution(const string type){
+    type.compare("a");
+    std::vector<std::string> a;
+    return a;
   }
 };
 
