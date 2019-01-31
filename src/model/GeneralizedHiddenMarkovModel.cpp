@@ -248,7 +248,7 @@ GeneralizedHiddenMarkovModel::viterbi(
             = _states[s]->duration()->possibleLengths(max_next);
 
           // Model has fixed duration
-          if (last == first + increment) {
+          if (last == first + increment && i + increment < sequences[0].size()) {
             auto successor_probability
               = cached_evaluators[s]->evaluateSequence(
                   i, i + increment, (phase + increment) % _num_phases);
