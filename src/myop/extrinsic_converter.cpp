@@ -27,6 +27,11 @@ using VLMC = tops::model::VariableLengthMarkovChain;
 namespace tops{
   namespace myop{
     extern tops::model::Sequence conservation_sequence;
+    extern tops::model::Sequences intron_trainning_conservation_sequences;
+    extern tops::model::Sequences rev_intron_trainning_conservation_sequences;
+    extern tops::model::Sequences cds_trainning_conservation_sequences;
+    extern tops::model::Sequences rev_cds_trainning_conservation_sequences;
+    extern tops::model::Sequences intergenic_trainning_conservation_sequences;
   }
 }
 
@@ -130,7 +135,7 @@ class FastaConverter{
             name.clear();
           }
           if( !line.empty() ){
-            name = line.substr(1);
+            name = line.substr(1);  
             fs.setSequenceName(name);
           }
           content.clear();
@@ -403,57 +408,81 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
 
 class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
   private:
-    VLMCPtr intron_vlmc;
-    VLMCPtr cds_vlmc = trainVLCM(4, 5);
-    VLMCPtr intergenic_vlmc;
+      VLMCPtr cds_vlmc;
+      VLMCPtr rev_cds_vlmc;
+      VLMCPtr intron_vlmc;
+      VLMCPtr rev_intron_vlmc;
+      VLMCPtr intergenic_vlmc;
+
+    tops::model::Sequences read_sequences_from_file(const std::string &filepath){
+      //std::cout << "read_sequences: " << filepath << std::endl;
+      std::ifstream fin{filepath};
+      std::string line;
+      tops::model::Sequences seqs;
+
+      if (!fin.good()) {
+        std::cerr << "Error opening. Bailing out. " << filepath << std::endl;
+        return seqs;
+      }
+
+      while(getline(fin, line)) {
+        if (line.empty()){
+          continue;
+        }
+        tops::model::Sequence s;
+        for (auto c : line) {
+          s.push_back(static_cast<tops::model::Symbol>(c - '0'));
+        }
+        seqs.push_back(s);
+      }
+
+      fin.close();
+
+      return seqs;
+    }
 
   public:
-    VLMCPtr trainVLCM(unsigned int alphabet_size,
-                      unsigned int order) {
+
+    ExtrinsicConverterTwinscan(){
+      cds_vlmc = trainVLCM(3, 5, "./trainning_conservation_sequences/exon_conservation_sequences.txt");
+      rev_cds_vlmc = trainVLCM(3, 5, "./trainning_conservation_sequences/exon_conservation_sequences_rev.txt");
+      intron_vlmc = trainVLCM(3, 5, "./trainning_conservation_sequences/intron_conservation_sequences.txt");
+      rev_intron_vlmc = trainVLCM(3, 5, "./trainning_conservation_sequences/intron_conservation_sequences_reverse.txt");
+      intergenic_vlmc = trainVLCM(3, 5, "./trainning_conservation_sequences/intergenic_conservation_sequences.txt");
+    }
+
+    VLMCPtr trainVLCM(const unsigned int &alphabet_size,
+                      const unsigned int &order,
+                      const string & conservation_sequences_file) {      
       auto vlmc_trainer = VLMC::standardTrainer();
-      tops::model::Sequences sequences =  {
-        {1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,1,},
-        {1,0,0,1,0,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,},
-        {1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,},
-        {1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,1,0,1,1,0,0,0,1,0,0,1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,0,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,0,0,1,1,1,1,0},
-        {0,0,1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,0,1,1,1,0,0,1,1,0,1,1,0,1,0,0,1,1,0,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,0,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-        {1,0,1,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,0,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,1},
-        {0,1,1,0,1,0,1,1,1,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,0,1,0,1,1,1,1,1,1,1,1,},
-        {1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,},
-        {1,0,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,0,1,1,1,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0,1,1,0,},
-        {1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
-        {1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,1,0,1,1,0,1,1,0,0,0,1,1,1,0,1,1,0,1,0,1,0,0,0,1,1,1,1,0,1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,0,0,1,0,1,1,1,0,1,1,0,1,1,1,1,0,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,0,0,1,1,1,1,1,1,0,0,1,0,0,1,1,0,0,1,0,1,1,1,1,0,0,0,1,1,0,1,1,1,1,0,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,0,0,0,1,0,0,0,1,1,1,0,1,1,1,0,1,0,},
-        {1,0,1,1,1,0,1,0,0,1,0,1,0,0,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,1,0,},
-        {0,1,0,1,1,0,1,1,0,1,1,0,0,1,0,1,1,1,1,0,0,1,0,1,1,0,1,1,0,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,0,0,1,1,0,0,1,0,1,0,0,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,0,0,1,0,1,0,0,0,1,0,1,1,0,0,1,1,1,0,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,1,0,0,0,1,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,0,0,1,0,0,1,1,1,1,0,0,1,1,0,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,0,1,0,1,1,0,1,1,0,0,1,1,1,0,1,0,1,1,1,0,0,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,1,0,1,1,1,1,1,0,0,1,0,1,0,0,0,1,0,1,0,1,1,0,1,1,1,1,1,0,},
-        {0,0,0,1,0,1,0,0,0,0,1,1,0,1,0,0,1,0,1,1,1,0,1,0,0,1,0,0,1,1,0,1,1,0,1,},
-        {1,0,1,0,1,1,1,0,1,0,0,1,1,0,1,1,0,1,1,0,0,0,0,1,0,1,1,1,0,1,1,0,1,1,0,1,0,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1,0,0,1,1,0,1,1,0,0,},
-        {0,1,0,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,1,1,0,1,1,1,1,0,1,0,1,0,1,1,1,0,0,0,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,0,1,1,0,0,0,0,0,0,1,1,0,1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,1,0,1,1,1,0,0,1,},
-        {0,0,1,1,0,0,0,1,0,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,},
-        {0,1,0,1,1,1,1,0,1,1,1,0,0,1,0,0,1,0,0,0,0,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,1,0,1,1,1,0,1,0,0,0,1,1,1,1,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,1,0,1,1,0,1,1,1,0,0,1,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,1,1,0,0,},
-        {1,0,1,1,0,1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,0,0,1,0,0,0,1,1,0,0,1,0,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,1,1,0,},
-      };
-    
-      vlmc_trainer->add_training_set(sequences);
+      auto seqs = read_sequences_from_file(conservation_sequences_file);
+      vlmc_trainer->add_training_set(seqs);
+      std::vector<double> weights(seqs.size(), 1.0);
       auto vlmc = vlmc_trainer->train(
-                      VLMC::fixed_length_algorithm{},
-     //pseudocontador = 1.0, qdo n é informado,
-     //pois Twinscan n informa nas suas CM de ordem 5
-                      order, alphabet_size, 1.0,
-                      std::vector<double>{1.0, 1.0, 1.0, 1.0},
-                      nullptr);
-  
+                        VLMC::fixed_length_algorithm{},
+      //pseudocontador = 1.0, qdo n é informado,
+      //pois Twinscan n informa nas suas CM de ordem 5
+                        order, alphabet_size, 1.0, weights,
+                        nullptr);
+
       return vlmc;
     }
 
-  VLMCPtr chooseTrainedVLCM(const std::string &type){
-    if ((type.compare("ep") == 0) || (type.compare("exon") == 0)) {
-      return cds_vlmc;
+    VLMCPtr chooseTrainedVLCM(const std::string &type){
+      if (type.compare("cds") == 0) {
+        return cds_vlmc;
+      } else if (type.compare("rev_cds") == 0) {
+        return rev_cds_vlmc;
+      } else if (type.compare("intron") == 0) {
+        return intron_vlmc;
+      } else if (type.compare("rev_intron") == 0) {
+        return rev_intron_vlmc;
+      } else if (type.compare("intergenic") == 0) {
+        return intergenic_vlmc;
+      } else{
+        return cds_vlmc;
+      }
     }
-    //TODO implementar os treinamentos das vlcms dos outros estados
-    else{
-      return cds_vlmc;
-    }
-  }
 
   tops::model::Matrix alterMatrixLines(const tops::model::Sequence
                                           &target_sequence,
@@ -467,23 +496,82 @@ class ExtrinsicConverterTwinscan: public ExtrinsicConverter{
                                     tops::model::CachedEvaluator<
                                     tops::model::Standard, VLMC>>
                                     (evaluator)->cache();
-    
+    auto probabilities_line = prefix_sum_array;
+    probabilities_line[0] = prefix_sum_array[0];
+
+    for(size_t i = 1; i < prefix_sum_array.size(); i++){
+      probabilities_line[i] = prefix_sum_array[i] / prefix_sum_array[i - 1];
+    }
+   
     std::vector<std::string> exons =
       selectStatesToReceiveContribution(type);
     
     for (const auto& exon : exons) {
-      probabilities[_states_indices[exon]] = prefix_sum_array;
+      probabilities[_states_indices[exon]] = probabilities_line;
     }
 
     return probabilities;
   }
-  //select states that will receive extrinsic contribution
-  std::vector<std::string>
-  selectStatesToReceiveContribution(const string type){
-    type.compare("a");
-    std::vector<std::string> a;
-    return a;
-  }
+
+    //select states that will receive extrinsic contribution
+    std::vector<std::string>
+    selectStatesToReceiveContribution(const string type){
+      std::vector<std::string> exons;
+      if (type.compare("cds") == 0) {
+        exons = std::vector<std::string> {
+          "EI0", "EI1", "EI2",
+          "E00", "E01", "E02",
+          "E10", "E11", "E12",
+          "E20", "E21", "E22",
+          "ET0", "ET1", "ET2",
+          "ES",
+          "start", "stop",
+        };
+      } else if (type.compare("rev_cds") == 0) {
+        exons = std::vector<std::string> {
+          "rEI0", "rEI1", "rEI2",
+          "rE00", "rE01", "rE02",
+          "rE10", "rE11", "rE12",
+          "rE20", "rE21", "rE22",
+          "rET0", "rET1", "rET2",
+          "rES",
+          "rstart", "rstop",
+        };
+      //don and dss are in intron  
+      } else if (type.compare("intron") == 0) {
+        exons = std::vector<std::string> {
+          "I0", "I1", "I2",
+          "Is0", "If0", "Is1",
+          "If1",  "Is2", "If2",
+          "acc0", "acc1", "acc2",
+          "don0", "don1", "don2",
+        };
+      }else if (type.compare("rev_intron") == 0) {
+        exons = std::vector<std::string> {
+          "rI0", "rI1", "rI2",
+          "rIs0", "rIf0", "rIs1",
+          "rIf1", "rIs2", "rIf2",
+           "racc0", "racc1", "racc2",
+           "rdon0", "rdon1", "rdon2",
+        };
+      }else if (type.compare("intergenic") == 0) {
+        exons = std::vector<std::string> {
+          "N"
+        }; 
+      }
+      
+      return exons;
+    }
+
+    void printConservationSequences(tops::model::Sequences seqs){
+      for (const auto& seq: seqs) {
+        std::cout << "=>";
+        for (const auto &s : seq) {
+          std::cout << s;	
+        }
+        std::cout << "<=\n";
+      } 
+    }
 };
 
 //treinar com  fixed_length_algorithm, unsigned int order = 5,

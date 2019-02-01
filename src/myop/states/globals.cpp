@@ -77,6 +77,11 @@ model::Sequence sequence;
 model::Sequence conservation_sequence;
 std::string hintsFileGFF;
 
+tops::model::Sequences intron_trainning_conservation_sequences;
+tops::model::Sequences rev_intron_trainning_conservation_sequences;
+tops::model::Sequences cds_trainning_conservation_sequences;
+tops::model::Sequences rev_cds_trainning_conservation_sequences;
+tops::model::Sequences intergenic_trainning_conservation_sequences;
 /*----------------------------------------------------------------------------*/
 /*                                 FUNCTIONS                                  */
 /*----------------------------------------------------------------------------*/

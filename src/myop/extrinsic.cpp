@@ -88,8 +88,13 @@ class Twinscan : public ExtrinsicTechnique {
   
   tops::model::Matrix makeContribuition() override {
     std::unique_ptr<ExtrinsicConverterTwinscan> hc = std::make_unique<ExtrinsicConverterTwinscan>();
-    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "exon");
-    //printExtrinsicMatrix();
+    
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "cds");
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "rev_cds");
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "intron");
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "rev_intron");
+    _probabilities = hc->alterMatrixLines(sequence, _probabilities, "intergenic");
+    
     return _probabilities;
   }
 };
