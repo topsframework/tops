@@ -383,14 +383,14 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
         exons = std::vector<std::string> {
           "stop", "rstop",
         };
-      } else if (type.compare("ass") == 0) {
-        exons = std::vector<std::string> {
-          "acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
-        };
-      } else if (type.compare("dss") == 0) {
-        exons = std::vector<std::string> {
-          "don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
-        };
+      //} else if (type.compare("ass") == 0) {
+        //exons = std::vector<std::string> {
+          //"acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
+        //};
+      //} else if (type.compare("dss") == 0) {
+        //exons = std::vector<std::string> {
+          //"don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
+        //};
       } else if (type.compare("intron") == 0) {
         exons = std::vector<std::string> {
           "I0", "I1", "I2",
@@ -399,6 +399,8 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
           "rI0", "rI1", "rI2",
           "rIs0", "rIf0", "rIs1",
           "rIf1", "rIs2", "rIf2",
+          "acc0", "acc1", "acc2", "racc0", "racc1", "racc2",
+          "don0", "don1", "don2", "rdon0", "rdon1", "rdon2",
         };
       }
       return exons;
