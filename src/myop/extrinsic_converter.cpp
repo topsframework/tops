@@ -329,9 +329,11 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
           addContribution(start, end,  "bonus", "ep");
       } else if (type.compare("exon") == 0) {
           addContribution(start, end, "bonus", "exon");
-      } else if (type.compare("start") == 0) {
+      } else if (type.compare("start") == 0 ||
+       type.compare("start_codon") == 0) {
           addContribution(start, end, "bonus", "start");
-      } else if (type.compare("stop") == 0) {
+      } else if (type.compare("stop") == 0 ||
+       type.compare("stop_codon") == 0) {
           addContribution(start, end, "bonus", "stop");
       } else if (type.compare("ass") == 0) {
           addContribution(start, end, "bonus", "ass");
