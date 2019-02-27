@@ -49,14 +49,19 @@ using DiscreteConverterPtr = std::shared_ptr<DiscreteConverter>;
 class DiscreteConverter : public Converter {
  public:
   // Constructors
-  explicit DiscreteConverter(const option::Alphabet &alphabet);
+  explicit DiscreteConverter(option::Alphabet alphabet);
 
   // Overriden methods
   model::Symbol convert(const option::Symbol &orig) const override;
   option::Symbol convert(const model::Symbol &orig) const override;
 
+  // Concrete methods
+  option::Alphabet& alphabet();
+  const option::Alphabet& alphabet() const;
+
  private:
   // Instance variables
+  option::Alphabet alphabet_;
   std::map<model::Symbol, option::Symbol> in_to_out_;
   std::map<option::Symbol, model::Symbol> out_to_in_;
 };

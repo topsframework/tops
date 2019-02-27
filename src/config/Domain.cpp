@@ -37,7 +37,7 @@ namespace config {
 /*----------------------------------------------------------------------------*/
 
 Domain::Domain(discrete_domain, option::Alphabet alphabet)
-    : converter_(std::make_shared<DiscreteConverter>(alphabet)) {
+    : converter_(std::make_shared<DiscreteConverter>(std::move(alphabet))) {
   auto data = std::make_shared<DiscreteDomainData>("", "discrete_domain");
   std::get<decltype("alphabet"_t)>(*data) = std::move(alphabet);
   data_ = data;
@@ -47,7 +47,8 @@ Domain::Domain(discrete_domain, option::Alphabet alphabet)
 
 Domain::Domain(custom_domain, option::OutToInSymbolFunction out_to_in,
                               option::InToOutSymbolFunction in_to_out)
-    : converter_(std::make_shared<CustomConverter>(out_to_in, in_to_out)) {
+    : converter_(std::make_shared<CustomConverter>(
+          std::move(out_to_in), std::move(in_to_out))) {
   auto data = std::make_shared<CustomDomainData>("", "custom_domain");
   std::get<decltype("out_to_in"_t)>(*data) = std::move(out_to_in);
   std::get<decltype("in_to_out"_t)>(*data) = std::move(in_to_out);

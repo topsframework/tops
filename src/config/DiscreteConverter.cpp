@@ -20,6 +20,9 @@
 // Interface header
 #include "config/DiscreteConverter.hpp"
 
+// Standard headers
+#include <utility>
+
 namespace tops {
 namespace config {
 
@@ -27,7 +30,8 @@ namespace config {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-DiscreteConverter::DiscreteConverter(const option::Alphabet &alphabet) {
+DiscreteConverter::DiscreteConverter(option::Alphabet alphabet)
+    : alphabet_(alphabet) {
   model::Symbol i = 0;
 
   for (const option::Symbol &s : alphabet) {
@@ -49,6 +53,20 @@ model::Symbol DiscreteConverter::convert(const option::Symbol &orig) const {
 
 option::Symbol DiscreteConverter::convert(const model::Symbol &orig) const {
   return in_to_out_.at(orig);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
+
+option::Alphabet& DiscreteConverter::alphabet() {
+  return alphabet_;
+}
+
+/*----------------------------------------------------------------------------*/
+
+const option::Alphabet& DiscreteConverter::alphabet() const {
+  return alphabet_;
 }
 
 /*----------------------------------------------------------------------------*/
