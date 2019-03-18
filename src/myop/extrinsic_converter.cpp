@@ -376,6 +376,7 @@ class ExtrinsicConverterAugustus: public ExtrinsicConverter{
           "rE20", "rE21", "rE22",
           "rET0", "rET1", "rET2",
           "ES", "rES",
+          "start", "rstart",
         };
       } else if (type.compare("start") == 0) {
         exons = std::vector<std::string> {
