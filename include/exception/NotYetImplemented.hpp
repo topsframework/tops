@@ -37,7 +37,7 @@ namespace exception {
 class NotYetImplemented : public Exception {
  public:
   // Constructors
-  NotYetImplemented(const char* file, unsigned int line, const char* func);
+  NotYetImplemented(const char* file, size_t line, const char* func);
 };
 
 }  // namespace exception

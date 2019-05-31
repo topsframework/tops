@@ -49,8 +49,8 @@ class Duration {
   // Purely virtual methods
   virtual SerializerPtr serializer(TranslatorPtr translator) = 0;
 
-  virtual Range possibleLengths(std::size_t max) const = 0;
-  virtual Probability probabilityOfLenght(std::size_t length) const = 0;
+  virtual Range possibleLengths(size_t max) const = 0;
+  virtual Probability probabilityOfLenght(size_t length) const = 0;
 
   // Destructor
   virtual ~Duration() = default;

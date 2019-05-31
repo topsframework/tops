@@ -28,7 +28,7 @@ namespace exception {
 /*----------------------------------------------------------------------------*/
 
 OutOfRange::OutOfRange(const char* file,
-                       unsigned int line,
+                       size_t line,
                        const char* func)
     : Exception(file, line, func, "Argument out of range") {
 }

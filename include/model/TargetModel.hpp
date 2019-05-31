@@ -50,8 +50,8 @@ class TargetModel : public DiscreteIIDModel {
 
   // Overriden methods
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
 
   // Concrete methods
   DiscreteIIDModelPtr sequenceDistribution(const Sequence& s) const;

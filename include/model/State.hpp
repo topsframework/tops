@@ -57,9 +57,9 @@ class State {
   using Self = State<EmissionModel, TransitionModel>;
   using SelfPtr = std::shared_ptr<Self>;
 
-  using Id = std::size_t;
-  using Position = std::size_t;
-  using Dimension = std::size_t;
+  using Id = size_t;
+  using Position = size_t;
+  using Dimension = size_t;
 
   using EmissionModelPtr = std::shared_ptr<EmissionModel>;
   using TransitionModelPtr = std::shared_ptr<TransitionModel>;
@@ -86,11 +86,11 @@ class State {
   virtual std::vector<Id>& successors() = 0;
   virtual const std::vector<Id>& successors() const = 0;
 
-  virtual std::size_t beginExtension() const = 0;
-  virtual std::size_t endExtension() const = 0;
+  virtual size_t beginExtension() const = 0;
+  virtual size_t endExtension() const = 0;
 
-  virtual std::size_t beginPhase() const = 0;
-  virtual std::size_t endPhase() const = 0;
+  virtual size_t beginPhase() const = 0;
+  virtual size_t endPhase() const = 0;
 
   virtual bool hasGap(Dimension dim) const = 0;
   virtual bool isSilent() const = 0;

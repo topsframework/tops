@@ -150,7 +150,7 @@ TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
   };
 
   for (auto& sequence : sequences) {
-    unsigned int size = sequence.size();
+    size_t size = sequence.size();
     ASSERT_THAT(DOUBLE(mdd->standardEvaluator(sequence, true)
                           ->evaluateSequence(0, size)),
                 DoubleEq(DOUBLE(mdd->standardEvaluator(sequence)

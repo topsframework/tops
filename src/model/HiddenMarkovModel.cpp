@@ -35,7 +35,7 @@ namespace model {
 // Aliases
 using IID = DiscreteIIDModel;
 
-using Counter = std::size_t;
+using Counter = size_t;
 
 /*----------------------------------------------------------------------------*/
 /*                               CONSTRUCTORS                                 */
@@ -43,8 +43,8 @@ using Counter = std::size_t;
 
 HiddenMarkovModel::HiddenMarkovModel(
     std::vector<StatePtr> states,
-    std::size_t state_alphabet_size,
-    std::size_t observation_alphabet_size)
+    size_t state_alphabet_size,
+    size_t observation_alphabet_size)
     : _states(std::move(states)),
       _state_alphabet_size(state_alphabet_size),
       _observation_alphabet_size(observation_alphabet_size) {
@@ -60,14 +60,14 @@ HiddenMarkovModelPtr
 HiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
                          baum_welch_algorithm /* tag */,
                          const HiddenMarkovModelPtr& initial_model,
-                         std::size_t max_iterations,
+                         size_t max_iterations,
                          Probability diff_threshold) {
   auto model = std::make_shared<HiddenMarkovModel>(*initial_model);
 
   Symbol gap = model->observationAlphabetSize();
 
   std::pair<Expectation, Expectation> lasts;
-  for (std::size_t iteration = 0; iteration < max_iterations; iteration++) {
+  for (size_t iteration = 0; iteration < max_iterations; iteration++) {
     Expectation zero;
 
     // Matrix for expectations of transitions
@@ -154,7 +154,7 @@ HiddenMarkovModelPtr
 HiddenMarkovModel::train(const TrainerPtr<Labeling, Self>& trainer,
                          maximum_likelihood_algorithm /* tag */,
                          const HiddenMarkovModelPtr& initial_model,
-                         std::size_t pseudo_counter) {
+                         size_t pseudo_counter) {
   auto model = std::make_shared<HiddenMarkovModel>(*initial_model);
 
   // Matrix for counting of emissions
@@ -170,12 +170,12 @@ HiddenMarkovModel::train(const TrainerPtr<Labeling, Self>& trainer,
   for (const auto& [ observation, other_observations, label ]
       : trainer->training_set()) {
     // Add contribution of the given sequences to matrix A
-    for (std::size_t i = 0; i <= observation.size(); i++) {
+    for (size_t i = 0; i <= observation.size(); i++) {
       A[label[i]][label[i+1]] += 1;
     }
 
     // Add contribution of the given sequences to matrix E
-    for (std::size_t i = 0; i < observation.size(); i++) {
+    for (size_t i = 0; i < observation.size(); i++) {
       E[label[i+1]][observation[i]] += 1;
     }
   }
@@ -207,7 +207,7 @@ void HiddenMarkovModel::serialize(const SSPtr& serializer) {
 
 typename HiddenMarkovModel::GeneratorReturn<Symbol>
 HiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
-                              std::size_t pos,
+                              size_t pos,
                               const Sequence& context) const {
   assert(!context.empty() && context[0] == _begin_id);
 
@@ -221,12 +221,12 @@ HiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
 
 typename HiddenMarkovModel::GeneratorReturn<Sequence>
 HiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
-                                std::size_t size) const {
+                                size_t size) const {
   Sequences alignment(1);
   Sequence label;
 
   label.push_back(_begin_id);
-  for (std::size_t i = 1; i <= size; i++) {
+  for (size_t i = 1; i <= size; i++) {
     auto[ y, xs ] = drawSymbol(rng, i, label);
 
     // Keep trying to emit the right number of symbols
@@ -257,7 +257,7 @@ HiddenMarkovModel::viterbi(const Sequences& sequences) const {
   gammas[_begin_id][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
 
@@ -307,7 +307,7 @@ HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   posteriors[_begin_id][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
 
@@ -346,7 +346,7 @@ HiddenMarkovModel::forward(const Sequences& sequences) const {
   alphas[_begin_id][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
     for (const auto& state : _states) {
       auto k = state->id();
 
@@ -381,8 +381,8 @@ HiddenMarkovModel::backward(const Sequences& sequences) const {
   betas[_end_id][sequences[0].size()] = 1;
 
   // Recursion
-  auto max = std::numeric_limits<std::size_t>::max();
-  for (std::size_t i = sequences[0].size(); i != max; i--) {
+  auto max = std::numeric_limits<size_t>::max();
+  for (size_t i = sequences[0].size(); i != max; i--) {
     for (const auto& state : _states) {
       auto k = state->id();
 
@@ -416,7 +416,7 @@ HiddenMarkovModel::traceBack(
   // Initialization
   auto best_id = psi[_end_id][sequences[0].size()];
 
-  std::vector<std::size_t> idxs { sequences[0].size() };
+  std::vector<size_t> idxs { sequences[0].size() };
 
   // Iteration
   label.push_back(_end_id);
@@ -441,13 +441,13 @@ HiddenMarkovModel::traceBack(
 
 /*----------------------------------------------------------------------------*/
 
-std::size_t HiddenMarkovModel::stateAlphabetSize() const {
+size_t HiddenMarkovModel::stateAlphabetSize() const {
   return _state_alphabet_size;
 }
 
 /*----------------------------------------------------------------------------*/
 
-std::size_t HiddenMarkovModel::observationAlphabetSize() const {
+size_t HiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
 

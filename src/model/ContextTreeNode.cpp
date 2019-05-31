@@ -55,7 +55,7 @@ ContextTreeNodePtr ContextTreeNode::make(int alphabet_size) {
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-void ContextTreeNode::print(unsigned int i) {
+void ContextTreeNode::print(size_t i) {
   for (auto j = 0u; j < i; j++)
     std::cout << "  ";
   std::cout << "(" << id() << "): ";

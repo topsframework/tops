@@ -268,7 +268,7 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
     { 6.4e-6 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
-  for (unsigned int t = 0; t < tests.size(); t++) {
+  for (size_t t = 0; t < tests.size(); t++) {
     auto [ estimation, label, alignment, _ ] = phmm->viterbi(tests[t]);
 
     EXPECT_THAT(label, Eq(expected[t].label));
@@ -295,7 +295,7 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
     { 0.0216255 , {0, 1, 1, 1, 1, 1, 1, 4} , tests[3], {} },
   };
 
-  for (unsigned int t = 0; t < tests.size(); t++) {
+  for (size_t t = 0; t < tests.size(); t++) {
     auto [ estimation, label, alignment, _ ] = phmm->posteriorDecoding(tests[t]);
 
     EXPECT_THAT(label, Eq(expected[t].label));
@@ -308,7 +308,7 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, ShouldDrawLabeledSequenceWithDefaultSeed) {
-  std::vector<std::size_t> tests = {
+  std::vector<size_t> tests = {
     0, 1, 2, 3, 4, 5
   };
 
@@ -323,7 +323,7 @@ TEST_F(APairHiddenMarkovModel, ShouldDrawLabeledSequenceWithDefaultSeed) {
 
   auto rng = RandomNumberGeneratorAdapter<std::mt19937>::make();
 
-  for (unsigned int i = 0; i < tests.size(); i++) {
+  for (size_t i = 0; i < tests.size(); i++) {
     auto [ label, alignment ] = phmm->drawSequence(rng, tests[i]);
 
     EXPECT_THAT(label, ContainerEq(expected[i].label));

@@ -54,8 +54,8 @@ MultipleSequentialModel::MultipleSequentialModel(
 
 Probability
 MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
-                                        unsigned int /* pos */,
-                                        unsigned int /* phase */) const {
+                                        size_t /* pos */,
+                                        size_t /* phase */) const {
   throw_exception(NotYetImplemented);
 }
 
@@ -63,16 +63,16 @@ MultipleSequentialModel::evaluateSymbol(SEPtr<Standard> /* evaluator */,
 
 Probability
 MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const {
+                                          size_t begin,
+                                          size_t end,
+                                          size_t phase) const {
   if (begin > end) return 0;
 
   Probability product = 1;
   int b = begin;
   int e = 0;
 
-  for (unsigned int i = 0; i < _models.size(); i++) {
+  for (size_t i = 0; i < _models.size(); i++) {
     e = b + _max_length[i];
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size();
@@ -90,10 +90,10 @@ MultipleSequentialModel::evaluateSequence(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
-                                              unsigned int /* phase */) {
+                                              size_t /* phase */) {
   evaluator->cache().evaluators.resize(_models.size());
 
-  for (unsigned int i = 0; i < _models.size(); i++)
+  for (size_t i = 0; i < _models.size(); i++)
     evaluator->cache().evaluators[i]
       = _models[i]->standardEvaluator(evaluator->sequence(), true);
 }
@@ -102,8 +102,8 @@ void MultipleSequentialModel::initializeCache(CEPtr<Standard> evaluator,
 
 Probability
 MultipleSequentialModel::evaluateSymbol(CEPtr<Standard> evaluator,
-                                        unsigned int pos,
-                                        unsigned int phase) const {
+                                        size_t pos,
+                                        size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
@@ -111,16 +111,16 @@ MultipleSequentialModel::evaluateSymbol(CEPtr<Standard> evaluator,
 
 Probability
 MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
-                                          unsigned int begin,
-                                          unsigned int end,
-                                          unsigned int phase) const {
+                                          size_t begin,
+                                          size_t end,
+                                          size_t phase) const {
   auto& evaluators = evaluator->cache().evaluators;
 
   Probability product = 1;
   int b = begin;
   int e = 0;
 
-  for (unsigned int i = 0; i < _models.size(); i++) {
+  for (size_t i = 0; i < _models.size(); i++) {
     e = b + _max_length[i];
     if (e >= static_cast<int>(evaluator->sequence().size()))
       e = evaluator->sequence().size();
@@ -138,11 +138,11 @@ MultipleSequentialModel::evaluateSequence(CEPtr<Standard> evaluator,
 
 Standard<Symbol>
 MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
-                                    unsigned int pos,
-                                    unsigned int phase,
+                                    size_t pos,
+                                    size_t phase,
                                     const Sequence& context) const {
   int index = pos;
-  for (unsigned int j = 0; j < _models.size(); j++) {
+  for (size_t j = 0; j < _models.size(); j++) {
     index -= _max_length[j];
     if (index < 0)
       return _models[j]->standardGenerator(generator->randomNumberGenerator())
@@ -156,8 +156,8 @@ MultipleSequentialModel::drawSymbol(SGPtr<Standard> generator,
 
 Standard<Sequence> MultipleSequentialModel::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   return Base::drawSequence(generator, size, phase);
 }
 

@@ -45,7 +45,7 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(
 VariableLengthMarkovChainPtr
 VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
                                  context_algorithm,
-                                 unsigned int alphabet_size,
+                                 size_t alphabet_size,
                                  double delta) {
   ContextTreePtr tree = ContextTree::make(alphabet_size);
   tree->initializeContextTreeRissanen(trainer->training_set());
@@ -60,8 +60,8 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 VariableLengthMarkovChainPtr
 VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
                                  fixed_length_algorithm,
-                                 unsigned int order,
-                                 unsigned int alphabet_size,
+                                 size_t order,
+                                 size_t alphabet_size,
                                  double pseudo_counts,
                                  std::vector<double> weights,
                                  ProbabilisticModelPtr apriori) {
@@ -86,8 +86,8 @@ VariableLengthMarkovChainPtr
 VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
                                  interpolation_algorithm,
                                  std::vector<double> weights,
-                                 unsigned int alphabet_size,
-                                 unsigned int order,
+                                 size_t alphabet_size,
+                                 size_t order,
                                  double pseudo_counts,
                                  ProbabilisticModelPtr apriori) {
   auto tree = ContextTree::make(alphabet_size);
@@ -115,8 +115,8 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 
 Probability
 VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                          unsigned int pos,
-                                          unsigned int /* phase */) const {
+                                          size_t pos,
+                                          size_t /* phase */) const {
   ContextTreeNodePtr c = _context_tree->getContext(evaluator->sequence(), pos);
 
   if (c == nullptr) return 0;
@@ -129,16 +129,16 @@ VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 
 Probability VariableLengthMarkovChain::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 void VariableLengthMarkovChain::initializeCache(CEPtr<Standard> evaluator,
-                                                unsigned int phase) {
+                                                size_t phase) {
   Base::initializeCache(evaluator, phase);
 }
 
@@ -146,8 +146,8 @@ void VariableLengthMarkovChain::initializeCache(CEPtr<Standard> evaluator,
 
 Probability
 VariableLengthMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
-                                          unsigned int pos,
-                                          unsigned int phase) const {
+                                          size_t pos,
+                                          size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
@@ -155,9 +155,9 @@ VariableLengthMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 
 Probability VariableLengthMarkovChain::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
@@ -165,8 +165,8 @@ Probability VariableLengthMarkovChain::evaluateSequence(
 
 Standard<Symbol>
 VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                      unsigned int pos,
-                                      unsigned int phase,
+                                      size_t pos,
+                                      size_t phase,
                                       const Sequence& context) const {
   auto c = _context_tree->getContext(context, pos);
 
@@ -182,8 +182,8 @@ VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 Standard<Sequence> VariableLengthMarkovChain::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   return Base::drawSequence(generator, size, phase);
 }
 

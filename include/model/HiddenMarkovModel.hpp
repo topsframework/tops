@@ -148,8 +148,8 @@ class HiddenMarkovModel
   /*=============================[ CONSTRUCTORS ]=============================*/
 
   HiddenMarkovModel(std::vector<StatePtr> states,
-                    std::size_t state_alphabet_size,
-                    std::size_t observation_alphabet_size);
+                    size_t state_alphabet_size,
+                    size_t observation_alphabet_size);
 
   /*============================[ STATIC METHODS ]============================*/
 
@@ -242,7 +242,7 @@ class HiddenMarkovModel
   static SelfPtr train(const TrainerPtr<Alignment, Self>& trainer,
                        baum_welch_algorithm /* tag */,
                        const HiddenMarkovModelPtr& initial_model,
-                       std::size_t max_iterations,
+                       size_t max_iterations,
                        Probability diff_threshold);
 
   /**
@@ -257,7 +257,7 @@ class HiddenMarkovModel
   static SelfPtr train(const TrainerPtr<Labeling, Self>& trainer,
                        maximum_likelihood_algorithm /* tag */,
                        const HiddenMarkovModelPtr& initial_model,
-                       std::size_t pseudo_counter);
+                       size_t pseudo_counter);
 
   /*==========================[ CONCRETE METHODS ]============================*/
 
@@ -337,8 +337,8 @@ class HiddenMarkovModel
    * @return \f$Pr(s[pos])\f$
    */
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const;
+                             size_t pos,
+                             size_t phase) const;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -351,9 +351,9 @@ class HiddenMarkovModel
    * @return \f$Pr(s[begin..end-1])\f$
    */
   Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -365,8 +365,8 @@ class HiddenMarkovModel
    * @return \f$Pr(s[pos])\f$
    */
   Probability evaluateSymbol(SEPtr<Labeling> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const;
+                             size_t pos,
+                             size_t phase) const;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -379,9 +379,9 @@ class HiddenMarkovModel
    * @return \f$Pr(s[begin..end-1])\f$
    */
   Probability evaluateSequence(SEPtr<Labeling> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const;
 
   /*---------------------------( CachedEvaluator )----------------------------*/
 
@@ -391,7 +391,7 @@ class HiddenMarkovModel
    * @param phase Phase of the full sequence
    */
   void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase);
+                       size_t phase);
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -403,8 +403,8 @@ class HiddenMarkovModel
    * @return \f$Pr(s[pos])\f$
    */
   Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const;
+                             size_t pos,
+                             size_t phase) const;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -417,9 +417,9 @@ class HiddenMarkovModel
    * @return \f$Pr(s[begin..end-1])\f$
    */
   Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const;
 
   /**
    * Lazily initializes the cache of a CachedEvaluator.
@@ -427,7 +427,7 @@ class HiddenMarkovModel
    * @param phase Phase of the full labeled sequence
    */
   void initializeCache(CEPtr<Labeling> evaluator,
-                       unsigned int phase);
+                       size_t phase);
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -439,8 +439,8 @@ class HiddenMarkovModel
    * @return \f$Pr(s[pos])\f$
    */
   Probability evaluateSymbol(CEPtr<Labeling> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const;
+                             size_t pos,
+                             size_t phase) const;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -453,9 +453,9 @@ class HiddenMarkovModel
    * @return \f$Pr(s[begin..end-1])\f$
    */
   Probability evaluateSequence(CEPtr<Labeling> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const;
 
   /*---------------------------( SimpleGenerator )----------------------------*/
 
@@ -469,8 +469,8 @@ class HiddenMarkovModel
    * @return \f$x,\ x \in X\f$
    */
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                             unsigned int pos,
-                             unsigned int phase,
+                             size_t pos,
+                             size_t phase,
                              const Sequence& context) const;
 
   /**
@@ -482,8 +482,8 @@ class HiddenMarkovModel
    * @return \f$x,\ x \in X\f$
    */
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const;
+                                  size_t size,
+                                  size_t phase) const;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled symbol
@@ -495,8 +495,8 @@ class HiddenMarkovModel
    * @return \f$x,\ x \in X\f$
    */
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
-                              unsigned int pos,
-                              unsigned int phase,
+                              size_t pos,
+                              size_t phase,
                               const Sequence& context) const;
 
   /**
@@ -508,8 +508,8 @@ class HiddenMarkovModel
    * @return \f$x,\ x \in X\f$
    */
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const;
+                                  size_t size,
+                                  size_t phase) const;
 
   /*---------------------------( SimpleSerializer )---------------------------*/
 
@@ -588,13 +588,13 @@ class HiddenMarkovModel
    * Gets the model's state alphabet size.
    * @return \f$|Y|\f$
    */
-  std::size_t stateAlphabetSize() const;
+  size_t stateAlphabetSize() const;
 
   /**
    * Gets the model's observation alphabet size.
    * @return \f$|X|\f$
    */
-  std::size_t observationAlphabetSize() const;
+  size_t observationAlphabetSize() const;
 
   /**
    * Gets the state with a given ID.
@@ -618,10 +618,10 @@ class HiddenMarkovModel
 
   // Generator's implementations
   GeneratorReturn<Symbol> drawSymbol(const RandomNumberGeneratorPtr& rng,
-                                     std::size_t pos,
+                                     size_t pos,
                                      const Sequence& context) const;
   GeneratorReturn<Sequence> drawSequence(const RandomNumberGeneratorPtr& rng,
-                                         std::size_t size) const;
+                                         size_t size) const;
 
   // Labeler's implementations
   LabelerReturn viterbi(const Sequences& sequences) const;
@@ -638,8 +638,8 @@ class HiddenMarkovModel
  protected:
   // Instance variables
   std::vector<StatePtr> _states;
-  std::size_t _state_alphabet_size;
-  std::size_t _observation_alphabet_size;
+  size_t _state_alphabet_size;
+  size_t _observation_alphabet_size;
 
   Symbol _gap = _observation_alphabet_size;
 

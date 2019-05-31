@@ -38,14 +38,14 @@ namespace helper {
 /*----------------------------------------------------------------------------*/
 
 model::VariableLengthMarkovChainPtr generateRandomVLMC(
-    unsigned int number_of_nodes,
-    unsigned int alphabet_size) {
+    size_t number_of_nodes,
+    size_t alphabet_size) {
   auto tree = model::ContextTree::make(alphabet_size);
   auto node = tree->createContext();
   node->setDistribution(generateRandomIIDModel(alphabet_size));
-  for (unsigned int i = 1; i < number_of_nodes; i++) {
+  for (size_t i = 1; i < number_of_nodes; i++) {
     auto root = node;
-    for (unsigned int j = 0; j < alphabet_size; j++) {
+    for (size_t j = 0; j < alphabet_size; j++) {
       node = tree->createContext();
       node->setDistribution(generateRandomIIDModel(alphabet_size));
       node->setChild(root, j);

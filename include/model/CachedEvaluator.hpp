@@ -65,21 +65,21 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
   }
 
   // Overriden methods
-  Probability evaluateSymbol(unsigned int pos,
-                             unsigned int phase) const override {
+  Probability evaluateSymbol(size_t pos,
+                             size_t phase) const override {
     const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSymbol, pos, phase);
   }
 
-  Probability evaluateSequence(unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override {
+  Probability evaluateSequence(size_t begin,
+                               size_t end,
+                               size_t phase) const override {
     const_cast<Self*>(this)->lazyInitializeCache(phase);
     CALL_MEMBER_FUNCTION_DELEGATOR(evaluateSequence, begin, end, phase);
   }
 
   // Virtual methods
-  virtual void initializeCache(unsigned int phase) {
+  virtual void initializeCache(size_t phase) {
     CALL_MEMBER_FUNCTION_DELEGATOR(initializeCache, phase);
   }
 
@@ -105,7 +105,7 @@ class CachedEvaluator : public SimpleEvaluator<Decorator, Model> {
 
  private:
   // Concrete methods
-  inline void lazyInitializeCache(unsigned int phase) {
+  inline void lazyInitializeCache(size_t phase) {
     if (!initialized) {
       initialized = true;
       initializeCache(phase);

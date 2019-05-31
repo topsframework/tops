@@ -43,8 +43,8 @@ struct Range {
   // Inner classes
   struct iterator_type {
     // Aliases
-    using value_type = std::size_t;
-    using difference_type = std::size_t;
+    using value_type = size_t;
+    using difference_type = size_t;
     using iterator_category = std::forward_iterator_tag;
     using pointer = const value_type *;
     using reference = const value_type &;
@@ -83,12 +83,12 @@ struct Range {
   using const_iterator = const iterator_type;
 
   // Instance variables
-  std::size_t first_, last_, increment_;
+  size_t first_, last_, increment_;
 
   // Constructors
-  explicit Range(std::size_t last)
+  explicit Range(size_t last)
     : first_(0), last_(last), increment_(1) {}
-  Range(std::size_t first, std::size_t last, std::size_t increment = 1)
+  Range(size_t first, size_t last, size_t increment = 1)
     : first_(first), last_(last), increment_(increment) {}
 
   // Concrete methods

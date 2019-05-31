@@ -34,7 +34,7 @@ namespace helper {
 /*----------------------------------------------------------------------------*/
 
 static void generateAllCombinationsOfSymbolsImpl(
-    unsigned int pos,
+    size_t pos,
     model::Sequence s,
     std::vector<model::Sequence>& sequences) {
   model::Sequence s0 = s;
@@ -57,9 +57,9 @@ static void generateAllCombinationsOfSymbolsImpl(
 /*----------------------------------------------------------------------------*/
 
 model::Sequence generateRandomSequence(
-    unsigned int size, unsigned int alphabet_size) {
+    size_t size, size_t alphabet_size) {
   model::Sequence sequence;
-  for (unsigned int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     sequence.push_back(generateRandomInteger(alphabet_size-1));
   }
   return sequence;
@@ -174,7 +174,7 @@ model::Sequence sequenceOfLengths() {
 /*----------------------------------------------------------------------------*/
 
 std::vector<model::Sequence>
-generateAllCombinationsOfSymbols(unsigned int size) {
+generateAllCombinationsOfSymbols(size_t size) {
   model::Sequence s(size, 0);
   std::vector<model::Sequence> sequences;
   generateAllCombinationsOfSymbolsImpl(0, s, sequences);

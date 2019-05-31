@@ -55,7 +55,7 @@ class Consensus {
   explicit Consensus(const Sequence& symbols);
 
   // Concrete methods
-  bool is(unsigned int symbol) const;
+  bool is(size_t symbol) const;
   const Sequence symbols() const;
 
  private:

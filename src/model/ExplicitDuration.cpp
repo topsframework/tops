@@ -42,13 +42,13 @@ ExplicitDuration::ExplicitDuration(ProbabilisticModelPtr duration)
 /*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-Range ExplicitDuration::possibleLengths(std::size_t max_length) const {
+Range ExplicitDuration::possibleLengths(size_t max_length) const {
   return { 1, max_length + 1 };
 }
 
 /*----------------------------------------------------------------------------*/
 
-Probability ExplicitDuration::probabilityOfLenght(std::size_t len) const {
+Probability ExplicitDuration::probabilityOfLenght(size_t len) const {
   return _duration_model->standardEvaluator(Sequence{len})->evaluateSymbol(0);
 }
 

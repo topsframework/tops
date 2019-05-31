@@ -118,7 +118,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        maximum_likehood_algorithm,
-                       unsigned int alphabet_size);
+                       size_t alphabet_size);
 
   /**
    * Trains a new discrete iid model using the Smoothed Histogram Method
@@ -131,7 +131,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_burge_algorithm,
                        double c,
-                       unsigned int max_length);
+                       size_t max_length);
 
   /**
    * Trains a new discrete iid model using the Smoothed Histogram Method
@@ -145,9 +145,9 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_stanke_algorithm,
-                       std::vector<unsigned int> weights,
-                       unsigned int max_length,
-                       unsigned int m,
+                       std::vector<size_t> weights,
+                       size_t max_length,
+                       size_t m,
                        double slope);
 
   /**
@@ -159,7 +159,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
    */
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        smoothed_histogram_kernel_density_algorithm,
-                       unsigned int max_length);
+                       size_t max_length);
 
   // Others
 
@@ -175,32 +175,32 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
 
   // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // CachedEvaluator
   void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+                       size_t phase) override;
   Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
+                              size_t pos,
+                              size_t phase,
                               const Sequence& context) const override;
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const override;
+                                  size_t size,
+                                  size_t phase) const override;
 
   // SimpleSerializer
   void serialize(SSPtr serializer) override;
@@ -249,7 +249,7 @@ class DiscreteIIDModel : public ProbabilisticModelCrtp<DiscreteIIDModel> {
  private:
   // Instance variables
   std::vector<Probability> _probabilities;
-  std::size_t _alphabet_size;
+  size_t _alphabet_size;
 
   /*============================[ STATIC METHODS ]============================*/
 

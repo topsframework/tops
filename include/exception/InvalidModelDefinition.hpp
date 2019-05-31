@@ -33,7 +33,7 @@ namespace exception {
 class InvalidModelDefinition : public Exception {
  public:
   // Constructors
-  InvalidModelDefinition(const char* file, unsigned int line, const char* func);
+  InvalidModelDefinition(const char* file, size_t line, const char* func);
 };
 
 }  // namespace exception

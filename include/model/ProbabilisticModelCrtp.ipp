@@ -101,12 +101,12 @@ SerializerPtr ProbabilisticModelCrtp<Derived>::serializer(
 
 template<typename Derived>
 void ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
-                                                      unsigned int phase) {
+                                                      size_t phase) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size() + 1);
 
   prefix_sum_array[0] = 1;
-  for (unsigned int i = 0; i < evaluator->sequence().size(); i++)
+  for (size_t i = 0; i < evaluator->sequence().size(); i++)
     prefix_sum_array[i+1]
       = prefix_sum_array[i] * evaluator->evaluateSymbol(i, phase);
 }
@@ -116,11 +116,11 @@ void ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   Probability prob = 1;
-  for (unsigned int i = begin; i < end; i++)
+  for (size_t i = begin; i < end; i++)
     prob *= evaluator->evaluateSymbol(i, phase);
   return prob;
 }
@@ -130,8 +130,8 @@ Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSymbol(
     CEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   return evaluateSymbol(static_cast<SEPtr<Standard>>(evaluator), pos, phase);
 }
 
@@ -140,9 +140,9 @@ Probability ProbabilisticModelCrtp<Derived>::evaluateSymbol(
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int /* phase */) const {
+    size_t begin,
+    size_t end,
+    size_t /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   return prefix_sum_array[end] / prefix_sum_array[begin];
 }
@@ -152,10 +152,10 @@ Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
 template<typename Derived>
 Standard<Sequence> ProbabilisticModelCrtp<Derived>::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   Sequence s;
-  for (unsigned int k = 0; k < size; k++)
+  for (size_t k = 0; k < size; k++)
       s.push_back(generator->drawSymbol(k, phase, s));
   return s;
 }

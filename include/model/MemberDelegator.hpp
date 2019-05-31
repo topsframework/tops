@@ -93,7 +93,7 @@ struct inject_first_parameter<Ptr, Result(Klass::*)(Args...) const> {
 /*============================================================================*/
 
 template<typename Func, template<typename...> class Pack,
-         typename Ptr, typename... Args, std::size_t... I>
+         typename Ptr, typename... Args, size_t... I>
 auto call_helper(const Func& func, const Ptr& ptr, const Pack<Args...>& params,
                    std::index_sequence<I...>) {
   return func(ptr, std::get<I>(params)...);

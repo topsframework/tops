@@ -69,42 +69,42 @@ class MaximalDependenceDecomposition
   // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        standard_training_algorithm,
-                       unsigned int alphabet_size,
+                       size_t alphabet_size,
                        ConsensusSequence consensus_sequence,
                        ProbabilisticModelPtr consensus_model,
-                       unsigned int minimum_subset);
+                       size_t minimum_subset);
 
   /*==========================[ OVERRIDEN METHODS ]===========================*/
   /*-------------------------( Probabilistic Model )--------------------------*/
 
   // SimpleEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // CachedEvaluator
   void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+                       size_t phase) override;
   Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // SimpleGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
+                              size_t pos,
+                              size_t phase,
                               const Sequence& context) const override;
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const override;
+                                  size_t size,
+                                  size_t phase) const override;
 
   // SimpleSerializer
   void serialize(SSPtr serializer) override;
@@ -121,28 +121,28 @@ class MaximalDependenceDecomposition
   static MaximalDependenceDecompositionNodePtr trainTree(
       std::vector<Sequence> training_set,
       int divmin,
-      unsigned int alphabet_size,
+      size_t alphabet_size,
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model);
 
   static MaximalDependenceDecompositionNodePtr newNode(
       std::string node_name,
       std::vector<Sequence>& sequences,
-      unsigned int divmin,
+      size_t divmin,
       Sequence selected,
-      unsigned int alphabet_size,
+      size_t alphabet_size,
       ConsensusSequence consensus_sequence,
       ProbabilisticModelPtr consensus_model);
 
   static InhomogeneousMarkovChainPtr trainInhomogeneousMarkovChain(
       std::vector<Sequence>& sequences,
-      unsigned int alphabet_size);
+      size_t alphabet_size);
 
   static int getMaximalDependenceIndex(
       InhomogeneousMarkovChainPtr model,
       Sequence selected,
       ConsensusSequence consensus_sequence,
-      unsigned int alphabet_size,
+      size_t alphabet_size,
       ProbabilisticModelPtr consensus_model);
 
   static void subset(int index,

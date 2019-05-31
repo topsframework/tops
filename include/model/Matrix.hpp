@@ -32,12 +32,12 @@ namespace model {
 
 /*----------------------------------------------------------------------------*/
 
-template<typename T, std::size_t N>
+template<typename T, size_t N>
 struct Nest : Nest<std::vector<T>, N-1> {};
 template<typename T>
 struct Nest<T, 0> { using type = T; };
 
-template<typename T, std::size_t N>
+template<typename T, size_t N>
 using MultiArray = typename Nest<T, N>::type;
 
 using Matrix = MultiArray<Probability, 2>;
@@ -45,7 +45,7 @@ using Cube = MultiArray<Probability, 3>;
 
 /*----------------------------------------------------------------------------*/
 
-template<typename Original, std::size_t N>
+template<typename Original, size_t N>
 struct SumAux {
   Original operator()(const MultiArray<Original, N>& values) {
     Original acc {};
@@ -63,7 +63,7 @@ struct SumAux<Original, 0> {
   }
 };
 
-template<typename Original, std::size_t N>
+template<typename Original, size_t N>
 struct NormalizeAux {
   MultiArray<Probability, N>
   operator()(const MultiArray<Original, N>& values, Original sum) {
@@ -83,7 +83,7 @@ struct NormalizeAux<Original, 0> {
   }
 };
 
-template<typename Original, std::size_t N>
+template<typename Original, size_t N>
 MultiArray<Probability, N> normalize(const MultiArray<Original, N>& values) {
   return NormalizeAux<Original, N>{}(values, SumAux<Original, N>{}(values));
 }

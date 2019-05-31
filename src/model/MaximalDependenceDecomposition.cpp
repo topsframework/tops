@@ -59,10 +59,10 @@ MaximalDependenceDecomposition::MaximalDependenceDecomposition(
 MaximalDependenceDecompositionPtr
 MaximalDependenceDecomposition::train(TrainerPtr<Standard, Self> trainer,
                                       standard_training_algorithm,
-                                      unsigned int alphabet_size,
+                                      size_t alphabet_size,
                                       ConsensusSequence consensus_sequence,
                                       ProbabilisticModelPtr consensus_model,
-                                      unsigned int minimum_subset) {
+                                      size_t minimum_subset) {
   return MaximalDependenceDecomposition::make(
     consensus_sequence,
     consensus_model,
@@ -78,7 +78,7 @@ MaximalDependenceDecomposition::train(TrainerPtr<Standard, Self> trainer,
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
     std::vector<Sequence> training_set,
     int divmin,
-    unsigned int alphabet_size,
+    size_t alphabet_size,
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model) {
   Sequence selected;
@@ -96,9 +96,9 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     std::string node_name,
     std::vector<Sequence>& sequences,
-    unsigned int divmin,
+    size_t divmin,
     Sequence selected,
-    unsigned int alphabet_size,
+    size_t alphabet_size,
     ConsensusSequence consensus_sequence,
     ProbabilisticModelPtr consensus_model) {
   InhomogeneousMarkovChainPtr model = trainInhomogeneousMarkovChain(
@@ -184,14 +184,14 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 InhomogeneousMarkovChainPtr
 MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
     std::vector<Sequence>& sequences,
-    unsigned int alphabet_size) {
+    size_t alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> position_specific_vlmcs;
 
-  for (unsigned int j = 0; j < sequences[0].size(); j++) {
+  for (size_t j = 0; j < sequences[0].size(); j++) {
     std::vector<Sequence> imc_sequences;
 
     Sequence s;
-    for (unsigned int i = 0; i < sequences.size(); i++) {
+    for (size_t i = 0; i < sequences.size(); i++) {
       s.push_back(sequences[i][j]);
     }
     imc_sequences.push_back(s);
@@ -210,18 +210,18 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     InhomogeneousMarkovChainPtr model,
     Sequence selected,
     ConsensusSequence consensus_sequence,
-    unsigned int alphabet_size,
+    size_t alphabet_size,
     ProbabilisticModelPtr consensus_model) {
   // TODO(renatocf): refactor to use 'Probability'
   Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
   double maximal = -std::numeric_limits<double>::infinity();
   double maximal_i = -1;
-  for (unsigned int i = 0; i < consensus_sequence.size(); i++) {
+  for (size_t i = 0; i < consensus_sequence.size(); i++) {
     double sum = -std::numeric_limits<double>::infinity();
-    for (unsigned int j = 0; j < consensus_sequence.size(); j++) {
+    for (size_t j = 0; j < consensus_sequence.size(); j++) {
       if (i != j) {
         double chi = -std::numeric_limits<double>::infinity();
-        for (unsigned int k = 0; k < alphabet_size; k++) {
+        for (size_t k = 0; k < alphabet_size; k++) {
           s[i] = k;
           double e = consensus_model->standardEvaluator(s)->evaluateSymbol(i);
           s[j] = k;
@@ -236,7 +236,7 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
     }
     if (maximal < sum) {
       bool ok = false;
-      for (unsigned int k = 0; k < selected.size(); k++) {
+      for (size_t k = 0; k < selected.size(); k++) {
         if (selected[k] == i) {
           ok = true;
           break;
@@ -259,7 +259,7 @@ void MaximalDependenceDecomposition::subset(
     std::vector<Sequence>& consensus,
     std::vector<Sequence>& nonconsensus,
     ConsensusSequence consensus_sequence) {
-  for (unsigned int i = 0; i < sequences.size(); i++) {
+  for (size_t i = 0; i < sequences.size(); i++) {
     if (consensus_sequence[index].is(sequences[i][index])) {
       consensus.push_back(sequences[i]);
     } else {
@@ -276,8 +276,8 @@ void MaximalDependenceDecomposition::subset(
 
 Probability MaximalDependenceDecomposition::evaluateSymbol(
     SEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   return evaluateSequence(evaluator, pos, pos, phase);
 }
 
@@ -285,9 +285,9 @@ Probability MaximalDependenceDecomposition::evaluateSymbol(
 
 Probability MaximalDependenceDecomposition::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int /* phase */) const {
+    size_t begin,
+    size_t end,
+    size_t /* phase */) const {
   if ((end - begin) != _consensus_sequence.size()) return 0;
   auto first = evaluator->sequence().begin() + begin;
   auto last = evaluator->sequence().begin() + end;
@@ -299,7 +299,7 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
-                                                     unsigned int phase) {
+                                                     size_t phase) {
   int slen = evaluator->sequence().size();
   int clen = _consensus_sequence.size();
 
@@ -319,8 +319,8 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 
 Probability MaximalDependenceDecomposition::evaluateSymbol(
     CEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
@@ -328,9 +328,9 @@ Probability MaximalDependenceDecomposition::evaluateSymbol(
 
 Probability MaximalDependenceDecomposition::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int /* phase */) const {
+    size_t begin,
+    size_t end,
+    size_t /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   if ((end - begin) != _consensus_sequence.size()) return 0;
   return prefix_sum_array[begin];
@@ -340,8 +340,8 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
 
 Standard<Symbol> MaximalDependenceDecomposition::drawSymbol(
     SGPtr<Standard> /* generator */,
-    unsigned int /* pos */,
-    unsigned int /* phase */,
+    size_t /* pos */,
+    size_t /* phase */,
     const Sequence &/* context */) const {
   throw_exception(NotYetImplemented);
 }
@@ -350,8 +350,8 @@ Standard<Symbol> MaximalDependenceDecomposition::drawSymbol(
 
 Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
     SGPtr<Standard> /* generator */,
-    unsigned int /* size */,
-    unsigned int /* phase */) const {
+    size_t /* size */,
+    size_t /* phase */) const {
   throw_exception(NotYetImplemented);
 }
 
@@ -382,7 +382,7 @@ Probability MaximalDependenceDecomposition::_probabilityOf(
       p *= _probabilityOf(s, node->getRight(), indexes);
     }
   } else {  // leaf
-    for (unsigned int i = 0; i < s.size(); i++) {
+    for (size_t i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
         p *= node->getModel()->standardEvaluator(s)->evaluateSymbol(i);
       }
@@ -406,7 +406,7 @@ void MaximalDependenceDecomposition::_drawAux(
       _drawAux(s, node->getRight());
     }
   } else {  // leaf
-    for (unsigned int i = 0; i < s.size(); i++) {
+    for (size_t i = 0; i < s.size(); i++) {
       if (s[i] == INVALID_SYMBOL) {
         s[i] = node->getModel()->standardGenerator()->drawSymbol(i, 0, s);
       }

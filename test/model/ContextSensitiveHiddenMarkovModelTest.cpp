@@ -428,7 +428,7 @@ TEST_F(ACSHMM, DecodesASequenceOfObservations) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ACSHMM, ShouldDrawLabeledSequenceWithDefaultSeed) {
-  std::vector<std::size_t> tests = {
+  std::vector<size_t> tests = {
     0, 1, 2, 3, 4, 5
   };
 

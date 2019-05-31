@@ -68,7 +68,7 @@ class ContextTreeNode {
   void deleteChildren();
   std::vector<ContextTreeNodePtr> getChildren();
   bool isLeaf();
-  void print(unsigned int i);
+  void print(size_t i);
 
  private:
   // Instance variables

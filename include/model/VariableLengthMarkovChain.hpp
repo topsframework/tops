@@ -70,13 +70,13 @@ class VariableLengthMarkovChain
   // Trainer
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        context_algorithm,
-                       unsigned int alphabet_size,
+                       size_t alphabet_size,
                        double delta);
 
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        fixed_length_algorithm,
-                       unsigned int order,
-                       unsigned int alphabet_size,
+                       size_t order,
+                       size_t alphabet_size,
                        double pseudo_counts,
                        std::vector<double> weights,
                        ProbabilisticModelPtr apriori);
@@ -84,8 +84,8 @@ class VariableLengthMarkovChain
   static SelfPtr train(TrainerPtr<Standard, Self> trainer,
                        interpolation_algorithm,
                        std::vector<double> weights,
-                       unsigned int alphabet_size,
-                       unsigned int order,
+                       size_t alphabet_size,
+                       size_t order,
                        double pseudo_counts,
                        ProbabilisticModelPtr apriori);
 
@@ -94,32 +94,32 @@ class VariableLengthMarkovChain
 
   // StandardEvaluator
   Probability evaluateSymbol(SEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(SEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // CachedEvaluator
   void initializeCache(CEPtr<Standard> evaluator,
-                       unsigned int phase) override;
+                       size_t phase) override;
   Probability evaluateSymbol(CEPtr<Standard> evaluator,
-                             unsigned int pos,
-                             unsigned int phase) const override;
+                             size_t pos,
+                             size_t phase) const override;
   Probability evaluateSequence(CEPtr<Standard> evaluator,
-                               unsigned int begin,
-                               unsigned int end,
-                               unsigned int phase) const override;
+                               size_t begin,
+                               size_t end,
+                               size_t phase) const override;
 
   // StandardGenerator
   Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                              unsigned int pos,
-                              unsigned int phase,
+                              size_t pos,
+                              size_t phase,
                               const Sequence& context) const override;
   Standard<Sequence> drawSequence(SGPtr<Standard> generator,
-                                  unsigned int size,
-                                  unsigned int phase) const override;
+                                  size_t size,
+                                  size_t phase) const override;
 
   // SimpleSerializer
   void serialize(SSPtr serializer) override;

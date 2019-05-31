@@ -36,7 +36,7 @@ using IID = DiscreteIIDModel;
 template<typename Model> struct StateTraits;
 template<typename EmissionModel, typename TransitionModel> class State;
 template<typename EmissionModel, typename TransitionModel,
-         std::size_t dimension, bool... gaps> class SimpleState;
+         size_t dimension, bool... gaps> class SimpleState;
 
 /**
  * @typedef StateTraits

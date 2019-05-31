@@ -42,7 +42,7 @@ std::vector<Segment> Segment::readSequence(const Sequence& s) {
   std::vector<Segment> segments;
   Symbol symbol = s[0];
   int begin = 0;
-  for (unsigned int i = 1; i < s.size(); i++) {
+  for (size_t i = 1; i < s.size(); i++) {
     if (s[i] != symbol) {
       segments.push_back(Segment(symbol, begin, i));
       symbol = s[i];

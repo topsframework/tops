@@ -49,12 +49,12 @@ class Evaluator
     : public std::enable_shared_from_this<Evaluator<Decorator>> {
  public:
   // Purely virtual methods
-  virtual Probability evaluateSymbol(unsigned int pos,
-                                     unsigned int phase = 0) const = 0;
+  virtual Probability evaluateSymbol(size_t pos,
+                                     size_t phase = 0) const = 0;
 
-  virtual Probability evaluateSequence(unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase = 0) const = 0;
+  virtual Probability evaluateSequence(size_t begin,
+                                       size_t end,
+                                       size_t phase = 0) const = 0;
 
   virtual Decorator<Sequence>& sequence() = 0;
   virtual const Decorator<Sequence>& sequence() const = 0;

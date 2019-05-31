@@ -38,7 +38,7 @@ namespace exception {
 class Exception : public std::exception {
  public:
   // Constructors
-  Exception(const char* file, unsigned int line, const char* func,
+  Exception(const char* file, size_t line, const char* func,
             std::string error_message);
 
   // Overriden methods

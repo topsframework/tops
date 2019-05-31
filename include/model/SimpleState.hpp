@@ -32,7 +32,7 @@ namespace model {
 
 // Forward declaration
 template<typename EmissionModel, typename TransitionModel,
-         std::size_t dimensions, bool... gaps>
+         size_t dimensions, bool... gaps>
 class SimpleState;
 
 /**
@@ -40,7 +40,7 @@ class SimpleState;
  * @brief Alias of pointer to SimpleState.
  */
 template<typename EmissionModel, typename TransitionModel,
-         std::size_t dimensions, bool... gaps>
+         size_t dimensions, bool... gaps>
 using SimpleStatePtr
   = std::shared_ptr<SimpleState<EmissionModel, TransitionModel,
                                 dimensions, gaps...>>;
@@ -50,7 +50,7 @@ using SimpleStatePtr
  * @brief TODO
  */
 template<typename EmissionModel, typename TransitionModel,
-         std::size_t dimensions, bool... gaps>
+         size_t dimensions, bool... gaps>
 class SimpleState
     : public StateCrtp<EmissionModel, TransitionModel,
                        SimpleState<EmissionModel, TransitionModel,
@@ -79,14 +79,14 @@ class SimpleState
   // Constructors
   SimpleState(Id id, EmissionModelPtr emission,
                      TransitionModelPtr transition,
-                     std::pair<std::size_t, std::size_t> extensions = { 0, 0 },
-                     std::pair<std::size_t, std::size_t> phases = { 0, 0 });
+                     std::pair<size_t, size_t> extensions = { 0, 0 },
+                     std::pair<size_t, size_t> phases = { 0, 0 });
 
   SimpleState(Id id, EmissionModelPtr emission,
                      TransitionModelPtr transition,
                      DurationPtr duration,
-                     std::pair<std::size_t, std::size_t> extensions = { 0, 0 },
-                     std::pair<std::size_t, std::size_t> phases = { 0, 0 });
+                     std::pair<size_t, size_t> extensions = { 0, 0 },
+                     std::pair<size_t, size_t> phases = { 0, 0 });
 
   // Overriden methods
   bool hasGap(Dimension dim) const override;

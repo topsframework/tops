@@ -33,7 +33,7 @@ namespace exception {
 class OutOfRange : public Exception {
  public:
   // Constructors
-  OutOfRange(const char* file, unsigned int line, const char* func);
+  OutOfRange(const char* file, size_t line, const char* func);
 };
 
 }  // namespace exception

@@ -54,8 +54,8 @@ class ExplicitDuration : public DurationCrtp<ExplicitDuration> {
   explicit ExplicitDuration(ProbabilisticModelPtr duration);
 
   // Overriden methods
-  Range possibleLengths(std::size_t max) const override;
-  Probability probabilityOfLenght(std::size_t length) const override;
+  Range possibleLengths(size_t max) const override;
+  Probability probabilityOfLenght(size_t length) const override;
 
   // Concrete methods
   ProbabilisticModelPtr durationModel();

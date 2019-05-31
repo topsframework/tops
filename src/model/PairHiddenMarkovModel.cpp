@@ -41,8 +41,8 @@ using IID = DiscreteIIDModel;
 
 PairHiddenMarkovModel::PairHiddenMarkovModel(
     std::vector<StatePtr> states,
-    std::size_t state_alphabet_size,
-    std::size_t observation_alphabet_size)
+    size_t state_alphabet_size,
+    size_t observation_alphabet_size)
     : _states(std::move(states)),
       _state_alphabet_size(state_alphabet_size),
       _observation_alphabet_size(observation_alphabet_size) {
@@ -58,14 +58,14 @@ PairHiddenMarkovModelPtr
 PairHiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
                              baum_welch_algorithm /* tag */,
                              const PairHiddenMarkovModelPtr& initial_model,
-                             std::size_t max_iterations,
+                             size_t max_iterations,
                              Probability diff_threshold) {
   auto model = std::make_shared<PairHiddenMarkovModel>(*initial_model);
 
   Symbol gap = model->observationAlphabetSize();
 
   std::pair<Expectation, Expectation> lasts;
-  for (std::size_t iteration = 0; iteration < max_iterations; iteration++) {
+  for (size_t iteration = 0; iteration < max_iterations; iteration++) {
     Expectation zero;
 
     // Matrix for expectations of transitions
@@ -173,7 +173,7 @@ void PairHiddenMarkovModel::serialize(const SSPtr& serializer) {
 
 typename PairHiddenMarkovModel::GeneratorReturn<Symbol>
 PairHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
-                                  std::size_t pos,
+                                  size_t pos,
                                   const Sequence& context) const {
   assert(!context.empty() && context[0] == _begin_id);
 
@@ -187,12 +187,12 @@ PairHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
 
 typename PairHiddenMarkovModel::GeneratorReturn<Sequence>
 PairHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
-                                    std::size_t size) const {
+                                    size_t size) const {
   Sequences alignment(2);
   Sequence label;
 
   label.push_back(_begin_id);
-  for (std::size_t i = 1; i <= size; i++) {
+  for (size_t i = 1; i <= size; i++) {
     auto[ y, xs ] = drawSymbol(rng, i, label);
 
     // Keep trying to emit the right number of symbols
@@ -228,8 +228,8 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   gammas[_begin_id][0][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
-    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
+    for (size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         auto k = state->id();
 
@@ -286,8 +286,8 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
   posteriors[_begin_id][0][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
-    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
+    for (size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         auto k = state->id();
 
@@ -330,8 +330,8 @@ PairHiddenMarkovModel::forward(const Sequences& sequences) const {
   alphas[_begin_id][0][0] = 1;
 
   // Recursion
-  for (std::size_t i = 0; i <= sequences[0].size(); i++) {
-    for (std::size_t j = 0; j <= sequences[1].size(); j++) {
+  for (size_t i = 0; i <= sequences[0].size(); i++) {
+    for (size_t j = 0; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         auto k = state->id();
 
@@ -371,9 +371,9 @@ PairHiddenMarkovModel::backward(const Sequences& sequences) const {
   betas[_end_id][sequences[0].size()][sequences[1].size()] = 1;
 
   // Recursion
-  auto max = std::numeric_limits<std::size_t>::max();
-  for (std::size_t i = sequences[0].size(); i != max; i--) {
-    for (std::size_t j = sequences[1].size(); j != max; j--) {
+  auto max = std::numeric_limits<size_t>::max();
+  for (size_t i = sequences[0].size(); i != max; i--) {
+    for (size_t j = sequences[1].size(); j != max; j--) {
       for (const auto& state : _states) {
         auto k = state->id();
 
@@ -410,7 +410,7 @@ PairHiddenMarkovModel::traceBack(
   // Initialization
   auto best_id = psi[_end_id][sequences[0].size()][sequences[1].size()];
 
-  std::vector<std::size_t> idxs { sequences[0].size(), sequences[1].size() };
+  std::vector<size_t> idxs { sequences[0].size(), sequences[1].size() };
 
   // Iteration
   label.push_back(_end_id);
@@ -439,13 +439,13 @@ PairHiddenMarkovModel::traceBack(
 
 /*----------------------------------------------------------------------------*/
 
-std::size_t PairHiddenMarkovModel::stateAlphabetSize() const {
+size_t PairHiddenMarkovModel::stateAlphabetSize() const {
   return _state_alphabet_size;
 }
 
 /*----------------------------------------------------------------------------*/
 
-std::size_t PairHiddenMarkovModel::observationAlphabetSize() const {
+size_t PairHiddenMarkovModel::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
 

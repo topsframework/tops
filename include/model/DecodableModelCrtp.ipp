@@ -32,11 +32,9 @@ namespace model {
 template<typename Derived>
 DecodableModelCrtp<Derived>::DecodableModelCrtp(
     std::vector<StatePtr> states,
-    DiscreteIIDModelPtr initial_probabilities,
-    unsigned int state_alphabet_size,
-    unsigned int observation_alphabet_size)
+    size_t state_alphabet_size,
+    size_t observation_alphabet_size)
     : _states(std::move(states)),
-      _initial_probabilities(initial_probabilities),
       _state_alphabet_size(state_alphabet_size),
       _observation_alphabet_size(observation_alphabet_size) {
 }
@@ -49,7 +47,7 @@ DecodableModelCrtp<Derived>::DecodableModelCrtp(
 
 template<typename Derived>
 TrainerPtr<Labeling, Derived>
-DecodableModelCrtp<Derived>::labelingTrainer() {
+DecodableModelCrtp<Derived>::supervisedTrainer() {
   return SimpleTrainer<Labeling, Derived>::make();
 }
 
@@ -57,7 +55,7 @@ DecodableModelCrtp<Derived>::labelingTrainer() {
 
 template<typename Derived>
 TrainerPtr<Labeling, Derived>
-DecodableModelCrtp<Derived>::labelingTrainer(DerivedPtr model) {
+DecodableModelCrtp<Derived>::supervisedTrainer(DerivedPtr model) {
   return FixedTrainer<Labeling, Derived>::make(model);
 }
 
@@ -66,7 +64,7 @@ DecodableModelCrtp<Derived>::labelingTrainer(DerivedPtr model) {
 template<typename Derived>
 template<typename Tag, typename... Args>
 TrainerPtr<Labeling, Derived>
-DecodableModelCrtp<Derived>::labelingTrainer(Tag, Args&&... args) {
+DecodableModelCrtp<Derived>::supervisedTrainer(Tag, Args&&... args) {
   return CachedTrainer<Labeling, Derived, Tag, Args...>::make(
     Tag{}, std::forward<Args>(args)...);
 }
@@ -142,21 +140,21 @@ CalculatorPtr DecodableModelCrtp<Derived>::calculator(
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-unsigned int DecodableModelCrtp<Derived>::stateAlphabetSize() const {
+size_t DecodableModelCrtp<Derived>::stateAlphabetSize() const {
   return _state_alphabet_size;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-unsigned int DecodableModelCrtp<Derived>::observationAlphabetSize() const {
+size_t DecodableModelCrtp<Derived>::observationAlphabetSize() const {
   return _observation_alphabet_size;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-auto DecodableModelCrtp<Derived>::state(unsigned int id) -> StatePtr {
+auto DecodableModelCrtp<Derived>::state(typename State::Id id) -> StatePtr {
   return _states[id];
 }
 

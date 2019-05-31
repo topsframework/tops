@@ -31,7 +31,7 @@ namespace exception {
 /*----------------------------------------------------------------------------*/
 
 NotYetImplemented::NotYetImplemented(const char* file,
-                                     unsigned int line,
+                                     size_t line,
                                      const char* func)
     : Exception(file, line, func, "Method not implemented") {
 }

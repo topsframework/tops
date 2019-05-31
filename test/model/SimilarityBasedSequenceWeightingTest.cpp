@@ -62,7 +62,7 @@ class ASBSW : public testing::Test {
   SimilarityBasedSequenceWeightingPtr sbsw;
 
   virtual void SetUp() {
-    std::map<Sequence, unsigned int> counter;
+    std::map<Sequence, size_t> counter;
     counter[{1, 1}] = 2;
     counter[{0, 0}] = 4;
     sbsw = SimilarityBasedSequenceWeighting::make(counter, 6, 0, 0,

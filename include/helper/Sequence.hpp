@@ -29,13 +29,13 @@
 namespace tops {
 namespace helper {
 
-model::Sequence generateRandomSequence(unsigned int size,
-                                       unsigned int alphabet_size);
+model::Sequence generateRandomSequence(size_t size,
+                                       size_t alphabet_size);
 
 model::Sequence sequenceOfLengths();
 
 std::vector<model::Sequence>
-generateAllCombinationsOfSymbols(unsigned int size);
+generateAllCombinationsOfSymbols(size_t size);
 
 }  // namespace helper
 }  // namespace tops

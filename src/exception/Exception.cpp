@@ -32,7 +32,7 @@ namespace exception {
 /*----------------------------------------------------------------------------*/
 
 Exception::Exception(const char* file,
-                     unsigned int line,
+                     size_t line,
                      const char* func,
                      std::string error_message) {
   std::stringstream ss;

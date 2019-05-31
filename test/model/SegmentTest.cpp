@@ -50,7 +50,7 @@ TEST(ASegment, ShouldBeGeneratedBySequences) {
   segments.push_back(Segment(0, 4, 6));
   Sequence s = {0, 0, 1, 1, 0, 0};
   auto x = Segment::readSequence(s);
-  for (unsigned int i = 0; i < segments.size(); i++) {
+  for (size_t i = 0; i < segments.size(); i++) {
     ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
     ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
     ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
@@ -62,7 +62,7 @@ TEST(ASegment, ShouldBeGeneratedBySequences) {
   segments.push_back(Segment(0, 4, 5));
   s = {0, 0, 1, 1, 0};
   x = Segment::readSequence(s);
-  for (unsigned int i = 0; i < segments.size(); i++) {
+  for (size_t i = 0; i < segments.size(); i++) {
     ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
     ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
     ASSERT_THAT(x[i].end(), Eq(segments[i].end()));
@@ -72,7 +72,7 @@ TEST(ASegment, ShouldBeGeneratedBySequences) {
   segments.push_back(Segment(0, 0, 2));
   s = {0, 0};
   x = Segment::readSequence(s);
-  for (unsigned int i = 0; i < segments.size(); i++) {
+  for (size_t i = 0; i < segments.size(); i++) {
     ASSERT_THAT(x[i].symbol(), Eq(segments[i].symbol()));
     ASSERT_THAT(x[i].begin(), Eq(segments[i].begin()));
     ASSERT_THAT(x[i].end(), Eq(segments[i].end()));

@@ -108,7 +108,7 @@ static void BM_DiscreteIIDModelTrainSmoothedHistogramStankeAlgorithm(
   while (state.KeepRunning())
     iid_trainer->train(
       DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
-      std::vector<unsigned int>{1}, 15000, 8, 0.5);
+      std::vector<size_t>{1}, 15000, 8, 0.5);
 }
 
 BENCHMARK(BM_DiscreteIIDModelTrainSmoothedHistogramStankeAlgorithm)->RangePair(

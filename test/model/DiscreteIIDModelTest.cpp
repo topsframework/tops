@@ -110,7 +110,7 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
 
   auto iid = iid_trainer->train(
     DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
-    std::vector<unsigned int>{1}, 15000, 8, 0.5);
+    std::vector<size_t>{1}, 15000, 8, 0.5);
 
   ASSERT_THAT(DOUBLE(iid->probabilityOf(4186)), DoubleNear(0.000059, 1e-04));
   ASSERT_THAT(DOUBLE(iid->probabilityOf(3312)), DoubleNear(0.000059, 1e-04));
@@ -159,7 +159,7 @@ TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithmWithAnEmptyDataSet) {
   auto iid = DiscreteIIDModel::standardTrainer(
                DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
-               std::vector<unsigned int>{1}, 15000, 8, 0.5)->train();
+               std::vector<size_t>{1}, 15000, 8, 0.5)->train();
 
   ASSERT_THAT(DOUBLE(iid->probabilityOf(4186)), DoubleEq(0));
   ASSERT_THAT(DOUBLE(iid->probabilityOf(3312)), DoubleEq(0));

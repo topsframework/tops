@@ -28,7 +28,7 @@ namespace exception {
 /*----------------------------------------------------------------------------*/
 
 InvalidModelDefinition::InvalidModelDefinition(const char* file,
-                                               unsigned int line,
+                                               size_t line,
                                                const char* func)
     : Exception(file, line, func, "Invalid model definition") {
 }

@@ -35,8 +35,8 @@ StateCrtp<E, T, D>::StateCrtp(
     EmissionModelPtr emission,
     TransitionModelPtr transition,
     DurationPtr duration,
-    std::pair<std::size_t, std::size_t> extensions,
-    std::pair<std::size_t, std::size_t> phases)
+    std::pair<size_t, size_t> extensions,
+    std::pair<size_t, size_t> phases)
     : _id(std::move(id)),
       _emission(std::move(emission)),
       _transition(std::move(transition)),
@@ -161,28 +161,28 @@ auto StateCrtp<E, T, D>::successors() const -> const std::vector<Id>& {
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
-std::size_t StateCrtp<E, T, D>::beginExtension() const {
+size_t StateCrtp<E, T, D>::beginExtension() const {
   return _extensions.first;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
-std::size_t StateCrtp<E, T, D>::endExtension() const {
+size_t StateCrtp<E, T, D>::endExtension() const {
   return _extensions.second;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
-std::size_t StateCrtp<E, T, D>::beginPhase() const {
+size_t StateCrtp<E, T, D>::beginPhase() const {
   return _phases.first;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename E, typename T, typename D>
-std::size_t StateCrtp<E, T, D>::endPhase() const {
+size_t StateCrtp<E, T, D>::endPhase() const {
   return _phases.second;
 }
 

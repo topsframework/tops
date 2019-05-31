@@ -110,7 +110,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, FindsTheBestPath) {
     { 0.00198263 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
   };
 
-  for (unsigned int t = 0; t < tests.size(); t++) {
+  for (size_t t = 0; t < tests.size(); t++) {
     auto [ estimation, label, alignment, _ ] = ghmm->viterbi(tests[t]);
 
     EXPECT_THAT(label, Eq(expected[t].label));
@@ -137,7 +137,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, DecodesASequenceOfObservations) {
     { 0.196082 , {0, 2, 2, 2, 2, 2, 2, 3} , tests[3], {} },
   };
 
-  for (unsigned int t = 0; t < tests.size(); t++) {
+  for (size_t t = 0; t < tests.size(); t++) {
     auto [ estimation, label, alignment, _ ] = ghmm->posteriorDecoding(tests[t]);
 
     EXPECT_THAT(label, Eq(expected[t].label));
@@ -150,7 +150,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, DecodesASequenceOfObservations) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AGeneralizedHiddenMarkovModel, DISABLED_ShouldDrawLabeledSequenceWithDefaultSeed) {
-  std::vector<std::size_t> tests = {
+  std::vector<size_t> tests = {
     0, 1, 2, 3, 4, 5
   };
 
@@ -165,7 +165,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, DISABLED_ShouldDrawLabeledSequenceWithDefa
 
   auto rng = RandomNumberGeneratorAdapter<std::mt19937>::make();
 
-  for (unsigned int i = 0; i < tests.size(); i++) {
+  for (size_t i = 0; i < tests.size(); i++) {
     auto [ label, alignment ] = ghmm->drawSequence(rng, tests[i]);
 
     EXPECT_THAT(label, ContainerEq(expected[i].label));
@@ -173,7 +173,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, DISABLED_ShouldDrawLabeledSequenceWithDefa
   }
 
   // for (auto size : { 4, 5, 6 }) {
-  //   for (unsigned int i = 0; i < 32; i++) {
+  //   for (size_t i = 0; i < 32; i++) {
   //     auto [ label, alignment ] = ghmm->drawSequence(rng, size);
   //     std::cerr << "    { ";
   //

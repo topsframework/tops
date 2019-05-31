@@ -41,10 +41,10 @@ namespace model {
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
-    std::map<Sequence, unsigned int> counter,
+    std::map<Sequence, size_t> counter,
     double normalizer,
-    unsigned int skip_offset,
-    unsigned int skip_length,
+    size_t skip_offset,
+    size_t skip_length,
     Sequence skip_sequence)
       : _counter(counter),
         _skip_offset(skip_offset),
@@ -60,14 +60,14 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
 SimilarityBasedSequenceWeightingPtr
 SimilarityBasedSequenceWeighting::train(TrainerPtr<Standard, Self> trainer,
                                         standard_training_algorithm,
-                                        unsigned int alphabet_size,
-                                        unsigned int skip_offset,
-                                        unsigned int skip_length,
+                                        size_t alphabet_size,
+                                        size_t skip_offset,
+                                        size_t skip_length,
                                         Sequence skip_sequence) {
   auto& training_set = trainer->training_set();
 
-  std::map<Sequence, unsigned int> counter;
-  auto min_length = std::numeric_limits<unsigned int>::max();
+  std::map<Sequence, size_t> counter;
+  auto min_length = std::numeric_limits<size_t>::max();
   for (const auto& training_sequence : training_set) {
     counter[training_sequence]++;
 
@@ -86,11 +86,11 @@ SimilarityBasedSequenceWeighting::train(TrainerPtr<Standard, Self> trainer,
 /*----------------------------------------------------------------------------*/
 
 double SimilarityBasedSequenceWeighting::calculate_normalizer(
-    unsigned int skip_length,
-    unsigned int skip_offset,
-    unsigned int max_length,
-    const std::map<Sequence, unsigned int>& counter,
-    unsigned int alphabet_size) {
+    size_t skip_length,
+    size_t skip_offset,
+    size_t max_length,
+    const std::map<Sequence, size_t>& counter,
+    size_t alphabet_size) {
   int npatterns_differ_1 = (alphabet_size-1) * (max_length - skip_length);
 
   double sum = 0.0;
@@ -98,14 +98,14 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
     auto count = count_pair1.second;
     sum += count;
 
-    unsigned int diff = 0;
-    unsigned int np_differ_1  = 0;
+    size_t diff = 0;
+    size_t np_differ_1  = 0;
 
     for (const auto& count_pair2 : counter) {
       const auto& a = count_pair1.first;
       const auto& b = count_pair2.first;
 
-      for (unsigned int i = 0; i < max_length; i++) {
+      for (size_t i = 0; i < max_length; i++) {
         if ((i >= skip_offset) && (i <= skip_offset + skip_length)) {
           if (a[i] != b[i]) {
             diff += 2;
@@ -131,8 +131,8 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 
 Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
     SEPtr<Standard> /* evaluator */,
-    unsigned int /* pos */,
-    unsigned int /* phase */) const {
+    size_t /* pos */,
+    size_t /* phase */) const {
   throw_exception(NotYetImplemented);
 }
 
@@ -140,15 +140,15 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
 
 Probability SimilarityBasedSequenceWeighting::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int /* phase */) const {
+    size_t begin,
+    size_t end,
+    size_t /* phase */) const {
   if (end > evaluator->sequence().size()) return 0;
 
-  unsigned int length = _counter.begin()->first.size();
+  size_t length = _counter.begin()->first.size();
 
   Sequence ss;
-  for (unsigned int i = begin; i < end && i < begin + length; i++)
+  for (size_t i = begin; i < end && i < begin + length; i++)
     ss.push_back(evaluator->sequence()[i]);
 
   double sum = 0;
@@ -157,7 +157,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
     if (ss.size() != weight.first.size()) return 0;
 
     bool valid = true;
-    for (unsigned int i = 0; i < weight.first.size(); i++) {
+    for (size_t i = 0; i < weight.first.size(); i++) {
       if ((i >= _skip_offset) && (i < _skip_offset + _skip_length)) {
         if (ss[i] != _skip_sequence[i - _skip_offset]) {
           valid = false;
@@ -185,14 +185,14 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void SimilarityBasedSequenceWeighting::initializeCache(
-    CEPtr<Standard> evaluator, unsigned int phase) {
+    CEPtr<Standard> evaluator, size_t phase) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(evaluator->sequence().size());
 
   auto sequence_size = evaluator->sequence().size();
   auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
 
-  for (unsigned int i = 0; i < sequence_size; i++)  {
+  for (size_t i = 0; i < sequence_size; i++)  {
     prefix_sum_array[i]
       = evaluateSequence(simple_evaluator, i, sequence_size, phase);
   }
@@ -202,8 +202,8 @@ void SimilarityBasedSequenceWeighting::initializeCache(
 
 Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
     CEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
@@ -211,9 +211,9 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
 
 Probability SimilarityBasedSequenceWeighting::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int /* end */,
-    unsigned int /* phase */) const {
+    size_t begin,
+    size_t /* end */,
+    size_t /* phase */) const {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   if (begin < prefix_sum_array.size())
     return prefix_sum_array[begin];
@@ -224,8 +224,8 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 
 Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
     SGPtr<Standard> /* generator */,
-    unsigned int /* pos */,
-    unsigned int /* phase */,
+    size_t /* pos */,
+    size_t /* phase */,
     const Sequence &/* context */) const {
   throw_exception(NotYetImplemented);
 }
@@ -234,8 +234,8 @@ Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
 
 Standard<Sequence> SimilarityBasedSequenceWeighting::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   return Base::drawSequence(generator, size, phase);
 }
 

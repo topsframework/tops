@@ -49,7 +49,7 @@ void SExprTranslator::translate(
 void SExprTranslator::translate(
     Ptr<model::ContextSensitiveHiddenMarkovModel> model) {
   _sexpr += "(ContextSensitiveHiddenMarkovModel: ";
-  for (unsigned int i = 0; i < model->stateAlphabetSize(); i++) {
+  for (size_t i = 0; i < model->stateAlphabetSize(); i++) {
     model->state(i)->serializer(make_shared())->serialize();
     _sexpr += " ";
   }
@@ -72,7 +72,7 @@ void SExprTranslator::translate(
 
 void SExprTranslator::translate(Ptr<model::HiddenMarkovModel> model) {
   _sexpr += "(HiddenMarkovModel: ";
-  for (unsigned int i = 0; i < model->stateAlphabetSize(); i++) {
+  for (size_t i = 0; i < model->stateAlphabetSize(); i++) {
     model->state(i)->serializer(make_shared())->serialize();
     _sexpr += " ";
   }

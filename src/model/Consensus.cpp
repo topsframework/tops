@@ -39,7 +39,7 @@ Consensus::Consensus(const Sequence& symbols)
 /*                             CONCRETE METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-bool Consensus::is(unsigned int symbol) const {
+bool Consensus::is(size_t symbol) const {
   return std::find(
     std::begin(_symbols), std::end(_symbols), symbol) != std::end(_symbols);
 }

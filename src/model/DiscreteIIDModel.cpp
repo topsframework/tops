@@ -45,8 +45,8 @@ DiscreteIIDModel::DiscreteIIDModel(std::vector<Probability> probabilities)
 DiscreteIIDModel::DiscreteIIDModel(std::vector<Probabilities> probabilities)
     : _probabilities(probabilities.size() * probabilities.size()),
       _alphabet_size(probabilities.size()) {
-  for (unsigned int i = 0; i < probabilities.size(); i++) {
-    for (unsigned int j = 0; j < probabilities[i].size(); j++) {
+  for (size_t i = 0; i < probabilities.size(); i++) {
+    for (size_t j = 0; j < probabilities[i].size(); j++) {
       _probabilities[i * _alphabet_size + j] = probabilities[i][j];
     }
   }
@@ -61,9 +61,9 @@ DiscreteIIDModel::DiscreteIIDModel(std::vector<Probabilities> probabilities)
 DiscreteIIDModelPtr
 DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
                         maximum_likehood_algorithm,
-                        unsigned int alphabet_size) {
-  std::vector<unsigned int> count(alphabet_size, 0);
-  unsigned int number_of_symbols = 0;
+                        size_t alphabet_size) {
+  std::vector<size_t> count(alphabet_size, 0);
+  size_t number_of_symbols = 0;
   for (const auto& sequence : trainer->training_set()) {
     for (const auto& symbol : sequence) {
       count[symbol]++;
@@ -87,7 +87,7 @@ DiscreteIIDModelPtr
 DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
                         smoothed_histogram_burge_algorithm,
                         double c,
-                        unsigned int max_length) {
+                        size_t max_length) {
   std::vector<Symbol> data;
 
   for (auto sequence : trainer->training_set())
@@ -109,12 +109,12 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
       counter[symbol] += 1.0;
   }
   double total = 0.0;
-  for (unsigned int k = 0; k < max_length; k++) {
-    unsigned int start = (k >= 10) ? (k - 10) : 0;
-    unsigned int end = (k + 10 < max_length) ? k + 10 : max_length - 1;
+  for (size_t k = 0; k < max_length; k++) {
+    size_t start = (k >= 10) ? (k - 10) : 0;
+    size_t end = (k + 10 < max_length) ? k + 10 : max_length - 1;
 
     sum[k] = 0.0;
-    for (unsigned int x = start; x < end; x++) {
+    for (size_t x = start; x < end; x++) {
       iter = counter.find(x);
       if (iter != counter.end() && iter->second > 0.0) {
         double nx = iter->second;
@@ -132,7 +132,7 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
   total /= 1 - max_length*epsilon;
 
   std::vector<double> prob(max_length);
-  for (unsigned int k = 0; k < max_length; k++) {
+  for (size_t k = 0; k < max_length; k++) {
     prob[k] = epsilon + sum[k]/total;
   }
 
@@ -144,40 +144,40 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
 DiscreteIIDModelPtr
 DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
                         smoothed_histogram_stanke_algorithm,
-                        std::vector<unsigned int> weights,
-                        unsigned int max_length,
-                        unsigned int m,
+                        std::vector<size_t> weights,
+                        size_t max_length,
+                        size_t m,
                         double slope) {
-  unsigned int L = max_length;
-  unsigned int max = L + 4 * slope * L;
+  size_t L = max_length;
+  size_t max = L + 4 * slope * L;
 
   std::vector<Symbol> data;
-  for (unsigned int i = 0; i < trainer->training_set().size(); i++)
+  for (size_t i = 0; i < trainer->training_set().size(); i++)
     for (auto symbol : trainer->training_set()[i])
-      for (unsigned int k = 0; k < weights[i]; k++)
+      for (size_t k = 0; k < weights[i]; k++)
         data.push_back(symbol);
 
   if (data.size() == 0)
     return DiscreteIIDModel::make(std::vector<Probability>{});
 
-  std::map<Symbol, unsigned int> counter;
+  std::map<Symbol, size_t> counter;
   std::vector<double> prob(L);
 
-  for (unsigned int i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     if (counter.find(data[i]) == counter.end())
       counter[data[i]] = 1;
     else
       counter[data[i]] += 1;
   }
 
-  unsigned int count_left = 0;
-  unsigned int count_right = 0;
+  size_t count_left = 0;
+  size_t count_right = 0;
 
-  for (unsigned int pos = 0; (pos < L) && (pos < max); pos++) {
+  for (size_t pos = 0; (pos < L) && (pos < max); pos++) {
     double tmp = std::floor(0.01 + slope/pow(L, 1.0/5.0) * pos);
-    unsigned int bwd = (tmp <= 0) ? 1 : static_cast<unsigned int>(tmp);
+    size_t bwd = (tmp <= 0) ? 1 : static_cast<size_t>(tmp);
 
-    for (unsigned int j = pos - bwd + 1; j <= pos + bwd -1; j++) {
+    for (size_t j = pos - bwd + 1; j <= pos + bwd -1; j++) {
       if (j >= L)
         continue;
       if (j <= pos)
@@ -198,7 +198,7 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
       prob[pos] += kernel_normal(0.0, bwd) * counter[pos];
 
     bool negligible = false;
-    unsigned int j = 1;
+    size_t j = 1;
 
     while (!negligible && (pos >= j || pos+j < L)) {
       double  wj = kernel_normal(j, bwd) * counter[pos];
@@ -227,7 +227,7 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
 DiscreteIIDModelPtr
 DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
                         smoothed_histogram_kernel_density_algorithm,
-                        unsigned int max_length) {
+                        size_t max_length) {
   std::vector<double> data;
   for (const auto& sequence : trainer->training_set()) {
     for (const auto& symbol : sequence) {
@@ -242,7 +242,7 @@ DiscreteIIDModel::train(TrainerPtr<Standard, DiscreteIIDModel> trainer,
 
   double bandwidth = sj_bandwidth(data);
 
-  for (unsigned int pos = 0; pos < max_length; pos++) {
+  for (size_t pos = 0; pos < max_length; pos++) {
     double max = kernel_density_estimation(pos+0.5, bandwidth, data);
     double min = kernel_density_estimation(pos-0.5, bandwidth, data);
 
@@ -368,7 +368,7 @@ void DiscreteIIDModel::band_phi4_bin(int n,
 
 double DiscreteIIDModel::mean(const std::vector<double>& data) {
   double sum = 0.0;
-  for (unsigned int i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     sum += data[i];
   }
   return sum/static_cast<double>(data.size());
@@ -379,7 +379,7 @@ double DiscreteIIDModel::mean(const std::vector<double>& data) {
 double DiscreteIIDModel::var(const std::vector<double>& data) {
   double data_mean = mean(data);
   double sum = 0.0;
-  for (unsigned int i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     sum += (data[i] - data_mean)*(data[i] - data_mean);
   }
   return sum/(static_cast<double>(data.size()) -1.0);
@@ -413,7 +413,7 @@ double DiscreteIIDModel::kernel_density_estimation(
     double bw,
     const std::vector<double>& data) {
   double result = 0.0;
-  for (unsigned int i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     double x_xi = static_cast<double>(x) - static_cast<double>(data[i]);
     result += epanechnikov(x_xi, bw);
   }
@@ -463,41 +463,41 @@ double DiscreteIIDModel::sj_bandwidth(const std::vector<double>& data) {
 /*===============================  EVALUATOR  ================================*/
 
 Probability DiscreteIIDModel::evaluateSymbol(SEPtr<Standard> evaluator,
-                                             unsigned int pos,
-                                             unsigned int /* phase */) const {
+                                             size_t pos,
+                                             size_t /* phase */) const {
   return probabilityOf(evaluator->sequence()[pos]);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability DiscreteIIDModel::evaluateSequence(SEPtr<Standard> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
   return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 void DiscreteIIDModel::initializeCache(CEPtr<Standard> evaluator,
-                                       unsigned int phase) {
+                                       size_t phase) {
   Base::initializeCache(evaluator, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability DiscreteIIDModel::evaluateSymbol(CEPtr<Standard> evaluator,
-                                             unsigned int pos,
-                                             unsigned int phase) const {
+                                             size_t pos,
+                                             size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 Probability DiscreteIIDModel::evaluateSequence(CEPtr<Standard> evaluator,
-                                               unsigned int begin,
-                                               unsigned int end,
-                                               unsigned int phase) const {
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
   return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
@@ -505,8 +505,8 @@ Probability DiscreteIIDModel::evaluateSequence(CEPtr<Standard> evaluator,
 
 Standard<Symbol> DiscreteIIDModel::drawSymbol(
     SGPtr<Standard> generator,
-    unsigned int /* pos */,
-    unsigned int /* phase */,
+    size_t /* pos */,
+    size_t /* phase */,
     const Sequence &/* context */) const {
   return draw(generator->randomNumberGenerator());
 }
@@ -514,8 +514,8 @@ Standard<Symbol> DiscreteIIDModel::drawSymbol(
 /*----------------------------------------------------------------------------*/
 
 Standard<Sequence> DiscreteIIDModel::drawSequence(SGPtr<Standard> generator,
-                                                  unsigned int size,
-                                                  unsigned int phase) const {
+                                                  size_t size,
+                                                  size_t phase) const {
   return Base::drawSequence(generator, size, phase);
 }
 
@@ -531,7 +531,7 @@ void DiscreteIIDModel::serialize(SSPtr serializer) {
 
 Symbol DiscreteIIDModel::draw(RandomNumberGeneratorPtr rng) const {
   double random = rng->generateDoubleInUnitInterval();
-  for (unsigned int symbol = 0; symbol < _probabilities.size(); symbol++) {
+  for (size_t symbol = 0; symbol < _probabilities.size(); symbol++) {
     random -= _probabilities[symbol];
     if (random <= 0)
       return symbol;

@@ -65,6 +65,35 @@ class DecodableModelCrtp
   using SelfPtr = DecodableModelCrtpPtr<Derived>;
   using DerivedPtr = std::shared_ptr<Derived>;
 
+  // Inner structs
+  struct Cache : Base::Cache {
+    Matrix alpha, beta, gamma, posterior_decoding;
+  };
+
+  template<typename Target>
+  struct GeneratorReturn {
+    Target label;
+    std::vector<Target> alignment;
+  };
+
+  struct LabelerReturn {
+    Probability estimation;
+    Sequence label;
+    Sequences alignment;
+    Matrix matrix;
+  };
+
+  struct CalculatorReturn {
+    Probability estimation;
+    Matrix matrix;
+  };
+
+  struct TraceBackReturn {
+    Sequence label;
+    Sequences alignment;
+  };
+
+  // Secretaries
   template<template<typename Target> class Decorator>
   using SEPtr = SimpleEvaluatorPtr<Decorator, Derived>;
   template<template<typename Target> class Decorator>
@@ -72,6 +101,8 @@ class DecodableModelCrtp
 
   template<template<typename Target> class Decorator>
   using SGPtr = SimpleGeneratorPtr<Decorator, Derived>;
+
+  using SSPtr = SimpleSerializerPtr<Derived>;
 
   using SLPtr = SimpleLabelerPtr<Derived>;
   using CLPtr = CachedLabelerPtr<Derived>;
@@ -83,10 +114,8 @@ class DecodableModelCrtp
   using State = typename StateTraits<Derived>::State;
   using StatePtr = std::shared_ptr<State>;
 
-  // Inner classes
-  struct Cache : Base::Cache {
-    Matrix alpha, beta, gamma, posterior_decoding;
-  };
+  using MatchState  = typename StateTraits<Derived>::MatchState;
+  using SilentState = typename StateTraits<Derived>::SilentState;
 
   // Hidden name method inheritance
   using Base::initializeCache;
@@ -98,32 +127,70 @@ class DecodableModelCrtp
 
   /*============================[ STATIC METHODS ]============================*/
 
-  /**
-   * Factory of Simple Trainers for supervised learning
-   * of Derived's parameters.
-   * @return New instance of TrainerPtr<Standard, Derived>
-   */
-  static TrainerPtr<Labeling, Derived> labelingTrainer();
+  /*------------------------------( Factories )-------------------------------*/
 
   /**
-   * Factory of Fixed Trainers for supervised learning
-   * of Derived's parameters.
+   * Factory of Simple Trainers for unsupervised learning of parameters.
+   * @return New instance of TrainerPtr<Alignment, Self>
+   */
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer() {
+    return SimpleTrainer<Alignment, Self>::make();
+  }
+
+  /**
+   * Factory of Fixed Trainers for unsupervised learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Alignment, Self>
    */
-  static TrainerPtr<Labeling, Derived> labelingTrainer(DerivedPtr model);
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(SelfPtr model) {
+    return FixedTrainer<Alignment, Self>::make(model);
+  }
 
   /**
-   * Factory of Cached Trainers for supervised learning
-   * of Derived's parameters.
+   * Factory of Cached Trainers for unsupervised learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Alignment, Self>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Labeling, Derived> labelingTrainer(Tag, Args&&... args);
+  static TrainerPtr<Alignment, Self> unsupervisedTrainer(
+      Tag /* training_algorithm_tag */, Args&&... args) {
+    return CachedTrainer<Alignment, Self, Tag, Args...>::make(
+        Tag{}, std::forward<Args>(args)...);
+  }
+
+  /**
+   * Factory of Simple Trainers for supervised learning of parameters.
+   * @return New instance of TrainerPtr<Standard, Derived>
+   */
+  static TrainerPtr<Labeling, Self> supervisedTrainer() {
+    return SimpleTrainer<Labeling, Self>::make();
+  }
+
+  /**
+   * Factory of Fixed Trainers for supervised learning of parameters.
+   * @param model Trained model with predefined parameters
+   * @return New instance of TrainerPtr<Standard, Self>
+   */
+  static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
+    return FixedTrainer<Labeling, Self>::make(model);
+  }
+
+  /**
+   * Factory of Cached Trainers for supervised learning of parameters.
+   * @param tag Tag representing the training algorithm
+   * @param params Parameters for the training algorithn chosen
+   * @return New instance of TrainerPtr<Standard, Self>
+   */
+  template<typename Tag, typename... Args>
+  static TrainerPtr<Labeling, Self> supervisedTrainer(
+      Tag /* training_algorithm_tag */, Args&&... args) {
+    return CachedTrainer<Labeling, Self, Tag, Args...>::make(
+        Tag{}, std::forward<Args>(args)...);
+  }
 
   /*==========================[ OVERRIDEN METHODS ]===========================*/
+
   /*---------------------------( Decodable Model )----------------------------*/
 
   EvaluatorPtr<Labeling>
@@ -150,11 +217,11 @@ class DecodableModelCrtp
 
   /*========================[ PURELY VIRTUAL METHODS ]========================*/
 
-  // SimpleEvaluator
+  /*---------------------------( SimpleEvaluator )----------------------------*/
 
   /**
    * Evaluates (given the trained model, returns the probability of)
-   * a labeled symbol of a SimpleEvaluator's labeled sequence
+   * a **labeled symbol** of a SimpleEvaluator's **labeled sequence**
    * (**without a cache**).
    * @param evaluator Instance of a SimpleEvaluator
    * @param pos Position within the full labeled sequence
@@ -162,12 +229,12 @@ class DecodableModelCrtp
    * @return \f$Pr(s[pos])\f$
    */
   virtual Probability evaluateSymbol(SEPtr<Labeling> evaluator,
-                                     unsigned int pos,
-                                     unsigned int phase) const = 0;
+                                     size_t pos,
+                                     size_t phase) const = 0;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
-   * a labeled subsequence of a SimpleEvaluator's labeled sequence
+   * a **labeled subsequence** of a SimpleEvaluator's **labeled sequence**
    * (**without a cache**).
    * @param evaluator Instance of a SimpleEvaluator
    * @param begin Position of the beginning of the labeled subsequence
@@ -176,11 +243,11 @@ class DecodableModelCrtp
    * @return \f$Pr(s[begin..end-1])\f$
    */
   virtual Probability evaluateSequence(SEPtr<Labeling> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const = 0;
+                                       size_t begin,
+                                       size_t end,
+                                       size_t phase) const = 0;
 
-  // CachedEvaluator
+  /*---------------------------( CachedEvaluator )----------------------------*/
 
   /**
    * Lazily initializes the cache of a CachedEvaluator.
@@ -188,11 +255,11 @@ class DecodableModelCrtp
    * @param phase Phase of the full labeled sequence
    */
   virtual void initializeCache(CEPtr<Labeling> evaluator,
-                               unsigned int phase) = 0;
+                               size_t phase) = 0;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
-   * a labeled symbol of a CachedEvaluator's labeled sequence
+   * a **labeled symbol** of a CachedEvaluator's **labeled sequence**
    * (**with a cache**).
    * @param evaluator Instance of a CachedEvaluator
    * @param pos Position within the full labeled sequence
@@ -200,12 +267,12 @@ class DecodableModelCrtp
    * @return \f$Pr(s[pos])\f$
    */
   virtual Probability evaluateSymbol(CEPtr<Labeling> evaluator,
-                                     unsigned int pos,
-                                     unsigned int phase) const = 0;
+                                     size_t pos,
+                                     size_t phase) const = 0;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
-   * a labeled subsequence of a CachedEvaluator's labeled sequence
+   * a **labeled subsequence** of a CachedEvaluator's **labeled sequence**
    * (**with a cache**).
    * @param evaluator Instance of a CachedEvaluator
    * @param begin Position of the beginning of the labeled subsequence
@@ -214,11 +281,11 @@ class DecodableModelCrtp
    * @return \f$Pr(s[begin..end-1])\f$
    */
   virtual Probability evaluateSequence(CEPtr<Labeling> evaluator,
-                                       unsigned int begin,
-                                       unsigned int end,
-                                       unsigned int phase) const = 0;
+                                       size_t begin,
+                                       size_t end,
+                                       size_t phase) const = 0;
 
-  // SimpleGenerator
+  /*---------------------------( SimpleGenerator )----------------------------*/
 
   /**
    * Draws (given the trained model, randomly choose) a labeled symbol
@@ -230,8 +297,8 @@ class DecodableModelCrtp
    * @return \f$x,\ x \in X\f$
    */
   virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
-                                      unsigned int pos,
-                                      unsigned int phase,
+                                      size_t pos,
+                                      size_t phase,
                                       const Sequence& context) const = 0;
 
   /**
@@ -243,10 +310,10 @@ class DecodableModelCrtp
    * @return \f$x,\ x \in X\f$
    */
   virtual Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
-                                          unsigned int size,
-                                          unsigned int phase) const = 0;
+                                          size_t size,
+                                          size_t phase) const = 0;
 
-  // SimpleLabeler
+  /*----------------------------( SimpleLabeler )-----------------------------*/
 
   /**
    * Labels (given the trained model, decide the best associated labels
@@ -259,13 +326,13 @@ class DecodableModelCrtp
   virtual Estimation<Labeling<Sequence>>
   labeling(SLPtr labeler, const Labeler::method& method) const = 0;
 
-  // CachedLabeler
+  /*----------------------------( CachedLabeler )-----------------------------*/
 
   /**
    * Lazily initializes the cache of a CachedLabeler.
    * @param labeler Instance of CachedLabeler
    */
-  virtual void initializeCache(CLPtr labeler) = 0;
+  virtual void initializeCache(CLPtr labeler);
 
   /**
    * Labels (given the trained model, decide the best associated labels
@@ -278,7 +345,7 @@ class DecodableModelCrtp
   virtual Estimation<Labeling<Sequence>>
   labeling(CLPtr labeler, const Labeler::method& method) const = 0;
 
-  // SimpleCalculator
+  /*---------------------------( SimpleCalculator )---------------------------*/
 
   /**
    * Calculates associated probabilities (given the model) of a
@@ -290,7 +357,7 @@ class DecodableModelCrtp
   virtual Probability
   calculate(SCPtr calculator, const Calculator::direction& direction) const = 0;
 
-  // CachedCalculator
+  /*---------------------------( CachedCalculator )---------------------------*/
 
   /**
    * Lazily initializes the cache of a CachedCalculator.
@@ -308,58 +375,53 @@ class DecodableModelCrtp
   virtual Probability
   calculate(CCPtr calculator, const Calculator::direction& direction) const = 0;
 
-  // Others
-  virtual void posteriorProbabilities(const Sequence& xs,
-                                      Matrix& probabilities) const = 0;
-
   /*============================[ VIRTUAL METHODS ]===========================*/
-
-  // Alphabet size
-
-  /**
-   * Gets the model's observation alphabet size.
-   * @return \f$|X|\f$
-   */
-  unsigned int observationAlphabetSize() const;
 
   /**
    * Gets the model's state alphabet size.
    * @return \f$|Y|\f$
    */
-  unsigned int stateAlphabetSize() const;
+  size_t stateAlphabetSize() const;
 
-  // States
+  /**
+   * Gets the model's observation alphabet size.
+   * @return \f$|X|\f$
+   */
+  size_t observationAlphabetSize() const;
 
   /**
    * Gets the state with a given ID.
    * @return \f$y_i\f$
    */
-  virtual StatePtr state(unsigned int id);
+  StatePtr state(typename State::Id id);
 
   /**
    * Gets a modifiable vector of std::shared_ptr<State>.
    * @return \f$Yf$
    */
-  virtual std::vector<StatePtr> states();
+  std::vector<StatePtr> states();
 
   /**
    * Gets a non-modifiable vector of std::shared_ptr<State>.
    * @return \f$Yf$
    */
-  virtual const std::vector<StatePtr> states() const;
+  const std::vector<StatePtr> states() const;
 
  protected:
   // Instance variables
   std::vector<StatePtr> _states;
-  DiscreteIIDModelPtr _initial_probabilities;
-  unsigned int _state_alphabet_size;
-  unsigned int _observation_alphabet_size;
+  size_t _state_alphabet_size;
+  size_t _observation_alphabet_size;
+
+  Symbol _gap = _observation_alphabet_size;
+
+  typename State::Id _begin_id = 0;
+  typename State::Id _end_id = _state_alphabet_size-1;
 
   // Constructors
   DecodableModelCrtp(std::vector<StatePtr> states,
-                     DiscreteIIDModelPtr _initial_probabilities,
-                     unsigned int state_alphabet_size,
-                     unsigned int observation_alphabet_size);
+                     size_t state_alphabet_size,
+                     size_t observation_alphabet_size);
 
  private:
   // Concrete methods

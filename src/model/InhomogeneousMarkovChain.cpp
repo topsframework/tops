@@ -50,14 +50,14 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
     TrainerPtr<Standard, Self> trainer,
     wam_algorithm,
-    unsigned int alphabet_size,
-    unsigned int order,
-    unsigned int length,
-    unsigned int offset,
-    unsigned int vicinity,
+    size_t alphabet_size,
+    size_t order,
+    size_t length,
+    size_t offset,
+    size_t vicinity,
     double pseudo_counts,
     Sequence fixed_sequence,
-    unsigned int fixed_sequence_position,
+    size_t fixed_sequence_position,
     std::vector<double> weights) {
 
   auto& sample_set = trainer->training_set();
@@ -87,7 +87,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
       for(int k = -vicinity; k <= static_cast<int>(vicinity); k++) {
         Sequence s;
         s.resize(o+1);
-        unsigned int l = 0;
+        size_t l = 0;
         int m = i - o + k + offset;
         if(m < 0)
           continue;
@@ -116,7 +116,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
       }
     }
 
-    if(fixseq && (fixed_pos <= static_cast<int>(i)) && (static_cast<unsigned long>(i) <= (fixed_pos + fixed.size() - 1))){
+    if(fixseq && (fixed_pos <= static_cast<int>(i)) && (static_cast<size_t>(i) <= (fixed_pos + fixed.size() - 1))){
       ContextTreePtr tree = ContextTree::make(alphabet_size);
       tree->initializeCounter(positionalSample, o, pseudo_counts, w);
       tree->normalize();
@@ -142,8 +142,8 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
 
 Probability
 InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
+                                         size_t pos,
+                                         size_t phase) const {
   return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
                       ->evaluateSymbol(pos);
 }
@@ -152,14 +152,14 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 
 Probability InhomogeneousMarkovChain::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int /*phase*/) const {
+    size_t begin,
+    size_t end,
+    size_t /*phase*/) const {
   if ((end - begin) > _vlmcs.size())
     return 0.0;
   auto t = 0u;
   Probability prob = 1;
-  for (unsigned int i = begin; i < end; i++) {
+  for (size_t i = begin; i < end; i++) {
     prob *= evaluator->evaluateSymbol(i, t);
     t++;
   }
@@ -169,7 +169,7 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
-                                               unsigned int /*phase*/) {
+                                               size_t /*phase*/) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(_vlmcs.size());
   for (auto k = 0u; k < _vlmcs.size(); k++) {
@@ -186,8 +186,8 @@ void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
 
 Probability
 InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
-                                         unsigned int pos,
-                                         unsigned int phase) const {
+                                         size_t pos,
+                                         size_t phase) const {
   return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
                       ->evaluateSymbol(pos);
 }
@@ -196,9 +196,9 @@ InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 
 Probability InhomogeneousMarkovChain::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   if ((end - begin) > _vlmcs.size())
     return 0.0;
 
@@ -217,8 +217,8 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
 
 Standard<Symbol>
 InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                     unsigned int pos,
-                                     unsigned int phase,
+                                     size_t pos,
+                                     size_t phase,
                                      const Sequence& context) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
@@ -233,8 +233,8 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 Standard<Sequence> InhomogeneousMarkovChain::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   return Base::drawSequence(generator, size, phase);
 }
 
@@ -248,7 +248,7 @@ void InhomogeneousMarkovChain::serialize(SSPtr serializer) {
 /*                             VIRTUAL METHODS                                */
 /*----------------------------------------------------------------------------*/
 
-unsigned int InhomogeneousMarkovChain::maximumTimeValue() {
+size_t InhomogeneousMarkovChain::maximumTimeValue() {
   return _vlmcs.size();
 }
 

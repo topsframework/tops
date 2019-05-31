@@ -30,48 +30,48 @@ namespace model {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T, std::size_t d, bool... gaps>
+template<typename E, typename T, size_t d, bool... gaps>
 SimpleState<E, T, d, gaps...>::SimpleState(
     Id id,
     EmissionModelPtr emission,
     TransitionModelPtr transition,
     DurationPtr duration,
-    std::pair<std::size_t, std::size_t> extensions,
-    std::pair<std::size_t, std::size_t> phases)
+    std::pair<size_t, size_t> extensions,
+    std::pair<size_t, size_t> phases)
     : Base(id, emission, transition, duration, extensions, phases),
       _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T, std::size_t d, bool... gaps>
+template<typename E, typename T, size_t d, bool... gaps>
 SimpleState<E, T, d, gaps...>::SimpleState(
     Id id,
     EmissionModelPtr emission,
     TransitionModelPtr transition,
-    std::pair<std::size_t, std::size_t> extensions,
-    std::pair<std::size_t, std::size_t> phases)
+    std::pair<size_t, size_t> extensions,
+    std::pair<size_t, size_t> phases)
     : Base(id, emission, transition, FixedDuration::make(1), extensions, phases),
       _gaps{ gaps... } {
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T, std::size_t d, bool... gaps>
+template<typename E, typename T, size_t d, bool... gaps>
 bool SimpleState<E, T, d, gaps...>::isSilent() const {
   return (... && gaps);
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T, std::size_t d, bool... gaps>
+template<typename E, typename T, size_t d, bool... gaps>
 bool SimpleState<E, T, d, gaps...>::hasGap(Dimension dim) const {
   return _gaps.at(dim);
 }
 
 /*----------------------------------------------------------------------------*/
 
-template<typename E, typename T, std::size_t d, bool... gaps>
+template<typename E, typename T, size_t d, bool... gaps>
 auto SimpleState<E, T, d, gaps...>::delta(Dimension dim) const
     -> Position {
   return hasGap(dim) ? 0 : 1;

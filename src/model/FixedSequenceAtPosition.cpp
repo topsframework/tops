@@ -46,8 +46,8 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
 
 Probability FixedSequenceAtPosition::evaluateSymbol(
     SEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
   return modelEvaluator->evaluateSymbol(pos, phase);
 }
@@ -56,9 +56,9 @@ Probability FixedSequenceAtPosition::evaluateSymbol(
 
 Probability FixedSequenceAtPosition::evaluateSequence(
     SEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
   auto result = modelEvaluator->evaluateSequence(begin, end, phase);
 
@@ -80,7 +80,7 @@ Probability FixedSequenceAtPosition::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void FixedSequenceAtPosition::initializeCache(CEPtr<Standard> evaluator,
-                                              unsigned int phase) {
+                                              size_t phase) {
   Base::initializeCache(evaluator, phase);
 }
 
@@ -88,8 +88,8 @@ void FixedSequenceAtPosition::initializeCache(CEPtr<Standard> evaluator,
 
 Probability FixedSequenceAtPosition::evaluateSymbol(
     CEPtr<Standard> evaluator,
-    unsigned int pos,
-    unsigned int phase) const {
+    size_t pos,
+    size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
 }
 
@@ -97,9 +97,9 @@ Probability FixedSequenceAtPosition::evaluateSymbol(
 
 Probability FixedSequenceAtPosition::evaluateSequence(
     CEPtr<Standard> evaluator,
-    unsigned int begin,
-    unsigned int end,
-    unsigned int phase) const {
+    size_t begin,
+    size_t end,
+    size_t phase) const {
   return Base::evaluateSequence(evaluator, begin, end, phase);
 }
 
@@ -107,8 +107,8 @@ Probability FixedSequenceAtPosition::evaluateSequence(
 
 Standard<Symbol> FixedSequenceAtPosition::drawSymbol(
     SGPtr<Standard> generator,
-    unsigned int pos,
-    unsigned int phase,
+    size_t pos,
+    size_t phase,
     const Sequence &context) const {
   auto modelGenerator
     = _model->standardGenerator(generator->randomNumberGenerator());
@@ -119,8 +119,8 @@ Standard<Symbol> FixedSequenceAtPosition::drawSymbol(
 
 Standard<Sequence> FixedSequenceAtPosition::drawSequence(
     SGPtr<Standard> generator,
-    unsigned int size,
-    unsigned int phase) const {
+    size_t size,
+    size_t phase) const {
   auto model_generator
     = _model->standardGenerator(generator->randomNumberGenerator());
   auto sequence = model_generator->drawSequence(size, phase);
