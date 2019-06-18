@@ -25,8 +25,11 @@
 #include <utility>
 
 // Internal headers
+#include "model/Symbol.hpp"
+#include "model/Multiple.hpp"
 #include "model/Sequence.hpp"
 #include "model/Calculator.hpp"
+#include "model/Probability.hpp"
 
 namespace tops {
 namespace model {
@@ -67,39 +70,22 @@ class SimpleCalculator : public Calculator {
     CALL_MEMBER_FUNCTION_DELEGATOR(calculate, dir);
   }
 
-  Sequence& sequence() override {
+  Multiple<Sequence>& sequence() override {
     return _sequence;
   }
 
-  const Sequence& sequence() const override {
+  const Multiple<Sequence>& sequence() const override {
     return _sequence;
-  }
-
-  std::vector<Sequence>& other_sequences() override {
-    return _other_sequences;
-  }
-
-  const std::vector<Sequence>& other_sequences() const override {
-    return _other_sequences;
   }
 
  protected:
   // Instace variables
   ModelPtr _model;
-  Sequence _sequence;
-  std::vector<Sequence> _other_sequences;
+  Multiple<Sequence> _sequence;
 
   // Constructors
-  SimpleCalculator(ModelPtr model, Sequence sequence)
+  SimpleCalculator(ModelPtr model, Multiple<Sequence> sequence)
       : _model(std::move(model)), _sequence(std::move(sequence)) {
-  }
-
-  SimpleCalculator(ModelPtr model,
-                   Sequence sequence,
-                   std::vector<Sequence> other_sequences)
-      : _model(std::move(model)),
-        _sequence(std::move(sequence)),
-        _other_sequences(std::move(other_sequences)) {
   }
 
  private:

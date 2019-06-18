@@ -58,7 +58,7 @@ ContextSensitiveHiddenMarkovModel::ContextSensitiveHiddenMarkovModel(
 
 ContextSensitiveHiddenMarkovModelPtr
 ContextSensitiveHiddenMarkovModel::train(
-    const TrainerPtr<Alignment, Self>& trainer,
+    const TrainerPtr<Multiple, Self>& trainer,
     baum_welch_algorithm /* tag */,
     const ContextSensitiveHiddenMarkovModelPtr& initial_model,
     size_t max_iterations,
@@ -171,16 +171,15 @@ ContextSensitiveHiddenMarkovModel::train(
                            model->stateAlphabetSize(),
                            model->observationAlphabetSize());
 
-  for (const auto& [ observation, other_observations, label ]
-      : trainer->training_set()) {
+  for (const auto& [ observations, label ] : trainer->training_set()) {
     // Add contribution of the given sequences to matrix A
-    for (size_t i = 0; i <= observation.size(); i++) {
+    for (size_t i = 0; i <= observations[0].size(); i++) {
       A[label[i]][label[i+1]] += 1;
     }
 
     // Add contribution of the given sequences to matrix E
-    for (size_t i = 0; i < observation.size(); i++) {
-      E[label[i+1]][observation[i]] += 1;
+    for (size_t i = 0; i < observations[0].size(); i++) {
+      E[label[i+1]][observations[0][i]] += 1;
     }
   }
 
@@ -217,9 +216,9 @@ ContextSensitiveHiddenMarkovModel::drawSymbol(
   assert(!context.empty() && context[0] == _begin_id);
 
   Symbol label = _states[context[pos-1]]->transition()->draw(rng);
-  Symbols alignment = { _states[label]->emission()->draw(rng) };
+  Multiple<Symbol> symbols = { _states[label]->emission()->draw(rng) };
 
-  return { label, alignment };
+  return { label, symbols };
 }
 
 /*----------------------------------------------------------------------------*/
@@ -228,7 +227,7 @@ typename ContextSensitiveHiddenMarkovModel::GeneratorReturn<Sequence>
 ContextSensitiveHiddenMarkovModel::drawSequence(
     const RandomNumberGeneratorPtr& rng,
     size_t size) const {
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
   Sequence label;
 
   label.push_back(_begin_id);
@@ -250,7 +249,7 @@ ContextSensitiveHiddenMarkovModel::drawSequence(
 /*================================  LABELER  =================================*/
 
 typename ContextSensitiveHiddenMarkovModel::LabelerReturn
-ContextSensitiveHiddenMarkovModel::viterbi(const Sequences& sequences) const {
+ContextSensitiveHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto gammas = make_multiarray(
@@ -297,7 +296,7 @@ ContextSensitiveHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
 typename ContextSensitiveHiddenMarkovModel::LabelerReturn
 ContextSensitiveHiddenMarkovModel::posteriorDecoding(
-    const Sequences& sequences) const {
+    const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto posteriors = make_multiarray(
@@ -345,7 +344,7 @@ ContextSensitiveHiddenMarkovModel::posteriorDecoding(
 /*----------------------------------------------------------------------------*/
 
 typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
-ContextSensitiveHiddenMarkovModel::forward(const Sequences& sequences) const {
+ContextSensitiveHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto alphas = make_multiarray(
@@ -380,7 +379,7 @@ ContextSensitiveHiddenMarkovModel::forward(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
-ContextSensitiveHiddenMarkovModel::backward(const Sequences& sequences) const {
+ContextSensitiveHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto betas = make_multiarray(
@@ -417,10 +416,10 @@ ContextSensitiveHiddenMarkovModel::backward(const Sequences& sequences) const {
 
 typename ContextSensitiveHiddenMarkovModel::TraceBackReturn
 ContextSensitiveHiddenMarkovModel::traceBack(
-    const Sequences& sequences,
+    const Multiple<Sequence>& sequences,
     const MultiArray<typename State::Id, 2>& psi) const {
   Sequence label;
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
 
   // Initialization
   auto best_id = psi[_end_id][sequences[0].size()];

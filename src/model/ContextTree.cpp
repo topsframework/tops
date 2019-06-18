@@ -186,7 +186,7 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
       s3.push_back(l);
 
       Probability prob
-        = old->standardEvaluator(s3)->evaluateSymbol(s3.size()-1);
+        = old->standardEvaluator({ s3 })->evaluateSymbol(s3.size()-1);
 
       probs[l] = (_all_context[i]->getCounter()[l] + pseudocount * prob)
                   / (total + pseudocount);
@@ -198,18 +198,20 @@ void ContextTree::normalize(ProbabilisticModelPtr old, double pseudocount) {
 
 /*----------------------------------------------------------------------------*/
 
-void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
-                                  int order,
-                                  const std::vector<double>& weights) {
-  initializeCounter(sequences, order, 0, weights);
+void ContextTree::initializeCounter(
+    const std::vector<Multiple<Sequence>>& training_set,
+    int order,
+    const std::vector<double>& weights) {
+  initializeCounter(training_set, order, 0, weights);
 }
 
 /*----------------------------------------------------------------------------*/
 
-void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
-                                    int order,
-                                    double pseudocounts,
-                                    const std::vector<double>& weights) {
+void ContextTree::initializeCounter(
+    const std::vector<Multiple<Sequence>>& training_set,
+    int order,
+    double pseudocounts,
+    const std::vector<double>& weights) {
   if (order < 0)
     order = 0;
 
@@ -220,10 +222,10 @@ void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
     }
   }
 
-  for (int l = 0; l < static_cast<int>(sequences.size()); l ++) {
+  for (int l = 0; l < static_cast<int>(training_set.size()); l ++) {
     double weight = weights[l];
-    for (int i = order; i < static_cast<int>(sequences[l].size()); i++) {
-      int currentSymbol = sequences[l][i];
+    for (int i = order; i < static_cast<int>(training_set[l][0].size()); i++) {
+      int currentSymbol = training_set[l][0][i];
       int j = i - 1;
 
       ContextTreeNodePtr w = getRoot();
@@ -231,7 +233,7 @@ void ContextTree::initializeCounter(const std::vector<Sequence>& sequences,
       w->addCount(currentSymbol, weight);
 
       while ((j >= 0) &&  ((i - j) <= order)) {
-        int symbol = sequences[l][j];
+        int symbol = training_set[l][0][j];
         if ((w->getChild(symbol) == NULL) || w->isLeaf()) {
           ContextTreeNodePtr c2 = createContext();
           w->setChild(c2, symbol);
@@ -361,14 +363,14 @@ void ContextTree::pruneTree(double delta) {
 /*----------------------------------------------------------------------------*/
 
 void ContextTree::initializeContextTreeRissanen(
-    const std::vector<Sequence>& sequences) {
+    const std::vector<Multiple<Sequence>>& training_set) {
   ContextTreeNodePtr root = createContext();
   for (int i = 0; i < static_cast<int>(_alphabet_size); i++)
     root->addCount(i);
 
-  for (int s = 0; s < static_cast<int>(sequences.size()); s++) {
-    for (int i = 0; i < static_cast<int>(sequences[s].size()); i++) {
-      int v = sequences[s][i];
+  for (int s = 0; s < static_cast<int>(training_set.size()); s++) {
+    for (int i = 0; i < static_cast<int>(training_set[s][0].size()); i++) {
+      int v = training_set[s][0][i];
       ContextTreeNodePtr w = root;
       if ((!w->isLeaf()) && ((w->getCounter())[v] == 1.0)) {
         for (int l = 0; l < static_cast<int>(_alphabet_size); l++) {
@@ -391,7 +393,7 @@ void ContextTree::initializeContextTreeRissanen(
       if (j < 0)
         w->addCount(v);
       while (j >= 0) {
-        int u = sequences[s][j];
+        int u = training_set[s][0][j];
         w->addCount(v);
         w = w->getChild(u);
         if ((!w->isLeaf()) && (w->getCounter())[v] == 1.0) {

@@ -77,42 +77,42 @@ class ASBSW : public testing::Test {
 TEST(SBSW, ShouldBeTrained) {
   auto sbsw_trainer = SimilarityBasedSequenceWeighting::standardTrainer();
 
-  sbsw_trainer->add_training_set({{1, 1},
-                                  {0, 1},
-                                  {1, 1},
-                                  {0, 0},
-                                  {1, 1}});
+  sbsw_trainer->add_training_set({{{1, 1}},
+                                  {{0, 1}},
+                                  {{1, 1}},
+                                  {{0, 0}},
+                                  {{1, 1}}});
 
   auto sbsw = sbsw_trainer->train(
     SimilarityBasedSequenceWeighting::standard_training_algorithm{},
     2, 0, 0, Sequence{});
 
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({0})->evaluateSequence(0, 1)),
+      DOUBLE(sbsw->standardEvaluator({{0}})->evaluateSequence(0, 1)),
       DoubleEq(0));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1})->evaluateSequence(0, 1)),
+      DOUBLE(sbsw->standardEvaluator({{1}})->evaluateSequence(0, 1)),
       DoubleEq(0));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
+      DOUBLE(sbsw->standardEvaluator({{0, 1}})->evaluateSequence(0, 2)),
       DoubleNear(0.200519, 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
+      DOUBLE(sbsw->standardEvaluator({{0, 0}})->evaluateSequence(0, 2)),
       DoubleNear(0.19992 , 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
+      DOUBLE(sbsw->standardEvaluator({{1, 0}})->evaluateSequence(0, 2)),
       DoubleNear(0.000799, 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
+      DOUBLE(sbsw->standardEvaluator({{1, 1}})->evaluateSequence(0, 2)),
       DoubleNear(0.599361, 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
+      DOUBLE(sbsw->standardEvaluator({{1, 0, 1}})->evaluateSequence(0, 3)),
       DoubleNear(0.000788, 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4)),
+      DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0}})->evaluateSequence(0, 4)),
       DoubleNear(0.000788, 1e-4));
   ASSERT_THAT(
-      DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+      DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
                  ->evaluateSequence(0, 13)),
              DoubleNear(0.000788, 1e-4));
 }
@@ -123,31 +123,31 @@ TEST(SBSW, ShouldBeTrained) {
 
 TEST_F(ASBSW, ShouldEvaluateASequence) {
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({0})->evaluateSequence(0, 1)),
+    DOUBLE(sbsw->standardEvaluator({{0}})->evaluateSequence(0, 1)),
            DoubleEq(0));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1})->evaluateSequence(0, 1)),
+    DOUBLE(sbsw->standardEvaluator({{1}})->evaluateSequence(0, 1)),
            DoubleEq(0));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
+    DOUBLE(sbsw->standardEvaluator({{0, 1}})->evaluateSequence(0, 2)),
            DoubleNear(0.0009999, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
+    DOUBLE(sbsw->standardEvaluator({{0, 0}})->evaluateSequence(0, 2)),
            DoubleNear(0.6666667, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
+    DOUBLE(sbsw->standardEvaluator({{1, 0}})->evaluateSequence(0, 2)),
            DoubleNear(0.0009999, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
+    DOUBLE(sbsw->standardEvaluator({{1, 1}})->evaluateSequence(0, 2)),
            DoubleNear(0.3333341, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
+    DOUBLE(sbsw->standardEvaluator({{1, 0, 1}})->evaluateSequence(0, 3)),
            DoubleNear(0.0009999, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0})->evaluateSequence(0, 4)),
+    DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0}})->evaluateSequence(0, 4)),
            DoubleNear(0.0009999, 1e-4));
   ASSERT_THAT(
-    DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+    DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
                ->evaluateSequence(0, 13)),
            DoubleNear(0.0009999, 1e-4));
 }
@@ -155,32 +155,32 @@ TEST_F(ASBSW, ShouldEvaluateASequence) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ASBSW, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({0}, true)
+  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({{0}}, true)
                          ->evaluateSequence(0, 1)),
-              DoubleNear(DOUBLE(sbsw->standardEvaluator({0})
+              DoubleNear(DOUBLE(sbsw->standardEvaluator({{0}})
                                     ->evaluateSequence(0, 1)), 1e-4));
 
-  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({0, 1}, true)
+  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({{0, 1}}, true)
                          ->evaluateSequence(0, 2)),
-              DoubleNear(DOUBLE(sbsw->standardEvaluator({0, 1})
+              DoubleNear(DOUBLE(sbsw->standardEvaluator({{0, 1}})
                                     ->evaluateSequence(0, 2)), 1e-4));
 
-  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({1, 0, 1}, true)
+  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({{1, 0, 1}}, true)
                          ->evaluateSequence(0, 3)),
-              DoubleNear(DOUBLE(sbsw->standardEvaluator({1, 0, 1})
+              DoubleNear(DOUBLE(sbsw->standardEvaluator({{1, 0, 1}})
                                     ->evaluateSequence(0, 3)), 1e-4));
 
-  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0}, true)
+  ASSERT_THAT(DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0}}, true)
                          ->evaluateSequence(0, 4)),
-              DoubleNear(DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0})
+              DoubleNear(DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0}})
                                     ->evaluateSequence(0, 4)), 1e-4));
 
   ASSERT_THAT(
     DOUBLE(
-      sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, true)
+      sbsw->standardEvaluator({{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, true)
           ->evaluateSequence(0, 13)),
     DoubleNear(
-      DOUBLE(sbsw->standardEvaluator({1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+      DOUBLE(sbsw->standardEvaluator({{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
                  ->evaluateSequence(0, 13)), 1e-4));
 }
 

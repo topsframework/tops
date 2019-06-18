@@ -71,7 +71,7 @@ class AMultipleSequentialModel : public testing::Test {
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
   ASSERT_THAT(
-      DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0})
+      DOUBLE(mm->standardEvaluator({{1, 0, 1, 0, 0, 0, 0}})
                ->evaluateSequence(0, 7)),
       DoubleNear(0.0001024, 1e-4));
 }
@@ -79,9 +79,9 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequence) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
-  ASSERT_THAT(DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0}, true)
+  ASSERT_THAT(DOUBLE(mm->standardEvaluator({{1, 0, 1, 0, 0, 0, 0}}, true)
                        ->evaluateSequence(0, 7)),
-              DoubleNear(DOUBLE(mm->standardEvaluator({1, 0, 1, 0, 0, 0, 0})
+              DoubleNear(DOUBLE(mm->standardEvaluator({{1, 0, 1, 0, 0, 0, 0}})
                                   ->evaluateSequence(0, 7)), 1e-4));
 }
 
@@ -89,7 +89,7 @@ TEST_F(AMultipleSequentialModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(AMultipleSequentialModel, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(mm->standardGenerator()->drawSequence(5),
+  ASSERT_THAT(mm->standardGenerator()->drawSequence(5)[0],
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 

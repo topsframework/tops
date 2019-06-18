@@ -45,7 +45,7 @@ FixedSequenceAtPosition::FixedSequenceAtPosition(ProbabilisticModelPtr model,
 /*==============================  EVALUATOR  =================================*/
 
 Probability FixedSequenceAtPosition::evaluateSymbol(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
   auto modelEvaluator = _model->standardEvaluator(evaluator->sequence());
@@ -55,7 +55,7 @@ Probability FixedSequenceAtPosition::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability FixedSequenceAtPosition::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -67,7 +67,7 @@ Probability FixedSequenceAtPosition::evaluateSequence(
        (j < static_cast<int>(_sequence.size()))
        && ((_position  + j) < static_cast<int>(evaluator->sequence().size()));
        j++) {
-    if (_sequence[j] != evaluator->sequence()[_position + j] )
+    if (_sequence[j] != evaluator->sequence()[0][_position + j] )
       break;
   }
   if (j != static_cast<int>(_sequence.size()))
@@ -79,7 +79,7 @@ Probability FixedSequenceAtPosition::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-void FixedSequenceAtPosition::initializeCache(CEPtr<Standard> evaluator,
+void FixedSequenceAtPosition::initializeCache(CEPtr<Multiple> evaluator,
                                               size_t phase) {
   Base::initializeCache(evaluator, phase);
 }
@@ -87,7 +87,7 @@ void FixedSequenceAtPosition::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability FixedSequenceAtPosition::evaluateSymbol(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
@@ -96,7 +96,7 @@ Probability FixedSequenceAtPosition::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability FixedSequenceAtPosition::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -105,11 +105,11 @@ Probability FixedSequenceAtPosition::evaluateSequence(
 
 /*==============================  GENERATOR  =================================*/
 
-Standard<Symbol> FixedSequenceAtPosition::drawSymbol(
-    SGPtr<Standard> generator,
+Multiple<Symbol> FixedSequenceAtPosition::drawSymbol(
+    SGPtr<Multiple> generator,
     size_t pos,
     size_t phase,
-    const Sequence &context) const {
+    const Multiple<Sequence> &context) const {
   auto modelGenerator
     = _model->standardGenerator(generator->randomNumberGenerator());
   return modelGenerator->drawSymbol(pos, phase, context);
@@ -117,16 +117,17 @@ Standard<Symbol> FixedSequenceAtPosition::drawSymbol(
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> FixedSequenceAtPosition::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> FixedSequenceAtPosition::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
   auto model_generator
     = _model->standardGenerator(generator->randomNumberGenerator());
-  auto sequence = model_generator->drawSequence(size, phase);
 
-  addSequence(sequence);
-  return sequence;
+  auto sequences = model_generator->drawSequence(size, phase);
+
+  addSequence(sequences[0]);
+  return sequences;
 }
 
 /*===============================  SERIALIZER  ===============================*/

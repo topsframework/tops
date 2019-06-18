@@ -81,20 +81,27 @@ class AnInhomogeneousMarkovChain : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequence) {
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0})->evaluateSequence(0, 1)),
-              DoubleEq(0.50));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1})->evaluateSequence(0, 1)),
-              DoubleEq(0.50));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.90));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.10));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.50));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.50 * 0.50));
-  ASSERT_THAT(DOUBLE(imc->standardEvaluator({1, 0, 1})->evaluateSequence(0, 3)),
-              DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{0}})->evaluateSequence(0, 1)),
+      DoubleEq(0.50));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{1}})->evaluateSequence(0, 1)),
+      DoubleEq(0.50));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{0, 1}})->evaluateSequence(0, 2)),
+      DoubleEq(0.50 * 0.90));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{0, 0}})->evaluateSequence(0, 2)),
+      DoubleEq(0.50 * 0.10));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{1, 0}})->evaluateSequence(0, 2)),
+      DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{1, 1}})->evaluateSequence(0, 2)),
+      DoubleEq(0.50 * 0.50));
+  ASSERT_THAT(
+      DOUBLE(imc->standardEvaluator({{1, 0, 1}})->evaluateSequence(0, 3)),
+      DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -104,15 +111,15 @@ TEST_F(AnInhomogeneousMarkovChain, ShouldEvaluateASequenceWithPrefixSumArray) {
     auto data = generateRandomSequence(i, 2);
     auto size = data.size();
     ASSERT_THAT(
-        DOUBLE(imc->standardEvaluator(data, true)->evaluateSequence(0, size)),
-        DoubleEq(imc->standardEvaluator(data)->evaluateSequence(0, size)));
+      DOUBLE(imc->standardEvaluator({ data }, true)->evaluateSequence(0, size)),
+      DoubleEq(imc->standardEvaluator({ data })->evaluateSequence(0, size)));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AnInhomogeneousMarkovChain, ShouldChooseSequenceWithDefaultSeed) {
-  ASSERT_THAT(imc->standardGenerator()->drawSequence(2),
+  ASSERT_THAT(imc->standardGenerator()->drawSequence(2)[0],
               ContainerEq(Sequence{ 0, 1 }));
 }
 

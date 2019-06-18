@@ -29,6 +29,7 @@
 // ToPS headers
 #include "model/Util.hpp"
 #include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
 #include "model/Probability.hpp"
 #include "model/RandomNumberGeneratorAdapter.hpp"
 
@@ -54,15 +55,15 @@ using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Sequence;
-using tops::model::Sequences;
+using tops::model::Multiple;
 using tops::model::PairHiddenMarkovModel;
 using tops::model::PairHiddenMarkovModelPtr;
 using tops::model::RandomNumberGeneratorAdapter;
 
 using tops::exception::NotYetImplemented;
 
-using tops::helper::createGlobalAlignmentPairHMM;
-using tops::helper::createUntrainedGlobalAlignmentPairHMM;
+using tops::helper::createGlobalMultiplePairHMM;
+using tops::helper::createUntrainedGlobalMultiplePairHMM;
 
 /*----------------------------------------------------------------------------*/
 /*                                  FIXTURES                                  */
@@ -70,7 +71,7 @@ using tops::helper::createUntrainedGlobalAlignmentPairHMM;
 
 class APairHiddenMarkovModel : public testing::Test {
  protected:
-  PairHiddenMarkovModelPtr phmm = createGlobalAlignmentPairHMM();
+  PairHiddenMarkovModelPtr phmm = createGlobalMultiplePairHMM();
 };
 
 /*----------------------------------------------------------------------------*/
@@ -81,7 +82,7 @@ TEST(PairHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
   auto phmm_trainer = PairHiddenMarkovModel::unsupervisedTrainer();
 
   phmm_trainer->add_training_set({
-    // Sequences with size 4 to 6 generated with default seed
+    // Multiple<Sequence> with size 4 to 6 generated with default seed
     // Empty spaces indicate gaps in the sequence
 
     { { 1, 1, 1, 1, }, { 1, 0, 1,    } },  // { 0, 1, 1, 1, 3, 4, }
@@ -186,7 +187,7 @@ TEST(PairHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
 
   auto trained_phmm = phmm_trainer->train(
     PairHiddenMarkovModel::baum_welch_algorithm{},
-    createUntrainedGlobalAlignmentPairHMM(), 1000, 1e-7);
+    createUntrainedGlobalMultiplePairHMM(), 1000, 1e-7);
 
   auto translator = tops::helper::SExprTranslator::make();
   auto serializer = trained_phmm->serializer(translator);
@@ -236,7 +237,7 @@ TEST(PairHiddenMarkovModel, ShouldBeTrainedUsingBaumWelchAlgorithm) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
@@ -254,7 +255,7 @@ TEST_F(APairHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},
@@ -281,7 +282,7 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}, {0}},
     {{1}, {0}},
     {{0, 0, 0}, {0, 0, 0}},

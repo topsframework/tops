@@ -51,9 +51,10 @@ template<template<typename Target> class Decorator>
 class Generator : public std::enable_shared_from_this<Generator<Decorator>> {
  public:
   // Purely virtual methods
-  virtual Decorator<Symbol> drawSymbol(size_t pos,
-                                       size_t phase = 0,
-                                       const Sequence& context = {}) const = 0;
+  virtual Decorator<Symbol> drawSymbol(
+      size_t pos,
+      size_t phase = 0,
+      const Decorator<Sequence>& context = {}) const = 0;
 
   virtual Decorator<Sequence> drawSequence(size_t size,
                                            size_t phase = 0) const = 0;

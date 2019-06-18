@@ -31,7 +31,6 @@ namespace tops {
 namespace model {
 
 using Sequence = std::vector<Symbol>;
-using Sequences = std::vector<Sequence>;
 
 }  // namespace model
 }  // namespace tops

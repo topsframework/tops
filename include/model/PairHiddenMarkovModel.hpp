@@ -87,7 +87,7 @@ class PairHiddenMarkovModel
   using Base = void;
 
   template<typename T>
-  using Alignment = std::vector<T>;
+  using Multiple = std::vector<T>;
 
   // Inner structs
   struct Cache {
@@ -98,13 +98,13 @@ class PairHiddenMarkovModel
   template<typename Target>
   struct GeneratorReturn {
     Target label;
-    std::vector<Target> alignment;
+    Multiple<Target> alignment;
   };
 
   struct LabelerReturn {
     Probability estimation;
     Sequence label;
-    Sequences alignment;
+    Multiple<Sequence> alignment;
     Cube matrix;
   };
 
@@ -115,7 +115,7 @@ class PairHiddenMarkovModel
 
   struct TraceBackReturn {
     Sequence label;
-    Sequences alignment;
+    Multiple<Sequence> alignment;
   };
 
   // Secretaries
@@ -168,37 +168,37 @@ class PairHiddenMarkovModel
 
   /**
    * Factory of Simple Trainers for unsupervised learning of parameters.
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Self>
    */
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(){
-    return SimpleTrainer<Alignment, Self>::make();
+  static TrainerPtr<Multiple, Self> unsupervisedTrainer(){
+    return SimpleTrainer<Multiple, Self>::make();
   }
 
   /**
    * Factory of Fixed Trainers for unsupervised learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Self>
    */
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Alignment, Self>::make(model);
+  static TrainerPtr<Multiple, Self> unsupervisedTrainer(SelfPtr model) {
+    return FixedTrainer<Multiple, Self>::make(model);
   }
 
   /**
    * Factory of Cached Trainers for unsupervised learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Self>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(
+  static TrainerPtr<Multiple, Self> unsupervisedTrainer(
       Tag /* training_algorithm */, Args&&... args) {
-    return CachedTrainer<Alignment, Self, Tag, Args...>::make(
+    return CachedTrainer<Multiple, Self, Tag, Args...>::make(
         Tag{}, std::forward<Args>(args)...);
   }
 
   /**
    * Factory of Simple Trainers for supervised learning of parameters.
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
   static TrainerPtr<Labeling, Self> supervisedTrainer() {
     return SimpleTrainer<Labeling, Self>::make();
@@ -207,7 +207,7 @@ class PairHiddenMarkovModel
   /**
    * Factory of Fixed Trainers for supervised learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Standard, Self>
+   * @return New instance of TrainerPtr<Multiple, Self>
    */
   static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
     return FixedTrainer<Labeling, Self>::make(model);
@@ -217,7 +217,7 @@ class PairHiddenMarkovModel
    * Factory of Cached Trainers for supervised learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Standard, Self>
+   * @return New instance of TrainerPtr<Multiple, Self>
    */
   template<typename Tag, typename... Args>
   static TrainerPtr<Labeling, Self> supervisedTrainer(
@@ -237,7 +237,7 @@ class PairHiddenMarkovModel
    * @param diff_threshold Minimum threshold of difference to stop the training
    * @return New instance of SelfPtr pointing to a new trained Self
    */
-  static SelfPtr train(const TrainerPtr<Alignment, Self>& trainer,
+  static SelfPtr train(const TrainerPtr<Multiple, Self>& trainer,
                        baum_welch_algorithm,
                        const PairHiddenMarkovModelPtr& initial_model,
                        size_t max_iterations,
@@ -252,7 +252,7 @@ class PairHiddenMarkovModel
    * @tparam Decorator Type of sequence (standard or labeled) being evaluated
    * @param sequence Sequence to be evaluated
    * @param cached Type of Evaluator (Simple or Cached)
-   * @return New instance of EvaluatorPtr<Standard>
+   * @return New instance of EvaluatorPtr<Multiple>
    */
   template<template<typename Target> class Decorator>
   EvaluatorPtr<Decorator> evaluator(const Decorator<Sequence>& sequence,
@@ -266,7 +266,7 @@ class PairHiddenMarkovModel
    * Factory of Simple Generators.
    * @tparam Decorator Type of sequence (standard or labeled) being evaluated
    * @param rng Random Number Generator
-   * @return New instance of EvaluatorPtr<Standard>
+   * @return New instance of EvaluatorPtr<Multiple>
    */
   template<template<typename Target> class Decorator>
   GeneratorPtr<Decorator> generator(RandomNumberGeneratorPtr rng
@@ -291,7 +291,8 @@ class PairHiddenMarkovModel
    * @param cached Type of Labeler (cached or non-cached)
    * @return New instance of LabelerPtr
    */
-  LabelerPtr labeler(const Sequence& sequence, bool cached = false) {
+  LabelerPtr labeler(const Multiple<Sequence>& sequence,
+                     bool cached = false) {
     auto self = shared_from_this();
     return cached ? CachedLabeler<Self>::make(self, sequence)
                   : SimpleLabeler<Self>::make(self, sequence);
@@ -303,8 +304,10 @@ class PairHiddenMarkovModel
    * @param cached Type of Calculator (cached or non-cached)
    * @return New instance of CalculatorPtr
    */
-  CalculatorPtr calculator(const Sequence& sequence, bool cached = false) {
+  CalculatorPtr calculator(const Multiple<Sequence>& sequence,
+                           bool cached = false) {
     auto self = shared_from_this();
+    Multiple<Sequence> sequences { sequence };
     return cached ? CachedCalculator<Self>::make(self, sequence)
                   : SimpleCalculator<Self>::make(self, sequence);
   }
@@ -320,7 +323,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[pos])\f$
    */
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+  Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const;
 
@@ -334,7 +337,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[begin..end-1])\f$
    */
-  Probability evaluateSequence(SEPtr<Standard> evaluator,
+  Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const;
@@ -374,7 +377,7 @@ class PairHiddenMarkovModel
    * @param evaluator Instance of CachedEvaluator
    * @param phase Phase of the full sequence
    */
-  void initializeCache(CEPtr<Standard> evaluator,
+  void initializeCache(CEPtr<Multiple> evaluator,
                        size_t phase);
 
   /**
@@ -386,7 +389,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[pos])\f$
    */
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+  Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const;
 
@@ -400,7 +403,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[begin..end-1])\f$
    */
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
+  Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const;
@@ -452,10 +455,10 @@ class PairHiddenMarkovModel
    * @param context Context to be considered when generating the symbol
    * @return \f$x,\ x \in X\f$
    */
-  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+  Multiple<Symbol> drawSymbol(SGPtr<Multiple> generator,
                              size_t pos,
                              size_t phase,
-                             const Sequence& context) const;
+                             const Multiple<Sequence>& context) const;
 
   /**
    * Draws (given the trained model, randomly choose) a sequence
@@ -465,7 +468,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the sequence to be generated
    * @return \f$x,\ x \in X\f$
    */
-  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+  Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                   size_t size,
                                   size_t phase) const;
 
@@ -481,7 +484,7 @@ class PairHiddenMarkovModel
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               size_t pos,
                               size_t phase,
-                              const Sequence& context) const;
+                              const Labeling<Sequence>& context) const;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled sequence
@@ -608,15 +611,15 @@ class PairHiddenMarkovModel
                                          size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn viterbi(const Sequences& sequences) const;
-  LabelerReturn posteriorDecoding(const Sequences& sequences) const;
+  LabelerReturn viterbi(const Multiple<Sequence>& sequences) const;
+  LabelerReturn posteriorDecoding(const Multiple<Sequence>& sequences) const;
 
   // Calculator's implementations
-  CalculatorReturn forward(const Sequences& sequences) const;
-  CalculatorReturn backward(const Sequences& sequences) const;
+  CalculatorReturn forward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn backward(const Multiple<Sequence>& sequences) const;
 
   // Helpers
-  TraceBackReturn traceBack(const Sequences& sequences,
+  TraceBackReturn traceBack(const Multiple<Sequence>& sequences,
                             const MultiArray<typename State::Id, 3>& psi) const;
 
  protected:

@@ -68,12 +68,12 @@ class VariableLengthMarkovChain
   /*============================[ STATIC METHODS ]============================*/
 
   // Trainer
-  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+  static SelfPtr train(TrainerPtr<Multiple, Self> trainer,
                        context_algorithm,
                        size_t alphabet_size,
                        double delta);
 
-  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+  static SelfPtr train(TrainerPtr<Multiple, Self> trainer,
                        fixed_length_algorithm,
                        size_t order,
                        size_t alphabet_size,
@@ -81,7 +81,7 @@ class VariableLengthMarkovChain
                        std::vector<double> weights,
                        ProbabilisticModelPtr apriori);
 
-  static SelfPtr train(TrainerPtr<Standard, Self> trainer,
+  static SelfPtr train(TrainerPtr<Multiple, Self> trainer,
                        interpolation_algorithm,
                        std::vector<double> weights,
                        size_t alphabet_size,
@@ -93,31 +93,31 @@ class VariableLengthMarkovChain
   /*-------------------------( Probabilistic Model )--------------------------*/
 
   // StandardEvaluator
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+  Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const override;
-  Probability evaluateSequence(SEPtr<Standard> evaluator,
+  Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const override;
 
   // CachedEvaluator
-  void initializeCache(CEPtr<Standard> evaluator,
+  void initializeCache(CEPtr<Multiple> evaluator,
                        size_t phase) override;
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+  Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const override;
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
+  Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const override;
 
   // StandardGenerator
-  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+  Multiple<Symbol> drawSymbol(SGPtr<Multiple> generator,
                               size_t pos,
                               size_t phase,
-                              const Sequence& context) const override;
-  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                              const Multiple<Sequence>& context) const override;
+  Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                   size_t size,
                                   size_t phase) const override;
 

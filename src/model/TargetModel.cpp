@@ -50,10 +50,10 @@ TargetModelPtr TargetModel::make(int alphabet_size) {
 
 /*===============================  EVALUATOR  ================================*/
 
-Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
+Probability TargetModel::evaluateSymbol(SEPtr<Multiple> evaluator,
                                         size_t pos,
                                         size_t /* phase */) const {
-  return sequenceDistribution(evaluator->sequence())
+  return sequenceDistribution(evaluator->sequence()[0])
     ->standardEvaluator(evaluator->sequence())->evaluateSymbol(pos);
 }
 
@@ -63,7 +63,7 @@ Probability TargetModel::evaluateSymbol(SEPtr<Standard> evaluator,
 
 DiscreteIIDModelPtr TargetModel::sequenceDistribution(const Sequence& s) const {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
-  iid_trainer->add_training_sequence(s);
+  iid_trainer->add_training_sequence({ s });
 
   return iid_trainer->train(
     DiscreteIIDModel::maximum_likehood_algorithm{}, alphabetSize());

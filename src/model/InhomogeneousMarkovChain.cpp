@@ -48,7 +48,7 @@ InhomogeneousMarkovChain::InhomogeneousMarkovChain(
 /*================================  TRAINER  =================================*/
 
 InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
-    TrainerPtr<Standard, Self> trainer,
+    TrainerPtr<Multiple, Self> trainer,
     wam_algorithm,
     size_t alphabet_size,
     size_t order,
@@ -59,12 +59,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
     Sequence fixed_sequence,
     size_t fixed_sequence_position,
     std::vector<double> weights) {
-
   auto& sample_set = trainer->training_set();
-
-
-
-
 
   std::vector<VariableLengthMarkovChainPtr> positional_distribution;
   positional_distribution.resize(length);
@@ -78,7 +73,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
   }
 
   for(auto i = 0u; i < length; i++) {
-    std::vector<Sequence> positionalSample;
+    std::vector<Multiple<Sequence>> positionalSample;
     std::vector<double> w;
     auto o = i;
     if (o > order)
@@ -91,11 +86,11 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
         int m = i - o + k + offset;
         if(m < 0)
           continue;
-        if((m + o) >= sample_set[j].size())
+        if((m + o) >= sample_set[j][0].size())
           continue;
         if(fixseq) {
           while((m < static_cast<int>(sample_set[j].size())) && (l <= o)) {
-            s[l] = sample_set[j][m];
+            s[l] = sample_set[j][0][m];
             if(fixseq && (fixed_pos <= (m-k)) && ( (m-k) <= static_cast<int>(fixed_pos + fixed.size()-1))) {
               int p = m - fixed_pos - k;
               if((p >= 0) && (p < static_cast<int>(fixed.size())))
@@ -106,12 +101,12 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
           }
         } else {
           while( (m < static_cast<int>(sample_set[j].size())) && (l <= o)) {
-            s[l] = sample_set[j][m];
+            s[l] = sample_set[j][0][m];
             l++;
             m++;
           }
         }
-        positionalSample.push_back(s);
+        positionalSample.push_back({ s });
         w.push_back(weights[j]);
       }
     }
@@ -127,7 +122,6 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
       tree->normalize();
       positional_distribution[i] = VariableLengthMarkovChain::make(tree);
     }
-
   }
 
   return InhomogeneousMarkovChain::make(positional_distribution);
@@ -141,7 +135,7 @@ InhomogeneousMarkovChainPtr InhomogeneousMarkovChain::train(
 /*===============================  EVALUATOR  ================================*/
 
 Probability
-InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Multiple> evaluator,
                                          size_t pos,
                                          size_t phase) const {
   return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
@@ -151,7 +145,7 @@ InhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability InhomogeneousMarkovChain::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t /*phase*/) const {
@@ -168,14 +162,14 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
+void InhomogeneousMarkovChain::initializeCache(CEPtr<Multiple> evaluator,
                                                size_t /*phase*/) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(_vlmcs.size());
   for (auto k = 0u; k < _vlmcs.size(); k++) {
-    prefix_sum_array[k].resize(evaluator->sequence().size() + 1);
+    prefix_sum_array[k].resize(evaluator->sequence()[0].size() + 1);
     prefix_sum_array[k][0] = 1.0;
-    for (auto i = 0u; i < evaluator->sequence().size(); i++) {
+    for (auto i = 0u; i < evaluator->sequence()[0].size(); i++) {
       auto phase = (i + k) % _vlmcs.size();
       prefix_sum_array[k][i + 1] = prefix_sum_array[k][i] * evaluator->evaluateSymbol(i, phase);
     }
@@ -185,7 +179,7 @@ void InhomogeneousMarkovChain::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
+InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Multiple> evaluator,
                                          size_t pos,
                                          size_t phase) const {
   return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
@@ -195,7 +189,7 @@ InhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability InhomogeneousMarkovChain::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -215,11 +209,11 @@ Probability InhomogeneousMarkovChain::evaluateSequence(
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
+Multiple<Symbol>
+InhomogeneousMarkovChain::drawSymbol(SGPtr<Multiple> generator,
                                      size_t pos,
                                      size_t phase,
-                                     const Sequence& context) const {
+                                     const Multiple<Sequence>& context) const {
   if (pos + phase < _vlmcs.size()) {
     auto vlmc = _vlmcs[pos + phase];
     return vlmc->standardGenerator(generator->randomNumberGenerator())
@@ -231,8 +225,8 @@ InhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> InhomogeneousMarkovChain::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> InhomogeneousMarkovChain::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
   return Base::drawSequence(generator, size, phase);

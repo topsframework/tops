@@ -22,12 +22,14 @@
 #include <limits>
 #include <vector>
 #include <utility>
+#include <iostream>
 
 // External headers
 #include "gmock/gmock.h"
 
 // ToPS headers
 #include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
 #include "model/Probability.hpp"
 
 #include "helper/Sequence.hpp"
@@ -50,6 +52,7 @@ using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Sequence;
+using tops::model::Multiple;
 using tops::model::Probability;
 using tops::model::DiscreteIIDModel;
 using tops::model::DiscreteIIDModelPtr;
@@ -73,10 +76,10 @@ class ADiscreteIIDModel : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
-  std::vector<Sequence> training_set = {
-    {0, 0, 0, 1, 1},
-    {0, 0, 0, 1, 0, 0, 1, 1},
-    {0, 0, 0, 1, 1, 0, 0},
+  std::vector<Multiple<Sequence>> training_set = {
+    {{0, 0, 0, 1, 1}},
+    {{0, 0, 0, 1, 0, 0, 1, 1}},
+    {{0, 0, 0, 1, 1, 0, 0}},
   };
 
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
@@ -93,7 +96,7 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingMLAlgorithm) {
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
-  iid_trainer->add_training_sequence(sequenceOfLengths());
+  iid_trainer->add_training_sequence({ sequenceOfLengths() });
 
   auto iid = iid_trainer->train(
     DiscreteIIDModel::smoothed_histogram_burge_algorithm{}, 1.0, 15000);
@@ -106,7 +109,7 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramBurgeAlgorithm) {
 
 TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
-  iid_trainer->add_training_sequence(sequenceOfLengths());
+  iid_trainer->add_training_sequence({ sequenceOfLengths() });
 
   auto iid = iid_trainer->train(
     DiscreteIIDModel::smoothed_histogram_stanke_algorithm{},
@@ -121,7 +124,7 @@ TEST(DiscreteIIDModel, ShouldBeTrainedUsingSmoothedHistogramStankeAlgorithm) {
 TEST(DiscreteIIDModel,
     ShouldBeTrainedUsingSmoothedHistogramKernelDensityAlgorithm) {
   auto iid_trainer = DiscreteIIDModel::standardTrainer();
-  iid_trainer->add_training_sequence(sequenceOfLengths());
+  iid_trainer->add_training_sequence({ sequenceOfLengths() });
 
   auto iid = iid_trainer->train(
     DiscreteIIDModel::smoothed_histogram_kernel_density_algorithm{}, 15000);
@@ -200,20 +203,22 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequence) {
     {0, 1, 1, 1},
     {1, 1, 1, 1}
   };
+
   for (const auto& data : test_data) {
     Probability result = 1.0;
     for (auto symbol : data)
       result *= iid->probabilityOf(symbol);
 
-    ASSERT_THAT(DOUBLE(iid->standardEvaluator(data)->evaluateSequence(0, 4)),
-                DoubleEq(result));
+    ASSERT_THAT(
+        DOUBLE(iid->standardEvaluator({ data })->evaluateSequence(0, 4)),
+        DoubleEq(result));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ADiscreteIIDModel, ShouldEvaluateASequencePosition) {
-  auto evaluator = iid->standardEvaluator({0, 1, 0});
+  auto evaluator = iid->standardEvaluator({{ 0, 1, 0 }});
   ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(0, 1)), DoubleEq(0.2));
   ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(1, 2)), DoubleEq(0.8));
   ASSERT_THAT(DOUBLE(evaluator->evaluateSequence(2, 3)), DoubleEq(0.2));
@@ -226,15 +231,17 @@ TEST_F(ADiscreteIIDModel, ShouldEvaluateASequenceWithPrefixSumArray) {
     auto data = generateRandomSequence(i, 2);
     auto size = data.size();
     ASSERT_THAT(
-      DOUBLE(iid->standardEvaluator(data, true)->evaluateSequence(0, size)),
-      DoubleEq(iid->standardEvaluator(data)->evaluateSequence(0, size)));
+      DOUBLE(iid->standardEvaluator({ data }, true)->evaluateSequence(0, size)),
+      DoubleEq(
+        DOUBLE(iid->standardEvaluator({ data })->evaluateSequence(0, size))));
   }
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(ADiscreteIIDModel, ShouldDrawSequenceWithDefaultSeed) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
+  std::cerr << iid->standardGenerator()->drawSequence(5).size() << std::endl;
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5)[0],
               ContainerEq(Sequence{0, 1, 1, 1, 1}));
 }
 

@@ -25,9 +25,12 @@
 #include <utility>
 
 // Internal headers
-#include "model/Labeling.hpp"
+#include "model/Symbol.hpp"
+#include "model/Multiple.hpp"
 #include "model/Sequence.hpp"
 #include "model/Estimation.hpp"
+#include "model/Probability.hpp"
+#include "model/SimpleCalculator.hpp"
 
 namespace tops {
 namespace model {
@@ -65,8 +68,7 @@ class CachedCalculator : public SimpleCalculator<Model> {
   }
 
   // Overriden methods
-  Probability
-  calculate(const Calculator::direction& dir) const override {
+  Probability calculate(const Calculator::direction& dir) const override {
     lazyInitializeCache();
     CALL_MEMBER_FUNCTION_DELEGATOR(calculate, dir);
   }
@@ -91,17 +93,10 @@ class CachedCalculator : public SimpleCalculator<Model> {
   mutable bool initialized = false;
 
   // Constructors
-  CachedCalculator(ModelPtr model, Sequence sequence, Cache cache = Cache())
-      : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
-  }
-
-  CachedCalculator(ModelPtr model, Sequence sequence,
-                   std::vector<Sequence> other_sequences,
+  CachedCalculator(ModelPtr model,
+                   Multiple<Sequence> sequence,
                    Cache cache = Cache())
-      : Base(std::move(model),
-             std::move(sequence),
-             std::move(other_sequences)),
-        _cache(std::move(cache)) {
+      : Base(std::move(model), std::move(sequence)), _cache(std::move(cache)) {
   }
 
  private:

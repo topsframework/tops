@@ -49,7 +49,8 @@ Range ExplicitDuration::possibleLengths(size_t max_length) const {
 /*----------------------------------------------------------------------------*/
 
 Probability ExplicitDuration::probabilityOfLenght(size_t len) const {
-  return _duration_model->standardEvaluator(Sequence{len})->evaluateSymbol(0);
+  auto evaluator = _duration_model->standardEvaluator({ Sequence{len} });
+  return evaluator->evaluateSymbol(0);
 }
 
 /*----------------------------------------------------------------------------*/

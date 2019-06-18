@@ -26,8 +26,8 @@
 namespace tops {
 namespace helper {
 
-tops::model::PairHiddenMarkovModelPtr createGlobalAlignmentPairHMM();
-tops::model::PairHiddenMarkovModelPtr createUntrainedGlobalAlignmentPairHMM();
+tops::model::PairHiddenMarkovModelPtr createGlobalMultiplePairHMM();
+tops::model::PairHiddenMarkovModelPtr createUntrainedGlobalMultiplePairHMM();
 
 }  // namespace helper
 }  // namespace tops

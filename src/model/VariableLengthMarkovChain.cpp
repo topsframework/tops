@@ -43,7 +43,7 @@ VariableLengthMarkovChain::VariableLengthMarkovChain(
 /*================================  TRAINER  =================================*/
 
 VariableLengthMarkovChainPtr
-VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+VariableLengthMarkovChain::train(TrainerPtr<Multiple, Self> trainer,
                                  context_algorithm,
                                  size_t alphabet_size,
                                  double delta) {
@@ -58,7 +58,7 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 /*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
-VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+VariableLengthMarkovChain::train(TrainerPtr<Multiple, Self> trainer,
                                  fixed_length_algorithm,
                                  size_t order,
                                  size_t alphabet_size,
@@ -83,7 +83,7 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 /*----------------------------------------------------------------------------*/
 
 VariableLengthMarkovChainPtr
-VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+VariableLengthMarkovChain::train(TrainerPtr<Multiple, Self> trainer,
                                  interpolation_algorithm,
                                  std::vector<double> weights,
                                  size_t alphabet_size,
@@ -114,10 +114,10 @@ VariableLengthMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 /*===============================  EVALUATOR  ================================*/
 
 Probability
-VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+VariableLengthMarkovChain::evaluateSymbol(SEPtr<Multiple> evaluator,
                                           size_t pos,
                                           size_t /* phase */) const {
-  ContextTreeNodePtr c = _context_tree->getContext(evaluator->sequence(), pos);
+  auto c = _context_tree->getContext(evaluator->sequence()[0], pos);
 
   if (c == nullptr) return 0;
   return c->getDistribution()
@@ -128,7 +128,7 @@ VariableLengthMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability VariableLengthMarkovChain::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -137,7 +137,7 @@ Probability VariableLengthMarkovChain::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-void VariableLengthMarkovChain::initializeCache(CEPtr<Standard> evaluator,
+void VariableLengthMarkovChain::initializeCache(CEPtr<Multiple> evaluator,
                                                 size_t phase) {
   Base::initializeCache(evaluator, phase);
 }
@@ -145,7 +145,7 @@ void VariableLengthMarkovChain::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-VariableLengthMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
+VariableLengthMarkovChain::evaluateSymbol(CEPtr<Multiple> evaluator,
                                           size_t pos,
                                           size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
@@ -154,7 +154,7 @@ VariableLengthMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability VariableLengthMarkovChain::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -163,15 +163,15 @@ Probability VariableLengthMarkovChain::evaluateSequence(
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
+Multiple<Symbol>
+VariableLengthMarkovChain::drawSymbol(SGPtr<Multiple> generator,
                                       size_t pos,
                                       size_t phase,
-                                      const Sequence& context) const {
-  auto c = _context_tree->getContext(context, pos);
+                                      const Multiple<Sequence>& context) const {
+  auto c = _context_tree->getContext(context[0], pos);
 
   // TODO(igorbonadio): ERROR!
-  if (c == nullptr) return Standard<Symbol>(INVALID_SYMBOL);
+  if (c == nullptr) return Multiple<Symbol>(INVALID_SYMBOL);
 
   return c->getDistribution()
           ->standardGenerator(generator->randomNumberGenerator())
@@ -180,8 +180,8 @@ VariableLengthMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> VariableLengthMarkovChain::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> VariableLengthMarkovChain::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
   return Base::drawSequence(generator, size, phase);

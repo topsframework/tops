@@ -44,7 +44,7 @@ PeriodicInhomogeneousMarkovChain::PeriodicInhomogeneousMarkovChain(
 /*================================  TRAINER  =================================*/
 
 PeriodicInhomogeneousMarkovChainPtr
-PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
+PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Multiple, Self> trainer,
                                         interpolation_algorithm,
                                         size_t alphabet_size,
                                         size_t order,
@@ -59,7 +59,7 @@ PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 
   for (size_t i = 0; i < length; i++) {
     std::vector<double> positional_weights;
-    std::vector<Sequence> positionalSample;
+    std::vector<Multiple<Sequence>> positionalSample;
     for (size_t j = 0; j < training_set.size(); j++) {
       int nseq = 0;
       while (true) {
@@ -69,14 +69,14 @@ PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
           continue;
         }
         size_t end = length * nseq + i;
-        if (end >= training_set[j].size())
+        if (end >= training_set[j][0].size())
           break;
         Sequence s;
         for (size_t k = start; k <= end; k++) {
-          s.push_back(training_set[j][k]);
+          s.push_back(training_set[j][0][k]);
           positional_weights.push_back(weights[j]);
         }
-        positionalSample.push_back(s);
+        positionalSample.push_back({ s });
         nseq++;
       }
     }
@@ -107,7 +107,7 @@ PeriodicInhomogeneousMarkovChain::train(TrainerPtr<Standard, Self> trainer,
 /*===============================  EVALUATOR  ================================*/
 
 Probability
-PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
+PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Multiple> evaluator,
                                                  size_t pos,
                                                  size_t phase) const {
   return _vlmcs[phase]->standardEvaluator(evaluator->sequence())
@@ -117,7 +117,7 @@ PeriodicInhomogeneousMarkovChain::evaluateSymbol(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
+PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Multiple> evaluator,
                                                    size_t begin,
                                                    size_t end,
                                                    size_t phase) const {
@@ -133,13 +133,13 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(SEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 void PeriodicInhomogeneousMarkovChain::initializeCache(
-    CEPtr<Standard> evaluator, size_t /* phase */) {
+    CEPtr<Multiple> evaluator, size_t /* phase */) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(_vlmcs.size());
   for (auto k = 0u; k < _vlmcs.size(); k++) {
-    prefix_sum_array[k].resize(evaluator->sequence().size() + 1);
+    prefix_sum_array[k].resize(evaluator->sequence()[0].size() + 1);
     prefix_sum_array[k][0] = 1.0;
-    for (auto i = 0u; i < evaluator->sequence().size(); i++) {
+    for (auto i = 0u; i < evaluator->sequence()[0].size(); i++) {
       auto phase = (i + k) % _vlmcs.size();
       prefix_sum_array[k][i + 1] = prefix_sum_array[k][i] * evaluator->evaluateSymbol(i, phase);
     }
@@ -149,7 +149,7 @@ void PeriodicInhomogeneousMarkovChain::initializeCache(
 /*----------------------------------------------------------------------------*/
 
 Probability
-PeriodicInhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
+PeriodicInhomogeneousMarkovChain::evaluateSymbol(CEPtr<Multiple> evaluator,
                                                  size_t pos,
                                                  size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
@@ -158,7 +158,7 @@ PeriodicInhomogeneousMarkovChain::evaluateSymbol(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability
-PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
+PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Multiple> evaluator,
                                                    size_t begin,
                                                    size_t end,
                                                    size_t phase) const {
@@ -175,11 +175,11 @@ PeriodicInhomogeneousMarkovChain::evaluateSequence(CEPtr<Standard> evaluator,
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol>
-PeriodicInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
-                                             size_t pos,
-                                             size_t phase,
-                                             const Sequence& context) const {
+Multiple<Symbol> PeriodicInhomogeneousMarkovChain::drawSymbol(
+    SGPtr<Multiple> generator,
+    size_t pos,
+    size_t phase,
+    const Multiple<Sequence>& context) const {
   auto vlmc = _vlmcs[(pos + phase) % _vlmcs.size()];
   return vlmc->standardGenerator(generator->randomNumberGenerator())
              ->drawSymbol(pos, phase, context);
@@ -187,8 +187,8 @@ PeriodicInhomogeneousMarkovChain::drawSymbol(SGPtr<Standard> generator,
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> PeriodicInhomogeneousMarkovChain::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> PeriodicInhomogeneousMarkovChain::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
   return Base::drawSequence(generator, size, phase);

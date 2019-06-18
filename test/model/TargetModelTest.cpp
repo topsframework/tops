@@ -74,15 +74,15 @@ TEST_F(ATargetModel, ShouldEvaluateASingleSymbol) {
 
 TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 0})->evaluateSequence(0, 3)),
+    DOUBLE(target->standardEvaluator({{0, 1, 0}})->evaluateSequence(0, 3)),
     DoubleEq(2.0/3.0 * 1.0/3.0 * 2.0/3.0));
 
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 1})->evaluateSequence(0, 3)),
+    DOUBLE(target->standardEvaluator({{0, 1, 1}})->evaluateSequence(0, 3)),
     DoubleEq(1.0/3.0 * 2.0/3.0 * 2.0/3.0));
 
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 1, 1})->evaluateSequence(0, 4)),
+    DOUBLE(target->standardEvaluator({{0, 1, 1, 1}})->evaluateSequence(0, 4)),
     DoubleEq(1.0/4.0 * 3.0/4.0 * 3.0/4.0 * 3.0/4.0));
 }
 
@@ -90,21 +90,21 @@ TEST_F(ATargetModel, ShouldHaveEvaluateASequence) {
 
 TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 0}, true)
+    DOUBLE(target->standardEvaluator({{0, 1, 0}}, true)
                  ->evaluateSequence(0, 3)),
-    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 0})
+    DoubleEq(DOUBLE(target->standardEvaluator({{0, 1, 0}})
                           ->evaluateSequence(0, 3))));
 
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 1})
+    DOUBLE(target->standardEvaluator({{0, 1, 1}})
                  ->evaluateSequence(0, 3)),
-    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 1}, true)
+    DoubleEq(DOUBLE(target->standardEvaluator({{0, 1, 1}}, true)
                    ->evaluateSequence(0, 3))));
 
   ASSERT_THAT(
-    DOUBLE(target->standardEvaluator({0, 1, 1, 1}, true)
+    DOUBLE(target->standardEvaluator({{0, 1, 1, 1}}, true)
                  ->evaluateSequence(0, 4)),
-    DoubleEq(DOUBLE(target->standardEvaluator({0, 1, 1, 1})
+    DoubleEq(DOUBLE(target->standardEvaluator({{0, 1, 1, 1}})
                           ->evaluateSequence(0, 4))));
 }
 
@@ -112,7 +112,7 @@ TEST_F(ATargetModel, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(ATargetModel, ShouldDrawSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(target->standardGenerator()->drawSequence(5),
+  ASSERT_THAT(target->standardGenerator()->drawSequence(5)[0],
               ContainerEq(Sequence{0, 1, 1, 0, 0}));
 }
 

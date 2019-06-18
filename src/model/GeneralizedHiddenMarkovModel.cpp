@@ -80,16 +80,15 @@ GeneralizedHiddenMarkovModel::train(
                            model->stateAlphabetSize(),
                            model->observationAlphabetSize());
 
-  for (const auto& [ observation, other_observations, label ]
-      : trainer->training_set()) {
+  for (const auto& [ observations, label ] : trainer->training_set()) {
     // Add contribution of the given sequences to matrix A
-    for (size_t i = 0; i <= observation.size(); i++) {
+    for (size_t i = 0; i <= observations[0].size(); i++) {
       A[label[i]][label[i+1]] += 1;
     }
 
     // Add contribution of the given sequences to matrix E
-    for (size_t i = 0; i < observation.size(); i++) {
-      E[label[i+1]][observation[i]] += 1;
+    for (size_t i = 0; i < observations[0].size(); i++) {
+      E[label[i+1]][observations[0][i]] += 1;
     }
   }
 
@@ -127,7 +126,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
   // TODO(renatocf): Implement drawing of duration
   Symbol label = _states[context[pos-1]]->transition()->draw(rng);
 
-  Symbols alignment = {
+  Multiple<Symbol> alignment = {
     _states[label]->emission()->standardGenerator(rng)->drawSymbol(pos) };
 
   return { label, alignment };
@@ -138,7 +137,7 @@ GeneralizedHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
 typename GeneralizedHiddenMarkovModel::GeneratorReturn<Sequence>
 GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
                                            size_t size) const {
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
   Sequence label;
 
   label.push_back(_begin_id);
@@ -160,7 +159,7 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 /*================================  LABELER  =================================*/
 
 typename GeneralizedHiddenMarkovModel::LabelerReturn
-GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
+GeneralizedHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto gammas = make_multiarray(
@@ -199,7 +198,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
             * _states[k]->duration()
                         ->probabilityOfLenght(d)
             * _states[k]->emission()
-                        ->standardEvaluator(sequences[0])
+                        ->standardEvaluator(sequences)
                         ->evaluateSequence(begin, end, phase);
 
           if (candidate_max > gammas[k][i]) {
@@ -223,7 +222,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 
 typename GeneralizedHiddenMarkovModel::LabelerReturn
 GeneralizedHiddenMarkovModel::posteriorDecoding(
-    const Sequences& sequences) const {
+    const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
   auto posteriors = make_multiarray(
@@ -275,7 +274,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
 /*----------------------------------------------------------------------------*/
 
 typename GeneralizedHiddenMarkovModel::CalculatorReturn
-GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
+GeneralizedHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
   auto alphas = make_multiarray(
@@ -308,7 +307,7 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
             * _states[k]->duration()
                         ->probabilityOfLenght(d)
             * _states[k]->emission()
-                        ->standardEvaluator(sequences[0])
+                        ->standardEvaluator(sequences)
                         ->evaluateSequence(begin, end, phase);
         }
       }
@@ -324,7 +323,7 @@ GeneralizedHiddenMarkovModel::forward(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename GeneralizedHiddenMarkovModel::CalculatorReturn
-GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
+GeneralizedHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
   auto betas = make_multiarray(
@@ -358,7 +357,7 @@ GeneralizedHiddenMarkovModel::backward(const Sequences& sequences) const {
             * _states[s]->duration()
                         ->probabilityOfLenght(d)
             * _states[s]->emission()
-                        ->standardEvaluator(sequences[0])
+                        ->standardEvaluator(sequences)
                         ->evaluateSequence(begin, end, phase)
             * betas[s][i + d];
         }
@@ -394,7 +393,7 @@ bool GeneralizedHiddenMarkovModel::segmentIsViable(
     = (state->beginPhase() - state->beginExtension()) % _num_phases;
 
   auto prob = state->emission()
-                   ->standardEvaluator(sequence)
+                   ->standardEvaluator({ sequence })
                    ->evaluateSequence(extended_begin,
                                       extended_end,
                                       extended_phase);
@@ -406,11 +405,11 @@ bool GeneralizedHiddenMarkovModel::segmentIsViable(
 
 typename GeneralizedHiddenMarkovModel::TraceBackReturn
 GeneralizedHiddenMarkovModel::traceBack(
-    const Sequences& sequences,
+    const Multiple<Sequence>& sequences,
     const MultiArray<typename State::Id, 2>& psi,
     const MultiArray<size_t, 2>& phi) const {
   Sequence label;
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
 
   // Initialization
   std::vector<size_t> idxs { sequences[0].size() };

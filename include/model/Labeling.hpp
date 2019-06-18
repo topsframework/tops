@@ -22,6 +22,7 @@
 
 // Internal headers
 #include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
 
 namespace tops {
 namespace model {
@@ -32,9 +33,8 @@ namespace model {
  */
 template<typename Target>
 struct Labeling {
-  Target observation;
-  std::vector<Target> other_observations;
-  Sequence label;
+  Multiple<Target> observations;
+  Target label;
 };
 
 }  // namespace model

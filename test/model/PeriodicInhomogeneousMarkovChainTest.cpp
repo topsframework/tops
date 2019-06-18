@@ -79,22 +79,22 @@ class APeriodicIMC: public testing::Test {
 TEST(PeriodicIMC, ShouldBeTrained) {
   auto pimc_trainer = PeriodicInhomogeneousMarkovChain::standardTrainer();
 
-  pimc_trainer->add_training_set({{1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-                                  {0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-                                  {1, 1, 0, 1, 0, 1, 1, 0, 1, 0},
-                                  {0, 1, 1, 0, 0, 0, 0, 1, 0, 1}});
+  pimc_trainer->add_training_set({{{1, 0, 1, 0, 1, 0, 1, 0, 1, 0}},
+                                  {{0, 1, 0, 1, 0, 1, 0, 1, 0, 1}},
+                                  {{1, 1, 0, 1, 0, 1, 1, 0, 1, 0}},
+                                  {{0, 1, 1, 0, 0, 0, 0, 1, 0, 1}}});
 
   auto pimc = pimc_trainer->train(
       PeriodicInhomogeneousMarkovChain::interpolation_algorithm{},
       2, 2, 2, 1.5, std::vector<double>{1.0, 1.0, 1.0, 1.0}, nullptr);
 
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1, 0, 1, 0})
+  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({{1, 0, 1, 0}})
                          ->evaluateSequence(0, 4)),
               DoubleNear(0.050034, 1e-4));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1, 1, 1, 1})
+  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({{1, 1, 1, 1}})
                          ->evaluateSequence(0, 4)),
               DoubleNear(0.050034, 1e-4));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({0, 0, 0, 1, 1, 1, 1})
+  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({{0, 0, 0, 1, 1, 1, 1}})
                   ->evaluateSequence(0, 7)),
               DoubleNear(0.007640, 1e-4));
 }
@@ -104,21 +104,27 @@ TEST(PeriodicIMC, ShouldBeTrained) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(APeriodicIMC, ShouldEvaluateASequence) {
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({0})->evaluateSequence(0, 1)),
-              DoubleEq(0.5));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1})->evaluateSequence(0, 1)),
-              DoubleEq(0.5));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({0, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.9));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({0, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.1));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1, 0})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.5));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1, 1})->evaluateSequence(0, 2)),
-              DoubleEq(0.5 * 0.5));
-  ASSERT_THAT(DOUBLE(pimc->standardEvaluator({1, 0, 1})
-                         ->evaluateSequence(0, 3)),
-              DoubleEq(0.5 * 0.5 * 0.8));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{0}})->evaluateSequence(0, 1)),
+      DoubleEq(0.5));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{1}})->evaluateSequence(0, 1)),
+      DoubleEq(0.5));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{0, 1}})->evaluateSequence(0, 2)),
+      DoubleEq(0.5 * 0.9));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{0, 0}})->evaluateSequence(0, 2)),
+      DoubleEq(0.5 * 0.1));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{1, 0}})->evaluateSequence(0, 2)),
+      DoubleEq(0.5 * 0.5));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{1, 1}})->evaluateSequence(0, 2)),
+      DoubleEq(0.5 * 0.5));
+  ASSERT_THAT(
+      DOUBLE(pimc->standardEvaluator({{1, 0, 1}})->evaluateSequence(0, 3)),
+      DoubleEq(0.5 * 0.5 * 0.8));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -126,9 +132,9 @@ TEST_F(APeriodicIMC, ShouldEvaluateASequence) {
 TEST_F(APeriodicIMC, ShouldEvaluateASequenceWithPrefixSumArray) {
   for (int i = 1; i < 1000; i++) {
     auto data = generateRandomSequence(i, 2);
-    ASSERT_THAT(DOUBLE(pimc->standardEvaluator(data, true)
+    ASSERT_THAT(DOUBLE(pimc->standardEvaluator({ data }, true)
                            ->evaluateSequence(0, data.size())),
-                DoubleEq(DOUBLE(pimc->standardEvaluator(data)
+                DoubleEq(DOUBLE(pimc->standardEvaluator({ data })
                                     ->evaluateSequence(0, data.size()))));
   }
 }
@@ -137,7 +143,7 @@ TEST_F(APeriodicIMC, ShouldEvaluateASequenceWithPrefixSumArray) {
 
 TEST_F(APeriodicIMC, ShouldChooseSequenceWithDefaultSeed) {
   // TODO(igorbonadio): check bigger sequence
-  ASSERT_THAT(pimc->standardGenerator()->drawSequence(5),
+  ASSERT_THAT(pimc->standardGenerator()->drawSequence(5)[0],
               ContainerEq(Sequence{0, 1, 1, 0, 1}));
 }
 

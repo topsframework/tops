@@ -46,6 +46,32 @@ DecodableModelCrtp<Derived>::DecodableModelCrtp(
 /*================================  TRAINER  =================================*/
 
 template<typename Derived>
+TrainerPtr<Multiple, Derived>
+DecodableModelCrtp<Derived>::unsupervisedTrainer() {
+  return SimpleTrainer<Multiple, Derived>::make();
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+TrainerPtr<Multiple, Derived>
+DecodableModelCrtp<Derived>::unsupervisedTrainer(DerivedPtr model) {
+  return FixedTrainer<Multiple, Derived>::make(model);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+template<typename Tag, typename... Args>
+TrainerPtr<Multiple, Derived>
+DecodableModelCrtp<Derived>::unsupervisedTrainer(Tag, Args&&... args) {
+  return CachedTrainer<Multiple, Derived, Tag, Args...>::make(
+    Tag{}, std::forward<Args>(args)...);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
 TrainerPtr<Labeling, Derived>
 DecodableModelCrtp<Derived>::supervisedTrainer() {
   return SimpleTrainer<Labeling, Derived>::make();
@@ -95,44 +121,100 @@ GeneratorPtr<Labeling> DecodableModelCrtp<Derived>::labelingGenerator(
 
 template<typename Derived>
 LabelerPtr DecodableModelCrtp<Derived>::labeler(
-    const Sequence& sequence, bool cached) {
-  return labeler(sequence, {}, cached);
-}
-
-/*----------------------------------------------------------------------------*/
-
-template<typename Derived>
-LabelerPtr DecodableModelCrtp<Derived>::labeler(
-    const Sequence& sequence,
-    const std::vector<Sequence>& other_sequences,
-    bool cached) {
-  using SL = SimpleLabeler<Derived>;
-  using CL = CachedLabeler<Derived>;
-
-  return cached ? CL::make(make_shared(), sequence, other_sequences)
-                : SL::make(make_shared(), sequence, other_sequences);
+    const Multiple<Sequence>& sequence, bool cached) {
+  return cached ? CachedLabeler<Derived>::make(make_shared(), sequence)
+                : SimpleLabeler<Derived>::make(make_shared(), sequence);
 }
 
 /*==============================  CALCULATOR  ================================*/
 
 template<typename Derived>
 CalculatorPtr DecodableModelCrtp<Derived>::calculator(
-    const Sequence& sequence, bool cached) {
-  return calculator(sequence, {}, cached);
+    const Multiple<Sequence>& sequence, bool cached) {
+  return cached ? CachedCalculator<Derived>::make(make_shared(), sequence)
+                : SimpleCalculator<Derived>::make(make_shared(), sequence);
+}
+
+/*----------------------------------------------------------------------------*/
+/*                           PURELY VIRTUAL METHODS                           */
+/*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+template<typename Derived>
+Probability DecodableModelCrtp<Derived>::evaluateSequence(
+    SEPtr<Labeling> evaluator,
+    size_t begin,
+    size_t end,
+    size_t phase) const {
+  Probability prob = 1;
+  for (size_t i = begin; i < end; i++)
+    prob *= evaluator->evaluateSymbol(i, phase);
+  return prob;
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-CalculatorPtr DecodableModelCrtp<Derived>::calculator(
-    const Sequence& sequence,
-    const std::vector<Sequence>& other_sequences,
-    bool cached) {
-  using SC = SimpleCalculator<Derived>;
-  using CC = CachedCalculator<Derived>;
+void DecodableModelCrtp<Derived>::initializeCache(CEPtr<Labeling> evaluator,
+                                                  size_t phase) {
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+  prefix_sum_array.resize(evaluator->sequence().observations[0].size() + 1);
 
-  return cached ? CC::make(make_shared(), sequence, other_sequences)
-                : SC::make(make_shared(), sequence, other_sequences);
+  prefix_sum_array[0] = 1;
+  for (size_t i = 0; i < evaluator->sequence().observations[0].size(); i++)
+    prefix_sum_array[i+1]
+      = prefix_sum_array[i] * evaluator->evaluateSymbol(i, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+Probability DecodableModelCrtp<Derived>::evaluateSymbol(
+    CEPtr<Labeling> evaluator,
+    size_t pos,
+    size_t phase) const {
+  return evaluateSymbol(static_cast<SEPtr<Labeling>>(evaluator), pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+template<typename Derived>
+Probability DecodableModelCrtp<Derived>::evaluateSequence(
+    CEPtr<Labeling> evaluator,
+    size_t begin,
+    size_t end,
+    size_t /* phase */) const {
+  auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
+  return prefix_sum_array[end] / prefix_sum_array[begin];
+}
+
+/*===============================  GENERATOR  ================================*/
+
+template<typename Derived>
+Labeling<Sequence> DecodableModelCrtp<Derived>::drawSequence(
+    SGPtr<Labeling> generator,
+    size_t size,
+    size_t phase) const {
+  Labeling<Sequence> labeling;
+  labeling.observations.resize(1);
+
+  labeling.label.push_back(_begin_id);
+  for (size_t i = 1; i <= size; i++) {
+    auto[ symbols, label ]
+      = generator->drawSymbol(i, phase, labeling);
+
+    // Keep trying to emit the right number of symbols
+    if (label == _end_id) { i--; continue; }
+
+    labeling.label.push_back(label);
+
+    for (size_t j = 0; j < labeling.observations.size(); j++)
+      labeling.observations[i].push_back(symbols[j]);
+  }
+  labeling.label.push_back(_end_id);
+
+  return labeling;
 }
 
 /*----------------------------------------------------------------------------*/

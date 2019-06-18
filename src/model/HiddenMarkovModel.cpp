@@ -57,7 +57,7 @@ HiddenMarkovModel::HiddenMarkovModel(
 /*================================  TRAINER  =================================*/
 
 HiddenMarkovModelPtr
-HiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
+HiddenMarkovModel::train(const TrainerPtr<Multiple, Self>& trainer,
                          baum_welch_algorithm /* tag */,
                          const HiddenMarkovModelPtr& initial_model,
                          size_t max_iterations,
@@ -167,16 +167,15 @@ HiddenMarkovModel::train(const TrainerPtr<Labeling, Self>& trainer,
                            model->stateAlphabetSize(),
                            model->observationAlphabetSize());
 
-  for (const auto& [ observation, other_observations, label ]
-      : trainer->training_set()) {
+  for (const auto& [ observations, label ] : trainer->training_set()) {
     // Add contribution of the given sequences to matrix A
-    for (size_t i = 0; i <= observation.size(); i++) {
+    for (size_t i = 0; i <= observations[0].size(); i++) {
       A[label[i]][label[i+1]] += 1;
     }
 
     // Add contribution of the given sequences to matrix E
-    for (size_t i = 0; i < observation.size(); i++) {
-      E[label[i+1]][observation[i]] += 1;
+    for (size_t i = 0; i < observations[0].size(); i++) {
+      E[label[i+1]][observations[0][i]] += 1;
     }
   }
 
@@ -211,10 +210,10 @@ HiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
                               const Sequence& context) const {
   assert(!context.empty() && context[0] == _begin_id);
 
-  Symbol label = _states[context[pos-1]]->transition()->draw(rng);
-  Symbols alignment = { _states[label]->emission()->draw(rng) };
+  auto label = _states[context[pos-1]]->transition()->draw(rng);
+  auto observations = { _states[label]->emission()->draw(rng) };
 
-  return { label, alignment };
+  return { label, observations };
 }
 
 /*----------------------------------------------------------------------------*/
@@ -222,7 +221,7 @@ HiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
 typename HiddenMarkovModel::GeneratorReturn<Sequence>
 HiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
                                 size_t size) const {
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
   Sequence label;
 
   label.push_back(_begin_id);
@@ -244,7 +243,7 @@ HiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 /*================================  LABELER  =================================*/
 
 typename HiddenMarkovModel::LabelerReturn
-HiddenMarkovModel::viterbi(const Sequences& sequences) const {
+HiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto gammas = make_multiarray(
@@ -288,7 +287,7 @@ HiddenMarkovModel::viterbi(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename HiddenMarkovModel::LabelerReturn
-HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
+HiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto posteriors = make_multiarray(
@@ -336,7 +335,7 @@ HiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename HiddenMarkovModel::CalculatorReturn
-HiddenMarkovModel::forward(const Sequences& sequences) const {
+HiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
   auto alphas = make_multiarray(
@@ -371,7 +370,7 @@ HiddenMarkovModel::forward(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename HiddenMarkovModel::CalculatorReturn
-HiddenMarkovModel::backward(const Sequences& sequences) const {
+HiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
   auto betas = make_multiarray(
@@ -408,10 +407,10 @@ HiddenMarkovModel::backward(const Sequences& sequences) const {
 
 typename HiddenMarkovModel::TraceBackReturn
 HiddenMarkovModel::traceBack(
-    const Sequences& sequences,
+    const Multiple<Sequence>& sequences,
     const MultiArray<typename State::Id, 2>& psi) const {
   Sequence label;
-  Sequences alignment(1);
+  Multiple<Sequence> alignment(1);
 
   // Initialization
   auto best_id = psi[_end_id][sequences[0].size()];

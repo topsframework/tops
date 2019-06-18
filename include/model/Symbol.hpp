@@ -28,7 +28,6 @@ namespace tops {
 namespace model {
 
 using Symbol = size_t;
-using Symbols = std::vector<size_t>;
 
 const Symbol INVALID_SYMBOL = std::numeric_limits<Symbol>::max();
 

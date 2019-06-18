@@ -55,7 +55,7 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
 /*================================  TRAINER  =================================*/
 
 PairHiddenMarkovModelPtr
-PairHiddenMarkovModel::train(const TrainerPtr<Alignment, Self>& trainer,
+PairHiddenMarkovModel::train(const TrainerPtr<Multiple, Self>& trainer,
                              baum_welch_algorithm /* tag */,
                              const PairHiddenMarkovModelPtr& initial_model,
                              size_t max_iterations,
@@ -177,8 +177,8 @@ PairHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
                                   const Sequence& context) const {
   assert(!context.empty() && context[0] == _begin_id);
 
-  Symbol label = _states[context[pos-1]]->transition()->draw(rng);
-  Symbols alignment = _states[label]->emission()->drawPair(rng);
+  auto label = _states[context[pos-1]]->transition()->draw(rng);
+  auto alignment = _states[label]->emission()->drawPair(rng);
 
   return { label, alignment };
 }
@@ -188,7 +188,7 @@ PairHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
 typename PairHiddenMarkovModel::GeneratorReturn<Sequence>
 PairHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
                                     size_t size) const {
-  Sequences alignment(2);
+  Multiple<Sequence> alignment(2);
   Sequence label;
 
   label.push_back(_begin_id);
@@ -211,7 +211,7 @@ PairHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
 /*================================  LABELER  =================================*/
 
 typename PairHiddenMarkovModel::LabelerReturn
-PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
+PairHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto gammas = make_multiarray(zero,
@@ -228,13 +228,13 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
   gammas[_begin_id][0][0] = 1;
 
   // Recursion
-  for (size_t i = 0; i <= sequences[0].size(); i++) {
-    for (size_t j = 0; j <= sequences[1].size(); j++) {
+  for (size_t i = 1; i <= sequences[0].size(); i++) {
+    for (size_t j = 1; j <= sequences[1].size(); j++) {
       for (const auto& state : _states) {
         auto k = state->id();
 
-        if (!state->hasGap(0) && i == 0) { continue; }
-        if (!state->hasGap(1) && j == 0) { continue; }
+        // if (!state->hasGap(0) && i == 0) { continue; }
+        // if (!state->hasGap(1) && j == 0) { continue; }
 
         for (auto p : state->predecessors()) {
           Probability candidate_max
@@ -263,7 +263,7 @@ PairHiddenMarkovModel::viterbi(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename PairHiddenMarkovModel::LabelerReturn
-PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
+PairHiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto posteriors = make_multiarray(zero,
@@ -318,7 +318,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename PairHiddenMarkovModel::CalculatorReturn
-PairHiddenMarkovModel::forward(const Sequences& sequences) const {
+PairHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto alphas = make_multiarray(zero,
@@ -359,7 +359,7 @@ PairHiddenMarkovModel::forward(const Sequences& sequences) const {
 /*----------------------------------------------------------------------------*/
 
 typename PairHiddenMarkovModel::CalculatorReturn
-PairHiddenMarkovModel::backward(const Sequences& sequences) const {
+PairHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
   auto betas = make_multiarray(zero,
@@ -402,10 +402,10 @@ PairHiddenMarkovModel::backward(const Sequences& sequences) const {
 
 typename PairHiddenMarkovModel::TraceBackReturn
 PairHiddenMarkovModel::traceBack(
-    const Sequences& sequences,
+    const Multiple<Sequence>& sequences,
     const MultiArray<typename State::Id, 3>& psi) const {
   Sequence label;
-  Sequences alignment(2);
+  Multiple<Sequence> alignment(2);
 
   // Initialization
   auto best_id = psi[_end_id][sequences[0].size()][sequences[1].size()];

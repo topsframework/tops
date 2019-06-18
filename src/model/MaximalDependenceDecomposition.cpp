@@ -57,7 +57,7 @@ MaximalDependenceDecomposition::MaximalDependenceDecomposition(
 /*================================  TRAINER  =================================*/
 
 MaximalDependenceDecompositionPtr
-MaximalDependenceDecomposition::train(TrainerPtr<Standard, Self> trainer,
+MaximalDependenceDecomposition::train(TrainerPtr<Multiple, Self> trainer,
                                       standard_training_algorithm,
                                       size_t alphabet_size,
                                       ConsensusSequence consensus_sequence,
@@ -76,7 +76,7 @@ MaximalDependenceDecomposition::train(TrainerPtr<Standard, Self> trainer,
 /*=================================  OTHERS  =================================*/
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
-    std::vector<Sequence> training_set,
+    const std::vector<Multiple<Sequence>>& training_set,
     int divmin,
     size_t alphabet_size,
     ConsensusSequence consensus_sequence,
@@ -95,7 +95,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::trainTree(
 
 MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     std::string node_name,
-    std::vector<Sequence>& sequences,
+    const std::vector<Multiple<Sequence>>& sequences,
     size_t divmin,
     Sequence selected,
     size_t alphabet_size,
@@ -117,7 +117,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
     Sequence s(consensus_sequence.size(), INVALID_SYMBOL);
     s[consensus_index] = consensus_sequence[consensus_index].symbols()[0];
     Probability prob = consensus_model
-      ->standardEvaluator(s)->evaluateSymbol(consensus_index);
+      ->standardEvaluator({ s })->evaluateSymbol(consensus_index);
     if (prob >= -0.001 && prob <= 0.001) {
       mdd_node = MaximalDependenceDecompositionNode::make(node_name,
                                                           model,
@@ -134,16 +134,17 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
         consensus_model);
       mdd_node->setChild(child);
     } else {
-      std::vector<Sequence> consensus_sequences;
-      std::vector<Sequence> nonconsensus_sequences;
-      subset(consensus_index,
-            sequences,
-            consensus_sequences,
-            nonconsensus_sequences,
-            consensus_sequence);
+      std::vector<Multiple<Sequence>> consensus_set;
+      std::vector<Multiple<Sequence>> non_consensus_set;
 
-      if ((consensus_sequences.size() > divmin)
-          && (nonconsensus_sequences.size() > divmin)) {
+      subset(consensus_index,
+             sequences,
+             consensus_set,
+             non_consensus_set,
+             consensus_sequence);
+
+      if ((consensus_set.size() > divmin)
+          && (non_consensus_set.size() > divmin)) {
         mdd_node = MaximalDependenceDecompositionNode::make(node_name,
                                                             model,
                                                             consensus_index);
@@ -151,7 +152,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
         p << node_name << "_p" << consensus_index;
         MaximalDependenceDecompositionNodePtr left = newNode(
           p.str(),
-          consensus_sequences,
+          consensus_set,
           divmin,
           selected,
           alphabet_size,
@@ -161,7 +162,7 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
         n << node_name << "_n" << consensus_index;
         MaximalDependenceDecompositionNodePtr right = newNode(
           n.str(),
-          nonconsensus_sequences,
+          non_consensus_set,
           divmin,
           selected,
           alphabet_size,
@@ -183,24 +184,25 @@ MaximalDependenceDecompositionNodePtr MaximalDependenceDecomposition::newNode(
 
 InhomogeneousMarkovChainPtr
 MaximalDependenceDecomposition::trainInhomogeneousMarkovChain(
-    std::vector<Sequence>& sequences,
+    const std::vector<Multiple<Sequence>>& training_set,
     size_t alphabet_size) {
   std::vector<VariableLengthMarkovChainPtr> position_specific_vlmcs;
 
-  for (size_t j = 0; j < sequences[0].size(); j++) {
-    std::vector<Sequence> imc_sequences;
+  for (size_t j = 0; j < training_set[0].size(); j++) {
+    std::vector<Multiple<Sequence>> imc_sequences;
 
     Sequence s;
-    for (size_t i = 0; i < sequences.size(); i++) {
-      s.push_back(sequences[i][j]);
+    for (size_t i = 0; i < training_set.size(); i++) {
+      s.push_back(training_set[i][0][j]);
     }
-    imc_sequences.push_back(s);
+    imc_sequences.push_back({ s });
 
     auto tree = ContextTree::make(alphabet_size);
     tree->initializeCounter(imc_sequences, 0, {1});
     tree->normalize();
     position_specific_vlmcs.push_back(VariableLengthMarkovChain::make(tree));
   }
+
   return InhomogeneousMarkovChain::make(position_specific_vlmcs);
 }
 
@@ -223,9 +225,11 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
         double chi = -std::numeric_limits<double>::infinity();
         for (size_t k = 0; k < alphabet_size; k++) {
           s[i] = k;
-          double e = consensus_model->standardEvaluator(s)->evaluateSymbol(i);
+          double e
+            = consensus_model->standardEvaluator({ s })->evaluateSymbol(i);
           s[j] = k;
-          double o = model->standardEvaluator(s)->evaluateSymbol(j);
+          double o
+            = model->standardEvaluator({ s })->evaluateSymbol(j);
           double x = (o - e)+(o - e)-e;
           chi = log_sum(chi, x);
         }
@@ -254,16 +258,16 @@ int MaximalDependenceDecomposition::getMaximalDependenceIndex(
 /*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecomposition::subset(
-    int index,
-    std::vector<Sequence>& sequences,
-    std::vector<Sequence>& consensus,
-    std::vector<Sequence>& nonconsensus,
-    ConsensusSequence consensus_sequence) {
-  for (size_t i = 0; i < sequences.size(); i++) {
-    if (consensus_sequence[index].is(sequences[i][index])) {
-      consensus.push_back(sequences[i]);
+    size_t index,
+    const std::vector<Multiple<Sequence>>& training_set,
+    std::vector<Multiple<Sequence>>& consensus_set,
+    std::vector<Multiple<Sequence>>& non_consensus_set,
+    const ConsensusSequence& consensus_sequence) {
+  for (size_t i = 0; i < training_set.size(); i++) {
+    if (consensus_sequence[index].is(training_set[i][0][index])) {
+      consensus_set.push_back(training_set[i]);
     } else {
-      nonconsensus.push_back(sequences[i]);
+      non_consensus_set.push_back(training_set[i]);
     }
   }
 }
@@ -275,7 +279,7 @@ void MaximalDependenceDecomposition::subset(
 /*==============================  EVALUATOR  =================================*/
 
 Probability MaximalDependenceDecomposition::evaluateSymbol(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
   return evaluateSequence(evaluator, pos, pos, phase);
@@ -284,13 +288,13 @@ Probability MaximalDependenceDecomposition::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability MaximalDependenceDecomposition::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t /* phase */) const {
   if ((end - begin) != _consensus_sequence.size()) return 0;
-  auto first = evaluator->sequence().begin() + begin;
-  auto last = evaluator->sequence().begin() + end;
+  auto first = evaluator->sequence()[0].begin() + begin;
+  auto last = evaluator->sequence()[0].begin() + end;
   Sequence subseq(first, last);
   std::vector<int> indexes;
   return _probabilityOf(subseq, _mdd_tree, indexes);
@@ -298,9 +302,9 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
 
 /*----------------------------------------------------------------------------*/
 
-void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
+void MaximalDependenceDecomposition::initializeCache(CEPtr<Multiple> evaluator,
                                                      size_t phase) {
-  int slen = evaluator->sequence().size();
+  int slen = evaluator->sequence()[0].size();
   int clen = _consensus_sequence.size();
 
   if (slen - clen + 1 <= 0) return;
@@ -308,7 +312,7 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
   prefix_sum_array.resize(slen - clen + 1);
 
-  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+  auto simple_evaluator = static_cast<SEPtr<Multiple>>(evaluator);
 
   for (int i = 0; i < slen - clen + 1; i++)
     prefix_sum_array[i]
@@ -318,7 +322,7 @@ void MaximalDependenceDecomposition::initializeCache(CEPtr<Standard> evaluator,
 /*----------------------------------------------------------------------------*/
 
 Probability MaximalDependenceDecomposition::evaluateSymbol(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
@@ -327,7 +331,7 @@ Probability MaximalDependenceDecomposition::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability MaximalDependenceDecomposition::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t /* phase */) const {
@@ -338,18 +342,18 @@ Probability MaximalDependenceDecomposition::evaluateSequence(
 
 /*==============================  GENERATOR  =================================*/
 
-Standard<Symbol> MaximalDependenceDecomposition::drawSymbol(
-    SGPtr<Standard> /* generator */,
+Multiple<Symbol> MaximalDependenceDecomposition::drawSymbol(
+    SGPtr<Multiple> /* generator */,
     size_t /* pos */,
     size_t /* phase */,
-    const Sequence &/* context */) const {
+    const Multiple<Sequence> &/* context */) const {
   throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> MaximalDependenceDecomposition::drawSequence(
-    SGPtr<Standard> /* generator */,
+Multiple<Sequence> MaximalDependenceDecomposition::drawSequence(
+    SGPtr<Multiple> /* generator */,
     size_t /* size */,
     size_t /* phase */) const {
   throw_exception(NotYetImplemented);
@@ -374,7 +378,7 @@ Probability MaximalDependenceDecomposition::_probabilityOf(
   Probability p = 1;
   if (node->getLeft()) {
     p = node->getModel()
-      ->standardEvaluator(s)->evaluateSymbol(node->getIndex());
+      ->standardEvaluator({ s })->evaluateSymbol(node->getIndex());
     indexes.push_back(node->getIndex());
     if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
       p *= _probabilityOf(s, node->getLeft(), indexes);
@@ -384,7 +388,7 @@ Probability MaximalDependenceDecomposition::_probabilityOf(
   } else {  // leaf
     for (size_t i = 0; i < s.size(); i++) {
       if (std::find(indexes.begin(), indexes.end(), i) == indexes.end()) {
-        p *= node->getModel()->standardEvaluator(s)->evaluateSymbol(i);
+        p *= node->getModel()->standardEvaluator({ s })->evaluateSymbol(i);
       }
     }
   }
@@ -394,21 +398,24 @@ Probability MaximalDependenceDecomposition::_probabilityOf(
 /*----------------------------------------------------------------------------*/
 
 void MaximalDependenceDecomposition::_drawAux(
-    Sequence& s,
+    Multiple<Sequence>& s,
     MaximalDependenceDecompositionNodePtr node) const {
   if (node->getLeft()) {
     s[node->getIndex()]
       = node->getModel()
         ->standardGenerator()->drawSymbol(node->getIndex(), 0, s);
-    if (_consensus_sequence[node->getIndex()].is(s[node->getIndex()])) {
+    if (_consensus_sequence[node->getIndex()].is(s[0][node->getIndex()])) {
       _drawAux(s, node->getLeft());
     } else {
       _drawAux(s, node->getRight());
     }
   } else {  // leaf
-    for (size_t i = 0; i < s.size(); i++) {
-      if (s[i] == INVALID_SYMBOL) {
-        s[i] = node->getModel()->standardGenerator()->drawSymbol(i, 0, s);
+    for (size_t i = 0; i < s[0].size(); i++) {
+      auto symbols = node->getModel()->standardGenerator()->drawSymbol(i, 0, s);
+      for (size_t j = 0; j < s.size(); j++) {
+        if (s[j][i] == INVALID_SYMBOL) {
+          s[j][i] = symbols[j];
+        }
       }
     }
   }

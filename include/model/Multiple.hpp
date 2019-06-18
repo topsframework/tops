@@ -17,20 +17,23 @@
 /*  MA 02110-1301, USA.                                                */
 /***********************************************************************/
 
-#ifndef TOPS_MODEL_STANDARD_
-#define TOPS_MODEL_STANDARD_
+#ifndef TOPS_MODEL_MULTIPLE_
+#define TOPS_MODEL_MULTIPLE_
+
+// Internal headers
+#include "model/Sequence.hpp"
 
 namespace tops {
 namespace model {
 
 /**
- * @class Standard
+ * @struct Multiple
  * @brief TODO
  */
 template<typename Target>
-using Standard = Target;
+using Multiple = std::vector<Target>;
 
 }  // namespace model
 }  // namespace tops
 
-#endif  // TOPS_MODEL_STANDARD_
+#endif  // TOPS_MODEL_MULTIPLE_

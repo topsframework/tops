@@ -79,7 +79,7 @@ class DecodableModelCrtp
   struct LabelerReturn {
     Probability estimation;
     Sequence label;
-    Sequences alignment;
+    Multiple<Sequence> alignment;
     Matrix matrix;
   };
 
@@ -90,7 +90,7 @@ class DecodableModelCrtp
 
   struct TraceBackReturn {
     Sequence label;
-    Sequences alignment;
+    Multiple<Sequence> alignment;
   };
 
   // Secretaries
@@ -131,63 +131,49 @@ class DecodableModelCrtp
 
   /**
    * Factory of Simple Trainers for unsupervised learning of parameters.
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer() {
-    return SimpleTrainer<Alignment, Self>::make();
-  }
+  static TrainerPtr<Multiple, Derived> unsupervisedTrainer();
 
   /**
    * Factory of Fixed Trainers for unsupervised learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Alignment, Self>::make(model);
-  }
+  static TrainerPtr<Multiple, Derived> unsupervisedTrainer(DerivedPtr model);
 
   /**
    * Factory of Cached Trainers for unsupervised learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Alignment, Self>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Alignment, Self> unsupervisedTrainer(
-      Tag /* training_algorithm_tag */, Args&&... args) {
-    return CachedTrainer<Alignment, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
+  static TrainerPtr<Multiple, Derived> unsupervisedTrainer(
+      Tag /* training_algorithm_tag */, Args&&... args);
 
   /**
    * Factory of Simple Trainers for supervised learning of parameters.
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Labeling, Self> supervisedTrainer() {
-    return SimpleTrainer<Labeling, Self>::make();
-  }
+  static TrainerPtr<Labeling, Derived> supervisedTrainer();
 
   /**
    * Factory of Fixed Trainers for supervised learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Standard, Self>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Labeling, Self>::make(model);
-  }
+  static TrainerPtr<Labeling, Derived> supervisedTrainer(DerivedPtr model);
 
   /**
    * Factory of Cached Trainers for supervised learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Standard, Self>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Labeling, Self> supervisedTrainer(
-      Tag /* training_algorithm_tag */, Args&&... args) {
-    return CachedTrainer<Labeling, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
+  static TrainerPtr<Labeling, Derived> supervisedTrainer(
+      Tag /* training_algorithm_tag */, Args&&... args);
 
   /*==========================[ OVERRIDEN METHODS ]===========================*/
 
@@ -201,18 +187,10 @@ class DecodableModelCrtp
   labelingGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
 
-  LabelerPtr labeler(const Sequence& sequence,
+  LabelerPtr labeler(const Multiple<Sequence>& sequence,
                      bool cached = false) override;
 
-  LabelerPtr labeler(const Sequence& sequence,
-                     const std::vector<Sequence>& other_sequences,
-                     bool cached = false) override;
-
-  CalculatorPtr calculator(const Sequence& sequence,
-                           bool cached = false) override;
-
-  CalculatorPtr calculator(const Sequence& sequence,
-                           const std::vector<Sequence>& other_sequences,
+  CalculatorPtr calculator(const Multiple<Sequence>& sequence,
                            bool cached = false) override;
 
   /*========================[ PURELY VIRTUAL METHODS ]========================*/
@@ -296,10 +274,11 @@ class DecodableModelCrtp
    * @param context Context to be considered when generating the labeled symbol
    * @return \f$x,\ x \in X\f$
    */
-  virtual Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
-                                      size_t pos,
-                                      size_t phase,
-                                      const Sequence& context) const = 0;
+  virtual Labeling<Symbol> drawSymbol(
+      SGPtr<Labeling> generator,
+      size_t pos,
+      size_t phase,
+      const Labeling<Sequence>& context) const = 0;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled sequence
@@ -332,7 +311,7 @@ class DecodableModelCrtp
    * Lazily initializes the cache of a CachedLabeler.
    * @param labeler Instance of CachedLabeler
    */
-  virtual void initializeCache(CLPtr labeler);
+  virtual void initializeCache(CLPtr labeler) = 0;
 
   /**
    * Labels (given the trained model, decide the best associated labels

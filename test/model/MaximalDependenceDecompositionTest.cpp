@@ -75,25 +75,25 @@ class AMDD : public testing::Test {
 TEST(MDD, ShouldBeTrained) {
   auto mdd_trainer = MaximalDependenceDecomposition::standardTrainer();
 
-  mdd_trainer->add_training_set({{1, 0, 3, 1, 3, 2, 3, 0, 1},
-                                 {0, 1, 2, 2, 3, 2, 3, 0, 2},
-                                 {1, 0, 3, 2, 3, 1, 0, 0, 2},
-                                 {0, 1, 2, 1, 3, 1, 0, 0, 3},
-                                 {1, 0, 2, 2, 2, 1, 0, 1, 3},
-                                 {0, 1, 3, 2, 3, 2, 0, 1, 3},
-                                 {1, 0, 2, 1, 3, 2, 3, 1, 0}});
+  mdd_trainer->add_training_set({{{1, 0, 3, 1, 3, 2, 3, 0, 1}},
+                                 {{0, 1, 2, 2, 3, 2, 3, 0, 2}},
+                                 {{1, 0, 3, 2, 3, 1, 0, 0, 2}},
+                                 {{0, 1, 2, 1, 3, 1, 0, 0, 3}},
+                                 {{1, 0, 2, 2, 2, 1, 0, 1, 3}},
+                                 {{0, 1, 3, 2, 3, 2, 0, 1, 3}},
+                                 {{1, 0, 2, 1, 3, 2, 3, 1, 0}}});
 
   auto mdd = mdd_trainer->train(
     MaximalDependenceDecomposition::standard_training_algorithm{},
     4, createConsensusSequence(), createDNAIIDModel(), 2);
 
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{1, 0, 2, 2, 3, 2, 0, 0, 3}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(0.0, 1e-4));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 2, 2, 3, 2, 0, 0, 3})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{1, 1, 2, 2, 3, 2, 0, 0, 3}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(0.0, 1e-4));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1, 3, 2, 3, 2, 0, 0, 0})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{1, 1, 3, 2, 3, 2, 0, 0, 0}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(0.0, 1e-4));
 }
@@ -105,36 +105,44 @@ TEST(MDD, ShouldBeTrained) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMDD, ShouldEvaluateASymbol) {
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0})->evaluateSymbol(0)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1})->evaluateSymbol(0)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0, 1})->evaluateSymbol(1)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0, 0})->evaluateSymbol(1)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0})->evaluateSymbol(1)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 1})->evaluateSymbol(1)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 1})->evaluateSymbol(2)),
-              DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 1, 0})->evaluateSymbol(3)),
-              DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{0}})->evaluateSymbol(0)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{1}})->evaluateSymbol(0)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{0, 1}})->evaluateSymbol(1)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{0, 0}})->evaluateSymbol(1)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{1, 0}})->evaluateSymbol(1)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{1, 1}})->evaluateSymbol(1)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{1, 0, 1}})->evaluateSymbol(2)),
+      DoubleEq(0));
+  ASSERT_THAT(
+      DOUBLE(mdd->standardEvaluator({{1, 0, 1, 0}})->evaluateSymbol(3)),
+      DoubleEq(0));
 }
 
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AMDD, ShouldEvaluateASequence) {
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({0})->evaluateSequence(0, 1)),
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{0}})->evaluateSequence(0, 1)),
               DoubleEq(0));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 0, 2, 2, 3, 2, 0, 0, 3})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{1, 0, 2, 2, 3, 2, 0, 0, 3}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(7.67981648e-7, 1e-4));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({1, 2, 2, 2, 3, 2, 0, 2, 3})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{1, 2, 2, 2, 3, 2, 0, 2, 3}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(0.000012, 1e-4));
-  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({2, 2, 2, 2, 2, 2, 2, 2, 2})
+  ASSERT_THAT(DOUBLE(mdd->standardEvaluator({{2, 2, 2, 2, 2, 2, 2, 2, 2}})
                         ->evaluateSequence(0, 9)),
               DoubleNear(0.000262, 1e-4));
 }
@@ -143,17 +151,17 @@ TEST_F(AMDD, ShouldEvaluateASequence) {
 
 TEST_F(AMDD, ShouldEvaluateASequenceWithPrefixSumArray) {
   std::vector<Sequence> sequences {
-    Sequence{0},
-    Sequence{1, 0, 2, 2, 3, 2, 0, 0, 3},
-    Sequence{1, 2, 2, 2, 3, 2, 0, 2, 3},
-    Sequence{2, 2, 2, 2, 2, 2, 2, 2, 2},
+    {0},
+    {1, 0, 2, 2, 3, 2, 0, 0, 3},
+    {1, 2, 2, 2, 3, 2, 0, 2, 3},
+    {2, 2, 2, 2, 2, 2, 2, 2, 2},
   };
 
   for (auto& sequence : sequences) {
     size_t size = sequence.size();
-    ASSERT_THAT(DOUBLE(mdd->standardEvaluator(sequence, true)
+    ASSERT_THAT(DOUBLE(mdd->standardEvaluator({ sequence }, true)
                           ->evaluateSequence(0, size)),
-                DoubleEq(DOUBLE(mdd->standardEvaluator(sequence)
+                DoubleEq(DOUBLE(mdd->standardEvaluator({ sequence })
                                    ->evaluateSequence(0, size))));
   }
 }

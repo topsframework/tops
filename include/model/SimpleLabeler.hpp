@@ -68,39 +68,22 @@ class SimpleLabeler : public Labeler {
     CALL_MEMBER_FUNCTION_DELEGATOR(labeling, chosen_method);
   }
 
-  Sequence& sequence() override {
+  Multiple<Sequence>& sequence() override {
     return _sequence;
   }
 
-  const Sequence& sequence() const override {
+  const Multiple<Sequence>& sequence() const override {
     return _sequence;
-  }
-
-  std::vector<Sequence>& other_sequences() override {
-    return _other_sequences;
-  }
-
-  const std::vector<Sequence>& other_sequences() const override {
-    return _other_sequences;
   }
 
  protected:
   // Instace variables
   ModelPtr _model;
-  Sequence _sequence;
-  std::vector<Sequence> _other_sequences;
+  Multiple<Sequence> _sequence;
 
   // Constructors
-  SimpleLabeler(ModelPtr model, Sequence sequence)
+  SimpleLabeler(ModelPtr model, Multiple<Sequence> sequence)
       : _model(std::move(model)), _sequence(std::move(sequence)) {
-  }
-
-  SimpleLabeler(ModelPtr model,
-                Sequence sequence,
-                std::vector<Sequence> other_sequences)
-      : _model(std::move(model)),
-        _sequence(std::move(sequence)),
-        _other_sequences(std::move(other_sequences)) {
   }
 
  private:

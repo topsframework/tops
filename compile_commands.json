@@ -181,8 +181,8 @@
 
 {
   "directory": "/home/renatocf/Documentos/projects/tops/refactoring",
-  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Standard.hpp",
-  "file": "include/model/Standard.hpp"
+  "command": "c++ -isystem external/gtest/googlemock/include -isystem external/gtest/googletest/include -isystem external/gbenchmark/include -isystem external/probability/include -I include -fPIC -std=c++11 -std=c++1z -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast -Wcast-align -Wmissing-include-dirs -Wredundant-decls -Werror -O2 -c include/model/Multiple.hpp",
+  "file": "include/model/Multiple.hpp"
 },
 
 {

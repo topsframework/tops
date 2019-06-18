@@ -49,7 +49,7 @@ class TargetModel : public DiscreteIIDModel {
   static TargetModelPtr make(int alphabet_size);
 
   // Overriden methods
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+  Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const override;
 

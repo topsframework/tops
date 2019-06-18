@@ -31,26 +31,26 @@ namespace model {
 /*================================  TRAINER  =================================*/
 
 template<typename Derived>
-TrainerPtr<Standard, Derived>
+TrainerPtr<Multiple, Derived>
 ProbabilisticModelCrtp<Derived>::standardTrainer() {
-  return SimpleTrainer<Standard, Derived>::make();
+  return SimpleTrainer<Multiple, Derived>::make();
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
-TrainerPtr<Standard, Derived>
+TrainerPtr<Multiple, Derived>
 ProbabilisticModelCrtp<Derived>::standardTrainer(DerivedPtr model) {
-  return FixedTrainer<Standard, Derived>::make(model);
+  return FixedTrainer<Multiple, Derived>::make(model);
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
 template<typename Tag, typename... Args>
-TrainerPtr<Standard, Derived>
+TrainerPtr<Multiple, Derived>
 ProbabilisticModelCrtp<Derived>::standardTrainer(Tag, Args&&... args) {
-  return CachedTrainer<Standard, Derived, Tag, Args...>::make(
+  return CachedTrainer<Multiple, Derived, Tag, Args...>::make(
     Tag{}, std::forward<Args>(args)...);
 }
 
@@ -70,19 +70,19 @@ auto ProbabilisticModelCrtp<Derived>::make(Args&&... args)
 /*===============================  EVALUATOR  ================================*/
 
 template<typename Derived>
-EvaluatorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardEvaluator(
-    const Standard<Sequence>& sequence, bool cached) {
+EvaluatorPtr<Multiple> ProbabilisticModelCrtp<Derived>::standardEvaluator(
+    const Multiple<Sequence>& sequence, bool cached) {
   auto self_ptr = make_shared();
-  return cached ? CachedEvaluator<Standard, Derived>::make(self_ptr, sequence)
-                : SimpleEvaluator<Standard, Derived>::make(self_ptr, sequence);
+  return cached ? CachedEvaluator<Multiple, Derived>::make(self_ptr, sequence)
+                : SimpleEvaluator<Multiple, Derived>::make(self_ptr, sequence);
 }
 
 /*===============================  GENERATOR  ================================*/
 
 template<typename Derived>
-GeneratorPtr<Standard> ProbabilisticModelCrtp<Derived>::standardGenerator(
+GeneratorPtr<Multiple> ProbabilisticModelCrtp<Derived>::standardGenerator(
     RandomNumberGeneratorPtr rng) {
-  return SimpleGenerator<Standard, Derived>::make(make_shared(), rng);
+  return SimpleGenerator<Multiple, Derived>::make(make_shared(), rng);
 }
 
 /*===============================  SERIALIZER  ===============================*/
@@ -100,13 +100,13 @@ SerializerPtr ProbabilisticModelCrtp<Derived>::serializer(
 /*===============================  EVALUATOR  ================================*/
 
 template<typename Derived>
-void ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
+void ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Multiple> evaluator,
                                                       size_t phase) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  prefix_sum_array.resize(evaluator->sequence().size() + 1);
+  prefix_sum_array.resize(evaluator->sequence()[0].size() + 1);
 
   prefix_sum_array[0] = 1;
-  for (size_t i = 0; i < evaluator->sequence().size(); i++)
+  for (size_t i = 0; i < evaluator->sequence()[0].size(); i++)
     prefix_sum_array[i+1]
       = prefix_sum_array[i] * evaluator->evaluateSymbol(i, phase);
 }
@@ -115,7 +115,7 @@ void ProbabilisticModelCrtp<Derived>::initializeCache(CEPtr<Standard> evaluator,
 
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t phase) const {
@@ -129,17 +129,17 @@ Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
 
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSymbol(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
-  return evaluateSymbol(static_cast<SEPtr<Standard>>(evaluator), pos, phase);
+  return evaluateSymbol(static_cast<SEPtr<Multiple>>(evaluator), pos, phase);
 }
 
 /*----------------------------------------------------------------------------*/
 
 template<typename Derived>
 Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t /* phase */) const {
@@ -150,14 +150,20 @@ Probability ProbabilisticModelCrtp<Derived>::evaluateSequence(
 /*===============================  GENERATOR  ================================*/
 
 template<typename Derived>
-Standard<Sequence> ProbabilisticModelCrtp<Derived>::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> ProbabilisticModelCrtp<Derived>::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
-  Sequence s;
-  for (size_t k = 0; k < size; k++)
-      s.push_back(generator->drawSymbol(k, phase, s));
-  return s;
+  Multiple<Sequence> sequences(1);
+
+  for (size_t k = 0; k < size; k++) {
+    auto symbols = generator->drawSymbol(k, phase, sequences);
+    for (size_t i = 0; i < symbols.size(); i++) {
+      sequences[i].push_back(symbols[i]);
+    }
+  }
+
+  return sequences;
 }
 
 /*===============================  SERIALIZER  ===============================*/

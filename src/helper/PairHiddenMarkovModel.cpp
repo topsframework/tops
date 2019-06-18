@@ -40,7 +40,7 @@ using Probabilities = std::vector<Probability>;
 /*                                 FUNCTIONS                                  */
 /*----------------------------------------------------------------------------*/
 
-model::PairHiddenMarkovModelPtr createGlobalAlignmentPairHMM() {
+model::PairHiddenMarkovModelPtr createGlobalMultiplePairHMM() {
   /*
    *                  τ
    *  .------------------------------.
@@ -171,7 +171,7 @@ model::PairHiddenMarkovModelPtr createGlobalAlignmentPairHMM() {
 
 /*----------------------------------------------------------------------------*/
 
-model::PairHiddenMarkovModelPtr createUntrainedGlobalAlignmentPairHMM() {
+model::PairHiddenMarkovModelPtr createUntrainedGlobalMultiplePairHMM() {
   /*
    *                  τ
    *  .------------------------------.

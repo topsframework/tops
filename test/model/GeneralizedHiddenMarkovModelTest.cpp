@@ -29,6 +29,7 @@
 // ToPS headers
 #include "model/Util.hpp"
 #include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
 #include "model/Probability.hpp"
 #include "model/RandomNumberGeneratorAdapter.hpp"
 
@@ -54,7 +55,7 @@ using ::testing::DoubleNear;
 using ::testing::ContainerEq;
 
 using tops::model::Sequence;
-using tops::model::Sequences;
+using tops::model::Multiple;
 using tops::model::GeneralizedHiddenMarkovModel;
 using tops::model::GeneralizedHiddenMarkovModelPtr;
 using tops::model::RandomNumberGeneratorAdapter;
@@ -78,7 +79,7 @@ class AGeneralizedHiddenMarkovModel : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AGeneralizedHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}},
     {{1}},
     {{0, 0, 0}},
@@ -96,7 +97,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, CalculatesForwardAndBackwardProbabilities)
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AGeneralizedHiddenMarkovModel, FindsTheBestPath) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}},
     {{1}},
     {{0, 0, 0}},
@@ -123,7 +124,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, FindsTheBestPath) {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AGeneralizedHiddenMarkovModel, DecodesASequenceOfObservations) {
-  std::vector<Sequences> tests = {
+  std::vector<Multiple<Sequence>> tests = {
     {{0}},
     {{1}},
     {{0, 0, 0}},

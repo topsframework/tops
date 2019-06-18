@@ -91,9 +91,10 @@ class CachedLabeler : public SimpleLabeler<Model> {
   mutable bool initialized = false;
 
   // Constructors
-  CachedLabeler(ModelPtr model, Sequence sequence,
-                std::vector<Sequence> other_sequences = {}, Cache cache = Cache())
-      : Base(std::move(model), std::move(sequence), std::move(other_sequences)),
+  CachedLabeler(ModelPtr model,
+                Multiple<Sequence> sequence,
+                Cache cache = Cache())
+      : Base(std::move(model), std::move(sequence)),
         _cache(std::move(cache)) {
   }
 

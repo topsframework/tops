@@ -26,7 +26,7 @@
 
 // Internal headers
 #include "model/Sequence.hpp"
-#include "model/Standard.hpp"
+#include "model/Multiple.hpp"
 #include "model/Evaluator.hpp"
 #include "model/Generator.hpp"
 #include "model/Serializer.hpp"
@@ -57,17 +57,17 @@ class ProbabilisticModel {
    * Factory of Simple/Cached Evaluators.
    * @param sequence Sequence to be evaluated
    * @param cached Type of Evaluator (Simple or Cached)
-   * @return New instance of EvaluatorPtr<Standard>
+   * @return New instance of EvaluatorPtr<Multiple>
    */
-  virtual EvaluatorPtr<Standard> standardEvaluator(
-      const Standard<Sequence>& sequence, bool cached = false) = 0;
+  virtual EvaluatorPtr<Multiple> standardEvaluator(
+      const Multiple<Sequence>& sequence, bool cached = false) = 0;
 
   /**
    * Factory of Simple Generators.
    * @param rng Random Number Generator
-   * @return New instance of EvaluatorPtr<Standard>
+   * @return New instance of EvaluatorPtr<Multiple>
    */
-  virtual GeneratorPtr<Standard> standardGenerator(
+  virtual GeneratorPtr<Multiple> standardGenerator(
       RandomNumberGeneratorPtr rng = RNGAdapter<std::mt19937>::make()) = 0;
 
   /**

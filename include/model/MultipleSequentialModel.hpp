@@ -55,7 +55,7 @@ class MultipleSequentialModel
 
   // Inner classes
   struct Cache : Base::Cache {
-    std::vector<EvaluatorPtr<Standard>> evaluators;
+    std::vector<EvaluatorPtr<Multiple>> evaluators;
   };
 
   /*=============================[ CONSTRUCTORS ]=============================*/
@@ -67,31 +67,31 @@ class MultipleSequentialModel
   /*-------------------------( Probabilistic Model )--------------------------*/
 
   // StandardEvaluator
-  Probability evaluateSymbol(SEPtr<Standard> evaluator,
+  Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const override;
-  Probability evaluateSequence(SEPtr<Standard> evaluator,
+  Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const override;
 
   // CachedEvaluator
-  void initializeCache(CEPtr<Standard> evaluator,
+  void initializeCache(CEPtr<Multiple> evaluator,
                        size_t phase) override;
-  Probability evaluateSymbol(CEPtr<Standard> evaluator,
+  Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                              size_t pos,
                              size_t phase) const override;
-  Probability evaluateSequence(CEPtr<Standard> evaluator,
+  Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
                                size_t phase) const override;
 
   // StandardGenerator
-  Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
+  Multiple<Symbol> drawSymbol(SGPtr<Multiple> generator,
                               size_t pos,
                               size_t phase,
-                              const Sequence& context) const override;
-  Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+                              const Multiple<Sequence>& context) const override;
+  Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                   size_t size,
                                   size_t phase) const override;
 

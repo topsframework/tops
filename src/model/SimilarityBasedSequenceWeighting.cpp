@@ -58,21 +58,19 @@ SimilarityBasedSequenceWeighting::SimilarityBasedSequenceWeighting(
 /*----------------------------------------------------------------------------*/
 
 SimilarityBasedSequenceWeightingPtr
-SimilarityBasedSequenceWeighting::train(TrainerPtr<Standard, Self> trainer,
+SimilarityBasedSequenceWeighting::train(TrainerPtr<Multiple, Self> trainer,
                                         standard_training_algorithm,
                                         size_t alphabet_size,
                                         size_t skip_offset,
                                         size_t skip_length,
                                         Sequence skip_sequence) {
-  auto& training_set = trainer->training_set();
-
   std::map<Sequence, size_t> counter;
   auto min_length = std::numeric_limits<size_t>::max();
-  for (const auto& training_sequence : training_set) {
-    counter[training_sequence]++;
+  for (const auto& sequences : trainer->training_set()) {
+    counter[sequences[0]]++;
 
-    if (training_sequence.size() < min_length)
-      min_length = training_sequence.size();
+    if (sequences[0].size() < min_length)
+      min_length = sequences[0].size();
   }
 
   auto normalizer = calculate_normalizer(skip_length, skip_offset, min_length,
@@ -130,7 +128,7 @@ double SimilarityBasedSequenceWeighting::calculate_normalizer(
 /*===============================  EVALUATOR  ================================*/
 
 Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
-    SEPtr<Standard> /* evaluator */,
+    SEPtr<Multiple> /* evaluator */,
     size_t /* pos */,
     size_t /* phase */) const {
   throw_exception(NotYetImplemented);
@@ -139,17 +137,17 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability SimilarityBasedSequenceWeighting::evaluateSequence(
-    SEPtr<Standard> evaluator,
+    SEPtr<Multiple> evaluator,
     size_t begin,
     size_t end,
     size_t /* phase */) const {
-  if (end > evaluator->sequence().size()) return 0;
+  if (end > evaluator->sequence()[0].size()) return 0;
 
   size_t length = _counter.begin()->first.size();
 
   Sequence ss;
   for (size_t i = begin; i < end && i < begin + length; i++)
-    ss.push_back(evaluator->sequence()[i]);
+    ss.push_back(evaluator->sequence()[0][i]);
 
   double sum = 0;
   for (auto weight : _counter) {
@@ -185,12 +183,12 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 /*----------------------------------------------------------------------------*/
 
 void SimilarityBasedSequenceWeighting::initializeCache(
-    CEPtr<Standard> evaluator, size_t phase) {
+    CEPtr<Multiple> evaluator, size_t phase) {
   auto& prefix_sum_array = evaluator->cache().prefix_sum_array;
-  prefix_sum_array.resize(evaluator->sequence().size());
+  prefix_sum_array.resize(evaluator->sequence()[0].size());
 
-  auto sequence_size = evaluator->sequence().size();
-  auto simple_evaluator = static_cast<SEPtr<Standard>>(evaluator);
+  auto sequence_size = evaluator->sequence()[0].size();
+  auto simple_evaluator = static_cast<SEPtr<Multiple>>(evaluator);
 
   for (size_t i = 0; i < sequence_size; i++)  {
     prefix_sum_array[i]
@@ -201,7 +199,7 @@ void SimilarityBasedSequenceWeighting::initializeCache(
 /*----------------------------------------------------------------------------*/
 
 Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t pos,
     size_t phase) const {
   return Base::evaluateSymbol(evaluator, pos, phase);
@@ -210,7 +208,7 @@ Probability SimilarityBasedSequenceWeighting::evaluateSymbol(
 /*----------------------------------------------------------------------------*/
 
 Probability SimilarityBasedSequenceWeighting::evaluateSequence(
-    CEPtr<Standard> evaluator,
+    CEPtr<Multiple> evaluator,
     size_t begin,
     size_t /* end */,
     size_t /* phase */) const {
@@ -222,18 +220,18 @@ Probability SimilarityBasedSequenceWeighting::evaluateSequence(
 
 /*===============================  GENERATOR  ================================*/
 
-Standard<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
-    SGPtr<Standard> /* generator */,
+Multiple<Symbol> SimilarityBasedSequenceWeighting::drawSymbol(
+    SGPtr<Multiple> /* generator */,
     size_t /* pos */,
     size_t /* phase */,
-    const Sequence &/* context */) const {
+    const Multiple<Sequence>&/* context */) const {
   throw_exception(NotYetImplemented);
 }
 
 /*----------------------------------------------------------------------------*/
 
-Standard<Sequence> SimilarityBasedSequenceWeighting::drawSequence(
-    SGPtr<Standard> generator,
+Multiple<Sequence> SimilarityBasedSequenceWeighting::drawSequence(
+    SGPtr<Multiple> generator,
     size_t size,
     size_t phase) const {
   return Base::drawSequence(generator, size, phase);

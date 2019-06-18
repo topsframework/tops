@@ -75,16 +75,16 @@ class AFixedSequenceAtPosition : public testing::Test {
 /*----------------------------------------------------------------------------*/
 
 TEST_F(AFixedSequenceAtPosition, ShouldEvaluateASequence) {
-  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 0, 0, 0, 0, 0})
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({{0, 0, 0, 0, 0, 0, 0, 0}})
                         ->evaluateSequence(0, 8)),
               DoubleEq(0));
-  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 0, 0, 0, 0})
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({{0, 0, 0, 1, 0, 0, 0, 0}})
                         ->evaluateSequence(0, 8)),
               DoubleEq(0));
-  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 1, 0, 0, 0})
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({{0, 0, 0, 1, 1, 0, 0, 0}})
                         ->evaluateSequence(0, 8)),
               DoubleEq(0));
-  ASSERT_THAT(DOUBLE(iid->standardEvaluator({0, 0, 0, 1, 0, 1, 0, 0})
+  ASSERT_THAT(DOUBLE(iid->standardEvaluator({{0, 0, 0, 1, 0, 1, 0, 0}})
                         ->evaluateSequence(0, 8)),
               DoubleNear(0.000041, 1e-4));
 }
@@ -93,7 +93,7 @@ TEST_F(AFixedSequenceAtPosition, ShouldEvaluateASequence) {
 
 TEST_F(AFixedSequenceAtPosition,
     ShouldDrawSequenceWithDefaultSeed) {
-  ASSERT_THAT(iid->standardGenerator()->drawSequence(5),
+  ASSERT_THAT(iid->standardGenerator()->drawSequence(5)[0],
               ContainerEq(Sequence{0, 1, 1, 1, 0}));
 }
 

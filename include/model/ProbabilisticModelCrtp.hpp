@@ -97,36 +97,36 @@ class ProbabilisticModelCrtp
 
   /**
    * Factory of Simple Trainers for unsupervised learning of parameters.
-   * @return New instance of TrainerPtr<Alignment, Derived>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Standard, Derived> standardTrainer();
+  static TrainerPtr<Multiple, Derived> standardTrainer();
 
   /**
    * Factory of Fixed Trainers for standard learning of parameters.
    * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
-  static TrainerPtr<Standard, Derived> standardTrainer(DerivedPtr model);
+  static TrainerPtr<Multiple, Derived> standardTrainer(DerivedPtr model);
 
   /**
    * Factory of Cached Trainers for standard learning of parameters.
    * @param tag Tag representing the training algorithm
    * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Standard, Derived>
+   * @return New instance of TrainerPtr<Multiple, Derived>
    */
   template<typename Tag, typename... Args>
-  static TrainerPtr<Standard, Derived> standardTrainer(
+  static TrainerPtr<Multiple, Derived> standardTrainer(
       Tag /* training_algorithm_tag */, Args&&... args);
 
   /*==========================[ OVERRIDEN METHODS ]===========================*/
 
   /*-------------------------( Probabilistic Model )--------------------------*/
 
-  EvaluatorPtr<Standard>
-  standardEvaluator(const Standard<Sequence>& sequence,
+  EvaluatorPtr<Multiple>
+  standardEvaluator(const Multiple<Sequence>& sequence,
                     bool cached = false) override;
 
-  GeneratorPtr<Standard>
+  GeneratorPtr<Multiple>
   standardGenerator(RandomNumberGeneratorPtr rng
                       = RNGAdapter<std::mt19937>::make()) override;
 
@@ -145,7 +145,7 @@ class ProbabilisticModelCrtp
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[pos])\f$
    */
-  virtual Probability evaluateSymbol(SEPtr<Standard> evaluator,
+  virtual Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                                      size_t pos,
                                      size_t phase) const = 0;
 
@@ -159,7 +159,7 @@ class ProbabilisticModelCrtp
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[begin..end-1])\f$
    */
-  virtual Probability evaluateSequence(SEPtr<Standard> evaluator,
+  virtual Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                        size_t begin,
                                        size_t end,
                                        size_t phase) const = 0;
@@ -171,7 +171,7 @@ class ProbabilisticModelCrtp
    * @param evaluator Instance of CachedEvaluator
    * @param phase Phase of the full sequence
    */
-  virtual void initializeCache(CEPtr<Standard> evaluator,
+  virtual void initializeCache(CEPtr<Multiple> evaluator,
                                size_t phase) = 0;
 
   /**
@@ -183,7 +183,7 @@ class ProbabilisticModelCrtp
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[pos])\f$
    */
-  virtual Probability evaluateSymbol(CEPtr<Standard> evaluator,
+  virtual Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                                      size_t pos,
                                      size_t phase) const = 0;
 
@@ -197,7 +197,7 @@ class ProbabilisticModelCrtp
    * @param phase Phase of the full sequence
    * @return \f$Pr(s[begin..end-1])\f$
    */
-  virtual Probability evaluateSequence(CEPtr<Standard> evaluator,
+  virtual Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                        size_t begin,
                                        size_t end,
                                        size_t phase) const = 0;
@@ -213,10 +213,11 @@ class ProbabilisticModelCrtp
    * @param context Context to be considered when generating the symbol
    * @return \f$x,\ x \in X\f$
    */
-  virtual Standard<Symbol> drawSymbol(SGPtr<Standard> generator,
-                                     size_t pos,
-                                     size_t phase,
-                                     const Sequence& context) const = 0;
+  virtual Multiple<Symbol> drawSymbol(
+      SGPtr<Multiple> generator,
+      size_t pos,
+      size_t phase,
+      const Multiple<Sequence>& context) const = 0;
 
   /**
    * Draws (given the trained model, randomly choose) a sequence
@@ -226,7 +227,7 @@ class ProbabilisticModelCrtp
    * @param phase Phase of the sequence to be generated
    * @return \f$x,\ x \in X\f$
    */
-  virtual Standard<Sequence> drawSequence(SGPtr<Standard> generator,
+  virtual Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                           size_t size,
                                           size_t phase) const = 0;
 

@@ -25,6 +25,7 @@
 
 // Internal headers
 #include "model/Symbol.hpp"
+#include "model/Multiple.hpp"
 #include "model/Sequence.hpp"
 #include "model/Probability.hpp"
 
@@ -52,11 +53,8 @@ class Calculator : public std::enable_shared_from_this<Calculator> {
   // Purely virtual methods
   virtual Probability calculate(const direction& dir) const = 0;
 
-  virtual Sequence& sequence() = 0;
-  virtual const Sequence& sequence() const = 0;
-
-  virtual std::vector<Sequence>& other_sequences() = 0;
-  virtual const std::vector<Sequence>& other_sequences() const = 0;
+  virtual Multiple<Sequence>& sequence() = 0;
+  virtual const Multiple<Sequence>& sequence() const = 0;
 
   // Destructor
   virtual ~Calculator() = default;
