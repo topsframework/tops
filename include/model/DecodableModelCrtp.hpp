@@ -76,16 +76,18 @@ class DecodableModelCrtp
     std::vector<Target> alignment;
   };
 
+  template<size_t num_sequences>
   struct LabelerReturn {
     Probability estimation;
     Sequence label;
     Multiple<Sequence> alignment;
-    Matrix matrix;
+    MultiArray<Probability, num_sequences+1> matrix;
   };
 
+  template<size_t num_sequences>
   struct CalculatorReturn {
     Probability estimation;
-    Matrix matrix;
+    MultiArray<Probability, num_sequences+1> matrix;
   };
 
   struct TraceBackReturn {

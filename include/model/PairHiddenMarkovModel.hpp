@@ -24,40 +24,16 @@
 #include <memory>
 
 // Internal headers
-#include "model/Matrix.hpp"
-#include "model/Labeling.hpp"
-#include "model/Sequence.hpp"
-#include "model/Estimation.hpp"
 #include "model/Probability.hpp"
+
+#include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
+#include "model/Labeling.hpp"
+#include "model/Estimation.hpp"
+
+#include "model/DecodableModelCrtp.hpp"
 #include "model/SimpleState.hpp"
-#include "model/DiscreteIIDModel.hpp"
 #include "model/PairHiddenMarkovModelState.hpp"
-
-#include "model/Trainer.hpp"
-#include "model/FixedTrainer.hpp"
-#include "model/SimpleTrainer.hpp"
-#include "model/CachedTrainer.hpp"
-
-#include "model/Evaluator.hpp"
-#include "model/SimpleEvaluator.hpp"
-#include "model/CachedEvaluator.hpp"
-
-#include "model/Generator.hpp"
-#include "model/SimpleGenerator.hpp"
-
-#include "model/Serializer.hpp"
-#include "model/SimpleSerializer.hpp"
-
-#include "model/Labeler.hpp"
-#include "model/SimpleLabeler.hpp"
-#include "model/CachedLabeler.hpp"
-
-#include "model/Calculator.hpp"
-#include "model/SimpleCalculator.hpp"
-#include "model/CachedCalculator.hpp"
-
-#include "model/RandomNumberGenerator.hpp"
-#include "model/RandomNumberGeneratorAdapter.hpp"
 
 namespace tops {
 namespace model {
@@ -76,7 +52,7 @@ using PairHiddenMarkovModelPtr = std::shared_ptr<PairHiddenMarkovModel>;
  * @brief TODO
  */
 class PairHiddenMarkovModel
-    : public std::enable_shared_from_this<PairHiddenMarkovModel> {
+    : public DecodableModelCrtp<PairHiddenMarkovModel> {
  public:
   // Tags
   class baum_welch_algorithm {};
@@ -84,65 +60,10 @@ class PairHiddenMarkovModel
   // Aliases
   using Self = PairHiddenMarkovModel;
   using SelfPtr = PairHiddenMarkovModelPtr;
-  using Base = void;
+  using Base = DecodableModelCrtp<Self>;
 
-  template<typename T>
-  using Multiple = std::vector<T>;
-
-  // Inner structs
-  struct Cache {
-    Matrix prefix_sum;
-    Cube alpha, beta, gamma, posterior_decoding;
-  };
-
-  template<typename Target>
-  struct GeneratorReturn {
-    Target label;
-    Multiple<Target> alignment;
-  };
-
-  struct LabelerReturn {
-    Probability estimation;
-    Sequence label;
-    Multiple<Sequence> alignment;
-    Cube matrix;
-  };
-
-  struct CalculatorReturn {
-    Probability estimation;
-    Cube matrix;
-  };
-
-  struct TraceBackReturn {
-    Sequence label;
-    Multiple<Sequence> alignment;
-  };
-
-  // Secretaries
-  template<template<typename Target> class Decorator>
-  using SEPtr = SimpleEvaluatorPtr<Decorator, Self>;
-  template<template<typename Target> class Decorator>
-  using CEPtr = CachedEvaluatorPtr<Decorator, Self>;
-
-  template<template<typename Target> class Decorator>
-  using SGPtr = SimpleGeneratorPtr<Decorator, Self>;
-
-  using SSPtr = SimpleSerializerPtr<Self>;
-
-  using SLPtr = SimpleLabelerPtr<Self>;
-  using CLPtr = CachedLabelerPtr<Self>;
-
-  using SCPtr = SimpleCalculatorPtr<Self>;
-  using CCPtr = CachedCalculatorPtr<Self>;
-
-  // Type traits
-  using State = typename StateTraits<Self>::State;
-  using StatePtr = std::shared_ptr<State>;
-
-  using MatchState  = typename StateTraits<Self>::MatchState;
-  using Gap1State   = typename StateTraits<Self>::Gap1State;
-  using Gap2State   = typename StateTraits<Self>::Gap2State;
-  using SilentState = typename StateTraits<Self>::SilentState;
+  using Gap1State = typename StateTraits<Self>::Gap1State;
+  using Gap2State = typename StateTraits<Self>::Gap2State;
 
   /*=============================[ CONSTRUCTORS ]=============================*/
 
@@ -151,80 +72,6 @@ class PairHiddenMarkovModel
                         size_t observation_alphabet_size);
 
   /*============================[ STATIC METHODS ]============================*/
-
-  /*-----------------------------( Constructors )-----------------------------*/
-
-  /**
-   * Make a std::shared_ptr<Self>.
-   * @param args Any arguments, forwared to Self's constructor
-   * @return New instance of new std::shared_ptr<Self>
-   */
-  template<typename... Args>
-  static SelfPtr make(Args&&... args) {
-    return std::make_shared<Self>(std::forward<Args>(args)...);
-  }
-
-  /*------------------------------( Factories )-------------------------------*/
-
-  /**
-   * Factory of Simple Trainers for unsupervised learning of parameters.
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(){
-    return SimpleTrainer<Multiple, Self>::make();
-  }
-
-  /**
-   * Factory of Fixed Trainers for unsupervised learning of parameters.
-   * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Multiple, Self>::make(model);
-  }
-
-  /**
-   * Factory of Cached Trainers for unsupervised learning of parameters.
-   * @param tag Tag representing the training algorithm
-   * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  template<typename Tag, typename... Args>
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(
-      Tag /* training_algorithm */, Args&&... args) {
-    return CachedTrainer<Multiple, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
-
-  /**
-   * Factory of Simple Trainers for supervised learning of parameters.
-   * @return New instance of TrainerPtr<Multiple, Derived>
-   */
-  static TrainerPtr<Labeling, Self> supervisedTrainer() {
-    return SimpleTrainer<Labeling, Self>::make();
-  }
-
-  /**
-   * Factory of Fixed Trainers for supervised learning of parameters.
-   * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Labeling, Self>::make(model);
-  }
-
-  /**
-   * Factory of Cached Trainers for supervised learning of parameters.
-   * @param tag Tag representing the training algorithm
-   * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  template<typename Tag, typename... Args>
-  static TrainerPtr<Labeling, Self> supervisedTrainer(
-      Tag /* training_algorithm */, Args&&... args) {
-    return CachedTrainer<Labeling, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
 
   /*-------------------------------( Trainer )--------------------------------*/
 
@@ -243,74 +90,7 @@ class PairHiddenMarkovModel
                        size_t max_iterations,
                        Probability diff_threshold);
 
-  /*==========================[ CONCRETE METHODS ]============================*/
-
-  /*------------------------------( Factories )-------------------------------*/
-
-  /**
-   * Factory of Simple/Cached Evaluators.
-   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
-   * @param sequence Sequence to be evaluated
-   * @param cached Type of Evaluator (Simple or Cached)
-   * @return New instance of EvaluatorPtr<Multiple>
-   */
-  template<template<typename Target> class Decorator>
-  EvaluatorPtr<Decorator> evaluator(const Decorator<Sequence>& sequence,
-                                    bool cached = false) {
-    auto self = shared_from_this();
-    return cached ? CachedEvaluator<Decorator, Self>::make(self, sequence)
-                  : SimpleEvaluator<Decorator, Self>::make(self, sequence);
-  }
-
-  /**
-   * Factory of Simple Generators.
-   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
-   * @param rng Random Number Generator
-   * @return New instance of EvaluatorPtr<Multiple>
-   */
-  template<template<typename Target> class Decorator>
-  GeneratorPtr<Decorator> generator(RandomNumberGeneratorPtr rng
-                                      = RNGAdapter<std::mt19937>::make()) {
-    auto self = shared_from_this();
-    return SimpleGenerator<Decorator, Self>::make(self, rng);
-  }
-
-  /**
-   * Factory of Simple Serializers.
-   * @param translator Visitor that serializes the files
-   * @return New instance of SerializerPtr
-   */
-  SerializerPtr serializer(TranslatorPtr translator) {
-    auto self = shared_from_this();
-    return SimpleSerializer<Self>::make(self, std::move(translator));
-  }
-
-  /**
-   * Factory of Simple/Cached Labelers
-   * @param sequence Input sequence to be labeled
-   * @param cached Type of Labeler (cached or non-cached)
-   * @return New instance of LabelerPtr
-   */
-  LabelerPtr labeler(const Multiple<Sequence>& sequence,
-                     bool cached = false) {
-    auto self = shared_from_this();
-    return cached ? CachedLabeler<Self>::make(self, sequence)
-                  : SimpleLabeler<Self>::make(self, sequence);
-  }
-
-  /**
-   * Factory of Simple/Cached Calculators
-   * @param sequence Input sequence that will be used for calculations
-   * @param cached Type of Calculator (cached or non-cached)
-   * @return New instance of CalculatorPtr
-   */
-  CalculatorPtr calculator(const Multiple<Sequence>& sequence,
-                           bool cached = false) {
-    auto self = shared_from_this();
-    Multiple<Sequence> sequences { sequence };
-    return cached ? CachedCalculator<Self>::make(self, sequence)
-                  : SimpleCalculator<Self>::make(self, sequence);
-  }
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
 
   /*---------------------------( SimpleEvaluator )----------------------------*/
 
@@ -325,7 +105,7 @@ class PairHiddenMarkovModel
    */
   Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -340,7 +120,7 @@ class PairHiddenMarkovModel
   Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -353,7 +133,7 @@ class PairHiddenMarkovModel
    */
   Probability evaluateSymbol(SEPtr<Labeling> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -368,7 +148,7 @@ class PairHiddenMarkovModel
   Probability evaluateSequence(SEPtr<Labeling> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /*---------------------------( CachedEvaluator )----------------------------*/
 
@@ -378,7 +158,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full sequence
    */
   void initializeCache(CEPtr<Multiple> evaluator,
-                       size_t phase);
+                       size_t phase) override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -391,7 +171,7 @@ class PairHiddenMarkovModel
    */
   Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -406,7 +186,7 @@ class PairHiddenMarkovModel
   Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /**
    * Lazily initializes the cache of a CachedEvaluator.
@@ -414,7 +194,7 @@ class PairHiddenMarkovModel
    * @param phase Phase of the full labeled sequence
    */
   void initializeCache(CEPtr<Labeling> evaluator,
-                       size_t phase);
+                       size_t phase) override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -427,7 +207,7 @@ class PairHiddenMarkovModel
    */
   Probability evaluateSymbol(CEPtr<Labeling> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -442,7 +222,7 @@ class PairHiddenMarkovModel
   Probability evaluateSequence(CEPtr<Labeling> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /*---------------------------( SimpleGenerator )----------------------------*/
 
@@ -458,7 +238,7 @@ class PairHiddenMarkovModel
   Multiple<Symbol> drawSymbol(SGPtr<Multiple> generator,
                              size_t pos,
                              size_t phase,
-                             const Multiple<Sequence>& context) const;
+                             const Multiple<Sequence>& context) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a sequence
@@ -470,7 +250,7 @@ class PairHiddenMarkovModel
    */
   Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                   size_t size,
-                                  size_t phase) const;
+                                  size_t phase) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled symbol
@@ -484,7 +264,7 @@ class PairHiddenMarkovModel
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               size_t pos,
                               size_t phase,
-                              const Labeling<Sequence>& context) const;
+                              const Labeling<Sequence>& context) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled sequence
@@ -496,7 +276,7 @@ class PairHiddenMarkovModel
    */
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   size_t size,
-                                  size_t phase) const;
+                                  size_t phase) const override;
 
   /*---------------------------( SimpleSerializer )---------------------------*/
 
@@ -505,7 +285,7 @@ class PairHiddenMarkovModel
    * in the disk using some file format) with a SimpleSerializer.
    * @param serializer Instance of SimpleSerializer
    */
-  void serialize(const SSPtr& serializer);
+  void serialize(const SSPtr serializer) override;
 
   /*----------------------------( SimpleLabeler )-----------------------------*/
 
@@ -518,7 +298,7 @@ class PairHiddenMarkovModel
    * @return The labeled sequence with its probability given the model
    */
   Estimation<Labeling<Sequence>>
-  labeling(SLPtr labeler, const Labeler::method& method) const;
+  labeling(SLPtr labeler, const Labeler::method& method) const override;
 
   /*----------------------------( CachedLabeler )-----------------------------*/
 
@@ -526,7 +306,7 @@ class PairHiddenMarkovModel
    * Lazily initializes the cache of a CachedLabeler.
    * @param labeler Instance of CachedLabeler
    */
-  void initializeCache(CLPtr labeler);
+  void initializeCache(CLPtr labeler) override;
 
   /**
    * Labels (given the trained model, decide the best associated labels
@@ -537,7 +317,7 @@ class PairHiddenMarkovModel
    * @return The labeled sequence with its probability given the model
    */
   Estimation<Labeling<Sequence>>
-  labeling(CLPtr labeler, const Labeler::method& method) const;
+  labeling(CLPtr labeler, const Labeler::method& method) const override;
 
   /*---------------------------( SimpleCalculator )---------------------------*/
 
@@ -548,8 +328,8 @@ class PairHiddenMarkovModel
    * @param direction Type of calculation
    * @return Probability of the sequence
    */
-  Probability
-  calculate(SCPtr calculator, const Calculator::direction& direction) const;
+  Probability calculate(
+      SCPtr calculator, const Calculator::direction& direction) const override;
 
   /*---------------------------( CachedCalculator )---------------------------*/
 
@@ -557,7 +337,7 @@ class PairHiddenMarkovModel
    * Lazily initializes the cache of a CachedCalculator.
    * @param calculator Instance of CachedCalculator
    */
-  void initializeCache(CCPtr calculator);
+  void initializeCache(CCPtr calculator) override;
 
   /**
    * Calculates associated probabilities (given the model) of a
@@ -566,42 +346,10 @@ class PairHiddenMarkovModel
    * @param direction Type of calculation
    * @return Probability of the sequence
    */
-  Probability
-  calculate(CCPtr calculator, const Calculator::direction& direction) const;
+  Probability calculate(
+      CCPtr calculator, const Calculator::direction& direction) const override;
 
-  /*--------------------------------( Getters )-------------------------------*/
-
-  /**
-   * Gets the model's state alphabet size.
-   * @return \f$|Y|\f$
-   */
-  size_t stateAlphabetSize() const;
-
-  /**
-   * Gets the model's observation alphabet size.
-   * @return \f$|X|\f$
-   */
-  size_t observationAlphabetSize() const;
-
-  /**
-   * Gets the state with a given ID.
-   * @return \f$y_i\f$
-   */
-  StatePtr state(typename State::Id id);
-
-  /**
-   * Gets a modifiable vector of std::shared_ptr<State>.
-   * @return \f$Yf$
-   */
-  std::vector<StatePtr> states();
-
-  /**
-   * Gets a non-modifiable vector of std::shared_ptr<State>.
-   * @return \f$Yf$
-   */
-  const std::vector<StatePtr> states() const;
-
-  /*----------------------------( Implementations )---------------------------*/
+  /*===========================[ CONCRETE METHODS ]===========================*/
 
   // Generator's implementations
   GeneratorReturn<Symbol> drawSymbol(const RandomNumberGeneratorPtr& rng,
@@ -611,27 +359,16 @@ class PairHiddenMarkovModel
                                          size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn viterbi(const Multiple<Sequence>& sequences) const;
-  LabelerReturn posteriorDecoding(const Multiple<Sequence>& sequences) const;
+  LabelerReturn<2> viterbi(const Multiple<Sequence>& sequences) const;
+  LabelerReturn<2> posteriorDecoding(const Multiple<Sequence>& sequences) const;
 
   // Calculator's implementations
-  CalculatorReturn forward(const Multiple<Sequence>& sequences) const;
-  CalculatorReturn backward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn<2> forward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn<2> backward(const Multiple<Sequence>& sequences) const;
 
   // Helpers
   TraceBackReturn traceBack(const Multiple<Sequence>& sequences,
                             const MultiArray<typename State::Id, 3>& psi) const;
-
- protected:
-  // Instance variables
-  std::vector<StatePtr> _states;
-  size_t _state_alphabet_size;
-  size_t _observation_alphabet_size;
-
-  Symbol _gap = _observation_alphabet_size;
-
-  typename State::Id _begin_id = 0;
-  typename State::Id _end_id = _state_alphabet_size-1;
 };
 
 }  // namespace model

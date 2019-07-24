@@ -49,9 +49,10 @@ GeneralizedHiddenMarkovModel::GeneralizedHiddenMarkovModel(
     size_t observation_alphabet_size,
     size_t num_phases,
     size_t max_backtracking)
-    : _states(std::move(states)),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size),
+    : DecodableModelCrtp(
+        std::move(states),
+        state_alphabet_size,
+        observation_alphabet_size),
       _num_phases(num_phases),
       _max_backtracking(max_backtracking) {
 }
@@ -106,16 +107,194 @@ GeneralizedHiddenMarkovModel::train(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Multiple> evaluator,
+                                             size_t pos,
+                                             size_t /* phase */) const {
+  auto[ full, alphas ] = forward({ evaluator->sequence() });
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Multiple> evaluator,
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                  size_t pos,
+                                  size_t /* phase */) const {
+  auto[ full, alphas ] = forward(evaluator->sequence().observations);
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Multiple> evaluator,
+                                                   size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Multiple> evaluator,
+                                             size_t pos,
+                                             size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Multiple> evaluator,
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                                   size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                             size_t pos,
+                                             size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+GeneralizedHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                               size_t begin,
+                                               size_t end,
+                                               size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+Multiple<Symbol>
+GeneralizedHiddenMarkovModel::drawSymbol(
+    SGPtr<Multiple> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Multiple<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Multiple<Sequence>
+GeneralizedHiddenMarkovModel::drawSequence(
+    SGPtr<Multiple> generator,
+    size_t size,
+    size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Symbol>
+GeneralizedHiddenMarkovModel::drawSymbol(
+    SGPtr<Labeling> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Labeling<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Sequence>
+GeneralizedHiddenMarkovModel::drawSequence(
+    SGPtr<Labeling> generator,
+    size_t size,
+    size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*================================  LABELER  =================================*/
+
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::labeling(
+    SLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+GeneralizedHiddenMarkovModel::labeling(
+    CLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*===============================  CALCULATOR  ===============================*/
+
+Probability GeneralizedHiddenMarkovModel::calculate(
+    SCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void GeneralizedHiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability GeneralizedHiddenMarkovModel::calculate(
+    CCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
 
 /*===============================  SERIALIZER  ===============================*/
 
-void GeneralizedHiddenMarkovModel::serialize(const SSPtr& serializer) {
-  serializer->translator()->translate(this->shared_from_this());
+void GeneralizedHiddenMarkovModel::serialize(const SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
-/*=================================  OTHERS  =================================*/
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 typename GeneralizedHiddenMarkovModel::GeneratorReturn<Symbol>
 GeneralizedHiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
@@ -156,9 +335,9 @@ GeneralizedHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
   return { label, alignment };
 }
 
-/*================================  LABELER  =================================*/
+/*----------------------------------------------------------------------------*/
 
-typename GeneralizedHiddenMarkovModel::LabelerReturn
+typename GeneralizedHiddenMarkovModel::LabelerReturn<1>
 GeneralizedHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -220,7 +399,7 @@ GeneralizedHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const
 
 /*----------------------------------------------------------------------------*/
 
-typename GeneralizedHiddenMarkovModel::LabelerReturn
+typename GeneralizedHiddenMarkovModel::LabelerReturn<1>
 GeneralizedHiddenMarkovModel::posteriorDecoding(
     const Multiple<Sequence>& sequences) const {
   const Probability zero;
@@ -273,7 +452,7 @@ GeneralizedHiddenMarkovModel::posteriorDecoding(
 
 /*----------------------------------------------------------------------------*/
 
-typename GeneralizedHiddenMarkovModel::CalculatorReturn
+typename GeneralizedHiddenMarkovModel::CalculatorReturn<1>
 GeneralizedHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
@@ -322,7 +501,7 @@ GeneralizedHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const
 
 /*----------------------------------------------------------------------------*/
 
-typename GeneralizedHiddenMarkovModel::CalculatorReturn
+typename GeneralizedHiddenMarkovModel::CalculatorReturn<1>
 GeneralizedHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
@@ -443,37 +622,6 @@ GeneralizedHiddenMarkovModel::traceBack(
   std::reverse(alignment[0].begin(), alignment[0].end());
 
   return { label, alignment };
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t GeneralizedHiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t GeneralizedHiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::state(typename State::Id id) -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto GeneralizedHiddenMarkovModel::states() const
-    -> const std::vector<StatePtr> {
-  return _states;
 }
 
 /*----------------------------------------------------------------------------*/

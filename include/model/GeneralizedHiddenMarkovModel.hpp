@@ -26,40 +26,16 @@
 #include <utility>
 
 // Internal headers
-#include "model/Matrix.hpp"
-#include "model/Labeling.hpp"
-#include "model/Sequence.hpp"
-#include "model/Estimation.hpp"
 #include "model/Probability.hpp"
+
+#include "model/Sequence.hpp"
+#include "model/Multiple.hpp"
+#include "model/Labeling.hpp"
+#include "model/Estimation.hpp"
+
+#include "model/DecodableModelCrtp.hpp"
 #include "model/SimpleState.hpp"
-#include "model/DiscreteIIDModel.hpp"
 #include "model/GeneralizedHiddenMarkovModelState.hpp"
-
-#include "model/Trainer.hpp"
-#include "model/FixedTrainer.hpp"
-#include "model/SimpleTrainer.hpp"
-#include "model/CachedTrainer.hpp"
-
-#include "model/Evaluator.hpp"
-#include "model/SimpleEvaluator.hpp"
-#include "model/CachedEvaluator.hpp"
-
-#include "model/Generator.hpp"
-#include "model/SimpleGenerator.hpp"
-
-#include "model/Serializer.hpp"
-#include "model/SimpleSerializer.hpp"
-
-#include "model/Labeler.hpp"
-#include "model/SimpleLabeler.hpp"
-#include "model/CachedLabeler.hpp"
-
-#include "model/Calculator.hpp"
-#include "model/SimpleCalculator.hpp"
-#include "model/CachedCalculator.hpp"
-
-#include "model/RandomNumberGenerator.hpp"
-#include "model/RandomNumberGeneratorAdapter.hpp"
 
 namespace tops {
 namespace model {
@@ -78,7 +54,7 @@ using GeneralizedHiddenMarkovModelPtr = std::shared_ptr<GeneralizedHiddenMarkovM
  * @brief TODO
  */
 class GeneralizedHiddenMarkovModel
-    : public std::enable_shared_from_this<GeneralizedHiddenMarkovModel> {
+    : public DecodableModelCrtp<GeneralizedHiddenMarkovModel> {
  public:
   // Tags
   class maximum_likelihood_algorithm {};
@@ -86,63 +62,7 @@ class GeneralizedHiddenMarkovModel
   // Aliases
   using Self = GeneralizedHiddenMarkovModel;
   using SelfPtr = GeneralizedHiddenMarkovModelPtr;
-  using Base = void;
-
-  template<typename T> using Multiple = std::vector<T>;
-  template<typename T> using LabelingMultiple = Labeling<std::vector<T>>;
-
-  // Inner structs
-  struct Cache {
-    std::vector<Probability> prefix_sum_array;
-    Matrix alpha, beta, gamma, posterior_decoding;
-  };
-
-  template<typename Target>
-  struct GeneratorReturn {
-    Target label;
-    Multiple<Target> alignment;
-  };
-
-  struct LabelerReturn {
-    Probability estimation;
-    Sequence label;
-    Multiple<Sequence> alignment;
-    Matrix matrix;
-  };
-
-  struct CalculatorReturn {
-    Probability estimation;
-    Matrix matrix;
-  };
-
-  struct TraceBackReturn {
-    Sequence label;
-    Multiple<Sequence> alignment;
-  };
-
-  // Secretaries
-  template<template<typename Target> class Decorator>
-  using SEPtr = SimpleEvaluatorPtr<Decorator, Self>;
-  template<template<typename Target> class Decorator>
-  using CEPtr = CachedEvaluatorPtr<Decorator, Self>;
-
-  template<template<typename Target> class Decorator>
-  using SGPtr = SimpleGeneratorPtr<Decorator, Self>;
-
-  using SSPtr = SimpleSerializerPtr<Self>;
-
-  using SLPtr = SimpleLabelerPtr<Self>;
-  using CLPtr = CachedLabelerPtr<Self>;
-
-  using SCPtr = SimpleCalculatorPtr<Self>;
-  using CCPtr = CachedCalculatorPtr<Self>;
-
-  // Type traits
-  using State = typename StateTraits<Self>::State;
-  using StatePtr = std::shared_ptr<State>;
-
-  using MatchState  = typename StateTraits<Self>::MatchState;
-  using SilentState = typename StateTraits<Self>::SilentState;
+  using Base = DecodableModelCrtp<Self>;
 
   /*=============================[ CONSTRUCTORS ]=============================*/
 
@@ -154,80 +74,6 @@ class GeneralizedHiddenMarkovModel
       size_t max_backtracking);
 
   /*============================[ STATIC METHODS ]============================*/
-
-  /*-----------------------------( Constructors )-----------------------------*/
-
-  /**
-   * Make a std::shared_ptr<Self>.
-   * @param args Any arguments, forwared to Self's constructor
-   * @return New instance of new std::shared_ptr<Self>
-   */
-  template<typename... Args>
-  static SelfPtr make(Args&&... args) {
-    return std::make_shared<Self>(std::forward<Args>(args)...);
-  }
-
-  /*------------------------------( Factories )-------------------------------*/
-
-  /**
-   * Factory of Simple Trainers for unsupervised learning of parameters.
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(){
-    return SimpleTrainer<Multiple, Self>::make();
-  }
-
-  /**
-   * Factory of Fixed Trainers for unsupervised learning of parameters.
-   * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Multiple, Self>::make(model);
-  }
-
-  /**
-   * Factory of Cached Trainers for unsupervised learning of parameters.
-   * @param tag Tag representing the training algorithm
-   * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  template<typename Tag, typename... Args>
-  static TrainerPtr<Multiple, Self> unsupervisedTrainer(
-      Tag /* training_algorithm_tag */, Args&&... args) {
-    return CachedTrainer<Multiple, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
-
-  /**
-   * Factory of Simple Trainers for supervised learning of parameters.
-   * @return New instance of TrainerPtr<Multiple, Derived>
-   */
-  static TrainerPtr<Labeling, Self> supervisedTrainer() {
-    return SimpleTrainer<Labeling, Self>::make();
-  }
-
-  /**
-   * Factory of Fixed Trainers for supervised learning of parameters.
-   * @param model Trained model with predefined parameters
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  static TrainerPtr<Labeling, Self> supervisedTrainer(SelfPtr model) {
-    return FixedTrainer<Labeling, Self>::make(model);
-  }
-
-  /**
-   * Factory of Cached Trainers for supervised learning of parameters.
-   * @param tag Tag representing the training algorithm
-   * @param params Parameters for the training algorithn chosen
-   * @return New instance of TrainerPtr<Multiple, Self>
-   */
-  template<typename Tag, typename... Args>
-  static TrainerPtr<Labeling, Self> supervisedTrainer(
-      Tag /* training_algorithm_tag */, Args&&... args) {
-    return CachedTrainer<Labeling, Self, Tag, Args...>::make(
-        Tag{}, std::forward<Args>(args)...);
-  }
 
   /*-------------------------------( Trainer )--------------------------------*/
 
@@ -245,73 +91,7 @@ class GeneralizedHiddenMarkovModel
                        const GeneralizedHiddenMarkovModelPtr& initial_model,
                        size_t pseudo_counter);
 
-  /*==========================[ CONCRETE METHODS ]============================*/
-
-  /*------------------------------( Factories )-------------------------------*/
-
-  /**
-   * Factory of Simple/Cached Evaluators.
-   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
-   * @param sequence Sequence to be evaluated
-   * @param cached Type of Evaluator (Simple or Cached)
-   * @return New instance of EvaluatorPtr<Multiple>
-   */
-  template<template<typename Target> class Decorator>
-  EvaluatorPtr<Decorator> evaluator(const Decorator<Sequence>& sequence,
-                                    bool cached = false) {
-    auto self = shared_from_this();
-    return cached ? CachedEvaluator<Decorator, Self>::make(self, sequence)
-                  : SimpleEvaluator<Decorator, Self>::make(self, sequence);
-  }
-
-  /**
-   * Factory of Simple Generators.
-   * @tparam Decorator Type of sequence (standard or labeled) being evaluated
-   * @param rng Random Number Generator
-   * @return New instance of EvaluatorPtr<Multiple>
-   */
-  template<template<typename Target> class Decorator>
-  GeneratorPtr<Decorator> generator(RandomNumberGeneratorPtr rng
-                                      = RNGAdapter<std::mt19937>::make()) {
-    auto self = shared_from_this();
-    return SimpleGenerator<Decorator, Self>::make(self, rng);
-  }
-
-  /**
-   * Factory of Simple Serializers.
-   * @param translator Visitor that serializes the files
-   * @return New instance of SerializerPtr
-   */
-  SerializerPtr serializer(TranslatorPtr translator) {
-    auto self = shared_from_this();
-    return SimpleSerializer<Self>::make(self, std::move(translator));
-  }
-
-  /**
-   * Factory of Simple/Cached Labelers
-   * @param sequence Input sequence to be labeled
-   * @param cached Type of Labeler (cached or non-cached)
-   * @return New instance of LabelerPtr
-   */
-  LabelerPtr labeler(const Multiple<Sequence>& sequence,
-                     bool cached = false) {
-    auto self = shared_from_this();
-    return cached ? CachedLabeler<Self>::make(self, sequence)
-                  : SimpleLabeler<Self>::make(self, sequence);
-  }
-
-  /**
-   * Factory of Simple/Cached Calculators
-   * @param sequence Input sequence that will be used for calculations
-   * @param cached Type of Calculator (cached or non-cached)
-   * @return New instance of CalculatorPtr
-   */
-  CalculatorPtr calculator(const Multiple<Sequence>& sequence,
-                           bool cached = false) {
-    auto self = shared_from_this();
-    return cached ? CachedCalculator<Self>::make(self, sequence)
-                  : SimpleCalculator<Self>::make(self, sequence);
-  }
+  /*==========================[ OVERRIDEN METHODS ]===========================*/
 
   /*---------------------------( SimpleEvaluator )----------------------------*/
 
@@ -326,7 +106,7 @@ class GeneralizedHiddenMarkovModel
    */
   Probability evaluateSymbol(SEPtr<Multiple> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -341,7 +121,7 @@ class GeneralizedHiddenMarkovModel
   Probability evaluateSequence(SEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -354,7 +134,7 @@ class GeneralizedHiddenMarkovModel
    */
   Probability evaluateSymbol(SEPtr<Labeling> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -369,7 +149,7 @@ class GeneralizedHiddenMarkovModel
   Probability evaluateSequence(SEPtr<Labeling> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /*---------------------------( CachedEvaluator )----------------------------*/
 
@@ -379,7 +159,7 @@ class GeneralizedHiddenMarkovModel
    * @param phase Phase of the full sequence
    */
   void initializeCache(CEPtr<Multiple> evaluator,
-                       size_t phase);
+                       size_t phase) override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -392,7 +172,7 @@ class GeneralizedHiddenMarkovModel
    */
   Probability evaluateSymbol(CEPtr<Multiple> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -407,7 +187,7 @@ class GeneralizedHiddenMarkovModel
   Probability evaluateSequence(CEPtr<Multiple> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /**
    * Lazily initializes the cache of a CachedEvaluator.
@@ -415,7 +195,7 @@ class GeneralizedHiddenMarkovModel
    * @param phase Phase of the full labeled sequence
    */
   void initializeCache(CEPtr<Labeling> evaluator,
-                       size_t phase);
+                       size_t phase) override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -428,7 +208,7 @@ class GeneralizedHiddenMarkovModel
    */
   Probability evaluateSymbol(CEPtr<Labeling> evaluator,
                              size_t pos,
-                             size_t phase) const;
+                             size_t phase) const override;
 
   /**
    * Evaluates (given the trained model, returns the probability of)
@@ -443,7 +223,7 @@ class GeneralizedHiddenMarkovModel
   Probability evaluateSequence(CEPtr<Labeling> evaluator,
                                size_t begin,
                                size_t end,
-                               size_t phase) const;
+                               size_t phase) const override;
 
   /*---------------------------( SimpleGenerator )----------------------------*/
 
@@ -459,7 +239,7 @@ class GeneralizedHiddenMarkovModel
   Multiple<Symbol> drawSymbol(SGPtr<Multiple> generator,
                              size_t pos,
                              size_t phase,
-                             const Multiple<Sequence>& context) const;
+                             const Multiple<Sequence>& context) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a sequence
@@ -471,7 +251,7 @@ class GeneralizedHiddenMarkovModel
    */
   Multiple<Sequence> drawSequence(SGPtr<Multiple> generator,
                                   size_t size,
-                                  size_t phase) const;
+                                  size_t phase) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled symbol
@@ -485,7 +265,7 @@ class GeneralizedHiddenMarkovModel
   Labeling<Symbol> drawSymbol(SGPtr<Labeling> generator,
                               size_t pos,
                               size_t phase,
-                              const Labeling<Sequence>& context) const;
+                              const Labeling<Sequence>& context) const override;
 
   /**
    * Draws (given the trained model, randomly choose) a labeled sequence
@@ -497,7 +277,7 @@ class GeneralizedHiddenMarkovModel
    */
   Labeling<Sequence> drawSequence(SGPtr<Labeling> generator,
                                   size_t size,
-                                  size_t phase) const;
+                                  size_t phase) const override;
 
   /*---------------------------( SimpleSerializer )---------------------------*/
 
@@ -506,7 +286,7 @@ class GeneralizedHiddenMarkovModel
    * in the disk using some file format) with a SimpleSerializer.
    * @param serializer Instance of SimpleSerializer
    */
-  void serialize(const SSPtr& serializer);
+  void serialize(const SSPtr serializer) override;
 
   /*----------------------------( SimpleLabeler )-----------------------------*/
 
@@ -519,7 +299,7 @@ class GeneralizedHiddenMarkovModel
    * @return The labeled sequence with its probability given the model
    */
   Estimation<Labeling<Sequence>>
-  labeling(SLPtr labeler, const Labeler::method& method) const;
+  labeling(SLPtr labeler, const Labeler::method& method) const override;
 
   /*----------------------------( CachedLabeler )-----------------------------*/
 
@@ -527,7 +307,7 @@ class GeneralizedHiddenMarkovModel
    * Lazily initializes the cache of a CachedLabeler.
    * @param labeler Instance of CachedLabeler
    */
-  void initializeCache(CLPtr labeler);
+  void initializeCache(CLPtr labeler) override;
 
   /**
    * Labels (given the trained model, decide the best associated labels
@@ -538,7 +318,7 @@ class GeneralizedHiddenMarkovModel
    * @return The labeled sequence with its probability given the model
    */
   Estimation<Labeling<Sequence>>
-  labeling(CLPtr labeler, const Labeler::method& method) const;
+  labeling(CLPtr labeler, const Labeler::method& method) const override;
 
   /*---------------------------( SimpleCalculator )---------------------------*/
 
@@ -549,8 +329,8 @@ class GeneralizedHiddenMarkovModel
    * @param direction Type of calculation
    * @return Probability of the sequence
    */
-  Probability
-  calculate(SCPtr calculator, const Calculator::direction& direction) const;
+  Probability calculate(
+      SCPtr calculator, const Calculator::direction& direction) const override;
 
   /*---------------------------( CachedCalculator )---------------------------*/
 
@@ -558,7 +338,7 @@ class GeneralizedHiddenMarkovModel
    * Lazily initializes the cache of a CachedCalculator.
    * @param calculator Instance of CachedCalculator
    */
-  void initializeCache(CCPtr calculator);
+  void initializeCache(CCPtr calculator) override;
 
   /**
    * Calculates associated probabilities (given the model) of a
@@ -567,42 +347,10 @@ class GeneralizedHiddenMarkovModel
    * @param direction Type of calculation
    * @return Probability of the sequence
    */
-  Probability
-  calculate(CCPtr calculator, const Calculator::direction& direction) const;
+  Probability calculate(
+      CCPtr calculator, const Calculator::direction& direction) const override;
 
-  /*--------------------------------( Getters )-------------------------------*/
-
-  /**
-   * Gets the model's state alphabet size.
-   * @return \f$|Y|\f$
-   */
-  size_t stateAlphabetSize() const;
-
-  /**
-   * Gets the model's observation alphabet size.
-   * @return \f$|X|\f$
-   */
-  size_t observationAlphabetSize() const;
-
-  /**
-   * Gets the state with a given ID.
-   * @return \f$y_i\f$
-   */
-  StatePtr state(typename State::Id id);
-
-  /**
-   * Gets a modifiable vector of std::shared_ptr<State>.
-   * @return \f$Yf$
-   */
-  std::vector<StatePtr> states();
-
-  /**
-   * Gets a non-modifiable vector of std::shared_ptr<State>.
-   * @return \f$Yf$
-   */
-  const std::vector<StatePtr> states() const;
-
-  /*----------------------------( Implementations )---------------------------*/
+  /*===========================[ CONCRETE METHODS ]===========================*/
 
   // Generator's implementations
   GeneratorReturn<Symbol> drawSymbol(const RandomNumberGeneratorPtr& rng,
@@ -612,12 +360,12 @@ class GeneralizedHiddenMarkovModel
                                          size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn viterbi(const Multiple<Sequence>& sequences) const;
-  LabelerReturn posteriorDecoding(const Multiple<Sequence>& sequences) const;
+  LabelerReturn<1> viterbi(const Multiple<Sequence>& sequences) const;
+  LabelerReturn<1> posteriorDecoding(const Multiple<Sequence>& sequences) const;
 
   // Calculator's implementations
-  CalculatorReturn forward(const Multiple<Sequence>& sequences) const;
-  CalculatorReturn backward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn<1> forward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn<1> backward(const Multiple<Sequence>& sequences) const;
 
   // Helpers
   bool segmentIsViable(const Sequence& sequence,
@@ -631,16 +379,8 @@ class GeneralizedHiddenMarkovModel
 
  protected:
   // Instance variables
-  std::vector<StatePtr> _states;
-  size_t _state_alphabet_size;
-  size_t _observation_alphabet_size;
   size_t _num_phases;
   size_t _max_backtracking;
-
-  Symbol _gap = _observation_alphabet_size;
-
-  typename State::Id _begin_id = 0;
-  typename State::Id _end_id = _state_alphabet_size-1;
 };
 
 }  // namespace model

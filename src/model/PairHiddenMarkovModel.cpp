@@ -43,9 +43,10 @@ PairHiddenMarkovModel::PairHiddenMarkovModel(
     std::vector<StatePtr> states,
     size_t state_alphabet_size,
     size_t observation_alphabet_size)
-    : _states(std::move(states)),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+    : DecodableModelCrtp(
+        std::move(states),
+        state_alphabet_size,
+        observation_alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -160,15 +161,191 @@ PairHiddenMarkovModel::train(const TrainerPtr<Multiple, Self>& trainer,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability
+PairHiddenMarkovModel::evaluateSymbol(SEPtr<Multiple> evaluator,
+                                      size_t pos,
+                                      size_t /* phase */) const {
+  auto[ full, alphas ] = forward({ evaluator->sequence() });
+  return alphas[0][pos][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSequence(SEPtr<Multiple> evaluator,
+                                        size_t begin,
+                                        size_t end,
+                                        size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                      size_t pos,
+                                      size_t /* phase */) const {
+  auto[ full, alphas ] = forward(evaluator->sequence().observations);
+  return alphas[0][pos][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
+                                        size_t begin,
+                                        size_t end,
+                                        size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void PairHiddenMarkovModel::initializeCache(CEPtr<Multiple> evaluator,
+                                            size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSymbol(CEPtr<Multiple> evaluator,
+                                      size_t pos,
+                                      size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSequence(CEPtr<Multiple> evaluator,
+                                        size_t begin,
+                                        size_t end,
+                                        size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void PairHiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                            size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                      size_t pos,
+                                      size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+PairHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                        size_t begin,
+                                        size_t end,
+                                        size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+Multiple<Symbol>
+PairHiddenMarkovModel::drawSymbol(
+    SGPtr<Multiple> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Multiple<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Multiple<Sequence>
+PairHiddenMarkovModel::drawSequence(SGPtr<Multiple> generator,
+                                    size_t size,
+                                    size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Symbol>
+PairHiddenMarkovModel::drawSymbol(
+    SGPtr<Labeling> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Labeling<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Sequence>
+PairHiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+                                    size_t size,
+                                    size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*================================  LABELER  =================================*/
+
+Estimation<Labeling<Sequence>>
+PairHiddenMarkovModel::labeling(
+    SLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void PairHiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+PairHiddenMarkovModel::labeling(
+    CLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*===============================  CALCULATOR  ===============================*/
+
+Probability PairHiddenMarkovModel::calculate(
+    SCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void PairHiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability PairHiddenMarkovModel::calculate(
+    CCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
 
 /*===============================  SERIALIZER  ===============================*/
 
-void PairHiddenMarkovModel::serialize(const SSPtr& serializer) {
-  serializer->translator()->translate(this->shared_from_this());
+void PairHiddenMarkovModel::serialize(const SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
 typename PairHiddenMarkovModel::GeneratorReturn<Symbol>
@@ -208,9 +385,9 @@ PairHiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
   return { label, alignment };
 }
 
-/*================================  LABELER  =================================*/
+/*----------------------------------------------------------------------------*/
 
-typename PairHiddenMarkovModel::LabelerReturn
+typename PairHiddenMarkovModel::LabelerReturn<2>
 PairHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -262,7 +439,7 @@ PairHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
 
 /*----------------------------------------------------------------------------*/
 
-typename PairHiddenMarkovModel::LabelerReturn
+typename PairHiddenMarkovModel::LabelerReturn<2>
 PairHiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -317,7 +494,7 @@ PairHiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) co
 
 /*----------------------------------------------------------------------------*/
 
-typename PairHiddenMarkovModel::CalculatorReturn
+typename PairHiddenMarkovModel::CalculatorReturn<2>
 PairHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -358,7 +535,7 @@ PairHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
 
 /*----------------------------------------------------------------------------*/
 
-typename PairHiddenMarkovModel::CalculatorReturn
+typename PairHiddenMarkovModel::CalculatorReturn<2>
 PairHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -435,36 +612,6 @@ PairHiddenMarkovModel::traceBack(
   std::reverse(alignment[1].begin(), alignment[1].end());
 
   return { label, alignment };
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t PairHiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t PairHiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto PairHiddenMarkovModel::state(typename State::Id id) -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto PairHiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto PairHiddenMarkovModel::states() const -> const std::vector<StatePtr> {
-  return _states;
 }
 
 /*----------------------------------------------------------------------------*/

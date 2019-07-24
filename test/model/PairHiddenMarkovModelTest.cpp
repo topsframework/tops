@@ -262,7 +262,7 @@ TEST_F(APairHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<PairHiddenMarkovModel::LabelerReturn> expected = {
+  std::vector<PairHiddenMarkovModel::LabelerReturn<2>> expected = {
     { 0.02   , {0, 1, 4}                , tests[0], {} },
     { 0.005  , {0, 1, 4}                , tests[1], {} },
     { 0.0008 , {0, 1, 1, 1, 4}          , tests[2], {} },
@@ -289,7 +289,7 @@ TEST_F(APairHiddenMarkovModel, DecodesASequenceOfObservations) {
     {{1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<PairHiddenMarkovModel::LabelerReturn> expected = {
+  std::vector<PairHiddenMarkovModel::LabelerReturn<2>> expected = {
     { 1.0       , {0, 1, 4}                , tests[0], {} },
     { 1.0       , {0, 1, 4}                , tests[1], {} },
     { 0.418035  , {0, 1, 1, 1, 4}          , tests[2], {} },

@@ -45,9 +45,10 @@ ContextSensitiveHiddenMarkovModel::ContextSensitiveHiddenMarkovModel(
     std::vector<StatePtr> states,
     size_t state_alphabet_size,
     size_t observation_alphabet_size)
-    : _states(std::move(states)),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+    : DecodableModelCrtp(
+        std::move(states),
+        state_alphabet_size,
+        observation_alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -197,16 +198,192 @@ ContextSensitiveHiddenMarkovModel::train(
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSymbol(SEPtr<Multiple> evaluator,
+                                                  size_t pos,
+                                                  size_t /* phase */) const {
+  auto[ full, alphas ] = forward({ evaluator->sequence() });
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSequence(SEPtr<Multiple> evaluator,
+                                                    size_t begin,
+                                                    size_t end,
+                                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                                  size_t pos,
+                                                  size_t /* phase */) const {
+  auto[ full, alphas ] = forward(evaluator->sequence().observations);
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
+                                                    size_t begin,
+                                                    size_t end,
+                                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void ContextSensitiveHiddenMarkovModel::initializeCache(CEPtr<Multiple> evaluator,
+                                                        size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSymbol(CEPtr<Multiple> evaluator,
+                                                  size_t pos,
+                                                  size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSequence(CEPtr<Multiple> evaluator,
+                                                    size_t begin,
+                                                    size_t end,
+                                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void ContextSensitiveHiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                                        size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                                  size_t pos,
+                                                  size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+ContextSensitiveHiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                                    size_t begin,
+                                                    size_t end,
+                                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+Multiple<Symbol>
+ContextSensitiveHiddenMarkovModel::drawSymbol(
+    SGPtr<Multiple> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Multiple<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Multiple<Sequence>
+ContextSensitiveHiddenMarkovModel::drawSequence(SGPtr<Multiple> generator,
+                                                size_t size,
+                                                size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Symbol>
+ContextSensitiveHiddenMarkovModel::drawSymbol(
+    SGPtr<Labeling> /* generator */,
+    size_t /* position */,
+    size_t /* phase */,
+    const Labeling<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Sequence>
+ContextSensitiveHiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+                                                size_t size,
+                                                size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*================================  LABELER  =================================*/
+
+Estimation<Labeling<Sequence>>
+ContextSensitiveHiddenMarkovModel::labeling(
+    SLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void ContextSensitiveHiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+ContextSensitiveHiddenMarkovModel::labeling(
+    CLPtr /* labeler */, const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*===============================  CALCULATOR  ===============================*/
+
+Probability ContextSensitiveHiddenMarkovModel::calculate(
+    SCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void ContextSensitiveHiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability ContextSensitiveHiddenMarkovModel::calculate(
+    CCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
 
 /*===============================  SERIALIZER  ===============================*/
 
-void ContextSensitiveHiddenMarkovModel::serialize(const SSPtr& serializer) {
-  serializer->translator()->translate(this->shared_from_this());
+void ContextSensitiveHiddenMarkovModel::serialize(const SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
-/*=================================  OTHERS  =================================*/
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 typename ContextSensitiveHiddenMarkovModel::GeneratorReturn<Symbol>
 ContextSensitiveHiddenMarkovModel::drawSymbol(
@@ -246,9 +423,9 @@ ContextSensitiveHiddenMarkovModel::drawSequence(
   return { label, alignment };
 }
 
-/*================================  LABELER  =================================*/
+/*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::LabelerReturn
+typename ContextSensitiveHiddenMarkovModel::LabelerReturn<1>
 ContextSensitiveHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -294,7 +471,7 @@ ContextSensitiveHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) 
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::LabelerReturn
+typename ContextSensitiveHiddenMarkovModel::LabelerReturn<1>
 ContextSensitiveHiddenMarkovModel::posteriorDecoding(
     const Multiple<Sequence>& sequences) const {
   Probability zero;
@@ -343,7 +520,7 @@ ContextSensitiveHiddenMarkovModel::posteriorDecoding(
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
+typename ContextSensitiveHiddenMarkovModel::CalculatorReturn<1>
 ContextSensitiveHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -378,7 +555,7 @@ ContextSensitiveHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) 
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
+typename ContextSensitiveHiddenMarkovModel::CalculatorReturn<1>
 ContextSensitiveHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -445,38 +622,6 @@ ContextSensitiveHiddenMarkovModel::traceBack(
   std::reverse(alignment[0].begin(), alignment[0].end());
 
   return { label, alignment };
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t ContextSensitiveHiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t ContextSensitiveHiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto ContextSensitiveHiddenMarkovModel::state(typename State::Id id)
-    -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto ContextSensitiveHiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto ContextSensitiveHiddenMarkovModel::states() const
-    -> const std::vector<StatePtr> {
-  return _states;
 }
 
 /*----------------------------------------------------------------------------*/

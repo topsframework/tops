@@ -104,7 +104,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, FindsTheBestPath) {
     {{1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn> expected = {
+  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn<1>> expected = {
     { 0.0225     , {0, 1, 3}                , tests[0], {} },
     { 0.036      , {0, 2, 3}                , tests[1], {} },
     { 0.00275625 , {0, 1, 1, 1, 3}          , tests[2], {} },
@@ -131,7 +131,7 @@ TEST_F(AGeneralizedHiddenMarkovModel, DecodesASequenceOfObservations) {
     {{1, 1, 1, 1, 1, 1}},
   };
 
-  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn> expected = {
+  std::vector<GeneralizedHiddenMarkovModel::LabelerReturn<1>> expected = {
     { 0.714286 , {0, 1, 3}                , tests[0], {} },
     { 0.615385 , {0, 2, 3}                , tests[1], {} },
     { 0.604329 , {0, 1, 1, 1, 3}          , tests[2], {} },

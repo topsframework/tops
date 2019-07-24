@@ -45,9 +45,10 @@ HiddenMarkovModel::HiddenMarkovModel(
     std::vector<StatePtr> states,
     size_t state_alphabet_size,
     size_t observation_alphabet_size)
-    : _states(std::move(states)),
-      _state_alphabet_size(state_alphabet_size),
-      _observation_alphabet_size(observation_alphabet_size) {
+    : DecodableModelCrtp(
+        std::move(states),
+        state_alphabet_size,
+        observation_alphabet_size) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -193,16 +194,190 @@ HiddenMarkovModel::train(const TrainerPtr<Labeling, Self>& trainer,
 }
 
 /*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
+/*                             OVERRIDEN METHODS                              */
 /*----------------------------------------------------------------------------*/
+
+/*===============================  EVALUATOR  ================================*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(SEPtr<Multiple> evaluator,
+                                  size_t pos,
+                                  size_t /* phase */) const {
+  auto[ full, alphas ] = forward({ evaluator->sequence() });
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(SEPtr<Multiple> evaluator,
+                                    size_t begin,
+                                    size_t end,
+                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(SEPtr<Labeling> evaluator,
+                                  size_t pos,
+                                  size_t /* phase */) const {
+  auto[ full, alphas ] = forward(evaluator->sequence().observations);
+  return alphas[0][pos];
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(SEPtr<Labeling> evaluator,
+                                    size_t begin,
+                                    size_t end,
+                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CEPtr<Multiple> evaluator,
+                                        size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(CEPtr<Multiple> evaluator,
+                                  size_t pos,
+                                  size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(CEPtr<Multiple> evaluator,
+                                    size_t begin,
+                                    size_t end,
+                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CEPtr<Labeling> evaluator,
+                                        size_t phase) {
+  Base::initializeCache(evaluator, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSymbol(CEPtr<Labeling> evaluator,
+                                  size_t pos,
+                                  size_t phase) const {
+  return Base::evaluateSymbol(evaluator, pos, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability
+HiddenMarkovModel::evaluateSequence(CEPtr<Labeling> evaluator,
+                                    size_t begin,
+                                    size_t end,
+                                    size_t phase) const {
+  return Base::evaluateSequence(evaluator, begin, end, phase);
+}
+
+/*===============================  GENERATOR  ================================*/
+
+Multiple<Symbol>
+HiddenMarkovModel::drawSymbol(SGPtr<Multiple> /* generator */,
+                              size_t /* position */,
+                              size_t /* phase */,
+                              const Multiple<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Multiple<Sequence>
+HiddenMarkovModel::drawSequence(SGPtr<Multiple> generator,
+                                size_t size,
+                                size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Symbol>
+HiddenMarkovModel::drawSymbol(SGPtr<Labeling> /* generator */,
+                              size_t /* position */,
+                              size_t /* phase */,
+                              const Labeling<Sequence>& /* sequence */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+Labeling<Sequence>
+HiddenMarkovModel::drawSequence(SGPtr<Labeling> generator,
+                                size_t size,
+                                size_t phase) const {
+  return Base::drawSequence(generator, size, phase);
+}
+
+/*================================  LABELER  =================================*/
+
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::labeling(SLPtr /* labeler */,
+                            const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CLPtr /* labeler */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Estimation<Labeling<Sequence>>
+HiddenMarkovModel::labeling(CLPtr /* labeler */,
+                            const Labeler::method& /* method */) const {
+  return {};
+}
+
+/*===============================  CALCULATOR  ===============================*/
+
+Probability HiddenMarkovModel::calculate(
+    SCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HiddenMarkovModel::initializeCache(CCPtr /* calculator */) {
+}
+
+/*----------------------------------------------------------------------------*/
+
+Probability HiddenMarkovModel::calculate(
+    CCPtr /* calculator */,
+    const Calculator::direction& /* direction */) const {
+  return {};
+}
 
 /*===============================  SERIALIZER  ===============================*/
 
-void HiddenMarkovModel::serialize(const SSPtr& serializer) {
-  serializer->translator()->translate(this->shared_from_this());
+void HiddenMarkovModel::serialize(const SSPtr serializer) {
+  Base::serialize(serializer);
 }
 
-/*=================================  OTHERS  =================================*/
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
 typename HiddenMarkovModel::GeneratorReturn<Symbol>
 HiddenMarkovModel::drawSymbol(const RandomNumberGeneratorPtr& rng,
@@ -240,9 +415,9 @@ HiddenMarkovModel::drawSequence(const RandomNumberGeneratorPtr& rng,
   return { label, alignment };
 }
 
-/*================================  LABELER  =================================*/
+/*----------------------------------------------------------------------------*/
 
-typename HiddenMarkovModel::LabelerReturn
+typename HiddenMarkovModel::LabelerReturn<1>
 HiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -286,7 +461,7 @@ HiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
 
 /*----------------------------------------------------------------------------*/
 
-typename HiddenMarkovModel::LabelerReturn
+typename HiddenMarkovModel::LabelerReturn<1>
 HiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
@@ -334,7 +509,7 @@ HiddenMarkovModel::posteriorDecoding(const Multiple<Sequence>& sequences) const 
 
 /*----------------------------------------------------------------------------*/
 
-typename HiddenMarkovModel::CalculatorReturn
+typename HiddenMarkovModel::CalculatorReturn<1>
 HiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
@@ -369,7 +544,7 @@ HiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
 
 /*----------------------------------------------------------------------------*/
 
-typename HiddenMarkovModel::CalculatorReturn
+typename HiddenMarkovModel::CalculatorReturn<1>
 HiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   const Probability zero;
 
@@ -436,36 +611,6 @@ HiddenMarkovModel::traceBack(
   std::reverse(alignment[0].begin(), alignment[0].end());
 
   return { label, alignment };
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t HiddenMarkovModel::stateAlphabetSize() const {
-  return _state_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-size_t HiddenMarkovModel::observationAlphabetSize() const {
-  return _observation_alphabet_size;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::state(typename State::Id id) -> StatePtr {
-  return _states[id];
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::states() -> std::vector<StatePtr> {
-  return _states;
-}
-
-/*----------------------------------------------------------------------------*/
-
-auto HiddenMarkovModel::states() const -> const std::vector<StatePtr> {
-  return _states;
 }
 
 /*----------------------------------------------------------------------------*/
