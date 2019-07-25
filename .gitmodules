@@ -13,3 +13,7 @@
 	path = external/probability
 	url = https://github.com/renatocf/probability.git
 	ignore = dirty
+[submodule "external/multivector"]
+	path = external/multivector
+	url = https://github.com/renatocf/multivector.git
+	ignore = dirty
