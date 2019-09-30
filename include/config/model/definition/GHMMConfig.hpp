@@ -41,7 +41,9 @@ namespace definition {
 using GHMMConfig
   = config_with_options<
       option::Probabilities(decltype("transition_probabilities"_t)),
-      option::States(decltype("states"_t))
+      option::States(decltype("states"_t)),
+      option::Size(decltype("num_phases"_t)),
+      option::Size(decltype("max_backtracking"_t))
     >::extending<DecodableModelConfig>::type<class GHMMConfigID>;
 
 /**

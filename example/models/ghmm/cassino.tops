@@ -22,6 +22,9 @@ states = [
 var sigma = 0.7
 var tau = 0.1
 
+num_phases = 2
+max_backtracking = 100
+
 transition_probabilities = [
   "B" | "B" : 0.0,
   "B" | "H" : 0.0,

@@ -65,7 +65,8 @@ void ContextTreeNode::print(size_t i) {
   std::cout << std::endl;
   if (!isLeaf()) {
     for (auto c : _child) {
-      c->print(i+1);
+      if (c != nullptr)
+        c->print(i+1);
     }
   }
 }
