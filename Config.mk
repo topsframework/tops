@@ -24,7 +24,7 @@ DESCRIPTION     := ToPS is an objected-oriented framework that \
 
 # Program settings
 # ==================
-SHRLIB          := model
+SHRLIB          := model config lang exception
 TESTBIN         := test
 BENCHBIN        := bench
 
@@ -36,7 +36,7 @@ LDLIBS          += # Linker paths
 # Flags
 # =======
 CPPFLAGS        += # Precompiler Flags
-CXXFLAGS        += -std=c++1z \
+CXXFLAGS        += -std=c++17 \
                    -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast \
                    -Wcast-align -Wmissing-include-dirs -Wredundant-decls \
                    -Werror -O2
