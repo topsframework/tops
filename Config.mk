@@ -30,17 +30,17 @@ BENCHBIN        := bench
 
 # Paths
 # =======
-CXXLIBS         += # C++ paths
-LDLIBS          += # Linker paths
+CXXLIBS         := # C++ paths
+LDLIBS          := # Linker paths
 
 # Flags
 # =======
-CPPFLAGS        += # Precompiler Flags
-CXXFLAGS        += -std=c++1z \
+CPPFLAGS        := # Precompiler Flags
+CXXFLAGS        := -std=c++17 \
                    -Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast \
                    -Wcast-align -Wmissing-include-dirs -Wredundant-decls \
                    -Werror -O2
-LDFLAGS         += # Linker Flags
+LDFLAGS         := # Linker Flags
 
 # Makeball list
 # ===============
