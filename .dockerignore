@@ -1,0 +1,47 @@
+
+# Automatically generated directories
+#======================================
+dep/
+build/
+lib/
+bin/
+sbin/
+libexec/
+dist/
+coverage/
+
+# Objects, Libraries and Binaries
+#==================================
+*.mo
+*.o
+*.a
+*.dll
+*.so
+*.pdf
+*.svg
+
+# Make auxiliars
+#=================
+make.debug
+doc/doxygen/
+doc/Doxyfile.mk
+*.d
+
+# Mac OS X temp files
+#======================
+.DS_Store
+
+# Vagrant
+#==========
+.vagrant
+
+# Vim auxiliar files
+#=====================
+*.swp
+*.swo
+
+# Docker stuff
+Dockerfile
+docker-compose.yml
+.dockerignore
+.env

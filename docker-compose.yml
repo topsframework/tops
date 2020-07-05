@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  tops:
+    image: '${TOPS_IMAGE}'
+    build:
+      context: .
+      target: '${TOPS_BUILD_TARGET}'
+    environment:
+      - 'TERM'
+      - 'LINES'
+      - 'COLUMNS'
+    env_file:
+      - '.env'
