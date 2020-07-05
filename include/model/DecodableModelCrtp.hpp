@@ -25,6 +25,8 @@
 #include <vector>
 
 // Internal headers
+#include "model/Matrix.hpp"
+#include "model/Probability.hpp"
 #include "model/State.hpp"
 #include "model/Labeler.hpp"
 #include "model/Calculator.hpp"
@@ -67,7 +69,7 @@ class DecodableModelCrtp
 
   // Inner structs
   struct Cache : Base::Cache {
-    Matrix alpha, beta, gamma, posterior_decoding;
+    MultiVector<Probability> alpha, beta, gamma, posterior_decoding;
   };
 
   template<typename Target>
@@ -76,18 +78,16 @@ class DecodableModelCrtp
     std::vector<Target> alignment;
   };
 
-  template<size_t num_sequences>
   struct LabelerReturn {
     Probability estimation;
     Sequence label;
     Multiple<Sequence> alignment;
-    MultiArray<Probability, num_sequences+1> matrix;
+    MultiVector<Probability> matrix;
   };
 
-  template<size_t num_sequences>
   struct CalculatorReturn {
     Probability estimation;
-    MultiArray<Probability, num_sequences+1> matrix;
+    MultiVector<Probability> matrix;
   };
 
   struct TraceBackReturn {

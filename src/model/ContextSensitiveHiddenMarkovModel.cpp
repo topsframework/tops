@@ -19,6 +19,8 @@
 
 // Interface header
 #include "model/ContextSensitiveHiddenMarkovModel.hpp"
+#include "model/Matrix.hpp"
+#include "model/Probability.hpp"
 
 // Standard headers
 #include <array>
@@ -74,14 +76,12 @@ ContextSensitiveHiddenMarkovModel::train(
     Expectation zero;
 
     // Matrix for expectations of transitions
-    auto A = make_multiarray(zero,
-                             model->stateAlphabetSize(),
-                             model->stateAlphabetSize());
+    MultiVector<Expectation> A(zero,
+        { model->stateAlphabetSize(), model->stateAlphabetSize() });
 
     // Matrix for expectations of emissions
-    auto E = make_multiarray(zero,
-                             model->stateAlphabetSize(),
-                             model->observationAlphabetSize()+1);
+    MultiVector<Expectation> E(zero,
+        { model->stateAlphabetSize(), model->observationAlphabetSize() + 1 });
 
     Expectation last;
     for (const auto& sequences : trainer->training_set()) {
@@ -101,7 +101,8 @@ ContextSensitiveHiddenMarkovModel::train(
 
             if (!successor->hasGap(0) && i == sequences[0].size()) { continue; }
 
-            A[state->id()][s] += alphas[state->id()][i]
+            A[state->id()][s]
+              += alphas[state->id()][i]
               * state->transition()->probabilityOf(s)
               * successor->emission()->probabilityOf(
                   successor->hasGap(0) ? gap : sequences[0][i])
@@ -133,8 +134,8 @@ ContextSensitiveHiddenMarkovModel::train(
       auto k = state->id();
 
       // Replace the transition and emission of each state
-      state->transition(IID::make(normalize<Expectation, 1>(A[k])));
-      state->emission(IID::make(normalize<Expectation, 1>(E[k])));
+      state->transition(IID::make(normalize<Expectation>(A[k])));
+      state->emission(IID::make(normalize<Expectation>(E[k])));
     }
 
     // Store last expectancies of alignment
@@ -163,14 +164,12 @@ ContextSensitiveHiddenMarkovModel::train(
     = std::make_shared<ContextSensitiveHiddenMarkovModel>(*initial_model);
 
   // Matrix for counting of emissions
-  auto A = make_multiarray(pseudo_counter,
-                           model->stateAlphabetSize(),
-                           model->stateAlphabetSize());
+  MultiVector<size_t> A(pseudo_counter,
+      { model->stateAlphabetSize(), model->stateAlphabetSize() });
 
   // Matrix for counting of transitions
-  auto E = make_multiarray(pseudo_counter,
-                           model->stateAlphabetSize(),
-                           model->observationAlphabetSize());
+  MultiVector<size_t> E(pseudo_counter,
+      { model->stateAlphabetSize(), model->observationAlphabetSize() });
 
   for (const auto& [ observations, label ] : trainer->training_set()) {
     // Add contribution of the given sequences to matrix A
@@ -190,8 +189,8 @@ ContextSensitiveHiddenMarkovModel::train(
     auto k = state->id();
 
     // Replace the transition and emission of each state
-    state->transition(IID::make(normalize<Counter, 1>(A[k])));
-    state->emission(IID::make(normalize<Counter, 1>(E[k])));
+    state->transition(IID::make(normalize<Counter>(A[k])));
+    state->emission(IID::make(normalize<Counter>(E[k])));
   }
 
   return model;
@@ -425,15 +424,15 @@ ContextSensitiveHiddenMarkovModel::drawSequence(
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::LabelerReturn<1>
+typename ContextSensitiveHiddenMarkovModel::LabelerReturn
 ContextSensitiveHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
-  auto gammas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+  MultiVector<Probability> gammas(zero,
+      { _state_alphabet_size, sequences[0].size() + 1 });
 
-  auto psi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+  MultiVector<typename State::Id> psi(_begin_id,
+      { _state_alphabet_size, sequences[0].size() + 1 });
 
   // Initialization
   gammas[_begin_id][0] = 1;
@@ -471,16 +470,16 @@ ContextSensitiveHiddenMarkovModel::viterbi(const Multiple<Sequence>& sequences) 
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::LabelerReturn<1>
+typename ContextSensitiveHiddenMarkovModel::LabelerReturn
 ContextSensitiveHiddenMarkovModel::posteriorDecoding(
     const Multiple<Sequence>& sequences) const {
   Probability zero;
 
-  auto posteriors = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+  MultiVector<Probability> posteriors(zero,
+      { _state_alphabet_size, sequences[0].size() + 1 });
 
-  auto psi = make_multiarray(
-      _begin_id, _state_alphabet_size, sequences[0].size() + 1);
+  MultiVector<typename State::Id> psi(_begin_id,
+      { _state_alphabet_size, sequences[0].size() + 1 });
 
   // Preprocessment
   auto[ full, alphas ] = forward(sequences);
@@ -520,12 +519,12 @@ ContextSensitiveHiddenMarkovModel::posteriorDecoding(
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::CalculatorReturn<1>
+typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
 ContextSensitiveHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
-  auto alphas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 1);
+  MultiVector<Probability> alphas(zero,
+      { _state_alphabet_size, sequences[0].size() + 1 });
 
   // Initialization
   alphas[_begin_id][0] = 1;
@@ -555,12 +554,12 @@ ContextSensitiveHiddenMarkovModel::forward(const Multiple<Sequence>& sequences) 
 
 /*----------------------------------------------------------------------------*/
 
-typename ContextSensitiveHiddenMarkovModel::CalculatorReturn<1>
+typename ContextSensitiveHiddenMarkovModel::CalculatorReturn
 ContextSensitiveHiddenMarkovModel::backward(const Multiple<Sequence>& sequences) const {
   Probability zero;
 
-  auto betas = make_multiarray(
-      zero, _state_alphabet_size, sequences[0].size() + 2);
+  MultiVector<Probability> betas(zero,
+      { _state_alphabet_size, sequences[0].size() + 2 });
 
   // Initialization
   betas[_end_id][sequences[0].size()] = 1;
@@ -594,12 +593,12 @@ ContextSensitiveHiddenMarkovModel::backward(const Multiple<Sequence>& sequences)
 typename ContextSensitiveHiddenMarkovModel::TraceBackReturn
 ContextSensitiveHiddenMarkovModel::traceBack(
     const Multiple<Sequence>& sequences,
-    const MultiArray<typename State::Id, 2>& psi) const {
+    const MultiVector<typename State::Id>& psi) const {
   Sequence label;
   Multiple<Sequence> alignment(1);
 
   // Initialization
-  auto best_id = psi[_end_id][sequences[0].size()];
+  typename State::Id best_id = psi[_end_id][sequences[0].size()];
 
   std::vector<size_t> idxs { sequences[0].size() };
 

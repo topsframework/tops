@@ -377,16 +377,16 @@ class ContextSensitiveHiddenMarkovModel
                                          size_t size) const;
 
   // Labeler's implementations
-  LabelerReturn<1> viterbi(const Multiple<Sequence>& sequences) const;
-  LabelerReturn<1> posteriorDecoding(const Multiple<Sequence>& sequences) const;
+  LabelerReturn viterbi(const Multiple<Sequence>& sequences) const;
+  LabelerReturn posteriorDecoding(const Multiple<Sequence>& sequences) const;
 
   // Calculator's implementations
-  CalculatorReturn<1> forward(const Multiple<Sequence>& sequences) const;
-  CalculatorReturn<1> backward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn forward(const Multiple<Sequence>& sequences) const;
+  CalculatorReturn backward(const Multiple<Sequence>& sequences) const;
 
   // Helpers
   TraceBackReturn traceBack(const Multiple<Sequence>& sequences,
-                            const MultiArray<typename State::Id, 2>& psi) const;
+                            const MultiVector<typename State::Id>& psi) const;
 };
 
 }  // namespace model
