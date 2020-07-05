@@ -1,0 +1,36 @@
+diff --git a/src/model/ContextSensitiveHiddenMarkovModel.cpp b/src/model/ContextSensitiveHiddenMarkovModel.cpp
+index 47b9934..e060fe7 100644
+--- a/src/model/ContextSensitiveHiddenMarkovModel.cpp
++++ b/src/model/ContextSensitiveHiddenMarkovModel.cpp
+@@ -74,14 +74,16 @@ ContextSensitiveHiddenMarkovModel::train(
+     Expectation zero;
+ 
+     // Matrix for expectations of transitions
+-    auto A = make_multiarray(zero,
+-                             model->stateAlphabetSize(),
+-                             model->stateAlphabetSize());
++    MultiVector<Probability> A(zero, {
++        model->stateAlphabetSize(),
++        model->stateAlphabetSize()
++    });
+ 
+     // Matrix for expectations of emissions
+-    auto E = make_multiarray(zero,
+-                             model->stateAlphabetSize(),
+-                             model->observationAlphabetSize()+1);
++    auto E = MultiVector<Probability>(zero, {
++        model->stateAlphabetSize(),
++        model->observationAlphabetSize()+1
++    });
+ 
+     Expectation last;
+     for (const auto& sequences : trainer->training_set()) {
+@@ -594,7 +596,7 @@ ContextSensitiveHiddenMarkovModel::backward(const Multiple<Sequence>& sequences)
+ typename ContextSensitiveHiddenMarkovModel::TraceBackReturn
+ ContextSensitiveHiddenMarkovModel::traceBack(
+     const Multiple<Sequence>& sequences,
+-    const MultiArray<typename State::Id, 2>& psi) const {
++    const MultiVector<typename State::Id>& psi) const {
+   Sequence label;
+   Multiple<Sequence> alignment(1);
+ 

@@ -1,0 +1,107 @@
+diff --git a/include/model/Matrix.hpp b/include/model/Matrix.hpp
+index 5a227b8..17d71a6 100644
+--- a/include/model/Matrix.hpp
++++ b/include/model/Matrix.hpp
+@@ -24,6 +24,9 @@
+ #include <array>
+ #include <vector>
+ 
++// External headers
++#include "multivector/multivector.hpp"
++
+ // Internal headers
+ #include "model/Probability.hpp"
+ 
+@@ -32,89 +35,11 @@ namespace model {
+ 
+ /*----------------------------------------------------------------------------*/
+ 
+-template<typename T, size_t N>
+-struct Nest : Nest<std::vector<T>, N-1> {};
+ template<typename T>
+-struct Nest<T, 0> { using type = T; };
+-
+-template<typename T, size_t N>
+-using MultiArray = typename Nest<T, N>::type;
+-
+-using Matrix = MultiArray<Probability, 2>;
+-using Cube = MultiArray<Probability, 3>;
+-
+-/*----------------------------------------------------------------------------*/
+-
+-template<typename Original, size_t N>
+-struct SumAux {
+-  Original operator()(const MultiArray<Original, N>& values) {
+-    Original acc {};
+-    for (const auto& curr : values) {
+-      acc += SumAux<Original, N-1>{}(curr);
+-    }
+-    return acc;
+-  }
+-};
+-
+-template<typename Original>
+-struct SumAux<Original, 0> {
+-  Original operator()(const MultiArray<Original, 0>& values) {
+-    return values;
+-  }
+-};
+-
+-template<typename Original, size_t N>
+-struct NormalizeAux {
+-  MultiArray<Probability, N>
+-  operator()(const MultiArray<Original, N>& values, Original sum) {
+-    MultiArray<Probability, N> converted;
+-    for (const auto& curr : values) {
+-      converted.push_back(NormalizeAux<Original, N-1>{}(curr, sum));
+-    }
+-    return converted;
+-  }
+-};
+-
+-template<typename Original>
+-struct NormalizeAux<Original, 0> {
+-  MultiArray<Probability, 0>
+-  operator()(const MultiArray<Original, 0>& values, Original sum) {
+-    return Probability{ (1.0 * values) / sum };
+-  }
+-};
+-
+-template<typename Original, size_t N>
+-MultiArray<Probability, N> normalize(const MultiArray<Original, N>& values) {
+-  return NormalizeAux<Original, N>{}(values, SumAux<Original, N>{}(values));
+-}
+-
+-/*----------------------------------------------------------------------------*/
+-
+-template<typename Original, size_t D, size_t N>
+-struct ConstructorAux {
+-  MultiArray<Original, N> operator()(
+-      const Original& initial_value,
+-      const std::array<size_t, D>& dimensions) {
+-    return MultiArray<Original, N>(dimensions[D-N],
+-        ConstructorAux<Original, D, N-1>{}(initial_value, dimensions));
+-  }
+-};
+-
+-template<typename Original, size_t D>
+-struct ConstructorAux<Original, D, 0> {
+-  MultiArray<Original, 0> operator()(
+-      const Original& initial_value,
+-      const std::array<size_t, D>& /* dimensions */) {
+-    return initial_value;
+-  }
+-};
++using MultiVector = multivector::MultiVector<T>;
+ 
+-template<typename Original, typename... Dimensions>
+-auto make_multiarray(const Original& initial_value, Dimensions... dimensions) {
+-  constexpr size_t D = sizeof...(dimensions);
+-  return ConstructorAux<Original, D, D>{}(
+-      initial_value, std::array<size_t, D>{ dimensions... });
+-}
++using Matrix = MultiVector<Probability>;
++using Cube = MultiVector<Probability>;
+ 
+ /*----------------------------------------------------------------------------*/
+ 
